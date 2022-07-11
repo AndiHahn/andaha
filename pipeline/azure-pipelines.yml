@@ -9,8 +9,6 @@ pool:
 variables:
   azureServiceConnection: "azure-rm-andaha-dev-connection"
   containerRegistryConnection: "azure-container-reg-dev-connection"
-  bicepTemplateFile: "bicep/main.bicep"
-  releaseTemplate: "release-template.yml"
 
 stages:
 - stage: CI
@@ -19,12 +17,6 @@ stages:
   - job: build_and_publish_services
     steps:
     - task: NuGetToolInstaller@1
-
-    - task: CopyFiles@2
-      displayName: "Copy bicep files to Staging Directory"
-      inputs:
-        sourceFolder: bicep/
-        targetFolder: "$(Build.ArtifactStagingDirectory)/"
 
     - task: Docker@2
       displayName: Service Shopping - build and push image
@@ -36,25 +28,3 @@ stages:
 
     - task: PublishBuildArtifacts@1
       displayName: "Publish Artifact"
-
-- stage: 'IaC'
-  displayName: 'IaC'
-  dependsOn: CI
-  jobs:
-  - job: Bicep_infrastructure_provisioning
-    steps:
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Downloading artifact'
-      inputs:
-        buildType: 'current'
-        artifact: drop
-        targetPath: '$(System.ArtifactsDirectory)'
-
-    - task: AzureCLI@2
-      displayName: 'Bicep infrastructure provisioning'
-      inputs:
-        azureSubscription: $(azureServiceConnection)
-        scriptType: bash
-        scriptLocation: inlineScript
-        inlineScript: |
-          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile)
