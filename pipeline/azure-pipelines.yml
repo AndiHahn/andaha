@@ -8,6 +8,7 @@ pool:
 
 variables:
   azureServiceConnection: "azure-rm-andaha-dev-connection"
+  containerRegistryConnection: "azure-container-reg-dev-connection"
   bicepTemplateFile: "bicep/main.bicep"
   releaseTemplate: "release-template.yml"
 
@@ -30,7 +31,7 @@ stages:
       inputs:
         command: buildAndPush
         dockerfile: $(Build.SourcesDirectory)/src/Services/Andaha.Services.Shopping/Dockerfile
-        containerRegistry: andahadev
+        containerRegistry: $(containerRegistryConnection)
         tags: ${Build.BuildId}
 
     - task: PublishBuildArtifacts@1
