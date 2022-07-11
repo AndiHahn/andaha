@@ -1,0 +1,62 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - release/crosscutting/v*
+      - refs/release/crosscutting/v*
+      - master
+      - feature/crosscutting/*
+  paths:
+    include:
+    - /src/shipping/crosscutting
+
+pool:
+  vmImage: "windows-latest"
+
+variables:
+  azureServiceConnection: "azure-rm-andaha-dev-connection"
+  containerRegistryConnection: "azure-container-reg-dev-connection"
+
+stages:
+- stage: CI
+  displayName: CI Cross Cutting
+  jobs: 
+  - job: build_and_publish_nuget_package
+    steps:
+      - task: DotNetCoreCLI@2
+        displayName: dotnet restore
+        inputs:
+          command: restore
+          projects: '**/Andaha.CrossCutting.Application.csproj'
+          feedRestore: andaha/andaha-feed
+
+      - task: DotNetCoreCLI@2
+        displayName: dotnet build
+        inputs:
+          projects: '**/Andaha.CrossCutting.Application.csproj'
+          arguments: --configuration $(BuildConfiguration)
+
+      - task: DotNetCoreCLI@2
+        displayName: dotnet pack
+        inputs:
+          command: pack
+          publishWebProjects: false
+          projects: '**/Andaha.CrossCutting.Application.csproj'
+          arguments: --output $(Build.ArtifactStagingDirectory)/
+          zipAfterPublish: True
+          searchPatternPack: '**/Andaha.CrossCutting.Application.csproj'
+          versioningScheme: byEnvVar
+          versionEnvVar: BuildEnv
+
+      - task: DotNetCoreCLI@2
+        displayName: dotnet nuget push
+        inputs:
+          command: push
+          feedPublish: andaha/andaha-feed
+
+      - task: PublishBuildArtifacts@1
+        displayName: publish artifact
+        condition: succeededOrFailed()
+        inputs:
+          PathtoPublish: $(build.artifactstagingdirectory)
+          TargetPath: '\\andaha\$(Build.DefinitionName)\$(Build.BuildNumber)'
