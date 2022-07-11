@@ -5,8 +5,8 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["Andaha.Services.Shopping/Andaha.Services.Shopping.csproj", "Andaha.Services.Shopping/"]
-#COPY [ "src/Services/Andaha.Services.Shopping/Andaha.Services.Shopping.csproj", "Andaha.Services.Shopping/"]
+COPY ["Andaha.Services.Shopping.csproj", "Andaha.Services.Shopping/"]
+COPY ["../../CrossCutting/Andaha.CrossCutting.Application/Andaha.CrossCutting.Application.csproj", "Andaha.Services.Shopping/"]
 
 RUN dotnet restore "Andaha.Services.Shopping/Andaha.Services.Shopping.csproj"
 COPY . .
