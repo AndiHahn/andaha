@@ -1,4 +1,4 @@
-trigger:
+﻿trigger:
   batch: true
   branches:
     include:
@@ -12,7 +12,8 @@ pool:
   vmImage: "windows-latest"
 
 variables:
-  buildConfiguration: "Release"  
+  buildConfiguration: "Release"
+  nugetFeed: "andaha/andaha-feed"
 
 steps:
   - task: NuGetToolInstaller@1
@@ -21,6 +22,7 @@ steps:
     displayName: dotnet restore
     inputs:
       command: restore
+      feedRestore: $(nugetFeed)
       projects: '**/Andaha.Services.Shopping.csproj'
 
   - task: DotNetCoreCLI@2

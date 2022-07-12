@@ -19,17 +19,17 @@ steps:
 - task: PowerShell@2
   displayName: read and set major version
   inputs:
-    script: "##vso[task.setvariable variable=Major]$(branchName).SubString(1, $(branchName).IndexOf(".") - 1)"
+    script: '##vso[task.setvariable variable=Major]$(branchName).SubString(1, $(branchName).IndexOf(".") - 1)'
 
 - task: PowerShell@2
   displayName: read and set minor version
   inputs:
-    script: "##vso[task.setvariable variable=Minor]$(branchName).SubString($(branchName).IndexOf(".") + 1).SubString(0, $(branchName).IndexOf(".") - 1)"
+    script: '##vso[task.setvariable variable=Minor]$(branchName).SubString($(branchName).IndexOf(".") + 1).SubString(0, $(branchName).IndexOf(".") - 1)'
 
 - task: PowerShell@2
   displayName: read and set patch version
   inputs:
-    script: "##vso[task.setvariable variable=Patch]$(branchName).SubString($(branchName).IndexOf(".") + 1).SubString($(branchName).IndexOf("."))"
+    script: '##vso[task.setvariable variable=Patch]$(branchName).SubString($(branchName).IndexOf(".") + 1).SubString($(branchName).IndexOf("."))'
 
 - task: Docker@2
   displayName: build and push image
