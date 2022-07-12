@@ -15,8 +15,6 @@ variables:
   buildConfiguration: "Release"
   nugetFeed: "andaha/andaha-feed"
 
-name: 1.0.$(Rev:r)
-
 steps:
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
@@ -41,7 +39,8 @@ steps:
       zipAfterPublish: True
       searchPatternPack: '**/Andaha.CrossCutting.Application.csproj'
       packDestination: '$(Build.ArtifactStagingDirectory)'
-      versioningScheme: byBuildNumber
+      versioningScheme: byEnvVar
+      versionEnvVar: PackageVersion
 
   - task: DotNetCoreCLI@2
     displayName: dotnet nuget push
