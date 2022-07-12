@@ -4,22 +4,22 @@ trigger:
     include:
       - release/crosscutting/v*
       - refs/release/crosscutting/v*
-      - master
-      - feature/crosscutting/*
   paths:
     include:
-    - /src/shipping/crosscutting
+    - /src/CrossCutting/Andaha.CrossCutting.Application/*
 
 pool:
   vmImage: "windows-latest"
 
 variables:
-  azureServiceConnection: "azure-rm-andaha-dev-connection"
-  containerRegistryConnection: "azure-container-reg-dev-connection"
+  buildConfiguration: "Release"
+  nugetFeed: "andaha/andaha-feed"
+
+name: 1.0.$(Rev:r)
 
 stages:
-- stage: CI
-  displayName: CI Cross Cutting
+- stage: CD
+  displayName: CD Cross Cutting
   jobs: 
   - job: build_and_publish_nuget_package
     steps:
@@ -28,16 +28,16 @@ stages:
         inputs:
           command: restore
           projects: '**/Andaha.CrossCutting.Application.csproj'
-          feedRestore: andaha/andaha-feed
 
       - task: DotNetCoreCLI@2
-        displayName: dotnet build
+        displayName: build
         inputs:
+          command: "build"
           projects: '**/Andaha.CrossCutting.Application.csproj'
           arguments: --configuration $(BuildConfiguration)
 
       - task: DotNetCoreCLI@2
-        displayName: dotnet pack
+        displayName: pack
         inputs:
           command: pack
           publishWebProjects: false
@@ -52,7 +52,7 @@ stages:
         displayName: dotnet nuget push
         inputs:
           command: push
-          feedPublish: andaha/andaha-feed
+          feedPublish: $(nugetFeed)
 
       - task: PublishBuildArtifacts@1
         displayName: publish artifact
