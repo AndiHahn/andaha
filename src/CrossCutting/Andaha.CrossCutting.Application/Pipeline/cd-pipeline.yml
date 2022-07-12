@@ -6,7 +6,7 @@ trigger:
       - refs/release/crosscutting/v*
   paths:
     include:
-    - /src/CrossCutting/Andaha.CrossCutting.Application/*
+    - src/CrossCutting/Andaha.CrossCutting.Application/*
 
 pool:
   vmImage: "windows-latest"
