@@ -8,6 +8,9 @@ WORKDIR /src
 COPY ["Andaha.Services.Shopping.csproj", "Andaha.Services.Shopping/"]
 COPY ["nuget.config", "Andaha.Services.Shopping/"]
 
+ARG PAT
+RUN sed -i "s|</configuration>|<packageSourceCredentials><andaha-feed><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"${PAT}\" /></andaha-feed></packageSourceCredentials></configuration>|" Andaha.Services.Shopping/nuget.config
+
 RUN dotnet restore "Andaha.Services.Shopping/Andaha.Services.Shopping.csproj" --configfile "Andaha.Services.Shopping/nuget.config"
 COPY . .
 WORKDIR "/src/Andaha.Services.Shopping"
