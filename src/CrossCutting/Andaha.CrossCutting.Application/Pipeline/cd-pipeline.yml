@@ -17,46 +17,34 @@ variables:
 
 name: 1.0.$(Rev:r)
 
-stages:
-- stage: CD
-  displayName: CD Cross Cutting
-  jobs: 
-  - job: build_and_publish_nuget_package
-    steps:
-      - task: DotNetCoreCLI@2
-        displayName: dotnet restore
-        inputs:
-          command: restore
-          projects: '**/Andaha.CrossCutting.Application.csproj'
+steps:
+  - task: DotNetCoreCLI@2
+    displayName: dotnet restore
+    inputs:
+      command: restore
+      projects: '**/Andaha.CrossCutting.Application.csproj'
 
-      - task: DotNetCoreCLI@2
-        displayName: build
-        inputs:
-          command: "build"
-          projects: '**/Andaha.CrossCutting.Application.csproj'
-          arguments: --configuration $(BuildConfiguration)
+  - task: DotNetCoreCLI@2
+    displayName: build
+    inputs:
+      command: "build"
+      projects: '**/Andaha.CrossCutting.Application.csproj'
+      arguments: --configuration $(BuildConfiguration)
 
-      - task: DotNetCoreCLI@2
-        displayName: pack
-        inputs:
-          command: pack
-          publishWebProjects: false
-          projects: '**/Andaha.CrossCutting.Application.csproj'
-          arguments: --output $(Build.ArtifactStagingDirectory)/
-          zipAfterPublish: True
-          searchPatternPack: '**/Andaha.CrossCutting.Application.csproj'
-          versioningScheme: byEnvVar
-          versionEnvVar: BuildEnv
+  - task: DotNetCoreCLI@2
+    displayName: pack
+    inputs:
+      command: pack
+      publishWebProjects: false
+      projects: '**/Andaha.CrossCutting.Application.csproj'
+      arguments: --output $(Build.ArtifactStagingDirectory)/
+      zipAfterPublish: True
+      searchPatternPack: '**/Andaha.CrossCutting.Application.csproj'
+      packDestination: '$(Build.ArtifactStagingDirectory)'
+      versioningScheme: byBuildNumber
 
-      - task: DotNetCoreCLI@2
-        displayName: dotnet nuget push
-        inputs:
-          command: push
-          feedPublish: $(nugetFeed)
-
-      - task: PublishBuildArtifacts@1
-        displayName: publish artifact
-        condition: succeededOrFailed()
-        inputs:
-          PathtoPublish: $(build.artifactstagingdirectory)
-          TargetPath: '\\andaha\$(Build.DefinitionName)\$(Build.BuildNumber)'
+  - task: DotNetCoreCLI@2
+    displayName: dotnet nuget push
+    inputs:
+      command: push
+      feedPublish: $(nugetFeed)
