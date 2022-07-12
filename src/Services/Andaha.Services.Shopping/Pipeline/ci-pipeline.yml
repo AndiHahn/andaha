@@ -1,0 +1,31 @@
+﻿trigger:
+  batch: true
+  branches:
+    include:
+      - master
+      - feature/shopping/*
+  paths:
+    include:
+    - src/Services/Andaha.Services.Shopping/*
+
+pool:
+  vmImage: "windows-latest"
+
+variables:
+  buildConfiguration: "Release"  
+
+steps:
+  - task: NuGetToolInstaller@1
+
+  - task: DotNetCoreCLI@2
+    displayName: dotnet restore
+    inputs:
+      command: restore
+      projects: '**/Andaha.Services.Shopping.csproj'
+
+  - task: DotNetCoreCLI@2
+    displayName: build
+    inputs:
+      command: "build"
+      projects: '**/Andaha.Services.Shopping.csproj'
+      arguments: "--configuration $(BuildConfiguration)"
