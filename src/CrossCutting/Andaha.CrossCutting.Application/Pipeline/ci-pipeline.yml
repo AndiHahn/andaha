@@ -1,0 +1,32 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - master
+      - feature/crosscutting/*
+  paths:
+    include:
+      - src/CrossCutting/Andaha.CrossCutting.Application/*
+
+pool:
+  vmImage: "windows-latest"
+
+variables:
+  buildConfiguration: "Release"  
+
+steps:
+  - task: NuGetToolInstaller@1
+
+  - task: DotNetCoreCLI@2
+    displayName: dotnet restore
+    inputs:
+      command: restore
+      projects: '**/Andaha.CrossCutting.Application.csproj'
+
+  - task: DotNetCoreCLI@2
+    displayName: build
+    inputs:
+      command: "build"
+      projects: '**/Andaha.CrossCutting.Application.csproj'
+      arguments: "--configuration $(BuildConfiguration)"
+      

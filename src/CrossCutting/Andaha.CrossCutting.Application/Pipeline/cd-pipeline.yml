@@ -1,0 +1,47 @@
+trigger:
+  branches:
+    include:
+      - release/crosscutting/v*
+      - refs/release/crosscutting/v*
+
+pool:
+  vmImage: "windows-latest"
+
+variables:
+  buildConfiguration: "Release"
+  nugetFeed: "andaha/andaha-feed"
+
+name: "$(Major).$(Minor).$(Patch)$(PackageVersionType)"
+
+steps:
+  - task: DotNetCoreCLI@2
+    displayName: dotnet restore
+    inputs:
+      command: restore
+      projects: '**/Andaha.CrossCutting.Application.csproj'
+
+  - task: DotNetCoreCLI@2
+    displayName: build
+    inputs:
+      command: "build"
+      projects: '**/Andaha.CrossCutting.Application.csproj'
+      arguments: --configuration $(BuildConfiguration)
+
+  - task: DotNetCoreCLI@2
+    displayName: pack
+    inputs:
+      command: pack
+      publishWebProjects: false
+      projects: '**/Andaha.CrossCutting.Application.csproj'
+      arguments: --output $(Build.ArtifactStagingDirectory)/
+      zipAfterPublish: True
+      searchPatternPack: '**/Andaha.CrossCutting.Application.csproj'
+      packDestination: '$(Build.ArtifactStagingDirectory)'
+      versioningScheme: byEnvVar
+      versionEnvVar: PackageVersion
+
+  - task: DotNetCoreCLI@2
+    displayName: dotnet nuget push
+    inputs:
+      command: push
+      feedPublish: $(nugetFeed)
