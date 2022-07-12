@@ -10,7 +10,7 @@ COPY ["nuget.config", "Andaha.Services.Shopping/"]
 
 ARG PAT
 #RUN sed -i "s|</configuration>|<packageSourceCredentials><andaha-feed><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"${PAT}\" /></andaha-feed></packageSourceCredentials></configuration>|" Andaha.Services.Shopping/nuget.config
-RUN (get-content Andaha.Services.Shopping/nuget.config) -replace "</configuration>", "<packageSourceCredentials><andaha-feed><add key=`"Username`" value=`"PAT`" /><add key=`"ClearTextPassword`" value=`"`${PAT}`" /></andaha-feed></packageSourceCredentials></configuration>" | Out-File -encoding ASCII Andaha.Services.Shopping/nuget.config
+RUN powershell -Command (get-content Andaha.Services.Shopping/nuget.config) -replace "</configuration>", "<packageSourceCredentials><andaha-feed><add key=`"Username`" value=`"PAT`" /><add key=`"ClearTextPassword`" value=`"`${PAT}`" /></andaha-feed></packageSourceCredentials></configuration>" | Out-File -encoding ASCII Andaha.Services.Shopping/nuget.config
 
 RUN dotnet restore "Andaha.Services.Shopping/Andaha.Services.Shopping.csproj" --configfile "Andaha.Services.Shopping/nuget.config"
 COPY . .
