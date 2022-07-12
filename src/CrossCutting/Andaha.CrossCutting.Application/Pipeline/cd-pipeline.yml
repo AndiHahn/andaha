@@ -11,7 +11,7 @@ variables:
   buildConfiguration: "Release"
   nugetFeed: "andaha/andaha-feed"
 
-name: "$(PackageVersion)"  
+name: "$(Major).$(Minor).$(Patch)$(PackageVersionType)"
 
 steps:
   - task: DotNetCoreCLI@2
