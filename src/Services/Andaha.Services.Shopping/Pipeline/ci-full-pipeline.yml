@@ -3,9 +3,6 @@ trigger:
     include:
       - release/shopping/v*
       - refs/release/shopping/v*
-  paths:
-    include:
-    - src/Services/Andaha.Services.Shopping/*
 
 pool:
   vmImage: "windows-latest"
