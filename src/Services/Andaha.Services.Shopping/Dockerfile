@@ -7,7 +7,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["Andaha.Services.Shopping.csproj", "Andaha.Services.Shopping/"]
 
-RUN dotnet restore "Andaha.Services.Shopping/Andaha.Services.Shopping.csproj" --configfile "./nuget.config"
+RUN dotnet restore "Andaha.Services.Shopping/Andaha.Services.Shopping.csproj" --configfile "Andaha.Services.Shopping/nuget.config"
 COPY . .
 WORKDIR "/src/Andaha.Services.Shopping"
 RUN dotnet build "Andaha.Services.Shopping.csproj" -c Release -o /app/build
