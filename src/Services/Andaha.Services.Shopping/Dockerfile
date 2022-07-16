@@ -5,14 +5,11 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["Andaha.Services.Shopping.csproj", "Andaha.Services.Shopping/"]
+#COPY ["Andaha.Services.Shopping.csproj", "Andaha.Services.Shopping/"]
+COPY [".", "Andaha.Services.Shopping/"]
 COPY ["nuget.config", "Andaha.Services.Shopping/"]
 
 ARG PatPlaceholder
-#RUN sed -i "s|</configuration>|<packageSourceCredentials><andaha-feed><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"${PAT}\" /></andaha-feed></packageSourceCredentials></configuration>|" Andaha.Services.Shopping/nuget.config
-#RUN (get-content Andaha.Services.Shopping/nuget.config) -replace "</configuration>", "<packageSourceCredentials><andaha-feed><add key=`"Username`" value=`"PAT`" /><add key=`"ClearTextPassword`" value=`"`${PAT}`" /></andaha-feed></packageSourceCredentials></configuration>" | Out-File -encoding ASCII Andaha.Services.Shopping/nuget.config
-#RUN "(gc Andaha.Services.Shopping/nuget.config) -replace '%PatPlaceholder%', '$PAT' | Out-File -encoding ASCII Andaha.Services.Shopping/nuget.config"
-
 RUN dotnet restore "Andaha.Services.Shopping/Andaha.Services.Shopping.csproj" --configfile "Andaha.Services.Shopping/nuget.config"
 COPY . .
 WORKDIR "/src/Andaha.Services.Shopping"
