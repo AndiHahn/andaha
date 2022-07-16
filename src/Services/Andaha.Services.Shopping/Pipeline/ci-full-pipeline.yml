@@ -45,5 +45,6 @@ steps:
   inputs:
     command: push
     dockerfile: src/Services/Andaha.Services.Shopping/Dockerfile
+    repository: andaha/services/shopping
     containerRegistry: $(containerRegistryConnection)
     tags: $(imageTag)
