@@ -35,7 +35,7 @@ steps:
   displayName: build and push image
   inputs:
     command: buildAndPush
-    arguments: '--build-arg PAT=$(NugetFeedAccessToken)'
+    arguments: '--build-arg PatPlaceholder=$(NugetFeedAccessToken)'
     dockerfile: src/Services/Andaha.Services.Shopping/Dockerfile
     containerRegistry: $(containerRegistryConnection)
     tags: $(imageTag)
