@@ -32,11 +32,18 @@ steps:
     script: '##vso[task.setvariable variable=Patch]$(branchName).SubString($(branchName).IndexOf(".") + 1).SubString($(branchName).IndexOf("."))'
 
 - task: Docker@2
-  displayName: build and push image
+  displayName: build image
   inputs:
-    command: buildAndPush
+    command: build
     arguments: '--build-arg PatPlaceholder=$(NugetFeedAccessToken)'
     dockerfile: src/Services/Andaha.Services.Shopping/Dockerfile
     containerRegistry: $(containerRegistryConnection)
     tags: $(imageTag)
     
+- task: Docker@2
+  displayName: push image
+  inputs:
+    command: push
+    dockerfile: src/Services/Andaha.Services.Shopping/Dockerfile
+    containerRegistry: $(containerRegistryConnection)
+    tags: $(imageTag)
