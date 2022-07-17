@@ -18,7 +18,7 @@ steps:
   inputs:
     targetType: inline
     script: |
-      [string] $majorVersion = $(branchName).SubString(1, $(branchName).IndexOf(".") - 1)
+      [string] $majorVersion = "$(branchName)"".SubString(1, "$(branchName)".IndexOf(".") - 1)
       Write-Host "Set major version to '$majorVersion'"
       Write-Host "##vso[task.setvariable variable=Major]$majorVersion"
 
@@ -27,7 +27,7 @@ steps:
   inputs:
     targetType: inline
     script: |
-      [string] $minorVersion = $(branchName).SubString($(branchName).IndexOf(".") + 1).SubString(0, $(branchName).IndexOf(".") - 1)
+      [string] $minorVersion = "$(branchName)".SubString("$(branchName)".IndexOf(".") + 1).SubString(0, "$(branchName)".IndexOf(".") - 1)
       Write-Host "Set minor version to '$minorVersion'"
       Write-Host "##vso[task.setvariable variable=Minor]$minorVersion"
 
@@ -36,7 +36,7 @@ steps:
   inputs:
     targetType: inline
     script: |
-      [string] $patchVersion = $(branchName).SubString($(branchName).IndexOf(".") + 1).SubString($(branchName).IndexOf("."))
+      [string] $patchVersion = "$(branchName)".SubString("$(branchName)".IndexOf(".") + 1).SubString("$(branchName)".IndexOf("."))
       Write-Host "Set patch version to '$patchVersion'"
       Write-Host "##vso[task.setvariable variable=Patch]$patchVersion"
 
