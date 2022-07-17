@@ -5,7 +5,6 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-#COPY ["Andaha.Services.Shopping.csproj", "Andaha.Services.Shopping/"]
 COPY [".", "Andaha.Services.Shopping/"]
 COPY ["nuget.config", "Andaha.Services.Shopping/"]
 
