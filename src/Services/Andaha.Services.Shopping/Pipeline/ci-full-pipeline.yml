@@ -8,25 +8,46 @@ pool:
   vmImage: "windows-latest"
 
 variables:
-  containerRegistryConnection: "azure-container-reg-dev-connection"
+  azureServiceConnection: "azure-rm-andaha-dev-connection"
+  containerRegistryConnection: "andaha-container-reg-connection"
   imageTag: "$(Build.SourceBranchName)"
+  bicepTemplateFile: "deploy/main.bicep"
 
-steps:
-- task: Docker@2
-  displayName: build image
-  inputs:
-    command: build
-    arguments: '--build-arg PatPlaceholder=$(NugetFeedAccessToken)'
-    dockerfile: src/Services/Andaha.Services.Shopping/Dockerfile
-    repository: andaha/services/shopping
-    containerRegistry: $(containerRegistryConnection)
-    tags: $(imageTag)
-    
-- task: Docker@2
-  displayName: push image
-  inputs:
-    command: push
-    dockerfile: src/Services/Andaha.Services.Shopping/Dockerfile
-    repository: andaha/services/shopping
-    containerRegistry: $(containerRegistryConnection)
-    tags: $(imageTag)
+stages:
+- stage: CI
+  displayName: CI
+  jobs:
+    - job: build_and_push_image
+      steps:
+      - task: Docker@2
+        displayName: build image
+        inputs:
+          command: build
+          arguments: '--build-arg PatPlaceholder=$(NugetFeedAccessToken)'
+          dockerfile: src/Services/Andaha.Services.Shopping/Dockerfile
+          repository: andaha/services/shopping
+          containerRegistry: $(containerRegistryConnection)
+          tags: $(imageTag)
+          
+      - task: Docker@2
+        displayName: push image
+        inputs:
+          command: push
+          dockerfile: src/Services/Andaha.Services.Shopping/Dockerfile
+          repository: andaha/services/shopping
+          containerRegistry: $(containerRegistryConnection)
+          tags: $(imageTag)
+- stage: CD
+  displayName: CD
+  dependsOn: CI
+  jobs:
+  - job: deployment
+    steps:
+    - task: AzureCLI@2
+      displayName: 'Deploy to dev'
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile)   
