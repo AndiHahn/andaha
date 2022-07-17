@@ -18,7 +18,7 @@ steps:
   inputs:
     targetType: inline
     script: |
-      [string] $majorVersion = "$(branchName)"".SubString(1, "$(branchName)".IndexOf(".") - 1)
+      [string] $majorVersion = "$(branchName)".SubString(1, "$(branchName)".IndexOf(".") - 1)
       Write-Host "Set major version to '$majorVersion'"
       Write-Host "##vso[task.setvariable variable=Major]$majorVersion"
 
