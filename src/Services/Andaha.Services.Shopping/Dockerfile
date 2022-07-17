@@ -6,7 +6,6 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY [".", "Andaha.Services.Shopping/"]
-COPY ["nuget.config", "Andaha.Services.Shopping/"]
 
 ARG PatPlaceholder
 RUN dotnet restore "Andaha.Services.Shopping/Andaha.Services.Shopping.csproj" --configfile "Andaha.Services.Shopping/nuget.config"
