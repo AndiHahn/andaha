@@ -11,7 +11,7 @@ variables:
   azureServiceConnection: "azure-rm-andaha-dev-connection"
   containerRegistryConnection: "andaha-container-reg-connection"
   imageTag: "$(Build.SourceBranchName)"
-  bicepTemplateFile: "deploy/main-shopping.bicep"
+  bicepTemplateFile: "bicep/deploy/main-shopping.bicep"
 
 stages:
 - stage: CI
@@ -37,12 +37,29 @@ stages:
           repository: andaha/services/shopping
           containerRegistry: $(containerRegistryConnection)
           tags: $(imageTag)
+
+      - task: CopyFiles@2
+        displayName: "Copy bicep files to Staging Directory"
+        inputs:
+          sourceFolder: bicep/
+          targetFolder: "$(Build.ArtifactStagingDirectory)/"
+
+      - task: PublishBuildArtifacts@1
+        displayName: "Publish Artifact"
+
 - stage: CD
   displayName: CD
   dependsOn: CI
   jobs:
   - job: deployment
     steps:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Downloading artifact'
+      inputs:
+        buildType: 'current'
+        artifact: drop
+        targetPath: '$(System.ArtifactsDirectory)'
+
     - task: AzureCLI@2
       displayName: 'Deploy to dev'
       inputs:
