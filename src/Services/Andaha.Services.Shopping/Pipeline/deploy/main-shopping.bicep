@@ -1,6 +1,6 @@
 param stage string = 'dev'
 param location string = resourceGroup().location
-param version string = 'v1.0.0'
+param version string = 'v1.0.1'
 
 module coreInfrastructure '../../../../../pipeline/deploy/main.bicep' = {
   name: 'andaha-core-infrastructure'
