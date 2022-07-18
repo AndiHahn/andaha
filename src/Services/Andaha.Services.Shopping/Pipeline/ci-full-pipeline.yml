@@ -39,9 +39,9 @@ stages:
           tags: $(imageTag)
 
       - task: CopyFiles@2
-        displayName: "Copy bicep files to Staging Directory"
+        displayName: "copy bicep files to staging directory"
         inputs:
-          sourceFolder: bicep/
+          sourceFolder: src/Services/Andaha.Services.Shopping/Pipeline/deploy
           targetFolder: "$(Build.ArtifactStagingDirectory)/"
 
       - task: PublishBuildArtifacts@1
