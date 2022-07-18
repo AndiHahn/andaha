@@ -5,7 +5,7 @@ trigger:
       - refs/release/shopping/v*
 
 pool:
-  vmImage: "windows-latest"
+  vmImage: "ubuntu-latest"
 
 variables:
   azureServiceConnection: "azure-rm-andaha-dev-connection"
