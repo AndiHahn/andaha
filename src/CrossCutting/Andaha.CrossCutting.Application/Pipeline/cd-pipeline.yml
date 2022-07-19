@@ -5,7 +5,7 @@ trigger:
       - refs/release/crosscutting/v*
 
 pool:
-  vmImage: "windows-latest"
+  vmImage: "ubuntu-latest"
 
 variables:
   buildConfiguration: "Release"
@@ -22,7 +22,7 @@ steps:
         [string] $version = $(Build.SourceBranchName)
         Write-Host "Set version to '$version'"
         Write-Host "##vso[task.setvariable variable=Version]$version"
-        
+
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
