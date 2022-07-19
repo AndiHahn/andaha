@@ -11,9 +11,18 @@ variables:
   buildConfiguration: "Release"
   nugetFeed: "andaha/andaha-feed"
 
-name: "$(Major).$(Minor).$(Patch)$(PackageVersionType)"
+name: "$(Build.SourceBranchName)"
 
 steps:
+  - task: PowerShell@2
+    displayName: set version environment variable
+    inputs:
+      targetType: inline
+      script: |
+        [string] $version = $(Build.SourceBranchName)
+        Write-Host "Set version to '$version'"
+        Write-Host "##vso[task.setvariable variable=Version]$version"
+        
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
@@ -38,7 +47,7 @@ steps:
       searchPatternPack: '**/Andaha.CrossCutting.Application.csproj'
       packDestination: '$(Build.ArtifactStagingDirectory)'
       versioningScheme: byEnvVar
-      versionEnvVar: PackageVersion
+      versionEnvVar: Version
 
   - task: DotNetCoreCLI@2
     displayName: dotnet nuget push
