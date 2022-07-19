@@ -82,7 +82,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
       containers: [
         {
           name: 'shopping-api'
-          image: 'andaha.azurecr.io/andaha/services/shopping:${imageVersion}'
+          image: 'andaha/services/shopping:${imageVersion}'
           env: stage == 'dev' ? environmentDevConfig : environmentProdConfig
         }
       ]

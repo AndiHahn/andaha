@@ -54,4 +54,7 @@ stages:
         inlineScript: |
           $acrUser=$(az acr credential show -n andaha --query username -o tsv)
           $acrPassword=$(az acr credential show -n andaha --query "passwords[0].value" -o tsv)
-          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile) -p containerRegistryUsername=$acrUser containerRegistryPassword=$acrPassword
+          az deployment group create 
+          --resource-group andaha-dev 
+          --template-file $(bicepTemplateFile) 
+          -p containerRegistryUsername=$acrUser containerRegistryPassword=$acrPassword version=$(Build.SourceBranchName)
