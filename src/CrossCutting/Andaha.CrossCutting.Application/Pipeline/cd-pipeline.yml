@@ -19,7 +19,7 @@ steps:
     inputs:
       targetType: inline
       script: |
-        [string] $version = "$(Build.SourceBranchName)"
+        [string] $version = "$(Build.SourceBranchName)".SubString(1)
         Write-Host "Set version to '$version'"
         Write-Host "##vso[task.setvariable variable=Version]$version"
 
