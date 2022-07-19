@@ -2,6 +2,9 @@ param location string
 param containerAppsEnvironmentId string
 param imageVersion string
 param stage string
+param containerRegistryUsername string
+@secure()
+param containerRegistryPassword string
 
 var sqlServerAdminLogin = 'andaha-sql-admin'
 var sqlServerAdminLoginPassword = 'Pass@word'
@@ -79,12 +82,12 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
       containers: [
         {
           name: 'shopping-api'
-          image: 'andaha/services/shopping:${imageVersion}'
+          image: 'andaha.azurecr.io/andaha/services/shopping:${imageVersion}'
           env: stage == 'dev' ? environmentDevConfig : environmentProdConfig
         }
       ]
       scale: {
-        minReplicas: 1
+        minReplicas: 0
         maxReplicas: 2
       }
     }
@@ -96,11 +99,22 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
         appPort: 80
       }
       ingress: {
-        external: false
+        external: true
         targetPort: 80
         allowInsecure: true
       }
+      registries: [
+        {
+          server: 'andaha.azurecr.io'
+          username: containerRegistryUsername
+          passwordSecretRef: 'container-registry-password'
+        }
+      ]
       secrets: [
+        {
+          name: 'container-registry-password'
+          value: containerRegistryPassword
+        }
         {
           name: 'shoppingdb-connection-string'
           value: shoppingDbConnectionString
