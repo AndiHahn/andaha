@@ -9,7 +9,7 @@
     - src/Services/Andaha.Services.Shopping/*
 
 pool:
-  vmImage: "windows-latest"
+  vmImage: "ubuntu-latest"
 
 variables:
   buildConfiguration: "Release"
