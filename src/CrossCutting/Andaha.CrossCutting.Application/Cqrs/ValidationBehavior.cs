@@ -6,7 +6,7 @@ using System.Reflection;
 namespace Andaha.CrossCutting.Application.Cqrs;
 public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
-    where TResponse : Result.Result
+    where TResponse : IResult
 {
     private readonly IEnumerable<IValidator<TRequest>> validators;
 
@@ -20,15 +20,16 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
         var context = new ValidationContext<TRequest>(request);
 
         var failures = validators
-            .Select(v => v.Validate(context))
-            .SelectMany(result => result.Errors)
+            .Select(async v => await v.ValidateAsync(context, cancellationToken))
+            .SelectMany(task => task.Result.Errors)
             .Where(f => f != null)
             .ToList();
 
         if (failures.Count != 0)
         {
             Type responseType = typeof(TResponse);
-            if (responseType == typeof(Result.Result) || responseType.GetGenericTypeDefinition() == typeof(Result<>))
+            if (typeof(IResult).IsAssignableFrom(responseType) ||
+                typeof(IPagedResult).IsAssignableFrom(responseType))
             {
                 MethodInfo? errorMethod = responseType.GetMethod(nameof(Result.Result.Error));
                 var result = errorMethod?.Invoke(responseType, new[] { failures });

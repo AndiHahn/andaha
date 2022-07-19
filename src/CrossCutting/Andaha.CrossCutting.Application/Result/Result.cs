@@ -57,9 +57,7 @@ namespace Andaha.CrossCutting.Application.Result
 
         public T? Value { get; private set; }
 
-#pragma warning disable CS8603 // Possible null reference return.
-        public static implicit operator T(Result<T> result) => result.Value;
-#pragma warning restore CS8603 // Possible null reference return.
+        public static implicit operator T?(Result<T> result) => result.Value;
 
         public static implicit operator Result<T>(T value) => Success(value);
 
