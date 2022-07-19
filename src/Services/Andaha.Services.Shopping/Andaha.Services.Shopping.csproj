@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Andaha.CrossCutting.Application" Version="1.0.2-preview" />
+    <PackageReference Include="Andaha.CrossCutting.Application" Version="1.0.3" />
     <PackageReference Include="CSharpFunctionalExtensions" Version="2.30.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.6">
