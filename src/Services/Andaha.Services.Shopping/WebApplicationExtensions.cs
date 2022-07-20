@@ -6,7 +6,7 @@ namespace Andaha.Services.Shopping;
 
 public static class WebApplicationExtensions
 {
-    public static WebApplication MigrateDatabase(this WebApplication webApplication, ILogger logger)
+    public static async Task<WebApplication> MigrateAndSeedDatabaseAsync(this WebApplication webApplication, ILogger logger)
     {
         using var scope = webApplication.Services.CreateScope();
 
@@ -15,14 +15,15 @@ public static class WebApplicationExtensions
         var context = scope.ServiceProvider.GetRequiredService<ShoppingDbContext>();
 
         retryPolicy.Execute(context.Database.Migrate);
+        await ShoppingDbContextSeed.SeedAsync(context);
 
         return webApplication;
     }
 
     private static Policy CreateRetryPolicy(ILogger logger)
     {
-        return Policy.Handle<Exception>().
-            WaitAndRetryForever(
+        return Policy.Handle<Exception>()
+            .WaitAndRetryForever(
                 sleepDurationProvider: retry => TimeSpan.FromSeconds(5),
                 onRetry: (exception, retry, timeSpan) =>
                 {

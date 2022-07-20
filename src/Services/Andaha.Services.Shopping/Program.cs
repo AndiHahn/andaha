@@ -75,7 +75,7 @@ app.MapHealthChecks("/liveness", new HealthCheckOptions
 
 try
 {
-    app.MigrateDatabase(app.Logger);
+    await app.MigrateAndSeedDatabaseAsync(app.Logger);
     
     app.Run();
 }
