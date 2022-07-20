@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Andaha.Services.Shopping.Application.SearchBills;
+namespace Andaha.Services.Shopping.Application.Queries.SearchBills;
 
 public class SearchBillsQueryValidator : AbstractValidator<SearchBillsQuery>
 {

@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Andaha.Services.Shopping.Application.GetBillById;
+namespace Andaha.Services.Shopping.Application.Queries.GetBillById;
 
 public class GetBillByIdQueryValidator : AbstractValidator<GetBillByIdQuery>
 {

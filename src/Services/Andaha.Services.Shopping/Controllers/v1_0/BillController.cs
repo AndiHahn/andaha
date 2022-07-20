@@ -1,8 +1,8 @@
 ﻿using Andaha.CrossCutting.Application.Result;
-using Andaha.Services.Shopping.Application.CreateBill;
-using Andaha.Services.Shopping.Application.DeleteBill;
-using Andaha.Services.Shopping.Application.GetBillById;
-using Andaha.Services.Shopping.Application.SearchBills;
+using Andaha.Services.Shopping.Application.Commands.CreateBill;
+using Andaha.Services.Shopping.Application.Commands.DeleteBill;
+using Andaha.Services.Shopping.Application.Queries.GetBillById;
+using Andaha.Services.Shopping.Application.Queries.SearchBills;
 using Andaha.Services.Shopping.Dtos.v1_0;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

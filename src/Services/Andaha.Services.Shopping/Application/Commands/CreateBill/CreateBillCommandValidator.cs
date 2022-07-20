@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Andaha.Services.Shopping.Application.CreateBill;
+namespace Andaha.Services.Shopping.Application.Commands.CreateBill;
 
 public class CreateBillCommandValidator : AbstractValidator<CreateBillCommand>
 {

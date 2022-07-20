@@ -1,7 +1,7 @@
 using Andaha.CrossCutting.Application.Result;
-using Andaha.Services.Shopping.Dtos;
+using Andaha.Services.Shopping.Dtos.v1_0;
 using MediatR;
 
-namespace Andaha.Services.Shopping.Application.CreateBill;
+namespace Andaha.Services.Shopping.Application.Commands.CreateBill;
 
 public record CreateBillCommand(Guid CategoryId, string ShopName, double Price, string? Notes) : IRequest<Result<BillDto>>;

@@ -1,13 +1,13 @@
-﻿using Andaha.CrossCutting.Application.Result;
-using Andaha.Services.Shopping.Infrastructure;
-using Andaha.Services.Shopping.Core;
-using MediatR;
+﻿#nullable enable
+
 using Andaha.CrossCutting.Application.Identity;
-using Andaha.Services.Shopping.Dtos;
+using Andaha.CrossCutting.Application.Result;
+using Andaha.Services.Shopping.Core;
+using Andaha.Services.Shopping.Dtos.v1_0;
+using Andaha.Services.Shopping.Infrastructure;
+using MediatR;
 
-#nullable enable
-
-namespace Andaha.Services.Shopping.Application.CreateBill;
+namespace Andaha.Services.Shopping.Application.Commands.CreateBill;
 
 internal class CreateBillCommandHandler : IRequestHandler<CreateBillCommand, Result<BillDto>>
 {

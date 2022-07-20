@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Andaha.Services.Shopping.Application.DeleteBill;
+namespace Andaha.Services.Shopping.Application.Commands.DeleteBill;
 
 public class DeleteBillCommandValidator : AbstractValidator<DeleteBillCommand>
 {

@@ -3,7 +3,7 @@ using Andaha.CrossCutting.Application.Result;
 using Andaha.Services.Shopping.Infrastructure;
 using MediatR;
 
-namespace Andaha.Services.Shopping.Application.DeleteBill;
+namespace Andaha.Services.Shopping.Application.Commands.DeleteBill;
 
 internal class DeleteBillCommandHandler : IRequestHandler<DeleteBillCommand, Result>
 {

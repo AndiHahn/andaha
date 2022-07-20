@@ -1,11 +1,11 @@
 ﻿using Andaha.CrossCutting.Application.Identity;
 using Andaha.CrossCutting.Application.Result;
-using Andaha.Services.Shopping.Dtos;
+using Andaha.Services.Shopping.Dtos.v1_0;
 using Andaha.Services.Shopping.Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Andaha.Services.Shopping.Application.SearchBills;
+namespace Andaha.Services.Shopping.Application.Queries.SearchBills;
 
 internal class SearchBillsQueryHandler : IRequestHandler<SearchBillsQuery, PagedResult<BillDto>>
 {

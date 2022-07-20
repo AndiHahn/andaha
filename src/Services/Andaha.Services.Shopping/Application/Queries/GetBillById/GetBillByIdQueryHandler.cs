@@ -1,10 +1,10 @@
 ﻿using Andaha.CrossCutting.Application.Identity;
 using Andaha.CrossCutting.Application.Result;
-using Andaha.Services.Shopping.Dtos;
+using Andaha.Services.Shopping.Dtos.v1_0;
 using Andaha.Services.Shopping.Infrastructure;
 using MediatR;
 
-namespace Andaha.Services.Shopping.Application.GetBillById;
+namespace Andaha.Services.Shopping.Application.Queries.GetBillById;
 
 internal class GetBillByIdQueryHandler : IRequestHandler<GetBillByIdQuery, Result<BillDto>>
 {
