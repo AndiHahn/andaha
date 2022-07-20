@@ -13,6 +13,8 @@ variables:
   imageTag: "$(Build.SourceBranchName)"
   bicepTemplateFile: "src/Services/Andaha.Services.Shopping/Pipeline/deploy/main-shopping.bicep"
 
+name: "$(BuildNumber) $(Build.SourceBranchName)"
+
 stages:
 - stage: CI
   displayName: CI
@@ -53,4 +55,4 @@ stages:
         inlineScript: |
           acrUser=$(az acr credential show --name andaha --resource-group andaha --query username -o tsv)
           acrPassword=$(az acr credential show --name andaha --resource-group andaha --query "passwords[0].value" -o tsv)
-          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile) -parameters containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)"
+          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile) --parameters containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)"
