@@ -13,7 +13,7 @@ variables:
   imageTag: "$(Build.SourceBranchName)"
   bicepTemplateFile: "src/Services/Andaha.Services.Shopping/Pipeline/deploy/main-shopping.bicep"
 
-name: "$(BuildNumber) $(Build.SourceBranchName)"
+name: "$(Build.BuildNumber) $(Build.SourceBranchName)"
 
 stages:
 - stage: CI
