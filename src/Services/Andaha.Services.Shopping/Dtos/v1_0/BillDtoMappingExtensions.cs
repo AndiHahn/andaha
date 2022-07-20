@@ -1,6 +1,6 @@
 ﻿using Andaha.Services.Shopping.Core;
 
-namespace Andaha.Services.Shopping.Dtos;
+namespace Andaha.Services.Shopping.Dtos.v1_0;
 
 internal static class BillDtoMappingExtensions
 {

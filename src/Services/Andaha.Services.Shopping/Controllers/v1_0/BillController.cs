@@ -3,12 +3,15 @@ using Andaha.Services.Shopping.Application.CreateBill;
 using Andaha.Services.Shopping.Application.DeleteBill;
 using Andaha.Services.Shopping.Application.GetBillById;
 using Andaha.Services.Shopping.Application.SearchBills;
-using Andaha.Services.Shopping.Dtos;
+using Andaha.Services.Shopping.Dtos.v1_0;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Andaha.Services.Shopping.Controllers;
+namespace Andaha.Services.Shopping.Controllers.v1_0;
 [MapToProblemDetails]
+[Consumes("application/json")]
+[Produces("application/json")]
+[ApiVersion("1.0")]
 [Route("api/[controller]")]
 [ApiController]
 public class BillController : ControllerBase
@@ -26,7 +29,7 @@ public class BillController : ControllerBase
     public Task<PagedResult<BillDto>> List([FromQuery] SearchBillsParameters searchParameters, CancellationToken cancellationToken)
     {
         var query = new SearchBillsQuery(searchParameters.PageSize, searchParameters.PageIndex, searchParameters.Search);
-        return this.sender.Send(query, cancellationToken);
+        return sender.Send(query, cancellationToken);
     }
 
     [HttpGet("{id}")]
@@ -36,7 +39,7 @@ public class BillController : ControllerBase
     public Task<Result<BillDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetBillByIdQuery(id);
-        return this.sender.Send(query, cancellationToken);
+        return sender.Send(query, cancellationToken);
     }
 
     [HttpPost]
@@ -45,7 +48,7 @@ public class BillController : ControllerBase
     public async Task<IActionResult> AddBill([FromBody] BillCreateDto createDto, CancellationToken cancellationToken)
     {
         var command = new CreateBillCommand(createDto.CategoryId, createDto.ShopName, createDto.Price, createDto.Notes);
-        var createdBill = await this.sender.Send(command, cancellationToken);
+        var createdBill = await sender.Send(command, cancellationToken);
 
         if (createdBill.Status != ResultStatus.Success) return this.ToActionResult(createdBill);
 
@@ -59,7 +62,7 @@ public class BillController : ControllerBase
     public async Task<IActionResult> DeleteBill(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeleteBillCommand(id);
-        await this.sender.Send(command, cancellationToken);
+        await sender.Send(command, cancellationToken);
         return NoContent();
     }
 }
