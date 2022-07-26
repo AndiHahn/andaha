@@ -11,7 +11,7 @@ public static class WebApplicationExtensions
         using var scope = webApplication.Services.CreateScope();
 
         var retryPolicy = CreateRetryPolicy(logger);
-
+        
         var context = scope.ServiceProvider.GetRequiredService<ShoppingDbContext>();
 
         retryPolicy.Execute(context.Database.Migrate);
