@@ -100,8 +100,8 @@ internal static class ProgramExtensions
     {
         return Policy.Handle<Exception>()
             .WaitAndRetryForeverAsync(
-                sleepDurationProvider: retry => TimeSpan.FromSeconds(5),
-                onRetry: (exception, retry, timeSpan) =>
+                sleepDurationProvider: _ => TimeSpan.FromSeconds(5),
+                onRetry: (exception, retry, _) =>
                 {
                     logger.LogWarning(
                         exception,
