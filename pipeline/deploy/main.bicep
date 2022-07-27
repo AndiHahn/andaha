@@ -10,3 +10,4 @@ module containerAppsEnvironment 'infrastructure/container-app-env.bicep' = {
 }
 
 output containerAppEnvironmentId string = containerAppsEnvironment.outputs.id
+output containerAppEnvironmentDomain string = containerAppsEnvironment.outputs.domain
