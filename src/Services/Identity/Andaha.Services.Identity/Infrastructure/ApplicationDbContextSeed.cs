@@ -10,9 +10,19 @@ public static class ApplicationDbContextSeed
         var user = await userManager.FindByNameAsync("Andreas");
         if (user is null)
         {
-            user = new ApplicationUser("Andreas");
+            user = new ApplicationUser()
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = "Andreas",
+                Email = "andreas@email.at",
+                EmailConfirmed = true
+            };
 
-            await userManager.CreateAsync(user, "Pass123$");
+            var result = await userManager.CreateAsync(user, "Pass123$");
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException($"Could not create user: {result.Errors.First().Description}");
+            }
         }
     }
 }
