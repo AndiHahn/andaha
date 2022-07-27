@@ -1,0 +1,31 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - master
+      - feature/identity/*
+  paths:
+    include:
+    - src/Services/Andaha.Services.Identity/*
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  buildConfiguration: "Release"
+
+steps:
+  - task: NuGetToolInstaller@1
+
+  - task: DotNetCoreCLI@2
+    displayName: dotnet restore
+    inputs:
+      command: restore
+      projects: '**/Andaha.Services.Identity.csproj'
+
+  - task: DotNetCoreCLI@2
+    displayName: build
+    inputs:
+      command: "build"
+      projects: '**/Andaha.Services.Identity.csproj'
+      arguments: "--configuration $(BuildConfiguration)"

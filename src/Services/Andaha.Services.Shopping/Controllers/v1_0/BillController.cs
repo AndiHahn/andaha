@@ -5,10 +5,12 @@ using Andaha.Services.Shopping.Application.Queries.GetBillById;
 using Andaha.Services.Shopping.Application.Queries.SearchBills;
 using Andaha.Services.Shopping.Dtos.v1_0;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Andaha.Services.Shopping.Controllers.v1_0;
 [MapToProblemDetails]
+[Authorize]
 [Consumes("application/json")]
 [Produces("application/json")]
 [ApiVersion("1.0")]
