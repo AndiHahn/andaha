@@ -11,9 +11,9 @@ variables:
   azureServiceConnection: "azure-rm-andaha-dev-connection"
   containerRegistryConnection: "andaha-container-reg-connection"
   imageTag: "$(Build.SourceBranchName)"
-  bicepTemplateFile: "src/Services/Identity/pipeline/cd/identity-main.bicep"
+  bicepTemplateFile: "src/Services/Identity/pipeline/bicep/identity-main.bicep"
 
-name: "$(Build.BuildNumber) $(Build.SourceBranchName)"
+name: "$(Build.SourceBranchName)"
 
 stages:
 - stage: build
