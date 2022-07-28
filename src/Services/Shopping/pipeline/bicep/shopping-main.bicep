@@ -4,7 +4,7 @@ param version string
 param containerRegistryUsername string
 param containerRegistryPassword string
 
-module coreInfrastructure '../../../../../pipeline/deploy/main.bicep' = {
+module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
   name: 'andaha-core-infrastructure'
   params: {
     location: location
@@ -12,14 +12,24 @@ module coreInfrastructure '../../../../../pipeline/deploy/main.bicep' = {
   }
 }
 
-module shoppingService 'service.bicep' = {
-  name: 'andaha-shopping-service'
+module sqlDatabase 'shopping-db-module.bicep' = {
+  name: 'andaha-shopping-sql'
   params: {
     location: location
-    containerAppsEnvironmentId: coreInfrastructure.outputs.containerAppEnvironmentId
-    imageVersion: version
     stage: stage
+  }
+}
+
+module containerApp 'shopping-app-module.bicep' = {
+  name: 'andaha-shopping-service'
+  params: {
+    stage: stage
+    location: location
+    imageVersion: version
+    containerAppsEnvironmentId: coreInfrastructure.outputs.containerAppEnvironmentId
+    containerAppsEnvironmentDomain: coreInfrastructure.outputs.containerAppEnvironmentDomain
     containerRegistryUsername: containerRegistryUsername
     containerRegistryPassword: containerRegistryPassword
+    sqlDbConnectionString: sqlDatabase.outputs.connectionString
   }
 }
