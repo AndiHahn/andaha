@@ -1,7 +1,7 @@
 FROM envoyproxy/envoy:v1.14.2
 
-COPY src/ApiGateways/Envoy/envoy.yaml /tmpl/envoy.yaml.tmpl
-COPY src/ApiGateways/Envoy/docker-entrypoint.sh /
+COPY envoy.yaml /tmpl/envoy.yaml.tmpl
+COPY docker-entrypoint.sh /
 
 RUN chmod 500 /docker-entrypoint.sh
 
