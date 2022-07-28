@@ -1,0 +1,48 @@
+trigger:
+  branches:
+    include:
+      - release/gateway/v*
+      - refs/release/gateway/v*
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  azureServiceConnection: "azure-rm-andaha-dev-connection"
+  containerRegistryConnection: "andaha-container-reg-connection"
+  imageTag: "$(Build.SourceBranchName)"
+  bicepTemplateFile: "src/ApiGateways/Envoy/pipeline/bicep/envoy-main.bicep"
+
+name: "$(Build.SourceBranchName)"
+
+stages:
+- stage: build
+  displayName: Build
+  jobs:
+    - job: build_and_push_image
+      steps:
+      - task: Docker@2
+        displayName: build image
+        inputs:
+          command: buildAndPush
+          dockerfile: src/ApiGateways/Envoy/Dockerfile
+          repository: andaha/gateways/envoy
+          containerRegistry: $(containerRegistryConnection)
+          tags: $(imageTag)
+
+- stage: deploy_dev
+  displayName: Deploy to dev
+  dependsOn: build
+  jobs:
+  - job: deployment
+    steps:
+    - task: AzureCLI@2
+      displayName: 'Deploy to dev'
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          acrUser=$(az acr credential show --name andaha --resource-group andaha --query username -o tsv)
+          acrPassword=$(az acr credential show --name andaha --resource-group andaha --query "passwords[0].value" -o tsv)
+          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile) --parameters containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)"
