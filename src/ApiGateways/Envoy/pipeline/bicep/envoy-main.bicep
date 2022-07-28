@@ -4,7 +4,7 @@ param location string = resourceGroup().location
 param containerRegistryUsername string
 param containerRegistryPassword string
 
-module coreInfrastructure '../../../../../pipeline/deploy/main.bicep' = {
+module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
   name: 'andaha-core-infrastructure'
   params: {
     location: location

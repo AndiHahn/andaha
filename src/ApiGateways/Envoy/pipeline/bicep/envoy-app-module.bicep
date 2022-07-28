@@ -6,30 +6,8 @@ param containerRegistryUsername string
 @secure()
 param containerRegistryPassword string
 
-var environmentDevConfig = [
-  {
-    name: 'ASPNETCORE_ENVIRONMENT'
-    value: 'Development'
-  }
-  {
-    name: 'ASPNETCORE_URLS'
-    value: 'http://0.0.0.0:80'
-  }
-]
-
-var environmentProdConfig = [
-  {
-    name: 'ASPNETCORE_ENVIRONMENT'
-    value: 'Production'
-  }
-  {
-    name: 'ASPNETCORE_URLS'
-    value: 'http://0.0.0.0:80'
-  }
-]
-
 resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
-  name: 'envoy-gateway'
+  name: 'envoy-gateway-${stage}'
   location: location
   properties: {
     managedEnvironmentId: containerAppsEnvironmentId
@@ -38,7 +16,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
         {
           name: 'envoy-gateway'
           image: 'andaha.azurecr.io/andaha/gateways/envoy:${imageVersion}'
-          env: stage == 'dev' ? environmentDevConfig : environmentProdConfig
+          env: []
           probes: [
             {
               httpGet: {
