@@ -2,6 +2,7 @@ param stage string
 param location string
 param imageVersion string
 param containerAppsEnvironmentId string
+param containerAppsEnvironmentDomain string
 param containerRegistryUsername string
 @secure()
 param containerRegistryPassword string
@@ -16,7 +17,12 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
         {
           name: 'envoy-gateway'
           image: 'andaha.azurecr.io/andaha/gateways/envoy:${imageVersion}'
-          env: []
+          env: [
+            {
+              name: 'ENVOY_SHOPPING_API_ADDRESS'
+              value: 'shopping-api-${stage}.${containerAppsEnvironmentDomain}'
+            }
+          ]
           probes: [
             {
               httpGet: {
