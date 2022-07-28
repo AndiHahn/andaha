@@ -1,5 +1,6 @@
 ﻿using Andaha.CrossCutting.Application;
 using Andaha.Services.Shopping.Filter;
+using Andaha.Services.Shopping.Healthcheck;
 using Andaha.Services.Shopping.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
@@ -65,6 +66,7 @@ internal static class ProgramExtensions
         builder.Services
             .AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
+            .AddCheck<DaprHealthCheck>("dapr")
             .AddSqlServer(
                 builder.Configuration["ConnectionStrings:ApplicationDbConnection"],
                 name: "shopping-db-check",

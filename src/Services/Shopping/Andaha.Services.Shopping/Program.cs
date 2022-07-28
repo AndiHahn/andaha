@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddDapr();
 
 builder
     .AddCustomDatabase()
@@ -16,6 +16,8 @@ builder
     .AddCustomAuthentication()
     .AddCustomHealthChecks()
     .AddCustomSwagger();
+
+builder.Services.AddDaprClient();
 
 builder.Services.AddLogging();
 
@@ -40,6 +42,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCloudEvents();
 
 app.UseAuthentication();
 

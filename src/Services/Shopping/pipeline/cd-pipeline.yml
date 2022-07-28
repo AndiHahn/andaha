@@ -11,13 +11,13 @@ variables:
   azureServiceConnection: "azure-rm-andaha-dev-connection"
   containerRegistryConnection: "andaha-container-reg-connection"
   imageTag: "$(Build.SourceBranchName)"
-  bicepTemplateFile: "src/Services/Andaha.Services.Shopping/Pipeline/deploy/main-shopping.bicep"
+  bicepTemplateFile: "src/Services/Shopping/pipeline/bicep/shopping-main.bicep"
 
 name: "$(Build.SourceBranchName)"
 
 stages:
-- stage: CI
-  displayName: CI
+- stage: build
+  displayName: Build
   jobs:
     - job: build_and_push_image
       steps:
@@ -26,7 +26,7 @@ stages:
         inputs:
           command: build
           arguments: '--build-arg PatPlaceholder=$(NugetFeedAccessToken)'
-          dockerfile: src/Services/Andaha.Services.Shopping/Dockerfile
+          dockerfile: src/Services/Shopping/Andaha.Services.Shopping/Dockerfile
           repository: andaha/services/shopping
           containerRegistry: $(containerRegistryConnection)
           tags: $(imageTag)
@@ -35,14 +35,14 @@ stages:
         displayName: push image
         inputs:
           command: push
-          dockerfile: src/Services/Andaha.Services.Shopping/Dockerfile
+          dockerfile: src/Services/Shopping/Andaha.Services.Shopping/Dockerfile
           repository: andaha/services/shopping
           containerRegistry: $(containerRegistryConnection)
           tags: $(imageTag)
 
-- stage: CD
-  displayName: CD
-  dependsOn: CI
+- stage: deploy_dev
+  displayName: Deploy to dev
+  dependsOn: build
   jobs:
   - job: deployment
     steps:

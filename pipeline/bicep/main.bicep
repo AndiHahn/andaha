@@ -1,8 +1,16 @@
 param stage string = 'dev'
 param location string = resourceGroup().location
 
-module containerAppsEnvironment 'infrastructure/container-app-env.bicep' = {
+module containerAppsEnvironment 'container-app-env.bicep' = {
   name: 'andaha-infrastructure-container-app-env'
+  params: {
+    location: location
+    stage: stage
+  }
+}
+
+module sqlServer 'sql-server.bicep' = {
+  name: 'andaha-infrastructure-sql-server'
   params: {
     location: location
     stage: stage

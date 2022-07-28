@@ -6,7 +6,7 @@
       - feature/shopping/*
   paths:
     include:
-    - src/Services/Andaha.Services.Shopping/*
+    - src/Services/Shopping/*
 
 pool:
   vmImage: "ubuntu-latest"

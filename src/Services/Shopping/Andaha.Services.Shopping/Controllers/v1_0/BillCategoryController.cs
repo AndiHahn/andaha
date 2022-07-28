@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Andaha.Services.Shopping.Controllers.v1_0;
 [MapToProblemDetails]
-[Authorize]
 [Consumes("application/json")]
 [Produces("application/json")]
 [ApiVersion("1.0")]
