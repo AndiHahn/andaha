@@ -6,7 +6,7 @@ trigger:
       - feature/identity/*
   paths:
     include:
-    - src/Services/Andaha.Services.Identity/*
+    - src/Services/Identity/*
 
 pool:
   vmImage: "ubuntu-latest"

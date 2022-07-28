@@ -9,46 +9,8 @@ param containerRegistryPassword string
 @secure()
 param sqlDbConnectionString string
 
-var environmentDevConfig = [
-  {
-    name: 'ASPNETCORE_ENVIRONMENT'
-    value: 'Development'
-  }
-  {
-    name: 'ASPNETCORE_URLS'
-    value: 'http://0.0.0.0:80'
-  }
-  {
-    name: 'ConnectionStrings__ApplicationDbConnection'
-    secretRef: 'identitydb-connection-string'
-  }
-  {
-    name: 'ExternalUrls__ShoppingApi'
-    value: 'https://shopping-api.${containerAppsEnvironmentDomain}'
-  }
-]
-
-var environmentProdConfig = [
-  {
-    name: 'ASPNETCORE_ENVIRONMENT'
-    value: 'Production'
-  }
-  {
-    name: 'ASPNETCORE_URLS'
-    value: 'http://0.0.0.0:80'
-  }
-  {
-    name: 'ConnectionStrings__ApplicationDbConnection'
-    secretRef: 'identitydb-connection-string'
-  }
-  {
-    name: 'ExternalUrls__ShoppingApi'
-    value: 'https://shopping-api.${containerAppsEnvironmentDomain}'
-  }
-]
-
 resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
-  name: 'identity-api'
+  name: 'identity-api-${stage}'
   location: location
   properties: {
     managedEnvironmentId: containerAppsEnvironmentId
@@ -57,7 +19,24 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
         {
           name: 'identity-api'
           image: 'andaha.azurecr.io/andaha/services/identity:${imageVersion}'
-          env: stage == 'dev' ? environmentDevConfig : environmentProdConfig
+          env: [
+            {
+              name: 'ASPNETCORE_ENVIRONMENT'
+              value: 'Production'
+            }
+            {
+              name: 'ASPNETCORE_URLS'
+              value: 'http://0.0.0.0:80'
+            }
+            {
+              name: 'ConnectionStrings__ApplicationDbConnection'
+              secretRef: 'identitydb-connection-string'
+            }
+            {
+              name: 'ExternalUrls__ShoppingApi'
+              value: 'https://shopping-api-${stage}.${containerAppsEnvironmentDomain}'
+            }
+          ]
           probes: [
             {
               httpGet: {
@@ -86,7 +65,6 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
       ingress: {
         external: true
         targetPort: 80
-        allowInsecure: true
       }
       registries: [
         {
