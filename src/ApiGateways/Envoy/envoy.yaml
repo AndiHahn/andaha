@@ -36,29 +36,11 @@ static_resources:
                   prefix: "/shopping-api/"
                 route:
                   auto_host_rewrite: true
-                  prefix_rewrite: "/invoke/shopping-api/method/"
+                  prefix_rewrite: "/invoke/shopping-api-dev/method/"
                   cluster: dapr
           http_filters:
           - name: envoy.cors
           - name: envoy.router
-          access_log:
-          - name: envoy.file_access_log
-            filter:
-              not_health_check_filter: {}
-            config:
-              json_format:
-                time: "%START_TIME%"
-                protocol: "%PROTOCOL%"
-                duration: "%DURATION%"
-                request_method: "%REQ(:METHOD)%"
-                request_host: "%REQ(HOST)%"
-                path: "%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%"
-                response_flags: "%RESPONSE_FLAGS%"
-                route_name: "%ROUTE_NAME%"
-                upstream_host: "%UPSTREAM_HOST%"
-                upstream_cluster: "%UPSTREAM_CLUSTER%"
-                upstream_local_address: "%UPSTREAM_LOCAL_ADDRESS%"
-              path: "/tmp/access.log"
   clusters:
   - name: dapr
     connect_timeout: 0.25s
