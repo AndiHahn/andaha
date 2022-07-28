@@ -6,7 +6,7 @@ var sqlServerAdminLoginPassword = 'Pass@word'
 var identityDbName = 'andaha-identitydb-${stage}'
 
 resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' existing = {
-  name: 'andaha-sqlserver-identity-${stage}'
+  name: 'andaha-sqlserver-${stage}'
 
   resource identityDb 'databases@2021-05-01-preview' = {
     name: identityDbName
