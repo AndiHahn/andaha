@@ -19,6 +19,7 @@ module containerApp 'envoy-app-module.bicep' = {
     location: location
     imageVersion: version
     containerAppsEnvironmentId: coreInfrastructure.outputs.containerAppEnvironmentId
+    containerAppsEnvironmentDomain: coreInfrastructure.outputs.containerAppEnvironmentDomain
     containerRegistryUsername: containerRegistryUsername
     containerRegistryPassword: containerRegistryPassword
   }
