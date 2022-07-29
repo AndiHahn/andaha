@@ -1,5 +1,5 @@
 admin:
-  access_log_path: "/dev/null"
+  access_log_path: /tmp/admin_access.log
   address:
     socket_address:
       address: 0.0.0.0
@@ -12,42 +12,53 @@ static_resources:
         port_value: 80
     filter_chains:
     - filters:
-      - name: envoy.http_connection_manager
-        config:
-          codec_type: auto
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
           stat_prefix: ingress_http
           route_config:
             name: andaha_backend_route
             virtual_hosts:
             - name: andaha_backend
-              domains:
-              - "*"
-              cors:
-                allow_origin_string_match:
-                - safe_regex:
-                    google_re2: {}
-                    regex: \*
-                allow_methods: "OPTIONS, GET, POST, PUT, DELETE"
-                allow_headers: "authorization, content-type, x-requestid, x-requested-with, x-signalr-user-agent"
-                allow_credentials: true
+              domains: ["*"]
               routes:
-              - name: "shopping-api"
-                match:
+              - match:
                   prefix: "/shopping-api/"
                 route:
                   auto_host_rewrite: true
                   prefix_rewrite: "/invoke/shopping-api-dev/method/"
                   cluster: dapr
+              - match:
+                  prefix: "/api/bill"
+                route:
+                  auto_host_rewrite: true
+                  cluster: shopping
           http_filters:
-          - name: envoy.cors
-          - name: envoy.router
+          - name: envoy.filters.http.router
   clusters:
   - name: dapr
     connect_timeout: 0.25s
     type: strict_dns
     lb_policy: round_robin
-    hosts:
-    - socket_address:
-        address: 127.0.0.1
-        port_value: 3500
-        
+    load_assignment:
+      cluster_name: dapr
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 127.0.0.1
+                port_value: 3500
+  - name: shopping
+    connect_timeout: 0.25s
+    type: strict_dns
+    lb_policy: round_robin
+    load_assignment:
+      cluster_name: shopping
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: ${ENVOY_SHOPPING_API_ADDRESS}
+                port_value: 80
