@@ -23,12 +23,6 @@ static_resources:
               domains: ["*"]
               routes:
               - match:
-                  prefix: "/shopping-api/"
-                route:
-                  auto_host_rewrite: true
-                  prefix_rewrite: "/invoke/shopping-api-dev/method/"
-                  cluster: dapr
-              - match:
                   prefix: "/api/bill"
                 route:
                   auto_host_rewrite: true
@@ -36,19 +30,6 @@ static_resources:
           http_filters:
           - name: envoy.filters.http.router
   clusters:
-  - name: dapr
-    connect_timeout: 0.25s
-    type: strict_dns
-    lb_policy: round_robin
-    load_assignment:
-      cluster_name: dapr
-      endpoints:
-      - lb_endpoints:
-        - endpoint:
-            address:
-              socket_address:
-                address: 127.0.0.1
-                port_value: 3500
   - name: shopping
     connect_timeout: 0.25s
     type: strict_dns
@@ -60,5 +41,5 @@ static_resources:
         - endpoint:
             address:
               socket_address:
-                address: ${ENVOY_SHOPPING_API_ADDRESS}
+                address: https://shopping-api-dev.happygrass-7fa69157.westeurope.azurecontainerapps.io
                 port_value: 80
