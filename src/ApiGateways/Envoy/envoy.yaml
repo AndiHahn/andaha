@@ -49,3 +49,8 @@ static_resources:
               socket_address:
                 address: shopping-api-dev.happygrass-7fa69157.westeurope.azurecontainerapps.io
                 port_value: 80
+    transport_socket:
+      name: envoy.transport_sockets.tls
+      typed_config:
+        "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+        sni: shopping-api-dev.happygrass-7fa69157.westeurope.azurecontainerapps.io
