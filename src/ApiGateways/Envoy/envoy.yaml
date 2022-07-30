@@ -41,5 +41,5 @@ static_resources:
         - endpoint:
             address:
               socket_address:
-                address: https://shopping-api-dev.happygrass-7fa69157.westeurope.azurecontainerapps.io
+                address: shopping-api-dev.happygrass-7fa69157.westeurope.azurecontainerapps.io
                 port_value: 80
