@@ -3,10 +3,11 @@ admin:
   address:
     socket_address:
       address: 0.0.0.0
-      port_value: 8001
+      port_value: 9901
 static_resources:
   listeners:
-  - address:
+  - name: listener_0
+    address:
       socket_address:
         address: 0.0.0.0
         port_value: 80
@@ -14,8 +15,16 @@ static_resources:
     - filters:
       - name: envoy.filters.network.http_connection_manager
         typed_config:
-          "@type": type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           stat_prefix: ingress_http
+          access_log:
+          - name: envoy.access_loggers.stdout
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
+          http_filters:
+          - name: envoy.filters.http.router
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
           route_config:
             name: andaha_backend_route
             virtual_hosts:
@@ -27,13 +36,10 @@ static_resources:
                 route:
                   auto_host_rewrite: true
                   cluster: shopping
-          http_filters:
-          - name: envoy.filters.http.router
   clusters:
   - name: shopping
-    connect_timeout: 0.25s
-    type: strict_dns
-    lb_policy: round_robin
+    type: STRICT_DNS
+    dns_lookup_family: V4_ONLY
     load_assignment:
       cluster_name: shopping
       endpoints:
