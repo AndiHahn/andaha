@@ -1,9 +1,41 @@
 version: '3.4'
 
 services:
+  andaha.gateways.envoy:
+    environment:
+      ENVOY_SHOPPING_API_ADDRESS: andaha.services.shopping
+    ports:
+      - "8001:8001"
+      - "80:80"
+
+  andaha.services.identity:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:80
+      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.identity.db;Database=andaha-identity-db;User Id=sa;Password=Pass@word;
+      ExternalUrls__ShoppingApi: http://andaha.services.shopping:80
+    ports:
+      - "9000:80"
+
+  andaha.services.identity.db:
+      environment:
+        ACCEPT_EULA: Y
+        SA_PASSWORD: Pass@word
+      ports:
+        - "9010:1433" 
+
   andaha.services.shopping:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:80
+      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.shopping.db;Database=andaha-shopping-db;User Id=sa;Password=Pass@word;
+      ExternalUrls__IdentityApi: http://andaha.services.identity:80
     ports:
-      - "5000:80"
+      - "9100:80"
+
+  andaha.services.shopping.db:
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: Pass@word
+    ports:
+      - "9110:1433"     

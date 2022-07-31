@@ -1,8 +1,32 @@
 version: '3.4'
 
 services:
-  andaha.services.shopping:
-    image: andahaservicesshopping:${TAG}
+  andaha.gateways.envoy:
+    image: andaha-gateways-envoy:v0.9
     build:
-      context: .
-      dockerfile: src/Services/Andaha.Services.Shopping/Dockerfile
+      context: src/ApiGateways/Envoy/
+      dockerfile: Dockerfile
+
+  andaha.services.identity:
+    image: andaha-services-identity:${TAG}
+    build:
+      context: src/Services/Identity/Andaha.Services.Identity/
+      dockerfile: Dockerfile
+    depends_on: 
+      - "andaha.services.identity.db"  
+
+  andaha.services.identity.db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+
+  andaha.services.shopping:
+    image: andaha-services-shopping:${TAG}
+    build:
+      context: src/Services/Shopping/Andaha.Services.Shopping/
+      dockerfile: Dockerfile
+      args:
+        PatPlaceholder: ${NUGET_FEED_ACCESS_TOKEN}
+    depends_on: 
+      - "andaha.services.shopping.db"      
+
+  andaha.services.shopping.db:
+    image: mcr.microsoft.com/mssql/server:2019-latest    
