@@ -1,6 +1,4 @@
 using Andaha.ApiGateways.Ocelot;
-using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,8 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder
-    .AddCustomOcelot()
-    .AddCustomHealthChecks();
+    .AddCustomOcelot();
 
 var app = builder.Build();
 
@@ -19,6 +16,7 @@ app.UseOcelot().Wait();
 
 app.MapControllers();
 
+/*
 app.MapHealthChecks("/hc", new HealthCheckOptions
 {
     Predicate = _ => true,
@@ -29,5 +27,6 @@ app.MapHealthChecks("/liveness", new HealthCheckOptions
 {
     Predicate = r => r.Name.Contains("self")
 });
+*/
 
 app.Run();
