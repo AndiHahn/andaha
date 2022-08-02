@@ -8,14 +8,14 @@ param containerRegistryUsername string
 param containerRegistryPassword string
 
 resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
-  name: 'ocelot-api-${stage}'
+  name: 'ocelot-gateway-${stage}'
   location: location
   properties: {
     managedEnvironmentId: containerAppsEnvironmentId
     template: {
       containers: [
         {
-          name: 'ocelot-api'
+          name: 'ocelot-gateway'
           image: 'andaha.azurecr.io/andaha/gateways/ocelot:${imageVersion}'
           env: [
             {
@@ -59,6 +59,11 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
       ingress: {
         external: true
         targetPort: 80
+      }
+      dapr: {
+        enabled: true
+        appId: 'ocelot-gateway'
+        appPort: 80
       }
       registries: [
         {

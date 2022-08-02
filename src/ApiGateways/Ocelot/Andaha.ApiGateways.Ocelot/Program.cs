@@ -7,7 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.AddCustomOcelot();
+builder
+    .AddCustomOcelot()
+    .AddCustomHealthChecks();
 
 var app = builder.Build();
 

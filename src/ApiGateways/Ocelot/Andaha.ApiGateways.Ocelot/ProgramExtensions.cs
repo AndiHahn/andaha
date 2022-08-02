@@ -1,4 +1,5 @@
-﻿using Ocelot.DependencyInjection;
+﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Ocelot.DependencyInjection;
 
 namespace Andaha.ApiGateways.Ocelot;
 
@@ -13,6 +14,15 @@ internal static class ProgramExtensions
         builder.Services.AddOcelot(ocelotConfiguration);
 
         builder.Services.ConfigureDownstreamHostAndPortsPlaceholders(builder.Configuration);
+
+        return builder;
+    }
+
+    internal static WebApplicationBuilder AddCustomHealthChecks(this WebApplicationBuilder builder)
+    {
+        builder.Services
+            .AddHealthChecks()
+            .AddCheck("self", () => HealthCheckResult.Healthy());
 
         return builder;
     }
