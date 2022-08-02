@@ -12,7 +12,7 @@
       "UpstreamHttpMethod": [ "GET" ]
     },
     {
-      "DownstreamPathTemplate": "/invoke/shopping-api/method/api/bill",
+      "DownstreamPathTemplate": "/v1.0/invoke/shopping-api/method/api/bill",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
