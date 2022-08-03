@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.AddCustomHealthChecks();
 
 builder.Services
