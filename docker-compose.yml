@@ -7,6 +7,12 @@ services:
       context: src/ApiGateways/Ocelot/Andaha.ApiGateways.Ocelot/
       dockerfile: Dockerfile
 
+  andaha.gateways.ocelot.dapr:
+    image: daprio/daprd:edge
+    network_mode: "service:andaha.gateways.ocelot"
+    depends_on:
+      - "andaha.gateways.ocelot"
+
   andaha.services.identity:
     image: andaha-services-identity:${TAG}
     build:
@@ -26,7 +32,16 @@ services:
       args:
         PatPlaceholder: ${NUGET_FEED_ACCESS_TOKEN}
     depends_on: 
-      - "andaha.services.shopping.db"      
+      - "andaha.services.shopping.db"
+
+  andaha.services.shopping.dapr:
+    image: "daprio/daprd:edge"
+    network_mode: "service:andaha.services.shopping"
+    depends_on:
+      - "andaha.services.shopping"
 
   andaha.services.shopping.db:
     image: mcr.microsoft.com/mssql/server:2019-latest    
+
+  dapr.placement:
+    image: "daprio/dapr"
