@@ -8,14 +8,14 @@ param containerRegistryUsername string
 param containerRegistryPassword string
 
 resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
-  name: 'servicestatus-api-${stage}'
+  name: 'servicestatus-${stage}'
   location: location
   properties: {
     managedEnvironmentId: containerAppsEnvironmentId
     template: {
       containers: [
         {
-          name: 'servicestatus-api'
+          name: 'servicestatus'
           image: 'andaha.azurecr.io/andaha/webapps/servicestatus:${imageVersion}'
           env: [
             {
