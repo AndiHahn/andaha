@@ -45,3 +45,10 @@ services:
 
   dapr.placement:
     image: "daprio/dapr"
+
+  andaha.webapps.servicestatus:
+    image: andaha-webapps-servicestatus:${TAG}
+    build:
+      context: src/WebApps/ServiceStatus/Andaha.WebApps.ServiceStatus
+      dockerfile: Dockerfile
+      

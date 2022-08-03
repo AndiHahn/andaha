@@ -1,0 +1,31 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - master
+      - feature/webapps/status/*
+  paths:
+    include:
+    - src/WebApps/ServiceStatus/*
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  buildConfiguration: "Release"
+
+steps:
+  - task: NuGetToolInstaller@1
+
+  - task: DotNetCoreCLI@2
+    displayName: dotnet restore
+    inputs:
+      command: restore
+      projects: '**/Andaha.WebApps.ServiceStatus.csproj'
+
+  - task: DotNetCoreCLI@2
+    displayName: build
+    inputs:
+      command: "build"
+      projects: '**/Andaha.WebApps.ServiceStatus.csproj'
+      arguments: "--configuration $(BuildConfiguration)"

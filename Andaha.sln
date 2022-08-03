@@ -25,7 +25,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Andaha.Services.Shopping", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ocelot", "Ocelot", "{DBD9F4BC-57F4-441A-8ED8-A2C53E1B1BA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Andaha.ApiGateways.Ocelot", "src\ApiGateways\Ocelot\Andaha.ApiGateways.Ocelot\Andaha.ApiGateways.Ocelot.csproj", "{EB52B2D2-A07E-43E3-BBC5-67C501D69B6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Andaha.ApiGateways.Ocelot", "src\ApiGateways\Ocelot\Andaha.ApiGateways.Ocelot\Andaha.ApiGateways.Ocelot.csproj", "{EB52B2D2-A07E-43E3-BBC5-67C501D69B6C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ServiceStatus", "ServiceStatus", "{F78E5A56-E71A-4C4F-ACED-29ADA23AF40D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Andaha.WebApps.ServiceStatus", "src\WebApps\ServiceStatus\Andaha.WebApps.ServiceStatus\Andaha.WebApps.ServiceStatus.csproj", "{540F6835-35B0-44BC-ACD1-85B10454CA75}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +53,10 @@ Global
 		{EB52B2D2-A07E-43E3-BBC5-67C501D69B6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB52B2D2-A07E-43E3-BBC5-67C501D69B6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB52B2D2-A07E-43E3-BBC5-67C501D69B6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{540F6835-35B0-44BC-ACD1-85B10454CA75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{540F6835-35B0-44BC-ACD1-85B10454CA75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{540F6835-35B0-44BC-ACD1-85B10454CA75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{540F6835-35B0-44BC-ACD1-85B10454CA75}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,6 +73,8 @@ Global
 		{4F572436-3E11-4280-B3C7-08577F6F1A43} = {49562A3E-F26B-457A-B242-D2E5CCE99A8B}
 		{DBD9F4BC-57F4-441A-8ED8-A2C53E1B1BA2} = {511E2340-65E1-4079-B129-3E8817FF9D34}
 		{EB52B2D2-A07E-43E3-BBC5-67C501D69B6C} = {DBD9F4BC-57F4-441A-8ED8-A2C53E1B1BA2}
+		{F78E5A56-E71A-4C4F-ACED-29ADA23AF40D} = {A6BCB942-B9B8-40A4-AFF6-A5667A9E213E}
+		{540F6835-35B0-44BC-ACD1-85B10454CA75} = {F78E5A56-E71A-4C4F-ACED-29ADA23AF40D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {567A126D-B3A9-4A9F-BD29-25679B16C0C5}
