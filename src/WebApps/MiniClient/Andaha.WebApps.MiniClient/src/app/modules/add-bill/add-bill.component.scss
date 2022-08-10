@@ -1,0 +1,19 @@
+.form-container {
+  display: flex;
+  flex-direction: column;
+  margin: 0px 15px;
+}
+
+.button-style {
+  width: 100%;
+  height: 50px;
+  border-radius: 0%;
+}
+
+.progress-bar-placeholder {
+  height: 4px;
+}
+
+.error-placeholder {
+  height: 30px;
+}

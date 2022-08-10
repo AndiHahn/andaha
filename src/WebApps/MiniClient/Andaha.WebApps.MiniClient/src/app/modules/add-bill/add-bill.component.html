@@ -1,0 +1,54 @@
+<div>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div style="display: flex; flex-direction: row">
+      <div style="flex: 1">
+        <button mat-raised-button color="secondary" class="button-style" routerLink="/">Zurück</button>
+      </div>
+      <div style="flex: 1">
+        <button mat-raised-button color="primary" class="button-style">Speichern</button>
+      </div>
+    </div>
+
+    <mat-progress-bar *ngIf="isSaving" mode="indeterminate" color="accent"></mat-progress-bar>
+    <div class="progress-bar-placeholder" *ngIf="!isSaving"></div>
+
+    <mat-error *ngIf="savingFailed" class="margin-top-5" style="text-align: center; margin: 10px 10px 0px 10px">
+      Fehler beim Speichern: {{ savingError }}
+    </mat-error>
+    <div class="error-placeholder" *ngIf="!savingFailed"></div>
+
+    <div class="form-container">
+      <br>
+      <mat-form-field appearance="fill">
+        <mat-label>Shopname</mat-label>
+        <input matInput formControlName="shopName" required>
+      </mat-form-field>
+      <br>
+      <mat-form-field appearance="fill">
+        <mat-label>Notizen</mat-label>
+        <textarea matInput formControlName="notes"></textarea>
+      </mat-form-field>
+      <br>
+      <mat-form-field appearance="fill">
+        <mat-label>Preis</mat-label>
+        <input matInput formControlName="price" type="number" required>
+      </mat-form-field>
+      <br>
+      <mat-form-field appearance="fill">
+        <mat-label>Kategorie</mat-label>
+        <mat-select formControlName="category" required>
+          <mat-option *ngFor="let category of categories" [value]="category">
+            {{category?.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <br>
+      <mat-form-field appearance="fill">
+        <mat-label>Datum</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="date">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </form>
+</div>
