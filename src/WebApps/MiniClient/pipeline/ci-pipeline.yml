@@ -12,7 +12,7 @@ pool:
   vmImage: "ubuntu-latest"
 
 variables:
-  nodeModulesCachePath: $(Pipeline.Workspace)/.npm
+  nodeModulesCachePath: $(System.DefaultWorkingDirectory)/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/node_modules
 
 steps:
   - task: Cache@2
