@@ -1,0 +1,77 @@
+trigger:
+  branches:
+    include:
+      - release/miniclient/v*
+      - refs/release/miniclient/v*
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  azureServiceConnection: "azure-rm-andaha-dev-connection"
+  containerRegistryConnection: "andaha-container-reg-connection"
+  bicepTemplateFile: "src/WebApps/MiniClient/pipeline/bicep/miniclient-main.bicep"
+
+name: "$(Build.SourceBranchName)"
+
+stages:
+- stage: build
+  displayName: Build
+  jobs:
+    - job: build
+      steps:
+      - task: Npm@1
+        displayName: "install typescript"
+        inputs:
+          command: custom
+          verbose: false
+          customCommand: "install -D typescript"
+
+      - task: Npm@1
+        displayName: "npm install"
+        inputs:
+          command: custom
+          workingDir: src/WebApps/MiniClient/Andaha.WebApps.MiniClient
+          verbose: false
+          customCommand: ci
+
+      - task: Npm@1
+        displayName: "npm build"
+        inputs:
+          command: custom
+          workingDir: src/WebApps/MiniClient/Andaha.WebApps.MiniClient
+          verbose: false
+          customCommand: run build
+
+      - task: CopyFiles@2
+          displayName: "Add Frontend to Staging Directory"
+          inputs:
+            SourceFolder: src/WebApps/MiniClient/Andaha.WebApps.MiniClient/dist/mlm3/
+            TargetFolder: "$(Build.ArtifactStagingDirectory)/"
+
+      - task: PublishBuildArtifacts@1
+        displayName: "Publish Artifact"    
+
+- stage: deploy_dev
+  displayName: Deploy to dev
+  dependsOn: build
+  jobs:
+  - job: deployment
+    steps:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Downloading artifact'
+      inputs:
+        buildType: 'current'
+        artifact: drop
+        targetPath: '$(System.ArtifactsDirectory)'
+
+    - task: AzureCLI@2
+      displayName: 'Deploy to dev'
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          acrUser=$(az acr credential show --name andaha --resource-group andaha --query username -o tsv)
+          acrPassword=$(az acr credential show --name andaha --resource-group andaha --query "passwords[0].value" -o tsv)
+          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile) --parameters containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)"

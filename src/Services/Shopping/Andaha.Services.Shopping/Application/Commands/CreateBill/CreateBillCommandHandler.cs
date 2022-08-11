@@ -27,7 +27,7 @@ internal class CreateBillCommandHandler : IRequestHandler<CreateBillCommand, Res
         Guid userId = this.identityService.GetUserId();
 
         var bill = this.dbContext.Bill.Add(
-            new Bill(userId, request.CategoryId, request.ShopName, request.Price, request.Notes));
+            new Bill(userId, request.CategoryId, request.ShopName, request.Price, request.Date, request.Notes));
 
         await this.dbContext.SaveChangesAsync(cancellationToken);
 

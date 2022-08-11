@@ -1,17 +1,6 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/api/bill",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "{SHOPPING_API_HOST}"
-        }
-      ],
-      "UpstreamPathTemplate": "/shopping-api/bill",
-      "UpstreamHttpMethod": [ "GET" ]
-    },
-    {
       "DownstreamPathTemplate": "/v1.0/invoke/shopping-api/method/api/bill",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -20,7 +9,31 @@
           "Port": "3500"
         }
       ],
-      "UpstreamPathTemplate": "/shopping-api-dapr/bill",
+      "UpstreamPathTemplate": "/shopping-api/bill",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    },
+    {
+      "DownstreamPathTemplate": "/v1.0/invoke/shopping-api/method/api/billcategory",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "127.0.0.1",
+          "Port": "3500"
+        }
+      ],
+      "UpstreamPathTemplate": "/shopping-api/billcategory",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    },
+    {
+      "DownstreamPathTemplate": "/v1.0/invoke/shopping-api/method/ping",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "127.0.0.1",
+          "Port": "3500"
+        }
+      ],
+      "UpstreamPathTemplate": "/shopping-api/ping",
       "UpstreamHttpMethod": [ "GET" ]
     }
   ],

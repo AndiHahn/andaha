@@ -23,6 +23,7 @@ services:
       ASPNETCORE_URLS: http://+:80
       ConnectionStrings__ApplicationDbConnection: Server=andaha.services.identity.db;Database=andaha-identity-db;User Id=sa;Password=Pass@word;
       ExternalUrls__ShoppingApi: http://andaha.services.shopping:80
+      ExternalUrls__WebMiniClient: http://localhost:4200
     ports:
       - "9100:80"
 

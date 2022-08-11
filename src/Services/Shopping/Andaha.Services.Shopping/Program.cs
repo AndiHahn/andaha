@@ -15,7 +15,8 @@ builder
     .AddCustomApiVersioning()
     .AddCustomAuthentication()
     .AddCustomHealthChecks()
-    .AddCustomSwagger();
+    .AddCustomSwagger()
+    .AddCustomCors();
 
 builder.Services.AddDaprClient();
 
@@ -45,6 +46,8 @@ app.UseHttpsRedirection();
 
 app.UseCloudEvents();
 
+app.UseCors();
+
 app.UseAuthentication();
 
 app.UseAuthorization();
@@ -61,6 +64,8 @@ app.MapHealthChecks("/liveness", new HealthCheckOptions
 {
     Predicate = r => r.Name.Contains("self")
 });
+
+app.MapGet("/ping", Results.NoContent);
 
 try
 {

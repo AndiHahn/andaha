@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
+
 builder
     .AddCustomDatabase()
     .AddCustomIdentity()
@@ -67,6 +69,8 @@ app.MapHealthChecks("/liveness", new HealthCheckOptions
 {
     Predicate = r => r.Name.Contains("self")
 });
+
+app.MapGet("/ping", Results.NoContent);
 
 try
 {

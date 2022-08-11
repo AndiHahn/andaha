@@ -38,8 +38,14 @@ internal static class Config
                 AllowedGrantTypes = GrantTypes.Implicit,
                 AllowAccessTokensViaBrowser = true,
 
-                RedirectUris = { $"{configuration["ExternalUrls:ShoppingApi"]}/swagger/oauth2-redirect.html" },
-                PostLogoutRedirectUris = { $"{configuration["ExternalUrls:ShoppingApi"]}/swagger/" },
+                RedirectUris =
+                {
+                    $"{configuration["ExternalUrls:ShoppingApi"]}/swagger/oauth2-redirect.html"
+                },
+                PostLogoutRedirectUris =
+                {
+                    $"{configuration["ExternalUrls:ShoppingApi"]}/swagger/"
+                },
 
                 AllowedScopes =
                 {
@@ -47,6 +53,30 @@ internal static class Config
                     IdentityServerConstants.StandardScopes.Profile,
                     "shopping"
                 }
+            },
+            new()
+            {
+                ClientId = "miniclient",
+                ClientName = "Webapp Mini Client",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowAccessTokensViaBrowser = true,
+
+                RedirectUris =
+                {
+                    $"{configuration["ExternalUrls:WebMiniClient"]}"
+                },
+                PostLogoutRedirectUris =
+                {
+                    $"{configuration["ExternalUrls:WebMiniClient"]}"
+                },
+
+                AllowedScopes =
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    "shopping"
+                },
+                AccessTokenLifetime = 60 * 60 * 720 // 1 month
             }
         };
     }

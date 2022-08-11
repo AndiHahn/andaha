@@ -13,7 +13,8 @@ public class Bill : Entity<Guid>
         Guid categoryId,
         string shopName,
         double price,
-        string? notes)
+        DateTime? date = null,
+        string? notes = null)
     {
         if (createdByUserId == Guid.Empty)
         {
@@ -44,7 +45,7 @@ public class Bill : Entity<Guid>
         this.CategoryId = categoryId;
         this.ShopName = shopName;
         this.Price = price;
-        this.Date = DateTime.UtcNow;
+        this.Date = date ?? DateTime.UtcNow;
         this.Notes = notes;
     }
 

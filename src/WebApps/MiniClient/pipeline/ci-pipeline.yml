@@ -1,0 +1,46 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - master
+      - feature/webapps/miniclient/*
+  paths:
+    include:
+    - src/WebApps/MiniClient/*
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  nodeModulesCachePath: $(Pipeline.Workspace)/.npm
+
+steps:
+  - task: Cache@2
+    displayName: "cache npm packages"
+    inputs:
+      key: 'npm | "$(Agent.OS)" | src/WebApps/MiniClient/Andaha.WebApps.MiniClient/package-lock.json'
+      restoreKeys: 'npm | "$(Agent.OS)"'
+      path: "$(nodeModulesCachePath)"
+
+  - task: Npm@1
+    displayName: "install typescript"
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: "install -D typescript"
+
+  - task: Npm@1
+    displayName: "npm install"
+    inputs:
+      command: custom
+      workingDir: src/WebApps/MiniClient/Andaha.WebApps.MiniClient
+      verbose: false
+      customCommand: ci
+
+  - task: Npm@1
+    displayName: "npm build"
+    inputs:
+      command: custom
+      workingDir: src/WebApps/MiniClient/Andaha.WebApps.MiniClient
+      verbose: false
+      customCommand: run build

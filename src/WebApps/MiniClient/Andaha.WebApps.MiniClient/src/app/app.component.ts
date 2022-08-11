@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ShoppingApiService } from './api/shopping/shopping-api.service';
 
 @Component({
   selector: 'app-root',
@@ -9,4 +10,8 @@ export class AppComponent {
   title = 'Andaha.WebApps.MiniClient';
 
   isDisabled = true;
+
+  constructor(shoppingApiService: ShoppingApiService) {
+    shoppingApiService.wakeUp().subscribe();
+  }
 }
