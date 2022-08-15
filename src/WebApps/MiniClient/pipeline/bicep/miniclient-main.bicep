@@ -1,5 +1,5 @@
-param stage string
-param location string
+param stage string = 'dev'
+param location string = resourceGroup().location
 
 module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
   name: 'andaha-core-infrastructure'
