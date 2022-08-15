@@ -77,13 +77,6 @@ stages:
         inlineScript: |
           az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile)
 
-    - task: AzureCLI@1
-      displayName: 'Delete app from Blobstorage'
-      inputs:
-        azureSubscription: $(azureServiceConnection)
-        scriptLocation: inlineScript
-        inlineScript: 'az storage blob delete-batch -s "$web" --account-name $(StorageAccountName)'
-
     - task: PowerShell@2
       displayName: Set appsetting variables
       inputs:
@@ -100,6 +93,13 @@ stages:
           [string] $gatewayBaseUrl = "https://ocelot-gateway-dev." + $deploymentOutput.containerAppEnvironmentDomain.value
           Write-Host "Set apiBaseUrl to '$gatewayBaseUrl'"
           Write-Host "##vso[task.setvariable variable=apiBaseUrl]$gatewayBaseUrl"
+
+    - task: AzureCLI@1
+      displayName: 'Delete app from Blobstorage'
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptLocation: inlineScript
+        inlineScript: 'az storage blob delete-batch -s "$web" --account-name $(storageAccountName)'
 
     - task: FileTransform@1
       displayName: 'App config substitution'
