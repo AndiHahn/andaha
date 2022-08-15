@@ -11,6 +11,7 @@ variables:
   azureServiceConnection: "azure-rm-andaha-dev-connection"
   containerRegistryConnection: "andaha-container-reg-connection"
   bicepTemplateFile: "src/WebApps/MiniClient/pipeline/bicep/miniclient-main.bicep"
+  nodeModulesCachePath: $(System.DefaultWorkingDirectory)/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/node_modules
 
 name: "$(Build.SourceBranchName)"
 
