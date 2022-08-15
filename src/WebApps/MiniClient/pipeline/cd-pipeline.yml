@@ -20,6 +20,14 @@ stages:
   jobs:
     - job: build
       steps:
+      - task: Cache@2
+        displayName: "cache npm packages"
+        inputs:
+          key: 'npm | "$(Agent.OS)" | src/WebApps/MiniClient/Andaha.WebApps.MiniClient/package-lock.json'
+          restoreKeys: 'npm | "$(Agent.OS)"'
+          path: "$(nodeModulesCachePath)"
+          cacheHitVar: CACHE_RESTORED
+
       - task: Npm@1
         displayName: "install typescript"
         inputs:
@@ -29,6 +37,7 @@ stages:
 
       - task: Npm@1
         displayName: "npm install"
+        condition: ne(variables.CACHE_RESTORED, 'true')
         inputs:
           command: custom
           workingDir: src/WebApps/MiniClient/Andaha.WebApps.MiniClient
@@ -107,3 +116,4 @@ stages:
         storage: $(StorageAccountName)
         ContainerName: '$web'
         AdditionalArgumentsForBlobCopy: '/Y /SetContentType /S'
+
