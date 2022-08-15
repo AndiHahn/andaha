@@ -46,7 +46,7 @@ stages:
       - task: CopyFiles@2
         displayName: "Add binaries to Staging Directory"
         inputs:
-          SourceFolder: src/WebApps/MiniClient/Andaha.WebApps.MiniClient/dist/mlm3/
+          SourceFolder: src/WebApps/MiniClient/Andaha.WebApps.MiniClient/dist/andaha.web-apps.mini-client/
           TargetFolder: "$(Build.ArtifactStagingDirectory)/"
 
       - task: PublishBuildArtifacts@1
@@ -107,4 +107,3 @@ stages:
         storage: $(StorageAccountName)
         ContainerName: '$web'
         AdditionalArgumentsForBlobCopy: '/Y /SetContentType /S'
-        
