@@ -2,6 +2,7 @@ param stage string = 'dev'
 param location string = resourceGroup().location
 param version string
 param containerRegistryUsername string
+@secure()
 param containerRegistryPassword string
 
 module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {

@@ -44,7 +44,7 @@ stages:
           customCommand: run build
 
       - task: CopyFiles@2
-        displayName: "Add Frontend to Staging Directory"
+        displayName: "Add binaries to Staging Directory"
         inputs:
           SourceFolder: src/WebApps/MiniClient/Andaha.WebApps.MiniClient/dist/mlm3/
           TargetFolder: "$(Build.ArtifactStagingDirectory)/"
@@ -58,20 +58,53 @@ stages:
   jobs:
   - job: deployment
     steps:
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Downloading artifact'
-      inputs:
-        buildType: 'current'
-        artifact: drop
-        targetPath: '$(System.ArtifactsDirectory)'
-
     - task: AzureCLI@2
-      displayName: 'Deploy to dev'
+      displayName: 'Infrastructure provisioning'
       inputs:
         azureSubscription: $(azureServiceConnection)
         scriptType: bash
         scriptLocation: inlineScript
         inlineScript: |
-          acrUser=$(az acr credential show --name andaha --resource-group andaha --query username -o tsv)
-          acrPassword=$(az acr credential show --name andaha --resource-group andaha --query "passwords[0].value" -o tsv)
-          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile) --parameters containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)"
+          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile)
+
+    - task: AzureCLI@1
+      displayName: 'Delete app from Blobstorage'
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptLocation: inlineScript
+        inlineScript: 'az storage blob delete-batch -s "$web" --account-name $(StorageAccountName)'
+
+    - task: PowerShell@2
+      displayName: Set appsetting variables
+      inputs:
+        targetType: inline
+        script: |
+          Write-Host "Replace appsettings"
+          Write-Host (Get-AzResourceGroupDeployment `
+            -ResourceGroupName andaha-dev `
+            -Name miniclient-main).Outputs.storageAccountName.value
+          $deploymentOutput = $((Get-AzResourceGroupDeployment `
+            -ResourceGroupName andaha-dev `
+            -Name miniclient-main).Outputs)
+          [string] $storageAccountName = $deploymentOutput.storageAccountName.value
+          [string] $gatewayBaseUrl = "https://ocelot-gateway-dev." + $deploymentOutput.containerAppEnvironmentDomain.value
+          Write-Host "Set apiBaseUrl to '$gatewayBaseUrl'"
+          Write-Host "##vso[task.setvariable variable=apiBaseUrl]$gatewayBaseUrl"
+
+    - task: FileTransform@1
+      displayName: 'App config substitution'
+      inputs:
+        folderPath: '$(System.DefaultWorkingDirectory)/drop/assets/appConfig/'
+        fileType: json
+        targetFiles: appConfig.json
+
+    - task: AzureFileCopy@4
+      displayName: 'Copy Frontend to Blobstorage'
+      inputs:
+        SourcePath: '$(System.DefaultWorkingDirectory)/drop/*'
+        azureSubscription: $(azureServiceConnection)
+        Destination: 'AzureBlob'
+        storage: $(StorageAccountName)
+        ContainerName: '$web'
+        AdditionalArgumentsForBlobCopy: '/Y /SetContentType /S'
+        
