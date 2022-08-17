@@ -120,6 +120,5 @@ stages:
       displayName: 'Copy Frontend to Blobstorage'
       inputs:
         azureSubscription: $(azureServiceConnection)
-        scriptLocation: inlineScript
-        inlineScript: |
-          az storage blob upload-batch --destination '$web' --account-name $(storageAccountName) --source "$(System.ArtifactsDirectory)/drop/*"
+        scriptLocation: inlineScrip        inlineScript: |
+          az storage blob upload-batch --destination '$web' --account-name $(storageAccountName) --source $(System.ArtifactsDirectory)/drop/*
