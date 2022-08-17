@@ -116,13 +116,10 @@ stages:
         fileType: json
         targetFiles: appConfig.json
 
-    - task: AzureFileCopy@4
+    - task: AzureCLI@1
       displayName: 'Copy Frontend to Blobstorage'
       inputs:
-        SourcePath: '$(System.ArtifactsDirectory)/drop/*'
         azureSubscription: $(azureServiceConnection)
-        Destination: 'AzureBlob'
-        storage: $(storageAccountName)
-        ContainerName: '$web'
-        AdditionalArgumentsForBlobCopy: '/Y /SetContentType /S'
-
+        scriptLocation: inlineScript
+        inlineScript: |
+          az storage blob upload-batch --destination '$web' --account-name $(storageAccountName) --source "$(Agent.ArtifactsDirectory)/drop/*"
