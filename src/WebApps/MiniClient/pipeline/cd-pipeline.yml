@@ -68,6 +68,13 @@ stages:
   jobs:
   - job: deployment
     steps:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Downloading artifact'
+      inputs:
+        buildType: 'current'
+        artifact: drop
+        targetPath: '$(System.ArtifactsDirectory)'
+
     - task: AzureCLI@2
       displayName: 'Infrastructure provisioning'
       inputs:
@@ -105,14 +112,14 @@ stages:
     - task: FileTransform@1
       displayName: 'App config substitution'
       inputs:
-        folderPath: '$(System.DefaultWorkingDirectory)/drop/assets/appConfig/'
+        folderPath: '$(System.ArtifactsDirectory)/drop/assets/appConfig/'
         fileType: json
         targetFiles: appConfig.json
 
     - task: AzureFileCopy@4
       displayName: 'Copy Frontend to Blobstorage'
       inputs:
-        SourcePath: '$(System.DefaultWorkingDirectory)/drop/*'
+        SourcePath: '$(System.ArtifactsDirectory)/drop/*'
         azureSubscription: $(azureServiceConnection)
         Destination: 'AzureBlob'
         storage: $(storageAccountName)
