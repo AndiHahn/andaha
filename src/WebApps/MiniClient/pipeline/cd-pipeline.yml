@@ -73,7 +73,7 @@ stages:
       inputs:
         buildType: 'current'
         artifact: drop
-        targetPath: '$(System.ArtifactsDirectory)'
+        targetPath: '$(System.ArtifactsDirectory)/drop'
 
     - task: AzureCLI@2
       displayName: 'Infrastructure provisioning'
