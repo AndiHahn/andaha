@@ -83,12 +83,10 @@ stages:
         targetType: inline
         script: |
           Write-Host "Replace appsettings"
-          Write-Host (Get-AzResourceGroupDeployment `
-            -ResourceGroupName andaha-dev `
-            -Name miniclient-main).Outputs.storageAccountName.value
           $deploymentOutput = $((Get-AzResourceGroupDeployment `
             -ResourceGroupName andaha-dev `
             -Name miniclient-main).Outputs)
+          Write-Host $deploymentOutput
           [string] $storageAccountName = $deploymentOutput.storageAccountName.value
           [string] $gatewayBaseUrl = "https://ocelot-gateway-dev." + $deploymentOutput.containerAppEnvironmentDomain.value
           Write-Host "Set apiBaseUrl to '$gatewayBaseUrl'"
