@@ -77,20 +77,21 @@ stages:
         inlineScript: |
           az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile)
 
-    - task: PowerShell@2
+    - task: AzureCLI@2
       displayName: Set appsetting variables
       inputs:
-        targetType: inline
-        script: |
-          Write-Host "Replace appsettings"
-          $deploymentOutput = $((Get-AzResourceGroupDeployment `
-            -ResourceGroupName andaha-dev `
-            -Name miniclient-main).Outputs)
-          Write-Host $deploymentOutput
-          [string] $storageAccountName = $deploymentOutput.storageAccountName.value
-          [string] $gatewayBaseUrl = "https://ocelot-gateway-dev." + $deploymentOutput.containerAppEnvironmentDomain.value
-          Write-Host "Set apiBaseUrl to '$gatewayBaseUrl'"
-          Write-Host "##vso[task.setvariable variable=apiBaseUrl]$gatewayBaseUrl"
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          echo "az deployment group show --resource-group andaha-dev --name miniclient-main"
+          deploymentoutputs=$(az deployment group show --resource-group andaha-dev --name miniclient-main --query properties.outputs)
+          echo $deploymentoutputs | jq -c '. | to_entries[] | [.key, .value.value]' |
+            while IFS=$"\n" read -r c; do
+              outputname=$(echo "$c" | jq -r '.[0]')
+              outputvalue=$(echo "$c" | jq -r '.[1]')
+              echo "Set variable $outputname=$outputvalue"
+              echo "##vso[task.setvariable variable=$outputname]$outputvalue"
+          done
 
     - task: AzureCLI@1
       displayName: 'Delete app from Blobstorage'

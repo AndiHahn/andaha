@@ -12,7 +12,7 @@ export class ShoppingApiService {
 
   constructor(private httpClient: HttpClient, appConfigService: AppConfigService) {
     const appConfig = appConfigService.getAppConfigFromCache();
-    this.endpointUrl = constructPath(appConfig.apiBaseUrl, 'shopping-api');
+    this.endpointUrl = constructPath(appConfig.gatewayBaseUrl, 'shopping-api');
   }
 
   wakeUp(): Observable<void> {

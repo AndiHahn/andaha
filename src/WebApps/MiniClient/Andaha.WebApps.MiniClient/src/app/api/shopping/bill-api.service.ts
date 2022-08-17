@@ -15,7 +15,7 @@ export class BillApiService {
 
   constructor(private httpClient: HttpClient, appConfigService: AppConfigService) {
     const appConfig = appConfigService.getAppConfigFromCache();
-    this.endpointUrl = constructPath(appConfig.apiBaseUrl, 'shopping-api', 'bill');
+    this.endpointUrl = constructPath(appConfig.gatewayBaseUrl, 'shopping-api', 'bill');
   }
 
   addBill(dto: BillCreateDto): Observable<BillDto> {
