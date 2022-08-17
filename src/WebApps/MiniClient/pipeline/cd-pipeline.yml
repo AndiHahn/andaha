@@ -122,4 +122,4 @@ stages:
         azureSubscription: $(azureServiceConnection)
         scriptLocation: inlineScript
         inlineScript: |
-          az storage blob upload-batch --destination '$web' --account-name $(storageAccountName) --source "$(Agent.ArtifactsDirectory)/drop/*"
+          az storage blob upload-batch --destination '$web' --account-name $(storageAccountName) --source $(Agent.ArtifactsDirectory)/drop/*
