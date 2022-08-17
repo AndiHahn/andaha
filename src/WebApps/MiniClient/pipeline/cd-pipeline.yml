@@ -100,7 +100,7 @@ stages:
         azureSubscription: $(azureServiceConnection)
         scriptLocation: inlineScript
         inlineScript: |
-          az storage blob delete-batch --source '$web' --account-name $storageAccountName
+          az storage blob delete-batch --source '$web' --account-name $(storageAccountName)
 
     - task: FileTransform@1
       displayName: 'App config substitution'
