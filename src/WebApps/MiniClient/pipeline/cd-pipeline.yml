@@ -80,6 +80,7 @@ stages:
     - task: AzureCLI@2
       displayName: Set appsetting variables
       inputs:
+        azureSubscription: $(azureServiceConnection)
         scriptType: bash
         scriptLocation: inlineScript
         inlineScript: |
@@ -98,7 +99,8 @@ stages:
       inputs:
         azureSubscription: $(azureServiceConnection)
         scriptLocation: inlineScript
-        inlineScript: 'az storage blob delete-batch -s "$web" --account-name $(storageAccountName)'
+        inlineScript: |
+          az storage blob delete-batch --source '$web' --account-name $storageAccountName
 
     - task: FileTransform@1
       displayName: 'App config substitution'
@@ -113,7 +115,7 @@ stages:
         SourcePath: '$(System.DefaultWorkingDirectory)/drop/*'
         azureSubscription: $(azureServiceConnection)
         Destination: 'AzureBlob'
-        storage: $(StorageAccountName)
+        storage: $(storageAccountName)
         ContainerName: '$web'
         AdditionalArgumentsForBlobCopy: '/Y /SetContentType /S'
 
