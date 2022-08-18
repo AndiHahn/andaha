@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ShoppingApiService } from './api/shopping/shopping-api.service';
+import { ContextService } from './core/context.service';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +12,6 @@ export class AppComponent {
 
   isDisabled = true;
 
-  constructor(shoppingApiService: ShoppingApiService) {
-    shoppingApiService.wakeUp().subscribe();
+  constructor(context: ContextService) {
   }
 }

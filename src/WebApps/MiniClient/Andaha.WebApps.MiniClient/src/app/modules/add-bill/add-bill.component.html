@@ -1,13 +1,15 @@
 <div>
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <div style="display: flex; flex-direction: row">
+    <div class="top-buttons">
       <div style="flex: 1">
         <button mat-raised-button color="secondary" class="button-style" routerLink="/">Zurück</button>
       </div>
       <div style="flex: 1">
-        <button mat-raised-button color="primary" class="button-style">Speichern</button>
+        <button mat-raised-button color="primary" class="button-style" [disabled]="!form.valid">Speichern</button>
       </div>
     </div>
+
+    <div class="button-placeholder"></div>
 
     <mat-progress-bar *ngIf="isSaving" mode="indeterminate" color="accent"></mat-progress-bar>
     <div class="progress-bar-placeholder" *ngIf="!isSaving"></div>
@@ -22,11 +24,6 @@
       <mat-form-field appearance="fill">
         <mat-label>Shopname</mat-label>
         <input matInput formControlName="shopName" required>
-      </mat-form-field>
-      <br>
-      <mat-form-field appearance="fill">
-        <mat-label>Notizen</mat-label>
-        <textarea matInput formControlName="notes"></textarea>
       </mat-form-field>
       <br>
       <mat-form-field appearance="fill">
@@ -48,6 +45,11 @@
         <input matInput [matDatepicker]="picker" formControlName="date">
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+      <br>
+      <mat-form-field appearance="fill">
+        <mat-label>Notizen</mat-label>
+        <textarea matInput formControlName="notes"></textarea>
       </mat-form-field>
     </div>
   </form>

@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ProblemDetails } from 'src/app/api/common-dtos/ProblemDetails';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
-import { BillCategoryApiService } from 'src/app/api/shopping/bill-category-api.service';
 import { BillCategoryDto } from 'src/app/api/shopping/models/BillCategoryDto';
 import { BillCreateDto } from 'src/app/api/shopping/models/BillCreateDto';
+import { ContextService } from 'src/app/core/context.service';
 
 @Component({
   selector: 'app-add-bill',
@@ -23,8 +22,8 @@ export class AddBillComponent implements OnInit {
   constructor(
     private fb: FormBuilder, 
     private router: Router,
-    private billApiService: BillApiService,
-    private billCategoryApiService: BillCategoryApiService) { 
+    private contextService: ContextService,
+    private billApiService: BillApiService) { 
     this.form = this.fb.group({
       shopName: ['', [Validators.required, Validators.maxLength(200)]],
       notes: ['', [Validators.maxLength(1000)]],
@@ -41,9 +40,9 @@ export class AddBillComponent implements OnInit {
   }
 
   private loadBillCategories() {
-    this.billCategoryApiService.getAll().subscribe(categories => {
-      this.categories = categories;
-    });
+    this.contextService.categories().subscribe({
+      next: categories => this.categories = categories
+    })
   }
 
   onSubmit() {
