@@ -9,7 +9,7 @@ internal static class Config
         new IdentityResource[]
         {
             new IdentityResources.OpenId(),
-            new IdentityResources.Profile()
+            new IdentityResources.Profile(),
         };
 
     public static IEnumerable<ApiScope> ApiScopes =>
@@ -58,25 +58,36 @@ internal static class Config
             {
                 ClientId = "miniclient",
                 ClientName = "Webapp Mini Client",
-                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowedGrantTypes = GrantTypes.Code,
                 AllowAccessTokensViaBrowser = true,
+                RequirePkce = true,
+                RequireClientSecret = false,
+                AllowOfflineAccess = true,
 
-                RedirectUris =
+                AllowedCorsOrigins =
                 {
                     $"{configuration["ExternalUrls:WebMiniClient"]}"
                 },
+
+                RedirectUris =
+                {
+                    $"{configuration["ExternalUrls:WebMiniClient"]}",
+                    $"{configuration["ExternalUrls:WebMiniClient"]}/signin-oidc"
+                },
                 PostLogoutRedirectUris =
                 {
-                    $"{configuration["ExternalUrls:WebMiniClient"]}"
+                    $"{configuration["ExternalUrls:WebMiniClient"]}",
+                    $"{configuration["ExternalUrls:WebMiniClient"]}/signout-callback-oidc"
                 },
 
                 AllowedScopes =
                 {
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
+                    IdentityServerConstants.StandardScopes.OfflineAccess,
                     "shopping"
                 },
-                AccessTokenLifetime = 60 * 60 * 720 // 1 month
+                AccessTokenLifetime = 60 * 60 * 24 * 30 // 60 * 60 * 24 * 30 = 1 month
             }
         };
     }

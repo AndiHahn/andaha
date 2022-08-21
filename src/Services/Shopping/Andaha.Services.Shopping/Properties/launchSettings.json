@@ -11,12 +11,12 @@
   "profiles": {
     "Andaha.Services.Shopping": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:7289;http://localhost:5289",
+      "applicationUrl": "https://localhost:8200",
       "dotnetRunMessages": true
     },
     "IIS Express": {

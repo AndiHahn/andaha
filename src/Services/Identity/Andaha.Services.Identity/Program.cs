@@ -11,7 +11,8 @@ builder
     .AddCustomIdentity()
     .AddCustomIdentityServer()
     .AddCustomAuthentication()
-    .AddCustomHealthChecks();
+    .AddCustomHealthChecks()
+    .AddCustomCors();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -52,9 +53,12 @@ app.Use((context, next) =>
     return next();
 });
 
+app.UseCors();
+
 app.UseIdentityServer();
 
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapRazorPages();

@@ -79,7 +79,25 @@ internal static class ProgramExtensions
 
         return builder;
     }
-    
+
+    internal static WebApplicationBuilder AddCustomCors(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddCors(
+            options =>
+            {
+                options.AddDefaultPolicy(
+                    policyBuilder =>
+                    {
+                        policyBuilder
+                            .AllowAnyOrigin()
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
+
+        return builder;
+    }
+
     internal static async Task MigrateDatabaseAsync(this WebApplication webApplication, ILogger logger)
     {
         using var scope = webApplication.Services.CreateScope();

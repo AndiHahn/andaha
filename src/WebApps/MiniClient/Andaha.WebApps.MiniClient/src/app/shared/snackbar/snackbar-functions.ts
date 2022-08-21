@@ -7,5 +7,5 @@ export function openErrorSnackbar(message: string, snackbar: MatSnackBar) {
 }
 
 export function openInformationSnackbar(message: string, snackbar: MatSnackBar) {
-  snackbar.openFromComponent(InformationSnackbarComponent, { data: message, panelClass: 'info-snackbar', duration: 300000 });
+  snackbar.openFromComponent(InformationSnackbarComponent, { data: message, panelClass: 'info-snackbar', duration: 3000 });
 }

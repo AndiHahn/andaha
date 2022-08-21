@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ShoppingApiService } from './api/shopping/shopping-api.service';
+import { AuthService } from './core/auth.service';
 import { ContextService } from './core/context.service';
 
 @Component({
@@ -12,6 +12,13 @@ export class AppComponent {
 
   isDisabled = true;
 
-  constructor(context: ContextService) {
+  isLoggedIn: boolean = false;
+
+  constructor(private authService: AuthService, context: ContextService) {
+    this.authService.loggedIn().subscribe(
+      {
+        next: isLoggedIn => this.isLoggedIn = isLoggedIn
+      }
+    )
   }
 }

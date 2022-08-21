@@ -10,6 +10,7 @@ namespace Andaha.Services.Shopping.Controllers.v1_0;
 [Consumes("application/json")]
 [Produces("application/json")]
 [ApiVersion("1.0")]
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class BillCategoryController : ControllerBase

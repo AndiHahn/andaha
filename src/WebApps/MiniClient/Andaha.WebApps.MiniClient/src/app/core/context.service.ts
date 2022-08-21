@@ -13,25 +13,43 @@ export class ContextService {
 
   private categoriesSubject: BehaviorSubject<BillCategoryDto[]>;
 
+  private shoppingApiAwake: boolean = false;
+
   constructor(
+    private authService: AuthService,
     private shoppingApiService: ShoppingApiService,
     private billCategoryApiService: BillCategoryApiService) {
     this.wakeUpBackendServices();
 
     this.categoriesSubject = new BehaviorSubject(this.getCategoriesFromStorage());
+
+    authService.loggedIn().subscribe(
+      {
+        next: _ => this.tryFetchBillCategories()
+      }
+    );
   }
 
   categories(): Observable<BillCategoryDto[]> {
     return this.categoriesSubject.asObservable();
   }
 
-  private wakeUpBackendServices() {
+  private wakeUpBackendServices(): void {
     this.shoppingApiService.wakeUp().subscribe({
-      next: _ => this.refreshBillCategoriesInStorage()
+      next: _ => {
+        this.shoppingApiAwake = true;
+        this.tryFetchBillCategories();
+      }
     });
   }
 
-  private refreshBillCategoriesInStorage() {
+  private tryFetchBillCategories(): void {
+    if (this.authService.isLoggedIn() && this.shoppingApiAwake) {
+      this.fetchBillCategories();
+    }
+  }
+
+  private fetchBillCategories(): void {
     this.billCategoryApiService.getAll().subscribe(
       {
         next: categories => this.updateBillCategoriesInStorage(categories)
