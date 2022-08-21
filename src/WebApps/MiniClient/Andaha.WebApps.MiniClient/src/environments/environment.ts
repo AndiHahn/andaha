@@ -19,9 +19,9 @@ export const environment = {
 
 export const environment = {
   production: false,
-  gatewayBaseUrl : "andaha.gateways.ocelot",
+  gatewayBaseUrl : "http://localhost:9000",
   auth: {
-    issuer: 'andaha.services.identity',
+    issuer: 'http://localhost:9100',
     redirectUri: 'http://localhost:4200',
     clientId: 'miniclient',
     responseType: 'code',

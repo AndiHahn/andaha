@@ -40,7 +40,7 @@ internal static class ProgramExtensions
                 options =>
                 {
                     options.IssuerUri = builder.Configuration["IssuerUrl"];
-                    options.Authentication.CookieLifetime = TimeSpan.FromDays(1);
+                    options.Authentication.CookieLifetime = TimeSpan.FromDays(30);
 
                     options.EmitStaticAudienceClaim = true;
 
