@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
-import { AppConfigService } from 'src/app/core/app-config.service';
+import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { constructPath } from '../functions';
 
 @Injectable({
@@ -10,9 +10,8 @@ import { constructPath } from '../functions';
 export class ShoppingApiService {
   private endpointUrl: string;
 
-  constructor(private httpClient: HttpClient, appConfigService: AppConfigService) {
-    const appConfig = appConfigService.getAppConfigFromCache();
-    this.endpointUrl = constructPath(appConfig.gatewayBaseUrl, 'shopping-api');
+  constructor(private httpClient: HttpClient) {
+    this.endpointUrl = constructPath(environment.gatewayBaseUrl, 'shopping-api');
   }
 
   wakeUp(): Observable<void> {

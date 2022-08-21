@@ -9,13 +9,18 @@ import { CommonModule } from '@angular/common';
 import { OverviewComponent } from './modules/overview/overview.component';
 import { AppConfigService } from './core/app-config.service';
 import { ErrorHttpInterceptor } from './core/error-http-interceptor.service';
+import { OAuthModule } from 'angular-oauth2-oidc';
+import { AuthService } from './core/auth.service';
+import { environment } from 'src/environments/environment';
 
-function initializeAppFactory(appConfigService: AppConfigService) {
-  return () => initApp(appConfigService);
+function initializeAppFactory(authService: AuthService, appConfigService: AppConfigService) {
+  return () => initApp(authService, appConfigService);
 }
 
-async function initApp(appConfigService: AppConfigService): Promise<void> {
+async function initApp(authService: AuthService, appConfigService: AppConfigService): Promise<void> {
   await appConfigService.init();
+
+  authService.init();
 }
 
 @NgModule({
@@ -26,6 +31,14 @@ async function initApp(appConfigService: AppConfigService): Promise<void> {
   imports: [
     BrowserModule,
     AppRoutingModule,
+    OAuthModule.forRoot({
+      resourceServer: {
+        allowedUrls: [
+          environment.gatewayBaseUrl
+        ],
+        sendAccessToken: true
+      }
+    }),
     BrowserAnimationsModule,
     CommonModule,
     HttpClientModule,
@@ -35,7 +48,7 @@ async function initApp(appConfigService: AppConfigService): Promise<void> {
     {
       provide: APP_INITIALIZER,
       useFactory: initializeAppFactory,
-      deps: [ AppConfigService ],
+      deps: [ AuthService, AppConfigService ],
       multi: true
     },
     {

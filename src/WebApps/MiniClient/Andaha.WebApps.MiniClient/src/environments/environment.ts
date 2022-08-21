@@ -2,8 +2,32 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+/*
 export const environment = {
-  production: false
+  production: false,
+  gatewayBaseUrl : "https://localhost:8000",
+  auth: {
+    issuer: 'https://localhost:8100',
+    redirectUri: 'http://localhost:4200',
+    clientId: 'miniclient',
+    responseType: 'code',
+    scope: 'openid profile offline_access shopping',
+    showDebugInformation: true,
+  }
+};
+*/
+
+export const environment = {
+  production: false,
+  gatewayBaseUrl : "andaha.gateways.ocelot",
+  auth: {
+    issuer: 'andaha.services.identity',
+    redirectUri: 'http://localhost:4200',
+    clientId: 'miniclient',
+    responseType: 'code',
+    scope: 'openid profile offline_access shopping',
+    showDebugInformation: true,
+  }
 };
 
 /*
