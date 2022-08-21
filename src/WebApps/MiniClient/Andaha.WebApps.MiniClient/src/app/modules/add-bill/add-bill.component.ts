@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillCategoryDto } from 'src/app/api/shopping/models/BillCategoryDto';
 import { BillCreateDto } from 'src/app/api/shopping/models/BillCreateDto';
 import { ContextService } from 'src/app/core/context.service';
+import { openErrorSnackbar, openInformationSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 
 @Component({
   selector: 'app-add-bill',
@@ -12,9 +14,9 @@ import { ContextService } from 'src/app/core/context.service';
   styleUrls: ['./add-bill.component.scss']
 })
 export class AddBillComponent implements OnInit {
+  numberRegex: string = '^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$';
+
   isSaving: boolean = false;
-  savingFailed: boolean = false;
-  savingError: string = '';
   form: FormGroup;
 
   categories?: BillCategoryDto[];
@@ -22,6 +24,7 @@ export class AddBillComponent implements OnInit {
   constructor(
     private fb: FormBuilder, 
     private router: Router,
+    private snackbar: MatSnackBar,
     private contextService: ContextService,
     private billApiService: BillApiService) { 
     this.form = this.fb.group({
@@ -30,10 +33,8 @@ export class AddBillComponent implements OnInit {
       category: ['', Validators.required],
       price: ['', [Validators.min(0), Validators.pattern(this.numberRegex)]],
       date: [new Date()]
-    });
+    })
   }
-
-  numberRegex: string = '^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$';
 
   ngOnInit(): void {
     this.loadBillCategories();
@@ -51,7 +52,6 @@ export class AddBillComponent implements OnInit {
     }
 
     this.isSaving = true;
-    this.savingFailed = false;
 
     const dto = this.createModelFromForm();
 
@@ -59,22 +59,26 @@ export class AddBillComponent implements OnInit {
       {
         next: _ => {
           this.isSaving = false;
+          openInformationSnackbar('Rechnung gespeichert', this.snackbar);
           this.router.navigateByUrl("/");
         },
         error: (err) => {
           this.isSaving = false;
-          this.savingFailed = true;
+
+          let savingError = '';
 
           if (err.status == 400) {
             const errorKeys = (Object.keys(err.error.errors) as Array<string>);
             if (errorKeys.length > 0) {
-              this.savingError = err.error.errors[errorKeys[0]][0];
+              savingError = err.error.errors[errorKeys[0]][0];
             } else {
-              this.savingError = err.error.detail;
+              savingError = err.error.detail;
             }
           } else {
-            this.savingError = err.error.detail;
+            savingError = err.error.detail;
           }
+
+          openErrorSnackbar(savingError, this.snackbar);
         }
       }
     );

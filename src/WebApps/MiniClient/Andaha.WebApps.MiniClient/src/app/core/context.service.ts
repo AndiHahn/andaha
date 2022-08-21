@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { BillCategoryApiService } from '../api/shopping/bill-category-api.service';
 import { BillCategoryDto } from '../api/shopping/models/BillCategoryDto';
 import { ShoppingApiService } from '../api/shopping/shopping-api.service';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -43,12 +44,12 @@ export class ContextService {
       return;
     }
 
-    const storageCategories = this.getCategoriesFromStorage().map(category => category.name).sort();
+    const storageCategories = this.getCategoriesFromStorage().map(category => category.id).sort();
     
-    const categoryNames = categories.map(category => category.name).sort();
+    const categoryIds = categories.map(category => category.id).sort();
 
     if (storageCategories.length != categories.length ||
-        storageCategories.join(',') != categoryNames.join(',')) {
+        storageCategories.join(',') != categoryIds.join(',')) {
       const categoriesJson = JSON.stringify(categories);
       window.localStorage.setItem(this.categoryCacheKey, categoriesJson);
 

@@ -14,11 +14,6 @@
     <mat-progress-bar *ngIf="isSaving" mode="indeterminate" color="accent"></mat-progress-bar>
     <div class="progress-bar-placeholder" *ngIf="!isSaving"></div>
 
-    <mat-error *ngIf="savingFailed" class="margin-top-5" style="text-align: center; margin: 10px 10px 0px 10px">
-      Fehler beim Speichern: {{ savingError }}
-    </mat-error>
-    <div class="error-placeholder" *ngIf="!savingFailed"></div>
-
     <div class="form-container">
       <br>
       <mat-form-field appearance="fill">

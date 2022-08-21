@@ -10,6 +10,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker'
 import { RouterModule, Routes } from '@angular/router';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatNativeDateModule } from '@angular/material/core';
+import { AppSnackbarModule } from 'src/app/shared/snackbar/snackbar.module';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 const routes: Routes = [
   {
@@ -34,6 +36,8 @@ const routes: Routes = [
     FormsModule,
     ReactiveFormsModule,
     MatProgressBarModule,
+    AppSnackbarModule,
+    MatSnackBarModule
   ],
   providers: [
     MatDatepickerModule

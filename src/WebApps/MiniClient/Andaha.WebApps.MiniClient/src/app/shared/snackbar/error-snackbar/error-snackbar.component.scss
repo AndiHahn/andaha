@@ -1,0 +1,11 @@
+.snack-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+}
+
+.message-container {
+  flex: 1;
+  margin-left: 10px;
+}
