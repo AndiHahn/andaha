@@ -3,6 +3,7 @@ param location string
 param imageVersion string
 param containerAppsEnvironmentId string
 param containerAppsEnvironmentDomain string
+param miniClientUrl string
 param containerRegistryUsername string
 @secure()
 param containerRegistryPassword string
@@ -33,8 +34,16 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
               secretRef: 'identitydb-connection-string'
             }
             {
+              name: 'IssuerUrl'
+              value: 'https://identity-api-${stage}.${containerAppsEnvironmentDomain}'
+            }
+            {
               name: 'ExternalUrls__ShoppingApi'
               value: 'https://shopping-api-${stage}.${containerAppsEnvironmentDomain}'
+            }
+            {
+              name: 'ExternalUrls__WebMiniClient'
+              value: miniClientUrl
             }
           ]
           probes: [

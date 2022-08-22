@@ -48,14 +48,14 @@ export class AuthService {
 
   private getCodeFlowConfig(): AuthConfig {
     return {
-      issuer: environment.auth.issuer,
-      loginUrl: environment.auth.issuer + '/connect/authorize',
-      tokenEndpoint: environment.auth.issuer + 'connect/token',
-      redirectUri: environment.auth.redirectUri,
-      clientId: environment.auth.clientId,
-      responseType: environment.auth.responseType,
-      scope: environment.auth.scope,
-      showDebugInformation: environment.auth.showDebugInformation
+      issuer: environment.authIssuerUrl,
+      loginUrl: environment.authIssuerUrl + '/connect/authorize',
+      tokenEndpoint: environment.authIssuerUrl + 'connect/token',
+      redirectUri: environment.authRedirectUrl,
+      clientId: environment.authClientId,
+      responseType: environment.authResponseType,
+      scope: environment.authScope,
+      showDebugInformation: environment.authShowDebugInformation
     }
   };
 }

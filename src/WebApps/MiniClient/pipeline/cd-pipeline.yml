@@ -51,7 +51,7 @@ stages:
           command: custom
           workingDir: src/WebApps/MiniClient/Andaha.WebApps.MiniClient
           verbose: false
-          customCommand: run build
+          customCommand: run build:prod
 
       - task: CopyFiles@2
         displayName: "Add binaries to Staging Directory"
@@ -109,12 +109,19 @@ stages:
         inlineScript: |
           az storage blob delete-batch --source '$web' --account-name $(storageAccountName)
 
-    - task: FileTransform@1
-      displayName: 'App config substitution'
+    - task: replacetokens@3
+      displayName: 'App environment substitution'
       inputs:
-        folderPath: '$(System.ArtifactsDirectory)/drop/assets/appConfig/'
-        fileType: json
-        targetFiles: appConfig.json
+        targetFiles: '$(Pipeline.ArtifactsDirectory)/drop/**/*.js'
+        encoding: 'auto'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: true
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+        useLegacyPattern: false
+        enableTransforms: false
+        enableTelemetry: true
 
     - task: AzureCLI@1
       displayName: 'Copy Frontend to Blobstorage'

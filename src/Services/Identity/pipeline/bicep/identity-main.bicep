@@ -2,6 +2,7 @@ param stage string = 'dev'
 param version string
 param location string = resourceGroup().location
 param containerRegistryUsername string
+@secure()
 param containerRegistryPassword string
 
 module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
@@ -28,6 +29,7 @@ module containerApp 'identity-app-module.bicep' = {
     imageVersion: version
     containerAppsEnvironmentId: coreInfrastructure.outputs.containerAppEnvironmentId
     containerAppsEnvironmentDomain: coreInfrastructure.outputs.containerAppEnvironmentDomain
+    miniClientUrl: 'https://andahaminiclient${stage}.z6.web.core.windows.net/'
     containerRegistryUsername: containerRegistryUsername
     containerRegistryPassword: containerRegistryPassword
     sqlDbConnectionString: sqlDatabase.outputs.connectionString

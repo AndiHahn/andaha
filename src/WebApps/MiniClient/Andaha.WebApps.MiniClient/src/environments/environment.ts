@@ -2,32 +2,15 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-/*
 export const environment = {
   production: false,
   gatewayBaseUrl : "https://localhost:8000",
-  auth: {
-    issuer: 'https://localhost:8100',
-    redirectUri: 'http://localhost:4200',
-    clientId: 'miniclient',
-    responseType: 'code',
-    scope: 'openid profile offline_access shopping',
-    showDebugInformation: true,
-  }
-};
-*/
-
-export const environment = {
-  production: false,
-  gatewayBaseUrl : "http://localhost:9000",
-  auth: {
-    issuer: 'http://localhost:9100',
-    redirectUri: 'http://localhost:4200',
-    clientId: 'miniclient',
-    responseType: 'code',
-    scope: 'openid profile offline_access shopping',
-    showDebugInformation: true,
-  }
+  authIssuerUrl: 'https://localhost:8100',
+  authRedirectUrl: window.location.origin,
+  authClientId: 'miniclient',
+  authResponseType: 'code',
+  authScope: 'openid profile offline_access shopping',
+  authShowDebugInformation: true,
 };
 
 /*
