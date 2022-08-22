@@ -12,6 +12,8 @@ variables:
   containerRegistryConnection: "andaha-container-reg-connection"
   bicepTemplateFile: "src/WebApps/MiniClient/pipeline/bicep/miniclient-main.bicep"
   nodeModulesCachePath: $(System.DefaultWorkingDirectory)/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/node_modules
+  gatewayBaseUrl: 'test'
+  authIssuerUrl: 'test2'
 
 name: "$(Build.SourceBranchName)"
 
@@ -61,10 +63,6 @@ stages:
 
       - task: PublishBuildArtifacts@1
         displayName: "Publish Artifact"    
-
-variables: 
-  gatewayBaseUrl: 'test'
-  authIssuerUrl: 'test2' 
 
 - stage: deploy_dev
   displayName: Deploy to dev
