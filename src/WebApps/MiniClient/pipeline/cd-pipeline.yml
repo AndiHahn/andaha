@@ -123,7 +123,7 @@ stages:
         tokenSuffix: '}#'
         enableTransforms: false
         enableTelemetry: true
-        inlineVariables: 'gatewayBaseUrl: asdf otherVariable: something'
+        inlineVariables: 'gatewayBaseUrl: asdf'
 
     - task: AzureCLI@1
       displayName: 'Copy Frontend to Blobstorage'
