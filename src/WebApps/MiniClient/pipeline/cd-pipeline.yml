@@ -66,6 +66,9 @@ stages:
   displayName: Deploy to dev
   dependsOn: build
   jobs:
+    variables: 
+      gatewayBaseUrl: 'test'
+      authIssuerUrl: 'test2' 
   - job: deployment
     steps:
     - task: DownloadPipelineArtifact@2
@@ -130,4 +133,3 @@ stages:
         scriptLocation: inlineScript
         inlineScript: |
           az storage blob upload-batch --destination '$web' --account-name $(storageAccountName) --source '$(System.ArtifactsDirectory)/drop'
-          
