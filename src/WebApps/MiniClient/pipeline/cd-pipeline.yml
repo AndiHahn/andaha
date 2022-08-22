@@ -130,3 +130,4 @@ stages:
         scriptLocation: inlineScript
         inlineScript: |
           az storage blob upload-batch --destination '$web' --account-name $(storageAccountName) --source '$(System.ArtifactsDirectory)/drop'
+          
