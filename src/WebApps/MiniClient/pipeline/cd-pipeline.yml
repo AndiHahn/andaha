@@ -114,7 +114,7 @@ stages:
     - task: replacetokens@3
       displayName: 'App environment substitution'
       inputs:
-        targetFiles: '$(Pipeline.ArtifactsDirectory)/drop/*.js'
+        targetFiles: '$(Pipeline.ArtifactsDirectory)/drop/main.*.js'
         encoding: 'auto'
         writeBOM: true
         actionOnMissing: 'warn'
@@ -123,7 +123,7 @@ stages:
         tokenSuffix: '}#'
         enableTransforms: false
         enableTelemetry: true
-        inlineVariables: 'gatewayBaseUrl: asdf'
+        inlineVariables: 'gatewayBaseUrl: asdf otherVariable: something'
 
     - task: AzureCLI@1
       displayName: 'Copy Frontend to Blobstorage'
