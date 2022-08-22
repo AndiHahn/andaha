@@ -62,13 +62,14 @@ stages:
       - task: PublishBuildArtifacts@1
         displayName: "Publish Artifact"    
 
+variables: 
+  gatewayBaseUrl: 'test'
+  authIssuerUrl: 'test2' 
+
 - stage: deploy_dev
   displayName: Deploy to dev
   dependsOn: build
   jobs:
-    variables: 
-      gatewayBaseUrl: 'test'
-      authIssuerUrl: 'test2' 
   - job: deployment
     steps:
     - task: DownloadPipelineArtifact@2
