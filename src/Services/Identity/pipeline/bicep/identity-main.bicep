@@ -29,7 +29,7 @@ module containerApp 'identity-app-module.bicep' = {
     imageVersion: version
     containerAppsEnvironmentId: coreInfrastructure.outputs.containerAppEnvironmentId
     containerAppsEnvironmentDomain: coreInfrastructure.outputs.containerAppEnvironmentDomain
-    miniClientUrl: 'https://andahaminiclient${stage}.z6.web.core.windows.net/'
+    miniClientUrl: 'https://andahaminiclient${stage}.z6.web.core.windows.net'
     containerRegistryUsername: containerRegistryUsername
     containerRegistryPassword: containerRegistryPassword
     sqlDbConnectionString: sqlDatabase.outputs.connectionString
