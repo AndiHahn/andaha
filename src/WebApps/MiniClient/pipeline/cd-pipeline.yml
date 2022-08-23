@@ -12,8 +12,6 @@ variables:
   containerRegistryConnection: "andaha-container-reg-connection"
   bicepTemplateFile: "src/WebApps/MiniClient/pipeline/bicep/miniclient-main.bicep"
   nodeModulesCachePath: $(System.DefaultWorkingDirectory)/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/node_modules
-  gatewayBaseUrl: 'test'
-  authIssuerUrl: 'test2'
 
 name: "$(Build.SourceBranchName)"
 
@@ -123,7 +121,6 @@ stages:
         tokenSuffix: '}#'
         enableTransforms: false
         enableTelemetry: true
-        inlineVariables: 'gatewayBaseUrl: asdf'
 
     - task: AzureCLI@1
       displayName: 'Copy Frontend to Blobstorage'
