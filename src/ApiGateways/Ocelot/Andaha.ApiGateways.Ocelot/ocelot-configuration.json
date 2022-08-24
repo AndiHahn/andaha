@@ -34,7 +34,7 @@
         }
       ],
       "UpstreamPathTemplate": "/shopping-api/ping",
-      "UpstreamHttpMethod": [ "GET" ]
+      "UpstreamHttpMethod": [ "GET", "OPTIONS" ]
     }
   ],
   "GlobalConfiguration": {
