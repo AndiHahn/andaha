@@ -9,9 +9,13 @@ import { CommonModule } from '@angular/common';
 import { OverviewComponent } from './modules/overview/overview.component';
 import { AppConfigService } from './core/app-config.service';
 import { ErrorHttpInterceptor } from './core/error-http-interceptor.service';
-import { OAuthModule } from 'angular-oauth2-oidc';
+import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { AuthService } from './core/auth.service';
 import { environment } from 'src/environments/environment';
+
+function storageFactory() : OAuthStorage {
+  return localStorage
+}
 
 function initializeAppFactory(authService: AuthService, appConfigService: AppConfigService) {
   return () => initApp(authService, appConfigService);
@@ -55,6 +59,10 @@ async function initApp(authService: AuthService, appConfigService: AppConfigServ
       provide: HTTP_INTERCEPTORS,
       useClass: ErrorHttpInterceptor,
       multi: true
+    },
+    {
+      provide: OAuthStorage,
+      useFactory: storageFactory
     }
   ],
   bootstrap: [AppComponent]
