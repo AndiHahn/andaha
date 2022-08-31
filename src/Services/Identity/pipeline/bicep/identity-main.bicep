@@ -30,8 +30,17 @@ module containerApp 'identity-app-module.bicep' = {
     containerAppsEnvironmentId: coreInfrastructure.outputs.containerAppEnvironmentId
     containerAppsEnvironmentDomain: coreInfrastructure.outputs.containerAppEnvironmentDomain
     miniClientUrl: 'https://andahaminiclient${stage}.z6.web.core.windows.net'
+    keyVaultUri: coreInfrastructure.outputs.keyVaultUri
     containerRegistryUsername: containerRegistryUsername
     containerRegistryPassword: containerRegistryPassword
     sqlDbConnectionString: sqlDatabase.outputs.connectionString
+  }
+}
+
+module keyVaultAccess 'identity-key-module.bicep' = {
+  name: 'andaha-keyvault-access'
+  params: {
+    appObjectId: containerApp.outputs.appObjectId 
+    stage: stage
   }
 }

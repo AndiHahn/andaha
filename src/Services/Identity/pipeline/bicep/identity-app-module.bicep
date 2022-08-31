@@ -4,15 +4,21 @@ param imageVersion string
 param containerAppsEnvironmentId string
 param containerAppsEnvironmentDomain string
 param miniClientUrl string
+param keyVaultUri string
 param containerRegistryUsername string
 @secure()
 param containerRegistryPassword string
 @secure()
 param sqlDbConnectionString string
 
+var config = json(loadTextContent('../../../../../pipeline/bicep/config.json'))
+
 resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: 'identity-api-${stage}'
   location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     managedEnvironmentId: containerAppsEnvironmentId
     template: {
@@ -44,6 +50,14 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
             {
               name: 'ExternalUrls__WebMiniClient'
               value: miniClientUrl
+            }
+            {
+              name: 'Certificate__KeyVaultUri'
+              value: keyVaultUri
+            }
+            {
+              name: 'Certificate__CertificateName'
+              value: config['identityserver-certificate-secret-key']
             }
           ]
           probes: [
@@ -95,3 +109,5 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
     }
   }
 }
+
+output appObjectId string = containerApp.identity.principalId

@@ -1,5 +1,7 @@
 ﻿using Andaha.Services.Identity.Domain;
 using Andaha.Services.Identity.Infrastructure;
+using Azure.Identity;
+using Azure.Security.KeyVault.Certificates;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -55,8 +57,40 @@ internal static class ProgramExtensions
             .AddInMemoryClients(Config.GetClients(builder.Configuration))
             .AddAspNetIdentity<ApplicationUser>();
 
-        // not recommended for production - you need to store your key material somewhere secure
-        identityServerBuilder.AddDeveloperSigningCredential();
+        if (builder.Environment.IsDevelopment())
+        {
+            identityServerBuilder.AddDeveloperSigningCredential();
+        }
+        else
+        {
+            var certificateClient = new CertificateClient(
+                new Uri(builder.Configuration.GetSection("Certificate").GetValue<string>("KeyVaultUri")),
+                new DefaultAzureCredential(new DefaultAzureCredentialOptions
+                {
+                    ExcludeAzureCliCredential = true,
+                    ExcludeEnvironmentCredential = true,
+                    ExcludeInteractiveBrowserCredential = true,
+                    ExcludeSharedTokenCacheCredential = true,
+                    ExcludeVisualStudioCodeCredential = true,
+                    ExcludeVisualStudioCredential = true,
+                    ExcludeManagedIdentityCredential = false,
+                }),
+                new CertificateClientOptions
+                {
+                    Retry =
+                    {
+                        Delay = TimeSpan.FromSeconds(3),
+                        MaxDelay = TimeSpan.FromSeconds(10),
+                        MaxRetries = 5,
+                        Mode = Azure.Core.RetryMode.Exponential
+                    }
+                });
+
+            var certificate = certificateClient.DownloadCertificate(
+                builder.Configuration.GetSection("Certificate").GetValue<string>("CertificateName"));
+
+            identityServerBuilder.AddSigningCredential(certificate);
+        }
 
         return builder;
     }

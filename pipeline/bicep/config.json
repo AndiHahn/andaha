@@ -1,0 +1,5 @@
+{
+  "mini-client-name": "andahaminiclient",
+  "key-vault-name": "andaha-keyvault",
+  "identityserver-certificate-secret-key": "identityserver-certificate"
+}
