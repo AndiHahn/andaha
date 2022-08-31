@@ -8,7 +8,7 @@ var keyVaultName = config['key-vault-name']
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: '${keyVaultName}-${stage}'
 
-  resource accessPolicy 'accessPolicies@2022-07-01' = {
+  resource accessPolicy 'accessPolicies' = {
     name: 'add'
     properties: {
       accessPolicies: [

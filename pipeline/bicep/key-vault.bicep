@@ -15,6 +15,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
     }
     tenantId: subscription().tenantId
     enableSoftDelete: false
+    accessPolicies: []
   }
 }
 
