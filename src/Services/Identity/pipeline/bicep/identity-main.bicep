@@ -37,7 +37,7 @@ module containerApp 'identity-app-module.bicep' = {
   }
 }
 
-module keyVaultAccess 'identity-key-module.bicep' = {
+module keyVaultAccess 'identity-keyvault-access-module.bicep' = {
   name: 'andaha-keyvault-access'
   params: {
     appObjectId: containerApp.outputs.appObjectId 

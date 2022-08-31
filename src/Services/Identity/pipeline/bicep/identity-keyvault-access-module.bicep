@@ -16,6 +16,9 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
           objectId: appObjectId
           tenantId: tenant().tenantId
           permissions: {
+            secrets: [
+              'get'
+            ]
             certificates: [
               'get'
             ]
