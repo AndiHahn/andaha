@@ -15,7 +15,26 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
     }
     tenantId: subscription().tenantId
     enableSoftDelete: false
-    accessPolicies: []
+    accessPolicies: [
+      {
+        objectId: config['admin-aad-user-object-id']
+        tenantId: tenant().tenantId
+        permissions: {
+          certificates: [
+            'all'
+          ]
+          keys: [
+            'all'
+          ]
+          secrets: [
+            'all'
+          ]
+          storage: [
+            'all'
+          ]
+        }
+      }
+    ]
   }
 }
 
