@@ -16,14 +16,17 @@ export class AuthService {
     this.oauthService.configure(this.getCodeFlowConfig());
     this.oauthService.loadDiscoveryDocumentAndTryLogin()
       .then(_ => {
-          if (this.oauthService.hasValidAccessToken() && this.oauthService.hasValidIdToken()) {
+          if (this.oauthService.hasValidAccessToken()) {
+            console.log("Has valid token.");
             this.isAuthenticatedSubject.next(true);
             return Promise.resolve();
           } else {
-              return new Promise(resolve => {
-                  this.oauthService.initLoginFlow();
-                  resolve(true);
-              });
+            console.log("No valid token.");
+            return new Promise(resolve => {
+              console.log("INIT LOGIN FLOW");
+              this.oauthService.initLoginFlow();
+              resolve(true);
+            });
           }
       });
 
