@@ -21,6 +21,14 @@ module sqlDatabase 'identity-db-module.bicep' = {
   }
 }
 
+module keyVault 'identity-keyvault-module.bicep' = {
+  name: 'andaha-keyvault'
+  params: {
+    stage: stage
+    location: location
+  }
+}
+
 module containerApp 'identity-app-module.bicep' = {
   name: 'andaha-identity-service'
   params: {
@@ -30,7 +38,8 @@ module containerApp 'identity-app-module.bicep' = {
     containerAppsEnvironmentId: coreInfrastructure.outputs.containerAppEnvironmentId
     containerAppsEnvironmentDomain: coreInfrastructure.outputs.containerAppEnvironmentDomain
     miniClientUrl: 'https://andahaminiclient${stage}.z6.web.core.windows.net'
-    keyVaultUri: coreInfrastructure.outputs.keyVaultUri
+    keyVaultUri: keyVault.outputs.keyVaultUri
+    certificateKeyvaultKey: 'identityserver-certificate'
     containerRegistryUsername: containerRegistryUsername
     containerRegistryPassword: containerRegistryPassword
     sqlDbConnectionString: sqlDatabase.outputs.connectionString
@@ -40,7 +49,7 @@ module containerApp 'identity-app-module.bicep' = {
 module keyVaultAccess 'identity-keyvault-access-module.bicep' = {
   name: 'andaha-keyvault-access'
   params: {
-    appObjectId: containerApp.outputs.appObjectId 
-    stage: stage
+    keyVaultName: keyVault.outputs.keyVaultName
+    appObjectId: containerApp.outputs.appObjectId
   }
 }

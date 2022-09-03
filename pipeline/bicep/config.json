@@ -1,6 +1,4 @@
 {
   "admin-aad-user-object-id": "f53ecc73-e727-41f2-879f-fff583c817ee",
-  "mini-client-name": "andahaminiclient",
-  "key-vault-name": "andaha-keyvault",
-  "identityserver-certificate-secret-key": "identityserver-certificate"
+  "mini-client-name": "andahaminiclient"
 }

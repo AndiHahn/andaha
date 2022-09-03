@@ -1,12 +1,10 @@
 param stage string
 param location string
 
-var config = json(loadTextContent('config.json'))
-
-var keyVaultName = config['key-vault-name']
+var config = json(loadTextContent('../../../../../pipeline//bicep/config.json'))
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
-  name: '${keyVaultName}-${stage}'
+  name: 'andaha-identity-keyvault-${stage}'
   location: location
   properties: {
     sku: {
@@ -39,3 +37,4 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
 }
 
 output keyVaultUri string = keyVault.properties.vaultUri
+output keyVaultName string = keyVault.name

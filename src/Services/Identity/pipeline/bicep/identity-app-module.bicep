@@ -5,6 +5,7 @@ param containerAppsEnvironmentId string
 param containerAppsEnvironmentDomain string
 param miniClientUrl string
 param keyVaultUri string
+param certificateKeyvaultKey string
 param containerRegistryUsername string
 @secure()
 param containerRegistryPassword string
@@ -57,7 +58,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
             }
             {
               name: 'Certificate__CertificateName'
-              value: config['identityserver-certificate-secret-key']
+              value: certificateKeyvaultKey
             }
           ]
           probes: [
