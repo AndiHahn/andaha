@@ -62,8 +62,7 @@ stages:
         inlineScript: |
           $pfxFilePath = $(identityServerCertificate.secureFilePath)
 
-          $flag = [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable
-          $cert = New-Object -TypeName System.Security.Cryptography.X509Certificates.X509Certificate2($pfxFilePath, "$(certificatePassword)", $flag)
+          $cert = New-Object -TypeName System.Security.Cryptography.X509Certificates.X509Certificate2($pfxFilePath)
 
           $bin = $cert.RawData
           $base64Value = [System.Convert]::ToBase64String($bin)
