@@ -4,7 +4,7 @@ param location string
 var config = json(loadTextContent('../../../../../pipeline//bicep/config.json'))
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
-  name: 'andaha-identity-keyvault-${stage}'
+  name: 'andaha-identity-${stage}'
   location: location
   properties: {
     sku: {

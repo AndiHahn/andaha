@@ -79,7 +79,7 @@ stages:
       displayName: 'upload certificate to keyvault'
       inputs:
         azureSubscription: $(azureServiceConnection)
-        keyVaultName: 'andaha-identity-keyvault-dev'
+        keyVaultName: 'andaha-identity-dev'
         certificateName: 'identityserver-certificate'
         uploadType: 'string'
         certString: $(certificateBase64Content)
