@@ -32,6 +32,18 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
           ]
         }
       }
+      {
+        objectId: config['azure-serviceconnection-object-id']
+        tenantId: tenant().tenantId
+        permissions: {
+          secrets: [
+            'set'
+          ]
+          certificates: [
+            'import'
+          ]
+        }
+      }
     ]
   }
 }

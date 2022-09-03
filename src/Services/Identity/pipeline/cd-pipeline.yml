@@ -46,3 +46,41 @@ stages:
           acrUser=$(az acr credential show --name andaha --resource-group andaha --query username -o tsv)
           acrPassword=$(az acr credential show --name andaha --resource-group andaha --query "passwords[0].value" -o tsv)
           az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile) --parameters containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)"
+
+    - task: DownloadSecureFile@1
+      displayName: 'download certificate'
+      name: identityServerCertificate
+      inputs:
+        secureFile: 'certificate.pfx'
+
+    - task: AzureCLI@2
+      displayName: 'convert certificate to base64 string'
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: pscore
+        scriptLocation: inlineScript
+        inlineScript: |
+          $secName = "certificate.pfx"
+          $tempDirectory = $(Agent.TempDirectory)
+
+          $pfxFilePath = Join-Path $tempDirectory $secName
+
+          $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
+          $flag = [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable
+
+          $cert.Import($pfxFilePath, "$(certificatePassword)", $flag)
+
+          $bin = $cert.RawData
+          $base64Value = [System.Convert]::ToBase64String($bin)
+
+          Write-Host "##vso[task.setvariable variable=certificateBase64Content;]$base64Value"
+
+    - task: JamieTaffurelli.azure-key-vault-key-cert-deploy.key-vault-certificate-generation.key-vault-certificate-generation@1
+      displayName: 'upload certificate to keyvault'
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        keyVaultName: 'andaha-identity-keyvault-dev'
+        certificateName: 'identityserver-certificate'
+        uploadType: 'string'
+        certString: $(certificateBase64Content)
+        password: $(certificatePassword)
