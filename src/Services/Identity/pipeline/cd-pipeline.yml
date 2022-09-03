@@ -64,7 +64,7 @@ stages:
 
           $cert = New-Object -TypeName System.Security.Cryptography.X509Certificates.X509Certificate2($pfxFilePath)
 
-          $bin = $cert.RawData
+          $bin = $cert.GetRawCertData()
           $base64Value = [System.Convert]::ToBase64String($bin)
 
           Write-Host "##vso[task.setvariable variable=certificateBase64Content;]$base64Value"
