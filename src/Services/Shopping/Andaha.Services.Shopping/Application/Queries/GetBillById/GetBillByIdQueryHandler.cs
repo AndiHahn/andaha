@@ -3,6 +3,7 @@ using Andaha.CrossCutting.Application.Result;
 using Andaha.Services.Shopping.Dtos.v1_0;
 using Andaha.Services.Shopping.Infrastructure;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Andaha.Services.Shopping.Application.Queries.GetBillById;
 
@@ -21,7 +22,10 @@ internal class GetBillByIdQueryHandler : IRequestHandler<GetBillByIdQuery, Resul
 
     public async Task<Result<BillDto>> Handle(GetBillByIdQuery request, CancellationToken cancellationToken)
     {
-        var bill = await this.dbContext.Bill.FindByIdAsync(request.BillId, cancellationToken);
+        var bill = await this.dbContext.Bill
+            .Include(bill => bill.Category)
+            .FirstOrDefaultAsync(bill => bill.Id == request.BillId, cancellationToken);
+
         if (bill is null)
         {
             return Result<BillDto>.NotFound($"Bill with id {request.BillId} not found.");

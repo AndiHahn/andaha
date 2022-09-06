@@ -6,6 +6,7 @@ using Andaha.Services.Shopping.Core;
 using Andaha.Services.Shopping.Dtos.v1_0;
 using Andaha.Services.Shopping.Infrastructure;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Andaha.Services.Shopping.Application.Commands.CreateBill;
 
@@ -26,11 +27,15 @@ internal class CreateBillCommandHandler : IRequestHandler<CreateBillCommand, Res
     {
         Guid userId = this.identityService.GetUserId();
 
-        var bill = this.dbContext.Bill.Add(
+        var newBill = this.dbContext.Bill.Add(
             new Bill(userId, request.CategoryId, request.ShopName, request.Price, request.Date, request.Notes));
 
         await this.dbContext.SaveChangesAsync(cancellationToken);
 
-        return bill.Entity.ToDto();
+        var bill = await this.dbContext.Bill
+            .Include(bill => bill.Category)
+            .SingleAsync(bill => bill.Id == newBill.Entity.Id, cancellationToken);
+
+        return bill.ToDto();
     }
 }

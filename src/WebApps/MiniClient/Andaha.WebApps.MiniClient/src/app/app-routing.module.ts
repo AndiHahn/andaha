@@ -10,6 +10,10 @@ const routes: Routes = [
   {
     path: 'bill/create',
     loadChildren: () => import('./modules/add-bill/add-bill.module').then(m => m.AddBillModule)
+  },
+  {
+    path: 'bill/list',
+    loadChildren: () => import('./modules/bill-list/bill-list.module').then(m => m.BillListModule)
   }
 ];
 

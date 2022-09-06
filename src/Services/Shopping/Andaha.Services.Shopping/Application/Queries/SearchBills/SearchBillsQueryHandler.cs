@@ -25,6 +25,7 @@ internal class SearchBillsQueryHandler : IRequestHandler<SearchBillsQuery, Paged
         Guid userId = this.identityService.GetUserId();
 
         var query = this.dbContext.Bill
+            .Include(bill => bill.Category)
             .OrderByDescending(b => b.Date)
             .Where(b => b.CreatedByUserId == userId);
 

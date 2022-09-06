@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillCategoryDto } from 'src/app/api/shopping/models/BillCategoryDto';
 import { BillCreateDto } from 'src/app/api/shopping/models/BillCreateDto';
-import { ContextService } from 'src/app/core/context.service';
+import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
+import { BillContextService } from 'src/app/services/bill-context.service';
 import { openErrorSnackbar, openInformationSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 
 @Component({
@@ -25,8 +25,9 @@ export class AddBillComponent implements OnInit {
     private fb: FormBuilder, 
     private router: Router,
     private snackbar: MatSnackBar,
-    private contextService: ContextService,
-    private billApiService: BillApiService) { 
+    private billContextService: BillContextService,
+    private billCategoryContextService: BillCategoryContextService
+    ) { 
     this.form = this.fb.group({
       shopName: ['', [Validators.required, Validators.maxLength(200)]],
       notes: ['', [Validators.maxLength(1000)]],
@@ -41,7 +42,7 @@ export class AddBillComponent implements OnInit {
   }
 
   private loadBillCategories() {
-    this.contextService.categories().subscribe({
+    this.billCategoryContextService.categories().subscribe({
       next: categories => this.categories = categories
     })
   }
@@ -55,12 +56,12 @@ export class AddBillComponent implements OnInit {
 
     const dto = this.createModelFromForm();
 
-    this.billApiService.addBill(dto).subscribe(
+    this.billContextService.addBill(dto).subscribe(
       {
         next: _ => {
           this.isSaving = false;
           openInformationSnackbar('Rechnung gespeichert', this.snackbar);
-          this.router.navigateByUrl("/");
+          this.router.navigateByUrl("/bill/list");
         },
         error: (err) => {
           this.isSaving = false;
@@ -68,7 +69,7 @@ export class AddBillComponent implements OnInit {
           let savingError = '';
 
           if (err.status == 400) {
-            const errorKeys = (Object.keys(err.error.errors) as Array<string>);
+            const errorKeys = Object.keys(err.error.errors);
             if (errorKeys.length > 0) {
               savingError = err.error.errors[errorKeys[0]][0];
             } else {
