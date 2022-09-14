@@ -89,17 +89,19 @@ export class BillContextService {
   }
 
   private fetchBills() {
-    this.billApiService.searchBills(
-      {
-        pageIndex: this.pageIndexSubject.value,
-        pageSize: this.pageSizeSubject.value
-      }).subscribe(
-      {
-        next: result => {
-          this.billsSubject.next(result.values);
-          this.totalResultsSubject.next(result.totalCount);
+    this.billApiService
+      .searchBills(
+        {
+          pageIndex: this.pageIndexSubject.value,
+          pageSize: this.pageSizeSubject.value
+        })
+      .subscribe(
+        {
+          next: result => {
+            this.billsSubject.next(result.values);
+            this.totalResultsSubject.next(result.totalCount);
+          }
         }
-      }
     );
   }
 }

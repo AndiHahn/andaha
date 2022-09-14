@@ -12,6 +12,7 @@ import { ErrorHttpInterceptor } from './core/error-http-interceptor.service';
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { AuthService } from './core/auth.service';
 import { environment } from 'src/environments/environment';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 function storageFactory() : OAuthStorage {
   return localStorage
@@ -38,7 +39,8 @@ async function initApp(authService: AuthService, appConfigService: AppConfigServ
     OAuthModule.forRoot({
       resourceServer: {
         allowedUrls: [
-          environment.gatewayBaseUrl
+          environment.gatewayBaseUrl,
+          'https://localhost:8200/api'
         ],
         sendAccessToken: true
       }
@@ -47,6 +49,12 @@ async function initApp(authService: AuthService, appConfigService: AppConfigServ
     CommonModule,
     HttpClientModule,
     MatButtonModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
   ],
   providers: [
     {
