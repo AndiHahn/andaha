@@ -8,7 +8,7 @@
     "build:prod": "ng build --prod",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "start-pwa": "ng build --configuration local && http-server -p 4200 -c-1 dist/andaha.web-apps.mini-client"
+    "start-pwa": "ng build --configuration local-pwa && http-server -p 4200 -c-1 dist/andaha.web-apps.mini-client"
   },
   "private": true,
   "dependencies": {

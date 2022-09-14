@@ -67,7 +67,7 @@
               ],
               "outputHashing": "all"
             },
-            "local": {
+            "local-pwa": {
               "budgets": [
                 {
                   "type": "initial",

@@ -11,7 +11,11 @@ export class ShoppingApiService {
   private endpointUrl: string;
 
   constructor(private httpClient: HttpClient) {
-    this.endpointUrl = constructPath(environment.gatewayBaseUrl, 'shopping-api');
+    if (environment.dapr) {
+      this.endpointUrl = constructPath(environment.gatewayBaseUrl, 'shopping-api');
+    } else {
+      this.endpointUrl = 'https://localhost:8200';
+    }
   }
 
   wakeUp(): Observable<void> {

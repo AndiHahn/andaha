@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  dapr: true,
   gatewayBaseUrl : "#{gatewayBaseUrl}#",
   authIssuerUrl: '#{authIssuerUrl}#',
   authRedirectUrl: window.location.origin,

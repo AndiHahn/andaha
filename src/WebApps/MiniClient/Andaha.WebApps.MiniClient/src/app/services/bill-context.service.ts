@@ -79,7 +79,6 @@ export class BillContextService {
       {
         next: ready => {
           if (ready) {
-            console.log("init subscriptions is ready -> shoppingApiReady()");
             this.fetchBills();
           }
         } 
@@ -88,19 +87,13 @@ export class BillContextService {
 
     this.pageIndexSubject.asObservable().pipe(skip(1)).subscribe(
       {
-        next: _ => {
-          console.log("init subscriptions -> pageIndexSubject");
-          this.fetchBills();
-        } 
+        next: _ => this.fetchBills() 
       }
     );
 
     this.pageSizeSubject.asObservable().pipe(skip(1)).subscribe(
       {
-        next: _ => {
-          console.log("init subscriptions -> pageSizeSubject");
-          this.fetchBills();
-        } 
+        next: _ => this.fetchBills() 
       }
     );
   }

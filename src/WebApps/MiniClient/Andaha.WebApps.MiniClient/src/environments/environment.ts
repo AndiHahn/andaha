@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  dapr: false,
   gatewayBaseUrl : "https://localhost:8000",
   authIssuerUrl: 'https://localhost:8100',
   authRedirectUrl: window.location.origin,

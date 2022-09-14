@@ -13,7 +13,11 @@ export class BillCategoryApiService {
   private apiVersion: string = "1.0";
 
   constructor(private httpClient: HttpClient) {
-    this.endpointUrl = constructPath(environment.gatewayBaseUrl, 'shopping-api', 'billcategory');
+    if (environment.dapr) {
+      this.endpointUrl = constructPath(environment.gatewayBaseUrl, 'shopping-api', 'billcategory');
+    } else {
+      this.endpointUrl = 'https://localhost:8200/api/billcategory';
+    }
   }
 
   getAll(): Observable<BillCategoryDto[]> {
