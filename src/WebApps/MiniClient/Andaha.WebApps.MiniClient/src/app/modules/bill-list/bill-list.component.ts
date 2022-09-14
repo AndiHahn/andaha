@@ -10,6 +10,7 @@ import { BillContextService } from '../../services/bill-context.service';
 })
 export class BillListComponent implements OnInit {
 
+  loading: boolean = false;
   bills?: BillDto[];
 
   pageSize?: number;
@@ -42,6 +43,14 @@ export class BillListComponent implements OnInit {
     this.billListContextService.pageSize().subscribe(
       {
         next: pageSize => this.pageSize = pageSize
+      }
+    );
+
+    this.billListContextService.loading().subscribe(
+      {
+        next: loading => {
+          this.loading = loading;
+        } 
       }
     );
   }

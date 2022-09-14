@@ -39,8 +39,7 @@ async function initApp(authService: AuthService, appConfigService: AppConfigServ
     OAuthModule.forRoot({
       resourceServer: {
         allowedUrls: [
-          environment.gatewayBaseUrl,
-          'https://localhost:8200/api'
+          environment.gatewayBaseUrl
         ],
         sendAccessToken: true
       }
