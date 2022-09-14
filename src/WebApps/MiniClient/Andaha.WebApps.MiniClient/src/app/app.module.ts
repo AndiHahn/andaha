@@ -7,7 +7,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button'
 import { CommonModule } from '@angular/common';
 import { OverviewComponent } from './modules/overview/overview.component';
-import { AppConfigService } from './core/app-config.service';
 import { ErrorHttpInterceptor } from './core/error-http-interceptor.service';
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { AuthService } from './core/auth.service';
@@ -18,13 +17,11 @@ function storageFactory() : OAuthStorage {
   return localStorage
 }
 
-function initializeAppFactory(authService: AuthService, appConfigService: AppConfigService) {
-  return () => initApp(authService, appConfigService);
+function initializeAppFactory(authService: AuthService) {
+  return () => initApp(authService);
 }
 
-async function initApp(authService: AuthService, appConfigService: AppConfigService): Promise<void> {
-  await appConfigService.init();
-
+async function initApp(authService: AuthService): Promise<void> {
   authService.init();
 }
 
@@ -59,7 +56,7 @@ async function initApp(authService: AuthService, appConfigService: AppConfigServ
     {
       provide: APP_INITIALIZER,
       useFactory: initializeAppFactory,
-      deps: [ AuthService, AppConfigService ],
+      deps: [ AuthService ],
       multi: true
     },
     {
