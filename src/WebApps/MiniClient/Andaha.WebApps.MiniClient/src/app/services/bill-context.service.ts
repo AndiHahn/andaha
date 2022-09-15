@@ -51,6 +51,10 @@ export class BillContextService {
     }
   }
 
+  searchBills(searchText: string): void {
+    this.fetchBills(searchText);
+  }
+
   addBill(dto: BillCreateDto): Observable<BillDto> {
     const returnSubject = new Subject<BillDto>();
 
@@ -98,14 +102,17 @@ export class BillContextService {
     );
   }
 
-  private fetchBills() {
+  private fetchBills(searchText?: string) {
     this.loadingSubject.next(true);
+
+    const search = searchText ?? '';
 
     this.billApiService
       .searchBills(
         {
           pageIndex: this.pageIndexSubject.value,
-          pageSize: this.pageSizeSubject.value
+          pageSize: this.pageSizeSubject.value,
+          search: search
         })
       .subscribe(
         {

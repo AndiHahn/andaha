@@ -9,6 +9,13 @@
 
 <div class="button-placeholder"></div>
 
+<div class="fixed">
+  <app-bill-list-filter [deactivate]="loading" (triggerLoading)="onSearchInput($event)">
+  </app-bill-list-filter>
+</div>
+
+<div class="filter-placeholder"></div>
+
 <div *ngIf="loading" class="action-container">
   <mat-spinner diameter="40"></mat-spinner>
 </div>

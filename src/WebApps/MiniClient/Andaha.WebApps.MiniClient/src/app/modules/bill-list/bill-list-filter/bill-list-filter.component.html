@@ -1,0 +1,18 @@
+<div class="master-container">
+  <div class="search-container">
+    <mat-chip>
+      <mat-icon>search</mat-icon>
+      <input matInput type="search" 
+        [readonly]="deactivate"
+        #searchTerm
+        (keyup)="searchBoxKeyup.emit(searchTerm.value)"
+        (keydown)="searchBoxKeyDown($event)"
+        placeholder="Suche...">
+      <button *ngIf="searchTerm.value" matSuffix mat-icon-button
+        aria-label="Clear"
+        (click)="onClearSearch()">
+        <mat-icon>close</mat-icon>
+      </button> 
+    </mat-chip>
+  </div>
+</div>

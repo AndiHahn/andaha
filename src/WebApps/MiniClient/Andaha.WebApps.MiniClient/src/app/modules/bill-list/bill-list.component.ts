@@ -27,6 +27,10 @@ export class BillListComponent implements OnInit {
     this.billListContextService.setPageSize(event.pageSize);
   }
 
+  onSearchInput(searchText: string): void {
+    this.billListContextService.searchBills(searchText);
+  }
+
   private initSubscriptions(): void {
     this.billListContextService.bills().subscribe(
       {

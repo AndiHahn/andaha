@@ -7,6 +7,9 @@ import { MatChipsModule } from '@angular/material/chips'
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { BillListFilterComponent } from './bill-list-filter/bill-list-filter.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 
 const routes: Routes = [
   {
@@ -17,7 +20,8 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
-    BillListComponent
+    BillListComponent,
+    BillListFilterComponent
   ],
   imports: [
     CommonModule,
@@ -26,7 +30,10 @@ const routes: Routes = [
     MatChipsModule,
     MatButtonModule,
     MatPaginatorModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatIconModule,
+    MatInputModule,
+    MatChipsModule
   ]
 })
 export class BillListModule { }
