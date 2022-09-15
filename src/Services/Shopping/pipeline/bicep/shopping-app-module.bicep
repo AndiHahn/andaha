@@ -9,6 +9,8 @@ param containerRegistryPassword string
 @secure()
 param sqlDbConnectionString string
 
+var imageName = stage == 'dev' ? 'andaha.azurecr.io/andaha/services/shopping:${imageVersion}' : 'andaha.azurecr.io/prod/andaha/services/shopping:${imageVersion}'
+
 resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: 'shopping-api-${stage}'
   location: location
@@ -18,7 +20,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
       containers: [
         {
           name: 'shopping-api'
-          image: 'andaha.azurecr.io/andaha/services/shopping:${imageVersion}'
+          image: imageName
           env: [
             {
               name: 'ASPNETCORE_ENVIRONMENT'
