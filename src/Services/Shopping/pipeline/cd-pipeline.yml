@@ -70,27 +70,27 @@ stages:
     environment: Production
     steps:
     - task: Docker@2
-        displayName: build image
-        inputs:
-          command: build
-          arguments: '--build-arg PatPlaceholder=$(NugetFeedAccessToken)'
-          dockerfile: src/Services/Shopping/Andaha.Services.Shopping/Dockerfile
-          repository: prod/andaha/services/shopping
-          containerRegistry: $(containerRegistryConnection)
-          tags: |
-            $(imageTag)
-            latest
-          
-      - task: Docker@2
-        displayName: push image
-        inputs:
-          command: push
-          dockerfile: src/Services/Shopping/Andaha.Services.Shopping/Dockerfile
-          repository: prod/andaha/services/shopping
-          containerRegistry: $(containerRegistryConnection)
-          tags: |
-            $(imageTag)
-            latest
+      displayName: build image
+      inputs:
+        command: build
+        arguments: '--build-arg PatPlaceholder=$(NugetFeedAccessToken)'
+        dockerfile: src/Services/Shopping/Andaha.Services.Shopping/Dockerfile
+        repository: prod/andaha/services/shopping
+        containerRegistry: $(containerRegistryConnection)
+        tags: |
+          $(imageTag)
+          latest
+        
+    - task: Docker@2
+      displayName: push image
+      inputs:
+        command: push
+        dockerfile: src/Services/Shopping/Andaha.Services.Shopping/Dockerfile
+        repository: prod/andaha/services/shopping
+        containerRegistry: $(containerRegistryConnection)
+        tags: |
+          $(imageTag)
+          latest
 
     - task: AzureCLI@2
       displayName: 'Deploy to prod'
