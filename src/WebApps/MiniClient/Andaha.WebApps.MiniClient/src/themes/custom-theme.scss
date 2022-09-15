@@ -13,4 +13,3 @@ $theme: mat.define-dark-theme((
 ));
 
 @include mat.all-component-themes($theme);
-@include mat.all-component-colors($theme);

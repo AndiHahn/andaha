@@ -1,4 +1,9 @@
-@import "constants.scss";
+@import "themes/custom-theme.scss";
+
+$primary-color: map-get($primary, 800);
+$secondary-color: map-get($primary, 200);
+$accent-color: map-get($accent, 200);
+$error-color: map-get($warn, 800);
 
 html, body {
   height: 100%;
@@ -9,6 +14,10 @@ body {
   font-family: Roboto,
   "Helvetica Neue", sans-serif;
 }
+
+//###################
+//#### SNACKBAR #####
+//###################
 
 .info-snackbar {
   max-width: 100% !important;
@@ -22,4 +31,28 @@ body {
   border-radius: 0px !important;
   margin: 0px !important;
   background-color: $error-color !important;
+}
+
+//############################
+//#### BACKGROUND COLORS #####
+//############################
+
+.primary-bg-color {
+  background-color: mat-color($primary-color);
+}
+
+.secondary-bg-color {
+  background-color: mat-color($secondary-color);
+}
+
+.accent-bg-color {
+  background-color: mat-color($accent-color);
+}
+
+.error-bg-color {
+  background-color: mat-color($error-color);
+}
+
+.dark-bg-color {
+  background-color: #303030;
 }
