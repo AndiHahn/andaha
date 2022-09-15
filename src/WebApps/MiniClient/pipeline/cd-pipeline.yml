@@ -8,7 +8,8 @@ pool:
   vmImage: "ubuntu-latest"
 
 variables:
-  azureServiceConnection: "azure-rm-andaha-dev-connection"
+  azureDevServiceConnection: "azure-rm-andaha-dev-connection"
+  azureProdServiceConnection: "azure-rm-andaha-prod-connection"
   containerRegistryConnection: "andaha-container-reg-connection"
   bicepTemplateFile: "src/WebApps/MiniClient/pipeline/bicep/miniclient-main.bicep"
   nodeModulesCachePath: $(System.DefaultWorkingDirectory)/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/node_modules
@@ -78,16 +79,16 @@ stages:
     - task: AzureCLI@2
       displayName: 'Infrastructure provisioning'
       inputs:
-        azureSubscription: $(azureServiceConnection)
+        azureSubscription: $(azureDevServiceConnection)
         scriptType: bash
         scriptLocation: inlineScript
         inlineScript: |
-          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile)
+          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile) --parameters stage="dev"
 
     - task: AzureCLI@2
       displayName: Set appsetting variables
       inputs:
-        azureSubscription: $(azureServiceConnection)
+        azureSubscription: $(azureDevServiceConnection)
         scriptType: bash
         scriptLocation: inlineScript
         inlineScript: |
@@ -104,7 +105,7 @@ stages:
     - task: AzureCLI@1
       displayName: 'Delete app from Blobstorage'
       inputs:
-        azureSubscription: $(azureServiceConnection)
+        azureSubscription: $(azureDevServiceConnection)
         scriptLocation: inlineScript
         inlineScript: |
           az storage blob delete-batch --source '$web' --account-name $(storageAccountName)
@@ -125,7 +126,79 @@ stages:
     - task: AzureCLI@1
       displayName: 'Copy Frontend to Blobstorage'
       inputs:
-        azureSubscription: $(azureServiceConnection)
+        azureSubscription: $(azureDevServiceConnection)
+        scriptLocation: inlineScript
+        inlineScript: |
+          az storage blob upload-batch --destination '$web' --account-name $(storageAccountName) --source '$(System.ArtifactsDirectory)/drop'
+
+- stage: deploy_prod
+  displayName: Deploy to prod
+  dependsOn: deploy_dev
+  condition: succeeded()
+  jobs:
+  - deployment: deploy_prod
+    displayName: Approval for prod
+    environment: Production
+  - job: deployment
+    steps:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Downloading artifact'
+      inputs:
+        buildType: 'current'
+        artifact: drop
+        targetPath: '$(System.ArtifactsDirectory)/drop'
+
+    - task: AzureCLI@2
+      displayName: 'Infrastructure provisioning'
+      inputs:
+        azureSubscription: $(azureProdServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az deployment group create --resource-group andaha-prod --template-file $(bicepTemplateFile) --parameters stage="prod"
+
+    - task: AzureCLI@2
+      displayName: Set appsetting variables
+      inputs:
+        azureSubscription: $(azureProdServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          echo "az deployment group show --resource-group andaha-prod --name miniclient-main"
+          deploymentoutputs=$(az deployment group show --resource-group andaha-prod --name miniclient-main --query properties.outputs)
+          echo $deploymentoutputs | jq -c '. | to_entries[] | [.key, .value.value]' |
+            while IFS=$"\n" read -r c; do
+              outputname=$(echo "$c" | jq -r '.[0]')
+              outputvalue=$(echo "$c" | jq -r '.[1]')
+              echo "Set variable $outputname=$outputvalue"
+              echo "##vso[task.setvariable variable=$outputname]$outputvalue"
+          done
+
+    - task: AzureCLI@1
+      displayName: 'Delete app from Blobstorage'
+      inputs:
+        azureSubscription: $(azureProdServiceConnection)
+        scriptLocation: inlineScript
+        inlineScript: |
+          az storage blob delete-batch --source '$web' --account-name $(storageAccountName)
+
+    - task: replacetokens@3
+      displayName: 'App environment substitution'
+      inputs:
+        targetFiles: '$(System.ArtifactsDirectory)/drop/*.js'
+        encoding: 'auto'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: true
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+        enableTransforms: false
+        enableTelemetry: true
+
+    - task: AzureCLI@1
+      displayName: 'Copy Frontend to Blobstorage'
+      inputs:
+        azureSubscription: $(azureProdServiceConnection)
         scriptLocation: inlineScript
         inlineScript: |
           az storage blob upload-batch --destination '$web' --account-name $(storageAccountName) --source '$(System.ArtifactsDirectory)/drop'

@@ -1,4 +1,4 @@
-param stage string = 'dev'
+param stage string
 param location string = resourceGroup().location
 
 module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {

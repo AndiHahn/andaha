@@ -7,6 +7,8 @@ param containerRegistryUsername string
 @secure()
 param containerRegistryPassword string
 
+var imageName = stage == 'dev' ? 'andaha.azurecr.io/andaha/webapps/servicestatus:${imageVersion}' : 'andaha.azurecr.io/prod/andaha/webapps/servicestatus:${imageVersion}'
+
 resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: 'servicestatus-${stage}'
   location: location
@@ -16,7 +18,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
       containers: [
         {
           name: 'servicestatus'
-          image: 'andaha.azurecr.io/andaha/webapps/servicestatus:${imageVersion}'
+          image: imageName
           env: [
             {
               name: 'ASPNETCORE_ENVIRONMENT'
