@@ -32,7 +32,9 @@
       "name": "backend",
       "urls": [
         "/shopping-api/bill",
-        "/shopping-api/billcategory"
+        "/api/bill",
+        "/shopping-api/billcategory",
+        "/api/billcategory"
       ],
       "cacheConfig": {
         "strategy": "freshness",
