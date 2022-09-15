@@ -66,8 +66,10 @@ stages:
   dependsOn: deploy_dev
   condition: succeeded()
   jobs:
-  - job: deployment
+  - deployment: deploy_prod
+    displayName: Deploy to production
     environment: Production
+  - job: deployment
     steps:
     - task: Docker@2
       displayName: build image
