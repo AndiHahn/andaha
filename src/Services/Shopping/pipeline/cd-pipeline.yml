@@ -8,7 +8,8 @@ pool:
   vmImage: "ubuntu-latest"
 
 variables:
-  azureServiceConnection: "azure-rm-andaha-dev-connection"
+  azureDevServiceConnection: "azure-rm-andaha-dev-connection"
+  azureProdServiceConnection: "azure-rm-andaha-prod-connection"
   containerRegistryConnection: "andaha-container-reg-connection"
   imageTag: "$(Build.SourceBranchName)"
   bicepTemplateFile: "src/Services/Shopping/pipeline/bicep/shopping-main.bicep"
@@ -44,9 +45,6 @@ stages:
             $(imageTag)
             latest
 
-      - task: PublishBuildArtifacts@1
-        displayName: "Publish Artifact"        
-
 - stage: deploy_dev
   displayName: Deploy to dev
   dependsOn: build
@@ -54,9 +52,9 @@ stages:
   - job: deployment
     steps:
     - task: AzureCLI@2
-      displayName: 'Deploy to dev'
+      displayName: 'Infrastructure provisioning'
       inputs:
-        azureSubscription: $(azureServiceConnection)
+        azureSubscription: $(azureDevServiceConnection)
         scriptType: bash
         scriptLocation: inlineScript
         inlineScript: |
@@ -70,7 +68,7 @@ stages:
   condition: succeeded()
   jobs:
   - deployment: deploy_prod
-    displayName: Deploy to production
+    displayName: Approval for prod
     environment: Production
   - job: deployment
     steps:
@@ -98,9 +96,9 @@ stages:
           latest
 
     - task: AzureCLI@2
-      displayName: 'Deploy to prod'
+      displayName: 'Infrastructure provisioning'
       inputs:
-        azureSubscription: $(azureServiceConnection)
+        azureSubscription: $(azureProdServiceConnection)
         scriptType: bash
         scriptLocation: inlineScript
         inlineScript: |
