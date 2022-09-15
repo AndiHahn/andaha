@@ -1,5 +1,5 @@
-param location string
 param stage string
+param location string
 param containerAppsEnvironmentName string = 'andaha-containerapp-env-${stage}'
 param logAnalyticsWorkspaceName string = 'andaha-loganalytics-${stage}'
 

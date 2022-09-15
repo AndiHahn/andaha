@@ -1,4 +1,4 @@
-param stage string = 'dev'
+param stage string
 param location string = resourceGroup().location
 param version string
 param containerRegistryUsername string
@@ -16,8 +16,10 @@ module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
 module sqlDatabase 'shopping-db-module.bicep' = {
   name: 'andaha-shopping-sql'
   params: {
-    location: location
     stage: stage
+    location: location
+    sqlServerAdminLogin: coreInfrastructure.outputs.sqlServerAdminLogin
+    sqlServerAdminLoginPassword: coreInfrastructure.outputs.sqlServerAdminLoginPassword
   }
 }
 

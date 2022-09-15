@@ -1,15 +1,16 @@
 param stage string
 param location string
+@secure()
+param sqlServerAdminPw string
 
 var sqlServerAdminLogin = 'andaha-sql-admin'
-var sqlServerAdminLoginPassword = 'Pass@word'
 
 resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' = {
   name: 'andaha-sqlserver-${stage}'
   location: location
   properties: {
     administratorLogin: sqlServerAdminLogin
-    administratorLoginPassword: sqlServerAdminLoginPassword
+    administratorLoginPassword: sqlServerAdminPw
   }
 
   resource sqlServerFirewall 'firewallRules@2021-05-01-preview' = {
@@ -21,3 +22,5 @@ resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' = {
     }
   }
 }
+
+output sqlServerAdminLogin string = sqlServerAdminLogin
