@@ -61,15 +61,15 @@ stages:
   - job: deployment
     steps:
     - task: Docker@2
-        displayName: build image
-        inputs:
-          command: buildAndPush
-          dockerfile: src/Services/Identity/Andaha.Services.Identity/Dockerfile
-          repository: prod/andaha/services/identity
-          containerRegistry: $(containerRegistryConnection)
-          tags: |
-            $(imageTag)
-            latest
+      displayName: build image
+      inputs:
+        command: buildAndPush
+        dockerfile: src/Services/Identity/Andaha.Services.Identity/Dockerfile
+        repository: prod/andaha/services/identity
+        containerRegistry: $(containerRegistryConnection)
+        tags: |
+          $(imageTag)
+          latest
 
     - task: AzureCLI@2
       displayName: 'Infrastructure provisioning'
