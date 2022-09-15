@@ -40,7 +40,7 @@ stages:
   - job: deployment
     steps:
     - task: AzureCLI@2
-      displayName: 'Deploy to dev'
+      displayName: 'Infrastructure provisioning'
       inputs:
         azureSubscription: $(azureDevServiceConnection)
         scriptType: bash
