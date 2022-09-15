@@ -48,9 +48,7 @@ export class BillListComponent implements OnInit {
 
     this.billListContextService.loading().subscribe(
       {
-        next: loading => {
-          this.loading = loading;
-        } 
+        next: loading => this.loading = loading 
       }
     );
   }
