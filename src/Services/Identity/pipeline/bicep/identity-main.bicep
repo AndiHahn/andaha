@@ -1,4 +1,4 @@
-param stage string = 'dev'
+param stage string
 param version string
 param location string = resourceGroup().location
 param containerRegistryUsername string

@@ -8,7 +8,8 @@ pool:
   vmImage: "ubuntu-latest"
 
 variables:
-  azureServiceConnection: "azure-rm-andaha-dev-connection"
+  azureDevServiceConnection: "azure-rm-andaha-dev-connection"
+  azureProdServiceConnection: "azure-rm-andaha-prod-connection"
   containerRegistryConnection: "andaha-container-reg-connection"
   imageTag: "$(Build.SourceBranchName)"
   bicepTemplateFile: "src/ApiGateways/Ocelot/pipeline/bicep/ocelot-main.bicep"
@@ -28,7 +29,9 @@ stages:
           dockerfile: src/ApiGateways/Ocelot/Andaha.ApiGateways.Ocelot/Dockerfile
           repository: andaha/gateways/ocelot
           containerRegistry: $(containerRegistryConnection)
-          tags: $(imageTag)
+          tags: |
+            $(imageTag)
+            latest
 
 - stage: deploy_dev
   displayName: Deploy to dev
@@ -39,10 +42,42 @@ stages:
     - task: AzureCLI@2
       displayName: 'Deploy to dev'
       inputs:
-        azureSubscription: $(azureServiceConnection)
+        azureSubscription: $(azureDevServiceConnection)
         scriptType: bash
         scriptLocation: inlineScript
         inlineScript: |
           acrUser=$(az acr credential show --name andaha --resource-group andaha --query username -o tsv)
           acrPassword=$(az acr credential show --name andaha --resource-group andaha --query "passwords[0].value" -o tsv)
-          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile) --parameters containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)"
+          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile) --parameters stage="dev" containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)"
+
+- stage: deploy_prod
+  displayName: Deploy to prod
+  dependsOn: deploy_dev
+  condition: succeeded()
+  jobs:
+  - deployment: deploy_prod
+    displayName: Approval for prod
+    environment: Production
+  - job: deployment
+    steps:
+    - task: Docker@2
+      displayName: build image
+      inputs:
+        command: buildAndPush
+        dockerfile: src/ApiGateways/Ocelot/Andaha.ApiGateways.Ocelot/Dockerfile
+        repository: prod/andaha/gateways/ocelot
+        containerRegistry: $(containerRegistryConnection)
+        tags: |
+          $(imageTag)
+          latest
+
+    - task: AzureCLI@2
+      displayName: 'Infrastructure provisioning'
+      inputs:
+        azureSubscription: $(azureProdServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          acrUser=$(az acr credential show --name andaha --resource-group andaha --query username -o tsv)
+          acrPassword=$(az acr credential show --name andaha --resource-group andaha --query "passwords[0].value" -o tsv)
+          az deployment group create --resource-group andaha-prod --template-file $(bicepTemplateFile) --parameters stage="prod" containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)"

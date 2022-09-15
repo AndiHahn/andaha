@@ -7,6 +7,8 @@ param containerRegistryUsername string
 @secure()
 param containerRegistryPassword string
 
+var imageName = stage == 'dev' ? 'andaha.azurecr.io/andaha/gateways/ocelot:${imageVersion}' : 'andaha.azurecr.io/prod/andaha/gateways/ocelot:${imageVersion}'
+
 resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: 'ocelot-gateway-${stage}'
   location: location
@@ -16,7 +18,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
       containers: [
         {
           name: 'ocelot-gateway'
-          image: 'andaha.azurecr.io/andaha/gateways/ocelot:${imageVersion}'
+          image: imageName
           env: [
             {
               name: 'ASPNETCORE_ENVIRONMENT'

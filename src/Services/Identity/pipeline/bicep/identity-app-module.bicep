@@ -12,7 +12,7 @@ param containerRegistryPassword string
 @secure()
 param sqlDbConnectionString string
 
-var config = json(loadTextContent('../../../../../pipeline/bicep/config.json'))
+var imageName = stage == 'dev' ? 'andaha.azurecr.io/andaha/services/identity:${imageVersion}' : 'andaha.azurecr.io/prod/andaha/services/identity:${imageVersion}'
 
 resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: 'identity-api-${stage}'
@@ -26,7 +26,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
       containers: [
         {
           name: 'identity-api'
-          image: 'andaha.azurecr.io/andaha/services/identity:${imageVersion}'
+          image: imageName
           env: [
             {
               name: 'ASPNETCORE_ENVIRONMENT'
