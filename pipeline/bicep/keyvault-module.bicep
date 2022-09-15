@@ -48,14 +48,14 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
       }
     ]
   }
-}
 
-resource sqlSecret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
-  name: '${keyVaultName}/sql-admin-pw'
-  properties: {
-    attributes: {
-      enabled: true
+  resource sqlSecret 'secrets@2022-07-01' = {
+    name: 'sql-admin-pw'
+    properties: {
+      attributes: {
+        enabled: true
+      }
+      value: sqlServerAdminPw
     }
-    value: sqlServerAdminPw
   }
 }

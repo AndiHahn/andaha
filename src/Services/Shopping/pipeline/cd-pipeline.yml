@@ -44,6 +44,9 @@ stages:
             $(imageTag)
             latest
 
+      - task: PublishBuildArtifacts@1
+        displayName: "Publish Artifact"        
+
 - stage: deploy_dev
   displayName: Deploy to dev
   dependsOn: build
