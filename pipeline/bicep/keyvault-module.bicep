@@ -1,9 +1,8 @@
 param stage string
 param location string
+param adminAadUserObjectId string
 @secure()
 param sqlServerAdminPw string
-
-var config = json(loadTextContent('config.json'))
 
 var keyVaultName = 'andaha-keyvault-${stage}'
 
@@ -19,7 +18,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
     enableSoftDelete: false
     accessPolicies: [
       {
-        objectId: config['admin-aad-user-object-id']
+        objectId: adminAadUserObjectId
         tenantId: tenant().tenantId
         permissions: {
           certificates: [
@@ -33,16 +32,6 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
           ]
           storage: [
             'all'
-          ]
-        }
-      }
-      {
-        objectId: config['azure-serviceconnection-object-id']
-        tenantId: tenant().tenantId
-        permissions: {
-          secrets: [
-            'set'
-            'get'
           ]
         }
       }

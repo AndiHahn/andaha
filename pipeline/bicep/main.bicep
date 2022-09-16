@@ -1,5 +1,6 @@
 param stage string
 param location string = resourceGroup().location
+param adminAadUserObjectId string
 
 resource generatePwScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   name: 'andaha-sql-password'
@@ -27,6 +28,7 @@ module keyVault 'keyvault-module.bicep' = {
   params: {
     stage: stage
     location: location
+    adminAadUserObjectId: adminAadUserObjectId
     sqlServerAdminPw: sqlServerAdminPassword
   }
 }

@@ -1,11 +1,13 @@
 param stage string
 param location string = resourceGroup().location
+param adminAadUserObjectId string
 
 module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
   name: 'andaha-core-infrastructure'
   params: {
-    location: location
     stage: stage
+    location: location
+    adminAadUserObjectId: adminAadUserObjectId
   }
 }
 
