@@ -61,22 +61,6 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
               value: certificateKeyvaultKey
             }
           ]
-          probes: [
-            {
-              httpGet: {
-                port: 80
-                path: '/hc'
-              }
-              type: 'Readiness'
-            }
-            {
-              httpGet: {
-                port: 80
-                path: '/liveness'
-              }
-              type: 'Liveness'
-            }
-          ]
         }
       ]
       scale: {
