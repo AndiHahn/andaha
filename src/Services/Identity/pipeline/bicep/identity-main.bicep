@@ -8,16 +8,18 @@ param containerRegistryPassword string
 module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
   name: 'andaha-core-infrastructure'
   params: {
-    location: location
     stage: stage
+    location: location
   }
 }
 
 module sqlDatabase 'identity-db-module.bicep' = {
   name: 'andaha-identity-sql'
   params: {
-    location: location
     stage: stage
+    location: location
+    sqlServerAdminLogin: coreInfrastructure.outputs.sqlServerAdminLogin
+    sqlServerAdminLoginPassword: coreInfrastructure.outputs.sqlServerAdminLoginPassword
   }
 }
 

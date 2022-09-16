@@ -1,8 +1,9 @@
 param stage string
 param location string
+param sqlServerAdminLogin string
+@secure()
+param sqlServerAdminLoginPassword string
 
-var sqlServerAdminLogin = 'andaha-sql-admin'
-var sqlServerAdminLoginPassword = 'Pass@word'
 var identityDbName = 'andaha-identitydb-${stage}'
 
 resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' existing = {

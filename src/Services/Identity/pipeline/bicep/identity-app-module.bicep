@@ -95,7 +95,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
                 path: '/hc'
                 scheme: 'HTTP'
               }
-              initialDelaySeconds: 60
+              initialDelaySeconds: 0
               periodSeconds: 15
               timeoutSeconds: 3
               successThreshold: 1
