@@ -61,6 +61,44 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
               value: certificateKeyvaultKey
             }
           ]
+          probes: [
+            {
+              type: 'Readiness'
+              httpGet: {
+                port: 80
+                path: '/hc'
+              }
+              initialDelaySeconds: 15
+              periodSeconds: 30
+              timeoutSeconds: 2
+              successThreshold: 1
+              failureThreshold: 3
+            }
+            {
+              type: 'Liveness'
+              httpGet: {
+                port: 80
+                path: '/liveness'
+              }
+              initialDelaySeconds: 15
+              periodSeconds: 30
+              timeoutSeconds: 2
+              successThreshold: 1
+              failureThreshold: 3
+            }
+            {
+              type: 'Startup'
+              httpGet: {
+                port: 80
+                path: '/hc'
+              }
+              initialDelaySeconds: 0
+              periodSeconds: 15
+              timeoutSeconds: 3
+              successThreshold: 1
+              failureThreshold: 3
+            }
+          ]
         }
       ]
       scale: {
