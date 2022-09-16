@@ -67,7 +67,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
               httpGet: {
                 port: 80
                 path: '/hc'
-                scheme: 'HTTPS'
+                scheme: 'HTTP'
               }
               initialDelaySeconds: 15
               periodSeconds: 30
@@ -80,7 +80,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
               httpGet: {
                 port: 80
                 path: '/liveness'
-                scheme: 'HTTPS'
+                scheme: 'HTTP'
               }
               initialDelaySeconds: 15
               periodSeconds: 30
@@ -93,7 +93,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
               httpGet: {
                 port: 80
                 path: '/hc'
-                scheme: 'HTTPS'
+                scheme: 'HTTP'
               }
               initialDelaySeconds: 60
               periodSeconds: 15
