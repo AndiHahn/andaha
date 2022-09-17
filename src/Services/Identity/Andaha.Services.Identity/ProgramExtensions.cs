@@ -2,6 +2,7 @@
 using Andaha.Services.Identity.Infrastructure;
 using Azure.Identity;
 using Azure.Security.KeyVault.Certificates;
+using Duende.IdentityServer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -97,7 +98,25 @@ internal static class ProgramExtensions
 
     internal static WebApplicationBuilder AddCustomAuthentication(this WebApplicationBuilder builder)
     {
-        builder.Services.AddAuthentication();
+        var googleAuthSection = builder.Configuration.GetSection("Authentication").GetSection("Google");
+        var facebookAuthSection = builder.Configuration.GetSection("Authentication").GetSection("Facebook");
+
+        builder.Services
+            .AddAuthentication()
+            .AddGoogle("Google", options =>
+            {
+                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+
+                options.ClientId = googleAuthSection.GetValue<string>("ClientId");
+                options.ClientSecret = googleAuthSection.GetValue<string>("ClientSecret");
+            })
+            .AddFacebook("Facebook", options =>
+            {
+                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+
+                options.AppId = facebookAuthSection.GetValue<string>("AppId");
+                options.AppSecret = facebookAuthSection.GetValue<string>("AppSecret");
+            });
 
         return builder;
     }
