@@ -85,7 +85,7 @@ stages:
         scriptType: bash
         scriptLocation: inlineScript
         inlineScript: |
-          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile) --parameters stage="dev" adminAadUserObjectId=$(admin-aad-user-object-id)
+          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile) --parameters stage="dev"
 
     - task: AzureCLI@2
       displayName: Set appsetting variables
@@ -159,7 +159,7 @@ stages:
         scriptType: bash
         scriptLocation: inlineScript
         inlineScript: |
-          az deployment group create --resource-group andaha-prod --template-file $(bicepTemplateFile) --parameters stage="prod" adminAadUserObjectId=$(admin-aad-user-object-id)
+          az deployment group create --resource-group andaha-prod --template-file $(bicepTemplateFile) --parameters stage="prod"
 
     - task: AzureCLI@2
       displayName: Set appsetting variables

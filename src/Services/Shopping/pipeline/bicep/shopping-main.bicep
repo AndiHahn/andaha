@@ -1,7 +1,6 @@
 param stage string
 param location string = resourceGroup().location
 param version string
-param adminAadUserObjectId string
 param containerRegistryUsername string
 @secure()
 param containerRegistryPassword string
@@ -11,17 +10,28 @@ module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
   params: {
     stage: stage
     location: location
-    adminAadUserObjectId: adminAadUserObjectId
   }
 }
+
+resource generateSqlPwScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+  name: 'andaha-sql-password'
+  location: location
+  kind: 'AzurePowerShell'
+  properties: {
+    azPowerShellVersion: '3.0' 
+    retentionInterval: 'P1D'
+    scriptContent: loadTextContent('../../../../../pipeline/bicep/scripts/generate-password.ps1')
+  }
+}
+
+var sqlServerAdminPassword = generateSqlPwScript.properties.outputs.password
 
 module sqlDatabase 'shopping-db-module.bicep' = {
   name: 'andaha-shopping-sql'
   params: {
     stage: stage
     location: location
-    sqlServerAdminLogin: coreInfrastructure.outputs.sqlServerAdminLogin
-    sqlServerAdminLoginPassword: coreInfrastructure.outputs.sqlServerAdminLoginPassword
+    sqlServerAdminLoginPassword: sqlServerAdminPassword
   }
 }
 
