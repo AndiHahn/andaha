@@ -1,7 +1,6 @@
 param stage string
 param location string
-
-var config = json(loadTextContent('../../../../../pipeline//bicep/config.json'))
+param adminAadUserObjectId string
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   name: 'andaha-identity-${stage}'
@@ -15,7 +14,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
     enableSoftDelete: false
     accessPolicies: [
       {
-        objectId: config['admin-aad-user-object-id']
+        objectId: adminAadUserObjectId
         tenantId: tenant().tenantId
         permissions: {
           certificates: [
@@ -29,18 +28,6 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
           ]
           storage: [
             'all'
-          ]
-        }
-      }
-      {
-        objectId: config['azure-serviceconnection-object-id']
-        tenantId: tenant().tenantId
-        permissions: {
-          secrets: [
-            'set'
-          ]
-          certificates: [
-            'import'
           ]
         }
       }

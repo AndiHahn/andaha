@@ -48,6 +48,8 @@ stages:
 - stage: deploy_dev
   displayName: Deploy to dev
   dependsOn: build
+  variables:
+  - group: Development
   jobs:
   - job: deployment
     steps:
@@ -60,12 +62,14 @@ stages:
         inlineScript: |
           acrUser=$(az acr credential show --name andaha --resource-group andaha --query username -o tsv)
           acrPassword=$(az acr credential show --name andaha --resource-group andaha --query "passwords[0].value" -o tsv)
-          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile) --parameters stage="dev" containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)"
+          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile) --parameters stage="dev" containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)" adminAadUserObjectId=$(admin-aad-user-object-id)
 
 - stage: deploy_prod
   displayName: Deploy to prod
   dependsOn: deploy_dev
   condition: succeeded()
+  variables:
+  - group: Production
   jobs:
   - deployment: deploy_prod
     displayName: Approval for prod
@@ -104,4 +108,4 @@ stages:
         inlineScript: |
           acrUser=$(az acr credential show --name andaha --resource-group andaha --query username -o tsv)
           acrPassword=$(az acr credential show --name andaha --resource-group andaha --query "passwords[0].value" -o tsv)
-          az deployment group create --resource-group andaha-prod --template-file $(bicepTemplateFile) --parameters stage="prod" containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)"
+          az deployment group create --resource-group andaha-prod --template-file $(bicepTemplateFile) --parameters stage="prod" containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)" adminAadUserObjectId=$(admin-aad-user-object-id)

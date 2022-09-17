@@ -1,6 +1,7 @@
 param stage string
 param version string
 param location string = resourceGroup().location
+param adminAadUserObjectId string
 param containerRegistryUsername string
 @secure()
 param containerRegistryPassword string
@@ -10,6 +11,7 @@ module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
   params: {
     stage: stage
     location: location
+    adminAadUserObjectId: adminAadUserObjectId
   }
 }
 
@@ -28,6 +30,7 @@ module keyVault 'identity-keyvault-module.bicep' = {
   params: {
     stage: stage
     location: location
+    adminAadUserObjectId: adminAadUserObjectId
   }
 }
 

@@ -1,6 +1,7 @@
 param stage string
 param location string = resourceGroup().location
 param version string
+param adminAadUserObjectId string
 param containerRegistryUsername string
 @secure()
 param containerRegistryPassword string
@@ -8,8 +9,9 @@ param containerRegistryPassword string
 module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
   name: 'andaha-core-infrastructure'
   params: {
-    location: location
     stage: stage
+    location: location
+    adminAadUserObjectId: adminAadUserObjectId
   }
 }
 
