@@ -11,7 +11,7 @@
 
 <div class="filter-container dark-bg-color">
   <app-bill-list-filter [deactivate]="loading" (triggerLoading)="onSearchInput($event)">
-  </app-bill-list-filter>
+  </app-bill-list-filter>    
 </div>
 
 <div class="filter-placeholder"></div>
@@ -21,7 +21,7 @@
 </div>
 
 <div class="action-container" *ngIf="!loading && bills && bills.length == 0">
-  Noch keine Rechnungen verfügbar.
+  Keine Rechnungen verfügbar.
 </div>
 
 <div *ngIf="!loading && bills && bills.length > 0">
