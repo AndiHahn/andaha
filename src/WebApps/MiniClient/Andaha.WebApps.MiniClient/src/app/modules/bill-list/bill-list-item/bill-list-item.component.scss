@@ -1,0 +1,21 @@
+.flex-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.margin-left-small {
+  margin-left: 5px;
+}
+
+.price-text {
+  font-weight: 500;
+}
+
+.date-text {
+  font-weight: lighter;
+}
+
+.vertical-center {
+  align-self: center;
+}

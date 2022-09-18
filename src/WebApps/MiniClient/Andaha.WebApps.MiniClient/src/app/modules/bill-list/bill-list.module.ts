@@ -10,6 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BillListFilterComponent } from './bill-list-filter/bill-list-filter.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { BillListItemComponent } from './bill-list-item/bill-list-item.component';
 
 const routes: Routes = [
   {
@@ -21,7 +22,8 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     BillListComponent,
-    BillListFilterComponent
+    BillListFilterComponent,
+    BillListItemComponent
   ],
   imports: [
     CommonModule,
