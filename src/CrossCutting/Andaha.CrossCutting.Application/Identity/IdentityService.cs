@@ -1,16 +1,27 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace Andaha.CrossCutting.Application.Identity;
 internal class IdentityService : IIdentityService
 {
-    private readonly IHttpContextAccessor _context;
+    private readonly IHttpContextAccessor httpContext;
 
     public IdentityService(IHttpContextAccessor context)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
+        this.httpContext = context ?? throw new ArgumentNullException(nameof(context));
     }
 
     public Guid GetUserId()
-        => new (_context.HttpContext?.User?.FindFirst("sub")?.Value ??
-            throw new InvalidOperationException("No sub claim available."));
+    {
+        var user = httpContext.HttpContext?.User;
+
+        var subClaim = user?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (subClaim is null)
+        {
+            throw new InvalidOperationException("No sub claim available.");
+        }
+
+        return new Guid(subClaim);
+    }
 }
