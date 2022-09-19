@@ -4,13 +4,22 @@
   margin: 0px 15px;
 }
 
-.top-buttons {
+.bottom-button {
   position: fixed;
   left: 0;
   right: 0;
+  bottom: 56px;
   z-index: 1000;
   display: flex;
   flex-direction: row;
+}
+
+.progress-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 106px;
+  z-index: 1000;
 }
 
 .button-style {

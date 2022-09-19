@@ -11,6 +11,8 @@ param containerRegistryUsername string
 param containerRegistryPassword string
 @secure()
 param sqlDbConnectionString string
+@secure()
+param facebookAppSecret string
 
 var imageName = stage == 'dev' ? 'andaha.azurecr.io/andaha/services/identity:${imageVersion}' : 'andaha.azurecr.io/prod/andaha/services/identity:${imageVersion}'
 
@@ -59,6 +61,14 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
             {
               name: 'Certificate__CertificateName'
               value: certificateKeyvaultKey
+            }
+            {
+              name: 'Authentication__Facebook__AppId'
+              value: '459631839436681'
+            }
+            {
+              name: 'Authentication__Facebook__AppSecret'
+              value: facebookAppSecret
             }
           ]
           probes: [

@@ -60,7 +60,7 @@ export class AddBillComponent implements OnInit {
       {
         next: _ => {
           this.isSaving = false;
-          openInformationSnackbar('Rechnung gespeichert', this.snackbar);
+          //openInformationSnackbar('Rechnung gespeichert', this.snackbar);
           this.router.navigateByUrl("/bill/list");
         },
         error: (err) => {

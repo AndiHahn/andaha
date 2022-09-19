@@ -1,14 +1,16 @@
 import { Injectable } from '@angular/core';
-import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
+import { AuthConfig, OAuthService, UserInfo } from 'angular-oauth2-oidc';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { UserAuthInfo } from './UserAuthInfo';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private isAuthenticatedSubject: BehaviorSubject<boolean> = new BehaviorSubject(this.isLoggedIn());
+  private isAuthenticated$: BehaviorSubject<boolean> = new BehaviorSubject(this.isLoggedIn());
+  private userAuthInfo$: BehaviorSubject<UserAuthInfo> = new BehaviorSubject<UserAuthInfo>({ userName: '', userEmail: '' });
 
   constructor(private oauthService: OAuthService) { }
 
@@ -17,13 +19,11 @@ export class AuthService {
     this.oauthService.loadDiscoveryDocumentAndTryLogin()
       .then(_ => {
           if (this.oauthService.hasValidAccessToken()) {
-            console.log("Has valid token.");
-            this.isAuthenticatedSubject.next(true);
+            this.isAuthenticated$.next(true);
+            this.buildAndRaiseAuthInfo();
             return Promise.resolve();
           } else {
-            console.log("No valid token.");
             return new Promise(resolve => {
-              console.log("INIT LOGIN FLOW");
               this.oauthService.initLoginFlow();
               resolve(true);
             });
@@ -46,7 +46,27 @@ export class AuthService {
   }
 
   loggedIn(): Observable<boolean> {
-    return this.isAuthenticatedSubject.asObservable();
+    return this.isAuthenticated$.asObservable();
+  }
+
+  userInfo(): Observable<UserAuthInfo> {
+    return this.userAuthInfo$.asObservable();
+  }
+
+  private buildAndRaiseAuthInfo() {
+    this.oauthService.loadUserProfile().then(userProfile => {
+      const userProfileClaims = userProfile as any;
+
+      if (userProfileClaims) {
+
+        const authInfo: UserAuthInfo = {
+          userName: userProfileClaims.info.name,
+          userEmail: userProfileClaims.info.email
+        }
+        
+        this.userAuthInfo$.next(authInfo);
+      }
+    });
   }
 
   private getCodeFlowConfig(): AuthConfig {

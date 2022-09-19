@@ -10,7 +10,7 @@ export const environment = {
   authRedirectUrl: window.location.origin,
   authClientId: 'miniclient',
   authResponseType: 'code',
-  authScope: 'openid profile offline_access shopping',
+  authScope: 'openid profile offline_access shopping collaboration',
   authShowDebugInformation: true,
 };
 

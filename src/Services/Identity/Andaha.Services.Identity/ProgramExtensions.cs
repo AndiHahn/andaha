@@ -128,7 +128,7 @@ internal static class ProgramExtensions
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddSqlServer(builder.Configuration.GetConnectionString("ApplicationDbConnection"),
                 name: "identity-db-check",
-                tags: new [] { "identity-db" });
+                tags: new [] { "sql-db" });
 
         return builder;
     }

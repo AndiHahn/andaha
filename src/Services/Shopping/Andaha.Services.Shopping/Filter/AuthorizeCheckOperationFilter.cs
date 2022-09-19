@@ -26,7 +26,7 @@ public class AuthorizeCheckOperationFilter : IOperationFilter
         {
             new OpenApiSecurityRequirement
             {
-                [ oAuthScheme ] = new [] { "basket" }
+                [ oAuthScheme ] = new [] { "shopping" }
             }
         };
     }

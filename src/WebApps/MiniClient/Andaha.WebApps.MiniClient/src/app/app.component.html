@@ -1,3 +1,27 @@
+<div>
+  <mat-toolbar class="toolbar" color="primary">
+    <!--
+    <button mat-icon-button>
+      <mat-icon>menu</mat-icon>
+    </button>
+    -->
+    <span>Andaha</span>
+    <span class="spacer"></span>
+    <span class="user-info">{{ userName }}</span>
+    <button mat-icon-button [matMenuTriggerFor]="profile">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+    <mat-menu #profile="matMenu">
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>exit_to_app</mat-icon>
+        <span>Ausloggen</span>
+      </button>
+    </mat-menu>
+  </mat-toolbar>
+</div>
+
+<div class="toolbar-placeholder"></div>
+
 <div class="wait-login-container" *ngIf="!isLoggedIn">
   <h2>Warten auf Login...</h2>
 </div>

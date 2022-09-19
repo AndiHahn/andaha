@@ -1,14 +1,3 @@
-<div class="top-buttons">
-  <div style="flex: 1">
-    <button mat-raised-button color="secondary" class="button-style" routerLink="/">Zurück</button>
-  </div>
-  <div style="flex: 1">
-    <button mat-raised-button color="primary" class="button-style" routerLink="/bill/create">Rechnung hinzufügen</button>
-  </div>
-</div>
-
-<div class="button-placeholder"></div>
-
 <div class="filter-container dark-bg-color">
   <app-bill-list-filter [deactivate]="loading" (triggerLoading)="onSearchInput($event)">
   </app-bill-list-filter>    

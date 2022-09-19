@@ -5,6 +5,8 @@ param adminAadUserObjectId string
 param containerRegistryUsername string
 @secure()
 param containerRegistryPassword string
+@secure()
+param facebookAppSecret string
 
 module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
   name: 'andaha-core-infrastructure'
@@ -60,6 +62,7 @@ module containerApp 'identity-app-module.bicep' = {
     containerRegistryUsername: containerRegistryUsername
     containerRegistryPassword: containerRegistryPassword
     sqlDbConnectionString: sqlDatabase.outputs.connectionString
+    facebookAppSecret: facebookAppSecret
   }
 }
 

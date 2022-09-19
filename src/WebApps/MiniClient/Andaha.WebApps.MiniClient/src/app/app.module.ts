@@ -5,13 +5,15 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button'
+import { MatToolbarModule } from '@angular/material/toolbar'
 import { CommonModule } from '@angular/common';
-import { OverviewComponent } from './modules/overview/overview.component';
 import { ErrorHttpInterceptor } from './core/error-http-interceptor.service';
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { AuthService } from './core/auth.service';
 import { environment } from 'src/environments/environment';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 
 function storageFactory() : OAuthStorage {
   return localStorage
@@ -27,8 +29,7 @@ async function initApp(authService: AuthService): Promise<void> {
 
 @NgModule({
   declarations: [
-    AppComponent,
-    OverviewComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
@@ -46,6 +47,9 @@ async function initApp(authService: AuthService): Promise<void> {
     CommonModule,
     HttpClientModule,
     MatButtonModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatMenuModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
       // Register the ServiceWorker as soon as the application is stable

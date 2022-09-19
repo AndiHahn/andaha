@@ -37,20 +37,24 @@ body {
 //#### BACKGROUND COLORS #####
 //############################
 
+.primary-fg-color {
+  color: $primary-color;
+}
+
 .primary-bg-color {
-  background-color: mat-color($primary-color);
+  background-color: $primary-color;
 }
 
 .secondary-bg-color {
-  background-color: mat-color($secondary-color);
+  background-color: $secondary-color;
 }
 
 .accent-bg-color {
-  background-color: mat-color($accent-color);
+  background-color: $accent-color;
 }
 
 .error-bg-color {
-  background-color: mat-color($error-color);
+  background-color: $error-color;
 }
 
 .dark-bg-color {

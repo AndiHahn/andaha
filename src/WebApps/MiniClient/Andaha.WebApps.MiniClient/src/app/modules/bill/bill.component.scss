@@ -1,0 +1,12 @@
+.bottom-navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-around;
+}

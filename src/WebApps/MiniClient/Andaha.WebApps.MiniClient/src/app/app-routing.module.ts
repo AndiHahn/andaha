@@ -1,11 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { OverviewComponent } from './modules/overview/overview.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: OverviewComponent
+    loadChildren: () => import('./modules/bill/bill.module').then(m => m.BillModule)
   },
   {
     path: 'bill/create',

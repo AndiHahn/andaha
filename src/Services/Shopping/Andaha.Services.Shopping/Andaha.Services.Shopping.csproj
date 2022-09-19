@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Andaha.CrossCutting.Application" Version="1.0.3" />
+    <PackageReference Include="Andaha.CrossCutting.Application" Version="1.0.5" />
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="6.0.2" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.4" />
     <PackageReference Include="CSharpFunctionalExtensions" Version="2.30.0" />

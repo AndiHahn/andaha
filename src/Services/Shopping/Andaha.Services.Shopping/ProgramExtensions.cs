@@ -70,7 +70,7 @@ internal static class ProgramExtensions
             .AddSqlServer(
                 builder.Configuration["ConnectionStrings:ApplicationDbConnection"],
                 name: "shopping-db-check",
-                tags: new[] { "shopping-db" });
+                tags: new[] { "sql-db" });
 
         return builder;
     }

@@ -12,6 +12,7 @@ export class AppComponent {
 
   isDisabled = true;
 
+  userName: string = '';
   isLoggedIn: boolean = false;
 
   constructor(private authService: AuthService, context: ContextService) {
@@ -19,6 +20,16 @@ export class AppComponent {
       {
         next: isLoggedIn => this.isLoggedIn = isLoggedIn
       }
-    )
+    );
+
+    this.authService.userInfo().subscribe(
+      {
+        next: userInfo => this.userName = userInfo.userName
+      }
+    );
+  }
+
+  logout(): void {
+    this.authService.logout();
   }
 }

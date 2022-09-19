@@ -84,4 +84,4 @@ stages:
         inlineScript: |
           acrUser=$(az acr credential show --name andaha --resource-group andaha --query username -o tsv)
           acrPassword=$(az acr credential show --name andaha --resource-group andaha --query "passwords[0].value" -o tsv)
-          az deployment group create --resource-group andaha-prod --template-file $(bicepTemplateFile) --parameters stage="prod" containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)" adminAadUserObjectId=$(admin-aad-user-object-id)
+          az deployment group create --resource-group andaha-prod --template-file $(bicepTemplateFile) --parameters stage="prod" containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)" adminAadUserObjectId=$(admin-aad-user-object-id) facebookAppSecret=$(facebookAppSecret)

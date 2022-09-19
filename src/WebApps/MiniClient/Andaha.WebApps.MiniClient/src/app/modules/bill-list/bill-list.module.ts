@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BillListComponent } from './bill-list.component';
-import { RouterModule, Routes } from '@angular/router';
 import { MatListModule } from '@angular/material/list'
 import { MatChipsModule } from '@angular/material/chips'
 import { MatButtonModule } from '@angular/material/button';
@@ -11,6 +10,7 @@ import { BillListFilterComponent } from './bill-list-filter/bill-list-filter.com
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { BillListItemComponent } from './bill-list-item/bill-list-item.component';
+import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
