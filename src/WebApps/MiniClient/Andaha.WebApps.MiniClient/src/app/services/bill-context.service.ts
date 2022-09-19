@@ -9,11 +9,13 @@ import { BillCreateDto } from '../api/shopping/models/BillCreateDto';
   providedIn: 'root'
 })
 export class BillContextService {
-  private billsSubject: BehaviorSubject<BillDto[]> = new BehaviorSubject<BillDto[]>([]);
-  private totalResultsSubject: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-  private pageIndexSubject: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-  private pageSizeSubject: BehaviorSubject<number> = new BehaviorSubject<number>(20);
-  private loadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private bills$: BehaviorSubject<BillDto[]> = new BehaviorSubject<BillDto[]>([]);
+  private totalResults$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  private pageIndex$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  private pageSize$: BehaviorSubject<number> = new BehaviorSubject<number>(20);
+  private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+  private searchText: string = '';
 
   constructor(
     private billApiService: BillApiService,
@@ -24,35 +26,46 @@ export class BillContextService {
   }
 
   bills(): Observable<BillDto[]> {
-    return this.billsSubject.asObservable();
+    return this.bills$.asObservable();
   }
 
   totalResults(): Observable<number> {
-    return this.totalResultsSubject.asObservable();
+    return this.totalResults$.asObservable();
   }
 
   pageSize(): Observable<number> {
-    return this.pageSizeSubject.asObservable();
+    return this.pageSize$.asObservable();
   }
 
   loading(): Observable<boolean> {
-    return this.loadingSubject.asObservable();
+    return this.loading$.asObservable();
   }
 
   setPageSize(size: number): void {
-    if (size != this.pageSizeSubject.value) {
-      this.pageSizeSubject.next(size);
+    if (size != this.pageSize$.value) {
+      this.pageSize$.next(size);
     }
   }
 
   setPageIndex(index: number): void {
-    if (index != this.pageIndexSubject.value) {
-      this.pageIndexSubject.next(index);
+    if (index != this.pageIndex$.value) {
+      this.pageIndex$.next(index);
     }
   }
 
   searchBills(searchText: string): void {
-    this.fetchBills(searchText);
+    this.searchText = searchText;
+    this.bills$.next([]);
+
+    this.pageIndex$.next(0);
+  }
+
+  fetchNextBills(): void {
+    if ((this.pageIndex$.value + 1) * this.pageSize$.value >= this.totalResults$.value) {
+      return;
+    }
+
+    this.setPageIndex(this.pageIndex$.value + 1);
   }
 
   addBill(dto: BillCreateDto): Observable<BillDto> {
@@ -61,13 +74,13 @@ export class BillContextService {
     this.billApiService.addBill(dto).subscribe(
       {
         next: result => {
-          const bills = [result].concat(this.billsSubject.value);
-          if (bills.length > this.pageSizeSubject.value) {
+          const bills = [result].concat(this.bills$.value);
+          if (bills.length > this.pageSize$.value) {
             bills.pop();
           }
 
-          this.billsSubject.next(bills);
-          this.totalResultsSubject.next(this.totalResultsSubject.value + 1);
+          this.bills$.next(bills);
+          this.totalResults$.next(this.totalResults$.value + 1);
           
           returnSubject.next(result);
         },
@@ -89,40 +102,50 @@ export class BillContextService {
       }
     );
 
-    this.pageIndexSubject.asObservable().pipe(skip(1)).subscribe(
+    this.pageIndex$.asObservable().pipe(skip(1)).subscribe(
       {
         next: _ => this.fetchBills() 
       }
     );
 
-    this.pageSizeSubject.asObservable().pipe(skip(1)).subscribe(
+    this.pageSize$.asObservable().pipe(skip(1)).subscribe(
       {
         next: _ => this.fetchBills() 
       }
     );
   }
 
-  private fetchBills(searchText?: string) {
-    this.loadingSubject.next(true);
-
-    const search = searchText ?? '';
+  private fetchBills() {
+    this.loading$.next(true);
 
     this.billApiService
       .searchBills(
         {
-          pageIndex: this.pageIndexSubject.value,
-          pageSize: this.pageSizeSubject.value,
-          search: search
+          pageIndex: this.pageIndex$.value,
+          pageSize: this.pageSize$.value,
+          search: this.searchText
         })
       .subscribe(
         {
           next: result => {
-            this.loadingSubject.next(false);
-            this.billsSubject.next(result.values);
-            this.totalResultsSubject.next(result.totalCount);
+            this.loading$.next(false);
+            this.updateBillList(result.values);
+            this.totalResults$.next(result.totalCount);
           },
-          error: _ => this.loadingSubject.next(false)
+          error: _ => this.loading$.next(false)
         }
     );
+  }
+
+  private updateBillList(newBills: BillDto[]) {
+    const currentBillList = this.bills$.value;
+
+    newBills.forEach(bill => {
+      if (!currentBillList.some(n => n.id == bill.id)) {
+        currentBillList.push(bill);
+      }
+    });
+
+    this.bills$.next(currentBillList);
   }
 }

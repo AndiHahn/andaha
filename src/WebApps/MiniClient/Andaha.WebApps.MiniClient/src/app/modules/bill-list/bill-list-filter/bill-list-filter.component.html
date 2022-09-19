@@ -3,7 +3,8 @@
     <mat-chip-list> 
       <mat-chip>
         <mat-icon>search</mat-icon>
-        <input matInput type="search" 
+        <input matInput type="text" 
+          class="search-box"
           [readonly]="deactivate"
           #searchTerm
           (keyup)="searchBoxKeyup.emit(searchTerm.value)"

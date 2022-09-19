@@ -11,6 +11,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { BillListItemComponent } from './bill-list-item/bill-list-item.component';
 import { RouterModule, Routes } from '@angular/router';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatCommonModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 const routes: Routes = [
   {
@@ -28,14 +33,15 @@ const routes: Routes = [
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
-    MatListModule,
     MatChipsModule,
     MatButtonModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
     MatIconModule,
     MatInputModule,
-    MatChipsModule
+    MatChipsModule,
+    MatDividerModule,
+    ScrollingModule
   ]
 })
 export class BillListModule { }

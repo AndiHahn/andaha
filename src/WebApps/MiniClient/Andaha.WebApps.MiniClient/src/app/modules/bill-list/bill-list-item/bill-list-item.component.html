@@ -1,3 +1,23 @@
+<div class="master-container">
+  <div matLine>
+    <div class="flex-container">
+      <span class="margin-left-small">{{ bill.shopName }}</span>
+      <span class="price-text">{{ bill.price }} €</span>
+    </div>
+  </div>
+  <div matLine>
+    <div class="flex-container">
+      <mat-chip-list>
+        <mat-chip [ngStyle]="{'background-color': bill.category.color}" selected> {{ bill.category.name }} </mat-chip>
+      </mat-chip-list>
+      <div class="vertical-center">  
+        <span class="date-text"> {{ bill.date | date:'fullDate' }} </span>
+      </div>
+    </div>
+  </div>
+</div>
+<mat-divider></mat-divider>
+<!--
 <mat-list-item>
   <div matLine>
     <div class="flex-container">
@@ -15,5 +35,6 @@
       </div>
     </div>
   </div>
-  <mat-divider></mat-divider>
+  <mat-divider class="divider"></mat-divider>
 </mat-list-item>
+-->

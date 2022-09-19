@@ -5,29 +5,29 @@
 
 <div class="filter-placeholder"></div>
 
-<div *ngIf="loading" class="action-container">
+<div *ngIf="loading && !totalCount" class="action-container">
   <mat-spinner diameter="40"></mat-spinner>
 </div>
 
-<div class="action-container" *ngIf="!loading && bills && bills.length == 0">
+<div class="action-container" *ngIf="!loading && totalCount && totalCount === 0">
   Keine Rechnungen verfügbar.
 </div>
 
-<div *ngIf="!loading && bills && bills.length > 0">
-  <mat-list>
-    <div *ngFor="let bill of bills">
+<cdk-virtual-scroll-viewport class="cdk-container" [itemSize]="pixelHeightPerItem">
+  <div *cdkVirtualFor="let bill of billDataSource">
+    <div class="cdk-item">
       <app-bill-list-item [bill]="bill"></app-bill-list-item>
     </div>
-  </mat-list>
+  </div>
+</cdk-virtual-scroll-viewport>
+
+<div style="display: none;">
+  <mat-paginator
+    class="paginator"
+    [length]="totalResults"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[20, 50, 100]"
+    aria-label="Select page"
+    (page)="onPageChange($event)">
+  </mat-paginator>
 </div>
-
-<div class="paginator-placeholder"></div>
-
-<mat-paginator
-  class="paginator"
-  [length]="totalResults"
-  [pageSize]="pageSize"
-  [pageSizeOptions]="[20, 50, 100]"
-  aria-label="Select page"
-  (page)="onPageChange($event)">
-</mat-paginator>
