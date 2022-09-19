@@ -17,7 +17,7 @@ module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
 }
 
 resource generateSqlPwScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
-  name: 'andaha-sql-password'
+  name: 'andaha-identity-sql-password'
   location: location
   kind: 'AzurePowerShell'
   properties: {
