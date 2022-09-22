@@ -83,8 +83,8 @@ stages:
         app_location: drop # (Optional) File path. Directory location of the application source code relative to working directory
         skip_app_build: true # (Optional) Skips Oryx build for app folder.
         azure_static_web_apps_api_token: $(miniClientWebAppDeploymentToken) # (Optional) Api token for deployment. Not required if passed as an environment variable.
-        workingDirectory: $(Pipeline.Workspace)
-        
+        workingDirectory: $(System.ArtifactsDirectory)
+
     - task: AzureCLI@2
       displayName: 'Infrastructure provisioning'
       inputs:
