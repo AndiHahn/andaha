@@ -17,6 +17,5 @@ module storage 'miniclient-storage-module.bicep' = {
   }
 }
 
-output storageAccountName string = storage.outputs.storageAccountName
 output gatewayBaseUrl string = 'https://ocelot-gateway-${stage}.${coreInfrastructure.outputs.containerAppEnvironmentDomain}'
 output authIssuerUrl string = 'https://identity-api-${stage}.${coreInfrastructure.outputs.containerAppEnvironmentDomain}'
