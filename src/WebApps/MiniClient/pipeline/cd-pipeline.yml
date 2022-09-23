@@ -118,6 +118,7 @@ stages:
         enableTelemetry: true
 
     - task: AzureStaticWebApp@0
+      displayName: 'Deploy to static web app'
       inputs:
         app_location: drop # (Optional) File path. Directory location of the application source code relative to working directory
         skip_app_build: true # (Optional) Skips Oryx build for app folder.
@@ -183,6 +184,7 @@ stages:
         enableTelemetry: true
 
     - task: AzureStaticWebApp@0
+      displayName: 'Deploy to static web app'
       inputs:
         app_location: drop # (Optional) File path. Directory location of the application source code relative to working directory
         skip_app_build: true # (Optional) Skips Oryx build for app folder.

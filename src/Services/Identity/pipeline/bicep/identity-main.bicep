@@ -2,6 +2,7 @@ param stage string
 param version string
 param location string = resourceGroup().location
 param adminAadUserObjectId string
+param miniClientWebAppUrl string
 param containerRegistryUsername string
 @secure()
 param containerRegistryPassword string
@@ -56,7 +57,7 @@ module containerApp 'identity-app-module.bicep' = {
     imageVersion: version
     containerAppsEnvironmentId: coreInfrastructure.outputs.containerAppEnvironmentId
     containerAppsEnvironmentDomain: coreInfrastructure.outputs.containerAppEnvironmentDomain
-    miniClientUrl: 'https://andahaminiclient${stage}.z6.web.core.windows.net'
+    miniClientUrl: miniClientWebAppUrl
     keyVaultUri: keyVault.outputs.keyVaultUri
     certificateKeyvaultKey: 'identityserver-certificate'
     containerRegistryUsername: containerRegistryUsername
