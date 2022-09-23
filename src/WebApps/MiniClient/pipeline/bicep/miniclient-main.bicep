@@ -17,5 +17,15 @@ module storage 'miniclient-storage-module.bicep' = {
   }
 }
 
+module staticWebApp 'miniclient-staticwebapp-module.bicep' = {
+  name: 'miniclient-static-webapp'
+  params: {
+    stage: stage
+    location: location
+  }
+}
+
 output gatewayBaseUrl string = 'https://ocelot-gateway-${stage}.${coreInfrastructure.outputs.containerAppEnvironmentDomain}'
 output authIssuerUrl string = 'https://identity-api-${stage}.${coreInfrastructure.outputs.containerAppEnvironmentDomain}'
+output webAppDeploymentToken string = staticWebApp.outputs.deploymentToken
+output hostName string = staticWebApp.outputs.hostName
