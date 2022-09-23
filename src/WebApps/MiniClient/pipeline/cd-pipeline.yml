@@ -125,13 +125,14 @@ stages:
         azure_static_web_apps_api_token: $(webAppDeploymentToken) # (Optional) Api token for deployment. Not required if passed as an environment variable.
         workingDirectory: $(System.ArtifactsDirectory)
 
-    - task: AzureCLI@1
+    - task: AzureCLI@2
       displayName: 'List pipeline variables'
       inputs:
         azureSubscription: $(azureProdServiceConnection)
+        scriptType: bash
         scriptLocation: inlineScript
         inlineScript: |
-          $env:AZURE_DEVOPS_EXT_PAT = $(devOpsPat)
+          AZURE_DEVOPS_EXT_PAT = $(devOpsPat)
           az devops login --organization $(devOpsOrganization)
           az pipelines variable-group list --org $(devOpsOrganization) --project andaha
 
@@ -141,7 +142,7 @@ stages:
         azureSubscription: $(azureProdServiceConnection)
         scriptLocation: inlineScript
         inlineScript: |
-          $env:AZURE_DEVOPS_EXT_PAT = $(devOpsPat)
+          AZURE_DEVOPS_EXT_PAT = $(devOpsPat)
           az devops login --organization $(devOpsOrganization)
           az pipelines variable-group variable create --org $(devOpsOrganization) --project andaha --group-id Production --name miniclientWebAppUrl --value $(webAppUrl) 
 
