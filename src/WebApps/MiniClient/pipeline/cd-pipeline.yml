@@ -125,23 +125,13 @@ stages:
         azure_static_web_apps_api_token: $(webAppDeploymentToken) # (Optional) Api token for deployment. Not required if passed as an environment variable.
         workingDirectory: $(System.ArtifactsDirectory)
 
-    - task: AzureCLI@2
-      displayName: 'List pipeline variables'
-      inputs:
-        azureSubscription: $(azureProdServiceConnection)
-        scriptType: bash
-        scriptLocation: inlineScript
-        inlineScript: |
-          echo "##vso[task.setvariable variable=AZURE_DEVOPS_EXT_PAT]$(devOpsPat)"
-          az devops login --organization $(devOpsOrganization)
-          az pipelines variable-group list --org $(devOpsOrganization) --project andaha
-
     - task: AzureCLI@1
       displayName: 'Set web app url variable'
       inputs:
         azureSubscription: $(azureProdServiceConnection)
         scriptLocation: inlineScript
         inlineScript: |
+          echo "##vso[task.setvariable variable=AZURE_DEVOPS_EXT_PAT]$(devOpsPat)"
           az devops login --organization $(devOpsOrganization)
           az pipelines variable-group variable create --org $(devOpsOrganization) --project andaha --group-id Production --name miniclientWebAppUrl --value $(webAppUrl) 
 
@@ -217,4 +207,6 @@ stages:
         azureSubscription: $(azureProdServiceConnection)
         scriptLocation: inlineScript
         inlineScript: |
+          echo "##vso[task.setvariable variable=AZURE_DEVOPS_EXT_PAT]$(devOpsPat)"
+          az devops login --organization $(devOpsOrganization)
           az pipelines variable-group variable create --org $(devOpsOrganization) --project andaha --group-id Production --name miniclientWebAppUrl --value $(webAppUrl) 
