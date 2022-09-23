@@ -131,6 +131,8 @@ stages:
         azureSubscription: $(azureProdServiceConnection)
         scriptLocation: inlineScript
         inlineScript: |
+          $env:AZURE_DEVOPS_EXT_PAT = $(devOpsPat)
+          az devops login --organization $(devOpsOrganization)
           az pipelines variable-group list --org $(devOpsOrganization) --project andaha
 
     - task: AzureCLI@1
@@ -139,6 +141,8 @@ stages:
         azureSubscription: $(azureProdServiceConnection)
         scriptLocation: inlineScript
         inlineScript: |
+          $env:AZURE_DEVOPS_EXT_PAT = $(devOpsPat)
+          az devops login --organization $(devOpsOrganization)
           az pipelines variable-group variable create --org $(devOpsOrganization) --project andaha --group-id Production --name miniclientWebAppUrl --value $(webAppUrl) 
 
 - stage: deploy_prod
