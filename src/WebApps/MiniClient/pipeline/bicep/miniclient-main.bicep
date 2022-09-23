@@ -9,14 +9,6 @@ module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
   }
 }
 
-module storage 'miniclient-storage-module.bicep' = {
-  name: 'miniclientstorage'
-  params: {
-    location: location
-    stage: stage
-  }
-}
-
 module staticWebApp 'miniclient-staticwebapp-module.bicep' = {
   name: 'miniclient-static-webapp'
   params: {
