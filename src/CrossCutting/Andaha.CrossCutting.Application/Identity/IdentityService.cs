@@ -24,4 +24,18 @@ internal class IdentityService : IIdentityService
 
         return new Guid(subClaim);
     }
+
+    public string GetUserEmailAddress()
+    {
+        var user = httpContext.HttpContext?.User;
+
+        var emailClaim = user?.FindFirst(ClaimTypes.Email)?.Value;
+
+        if (emailClaim is null)
+        {
+            throw new InvalidOperationException("No email claim available.");
+        }
+
+        return emailClaim;
+    } 
 }

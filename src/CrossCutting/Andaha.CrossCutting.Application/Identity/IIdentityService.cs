@@ -2,4 +2,6 @@
 public interface IIdentityService
 {
     Guid GetUserId();
+
+    string GetUserEmailAddress();
 }
