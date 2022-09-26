@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { BillCategoryApiService } from '../api/shopping/bill-category-api.service';
-import { BillCategoryDto } from '../api/shopping/models/BillCategoryDto';
+import { BillCategoryDto } from '../api/shopping/dtos/BillCategoryDto';
 import { ContextService } from '../core/context.service';
 
 @Injectable({

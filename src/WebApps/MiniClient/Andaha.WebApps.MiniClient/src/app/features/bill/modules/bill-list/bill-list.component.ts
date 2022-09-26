@@ -2,8 +2,10 @@ import { CdkScrollable, ScrollDispatcher } from '@angular/cdk/scrolling';
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { filter } from 'rxjs/operators';
 import { PageEvent } from '@angular/material/paginator';
-import { BillContextService } from '../../services/bill-context.service';
+import { BillContextService } from '../../../../services/bill-context.service';
 import { BillDataSource } from './BillDataSource';
+import { BillOptionsDialogService } from './bill-options-dialog/bill-options-dialog.service';
+import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 
 @Component({
   selector: 'app-bill-list',
@@ -21,9 +23,12 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   pageSize?: number;
   totalResults?: number;
 
+  timeoutHandler?: any;
+
   constructor(
     private scrollDispatcher: ScrollDispatcher,
-    private billListContextService: BillContextService) { }
+    private billListContextService: BillContextService,
+    private billOptionsDialogService: BillOptionsDialogService) { }
 
   ngOnDestroy(): void {
     this.billListContextService.searchBills('');
@@ -49,6 +54,12 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onSearchInput(searchText: string): void {
     this.billListContextService.searchBills(searchText);
+  }
+
+  holdHandler(time: number, bill: BillDto) {
+    if (time === 500) {
+      this.billOptionsDialogService.openDialog(bill.id);
+    }
   }
 
   private onScroll(data: any) {

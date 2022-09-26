@@ -5,9 +5,9 @@ import { environment } from 'src/environments/environment';
 import { PagedResultDto } from '../common-dtos/PagedResultDto';
 import { createHttpParameters } from '../functions/api-utils';
 import { addApiVersion, constructPath } from '../functions/functions';
-import { BillCreateDto } from './models/BillCreateDto';
-import { BillDto } from './models/BillDto';
-import { getSearchBillsHttpParams, SearchBillsParameters } from './models/SearchBillsParameters';
+import { BillCreateDto } from './dtos/BillCreateDto';
+import { BillDto } from './dtos/BillDto';
+import { getSearchBillsHttpParams, SearchBillsParameters } from './dtos/SearchBillsParameters';
 
 @Injectable({
   providedIn: 'root'
@@ -35,5 +35,12 @@ export class BillApiService {
   addBill(dto: BillCreateDto): Observable<BillDto> {
     const url = addApiVersion(this.endpointUrl, this.apiVersion);
     return this.httpClient.post<BillDto>(url, dto);
+  }
+
+  deleteBill(id: string): Observable<void> {
+    let url = constructPath(this.endpointUrl, id);
+    url = addApiVersion(url, this.apiVersion);
+    
+    return this.httpClient.delete<void>(url);
   }
 }

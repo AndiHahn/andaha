@@ -1,0 +1,11 @@
+<div>
+  <div class="close-container">
+    <button mat-icon-button [mat-dialog-close]="false">
+      <mat-icon class="close-icon">close</mat-icon>
+    </button>
+  </div>
+  <div>
+    <mat-progress-bar *ngIf="isDeleting" mode="indeterminate" color="accent"></mat-progress-bar>
+    <button mat-raised-button color="primary" class="button-style" (click)="onDeleteClick()" [disabled]="isDeleting">Löschen</button>
+  </div>
+</div>

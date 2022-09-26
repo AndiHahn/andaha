@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BillListComponent } from './bill-list.component';
-import { MatListModule } from '@angular/material/list'
 import { MatChipsModule } from '@angular/material/chips'
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -13,9 +12,9 @@ import { BillListItemComponent } from './bill-list-item/bill-list-item.component
 import { RouterModule, Routes } from '@angular/router';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatDividerModule } from '@angular/material/divider';
-import { MatCommonModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { HoldableDirectiveModule } from 'src/app/shared/directives/holdable-directive.module';
+import { BillOptionsDialogService } from './bill-options-dialog/bill-options-dialog.service';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 const routes: Routes = [
   {
@@ -41,7 +40,16 @@ const routes: Routes = [
     MatInputModule,
     MatChipsModule,
     MatDividerModule,
-    ScrollingModule
+    ScrollingModule,
+    MatDialogModule,
+    HoldableDirectiveModule
+  ],
+  providers: [
+    BillOptionsDialogService,
+    {
+      provide: 'dialog',
+      useValue: MatDialog
+    }
   ]
 })
 export class BillListModule { }

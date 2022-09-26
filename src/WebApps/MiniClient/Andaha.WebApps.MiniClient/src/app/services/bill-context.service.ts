@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, skip } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
-import { BillDto } from 'src/app/api/shopping/models/BillDto';
+import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { ContextService } from 'src/app/core/context.service';
-import { BillCreateDto } from '../api/shopping/models/BillCreateDto';
+import { BillCreateDto } from '../api/shopping/dtos/BillCreateDto';
 
 @Injectable({
   providedIn: 'root'
@@ -83,6 +83,26 @@ export class BillContextService {
           this.totalResults$.next(this.totalResults$.value + 1);
           
           returnSubject.next(result);
+        },
+        error: error => returnSubject.error(error)
+      }
+    );
+
+    return returnSubject.asObservable();
+  }
+
+  deleteBill(id: string): Observable<void> {
+    const returnSubject = new Subject<void>();
+
+    this.billApiService.deleteBill(id).subscribe(
+      {
+        next: _ => {
+          const bills = this.bills$.value.filter(bill => bill.id != id);
+
+          this.bills$.next(bills);
+          this.totalResults$.next(this.totalResults$.value - 1);
+          
+          returnSubject.next();
         },
         error: error => returnSubject.error(error)
       }

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { BillDto } from 'src/app/api/shopping/models/BillDto';
+import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 
 @Component({
   selector: 'app-bill-list-item',

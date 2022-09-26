@@ -5,6 +5,8 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { BillOptionsDialogService } from './modules/bill-list/bill-options-dialog/bill-options-dialog.service';
+import { MatDialog } from '@angular/material/dialog';
 
 const routes: Routes = [
   {
@@ -18,11 +20,11 @@ const routes: Routes = [
     children: [
       {
         path: 'bill/list',
-        loadChildren: () => import('../../modules/bill-list/bill-list.module').then(m => m.BillListModule)
+        loadChildren: () => import('./modules/bill-list/bill-list.module').then(m => m.BillListModule)
       },
       {
         path: 'bill/create',
-        loadChildren: () => import('../../modules/add-bill/add-bill.module').then(m => m.AddBillModule)
+        loadChildren: () => import('./modules/add-bill/add-bill.module').then(m => m.AddBillModule)
       }
     ]
   }
