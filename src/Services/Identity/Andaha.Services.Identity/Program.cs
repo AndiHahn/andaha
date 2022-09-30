@@ -1,6 +1,10 @@
 using Andaha.Services.Identity;
+using Andaha.Services.Identity.Domain;
 using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,6 +79,22 @@ app.MapHealthChecks("/liveness", new HealthCheckOptions
 });
 
 app.MapGet("/ping", Results.NoContent);
+
+app.MapGet("/api/user/{email}", async (UserManager<ApplicationUser> userManager, string email) =>
+{
+    var user = await userManager.Users.FirstOrDefaultAsync(user => user.Email == email);
+    if (user is null)
+    {
+        return Results.NotFound("User is not available.");
+    }
+
+    return Results.Ok(new
+    {
+        Id = user.Id,
+        Name = user.UserName,
+        Email = user.Email
+    });
+});
 
 try
 {

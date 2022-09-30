@@ -2,6 +2,7 @@
 using Andaha.Services.Collaboration.Filter;
 using Andaha.Services.Collaboration.Health;
 using Andaha.Services.Collaboration.Infrastructure;
+using Andaha.Services.Collaboration.Infrastructure.Proxies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
@@ -38,6 +39,7 @@ public static class ProgramExtensions
     {
         builder.Services.AddCqrs(Assembly.GetExecutingAssembly());
         builder.Services.AddIdentityService();
+        builder.Services.AddScoped<IIdentityApiProxy, IdentityApiProxy>();
 
         return builder;
     }

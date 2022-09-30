@@ -2,6 +2,7 @@
 using Andaha.Services.Shopping.Filter;
 using Andaha.Services.Shopping.Healthcheck;
 using Andaha.Services.Shopping.Infrastructure;
+using Andaha.Services.Shopping.Infrastructure.Proxies;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -25,6 +26,7 @@ internal static class ProgramExtensions
     {
         builder.Services.AddCqrs(Assembly.GetExecutingAssembly());
         builder.Services.AddIdentityService();
+        builder.Services.AddScoped<ICollaborationApiProxy, CollaborationApiProxy>();
 
         return builder;
     }
