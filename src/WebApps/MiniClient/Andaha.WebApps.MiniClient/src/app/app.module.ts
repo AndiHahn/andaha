@@ -14,6 +14,7 @@ import { environment } from 'src/environments/environment';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { HoldableDirective } from './shared/directives/holdable.directive';
 
 function storageFactory() : OAuthStorage {
   return localStorage
@@ -38,7 +39,9 @@ async function initApp(authService: AuthService): Promise<void> {
       resourceServer: {
         allowedUrls: [
           environment.gatewayBaseUrl,
-          'https://localhost:8200/api'
+          'https://localhost:8100/api',
+          'https://localhost:8200/api',
+          'https://localhost:8300/api'
         ],
         sendAccessToken: true
       }

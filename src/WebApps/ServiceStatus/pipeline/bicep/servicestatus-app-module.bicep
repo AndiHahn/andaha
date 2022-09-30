@@ -44,6 +44,14 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
               name: 'HealthChecksUI__HealthChecks__1__Uri'
               value: 'https://shopping-api-${stage}.${containerAppsEnvironmentDomain}/hc'
             }
+            {
+              name: 'HealthChecksUI__HealthChecks__2__Name'
+              value: 'Collaboration Service'
+            }
+            {
+              name: 'HealthChecksUI__HealthChecks__2__Uri'
+              value: 'https://collaboration-api-${stage}.${containerAppsEnvironmentDomain}/hc'
+            }
           ]
           probes: [
             {

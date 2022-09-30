@@ -1,0 +1,43 @@
+<div class="top-placeholder"></div>
+
+<div class="user-container">
+  <h3 class="title">Benutzer</h3>
+
+  <button mat-raised-button color="primary" class="button-style" (click)="onLogoutClick()">
+    <mat-icon>exit_to_app</mat-icon>
+    Ausloggen
+  </button>
+</div>
+
+<mat-divider class="divider"></mat-divider>
+
+<div class="connections-container">
+
+  <h3 class="title">Eingehende Verbindungsanfragen</h3>
+  
+  <app-incoming-connection-requests></app-incoming-connection-requests>
+
+  <div class="spacer"></div>
+
+  <mat-divider></mat-divider>
+
+  <h3 class="title">Ausgehende Verbindungsanfragen</h3>
+
+  <app-outgoing-connection-requests></app-outgoing-connection-requests>
+
+  <div class="spacer"></div>
+  
+  <mat-divider></mat-divider>
+
+  <h3 class="title">Verbindungen</h3>
+
+  <app-connections></app-connections>
+
+  <div class="spacer"></div>
+
+  <button mat-raised-button color="primary" class="button-style" (click)="onAddConnectionClick()">
+    Verbindung herstellen
+  </button>
+</div>
+
+<mat-divider class="divider"></mat-divider>

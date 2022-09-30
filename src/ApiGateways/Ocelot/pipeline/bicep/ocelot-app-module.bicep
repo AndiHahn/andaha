@@ -32,6 +32,10 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
               name: 'Hosts__SHOPPING_API_HOST'
               value: 'https://shopping-api-${stage}.${containerAppsEnvironmentDomain}:80'
             }
+            {
+              name: 'Hosts__COLLABORATION_API_HOST'
+              value: 'https://collaboration-api-${stage}.${containerAppsEnvironmentDomain}:80'
+            }
           ]
         }
       ]

@@ -18,7 +18,7 @@ internal static class Config
         new ApiScope[]
         {
             new("shopping", "Access to Shopping API"),
-            //new("collaboration", "Access to Collaboration API")
+            new("collaboration", "Access to Collaboration API")
         };
 
     public static IEnumerable<ApiResource> ApiResources =>
@@ -28,12 +28,10 @@ internal static class Config
             {
                 Scopes = { "shopping" }
             },
-            /*
             new("collaboration-api", "Collaboration API", new List<string> { JwtClaimTypes.Email, JwtClaimTypes.Name })
             {
                 Scopes = { "collaboration" }
             }
-            */
         };
 
     public static IEnumerable<Client> GetClients(IConfiguration configuration)
@@ -63,7 +61,6 @@ internal static class Config
                     "shopping"
                 }
             },
-            /*
             new()
             {
                 ClientId = "collaborationswaggerui",
@@ -87,7 +84,6 @@ internal static class Config
                     "collaboration"
                 }
             },
-            */
             new()
             {
                 ClientId = "miniclient",

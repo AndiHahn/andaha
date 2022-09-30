@@ -35,6 +35,90 @@
       ],
       "UpstreamPathTemplate": "/shopping-api/ping",
       "UpstreamHttpMethod": [ "GET", "OPTIONS" ]
+    },
+    {
+      "DownstreamPathTemplate": "/v1.0/invoke/collaboration-api/method/api/connection/request",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "127.0.0.1",
+          "Port": "3500"
+        }
+      ],
+      "UpstreamPathTemplate": "/collaboration-api/connection/request",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    },
+    {
+      "DownstreamPathTemplate": "/v1.0/invoke/collaboration-api/method/api/connection/outgoing",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "127.0.0.1",
+          "Port": "3500"
+        }
+      ],
+      "UpstreamPathTemplate": "/collaboration-api/connection/outgoing",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    },
+    {
+      "DownstreamPathTemplate": "/v1.0/invoke/collaboration-api/method/api/connection/incoming",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "127.0.0.1",
+          "Port": "3500"
+        }
+      ],
+      "UpstreamPathTemplate": "/collaboration-api/connection/incoming",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    },
+    {
+      "DownstreamPathTemplate": "/v1.0/invoke/collaboration-api/method/api/connection/accept/{fromUserId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "127.0.0.1",
+          "Port": "3500"
+        }
+      ],
+      "UpstreamPathTemplate": "/collaboration-api/connection/accept/{fromUserId}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    },
+    {
+      "DownstreamPathTemplate": "/v1.0/invoke/collaboration-api/method/api/connection/decline/{fromUserId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "127.0.0.1",
+          "Port": "3500"
+        }
+      ],
+      "UpstreamPathTemplate": "/collaboration-api/connection/decline/{fromUserId}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    },
+    {
+      "DownstreamPathTemplate": "/v1.0/invoke/collaboration-api/method/api/connection/established",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "127.0.0.1",
+          "Port": "3500"
+        }
+      ],
+      "UpstreamPathTemplate": "/collaboration-api/connection/established",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    },
+    {
+      "DownstreamPathTemplate": "/v1.0/invoke/collaboration-api/method/ping",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "127.0.0.1",
+          "Port": "3500"
+        }
+      ],
+      "UpstreamPathTemplate": "/collaboration-api/ping",
+      "UpstreamHttpMethod": [ "GET", "OPTIONS" ]
     }
   ],
   "GlobalConfiguration": {

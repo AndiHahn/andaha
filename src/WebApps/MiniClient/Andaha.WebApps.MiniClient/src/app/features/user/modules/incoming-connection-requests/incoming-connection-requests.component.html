@@ -1,0 +1,21 @@
+<div class="master-container">
+  <div *ngIf="loading && !connectionRequests">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+  
+  <div *ngIf="!loading && connectionRequests && connectionRequests.length == 0">
+    Keine eingehenden Verbindungsanfragen vorhanden.
+  </div>
+</div>
+
+<div *ngFor="let connectionRequest of connectionRequests">
+  <div class="list-item">
+    <mat-card class="mat-card">
+      <span class="truncate-text email-field">{{ connectionRequest.fromUserEmailAddress }}</span>
+      <div>
+        <button mat-raised-button class="accept-button" (click)="onAcceptClick(connectionRequest)"><mat-icon>done</mat-icon></button>
+        <button mat-raised-button class="decline-button" (click)="onDeclineClick(connectionRequest)"><mat-icon>close</mat-icon></button>
+      </div>
+    </mat-card>
+  </div>
+</div>

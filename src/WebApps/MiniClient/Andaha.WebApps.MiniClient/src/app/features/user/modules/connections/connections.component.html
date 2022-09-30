@@ -1,0 +1,18 @@
+<div class="master-container">
+  <div *ngIf="loading && !connections">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+  
+  <div *ngIf="!loading && connections && connections.length == 0">
+    Keine Verbindungen vorhanden.
+  </div>
+</div>
+
+<div *ngFor="let connection of connections">
+  <div class="list-item">
+    <mat-card class="mat-card">
+      <span class="truncate-text">{{ connection.userEmailAddress }}</span>
+      <span style="color: green;">aktiv</span>
+    </mat-card>
+  </div>
+</div>

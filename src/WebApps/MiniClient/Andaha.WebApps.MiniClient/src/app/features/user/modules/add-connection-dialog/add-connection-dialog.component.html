@@ -1,0 +1,24 @@
+<div class="close-container">
+  <button mat-icon-button [mat-dialog-close]="undefined">
+    <mat-icon class="close-icon">close</mat-icon>
+  </button>
+</div>
+
+<h3>Verbindung zu Benutzer anfordern:</h3>
+
+<form [formGroup]="formGroup" (ngSubmit)="onSubmitClick()">
+  <mat-form-field class="full-width" appearance="fill">
+    <mat-label>Email Adresse</mat-label>
+    <input matInput formControlName="emailAddress" email>
+    <mat-error *ngIf="formGroup.controls['emailAddress'].invalid" [ngClass]="'error'">
+      Keine gültige email Adresse.
+    </mat-error>
+  </mat-form-field>
+
+  <div class="button-container">
+    <mat-progress-bar *ngIf="isSaving" mode="indeterminate" color="accent"></mat-progress-bar>
+    <button mat-raised-button color="primary" class="button-style" [disabled]="isSaving">Verbindung anfordern</button>
+  </div>
+  
+  <mat-error *ngIf="errorMessage">{{ errorMessage }}</mat-error>
+</form>

@@ -19,7 +19,13 @@ services:
       context: src/Services/Identity/Andaha.Services.Identity/
       dockerfile: Dockerfile
     depends_on: 
-      - "andaha.services.identity.db"  
+      - "andaha.services.identity.db"
+
+  andaha.services.identity.dapr:
+    image: "daprio/daprd:edge"
+    network_mode: "service:andaha.services.identity"
+    depends_on:
+      - "andaha.services.identity"
 
   andaha.services.identity.db:
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -41,7 +47,26 @@ services:
       - "andaha.services.shopping"
 
   andaha.services.shopping.db:
-    image: mcr.microsoft.com/mssql/server:2019-latest    
+    image: mcr.microsoft.com/mssql/server:2019-latest
+
+  andaha.services.collaboration:
+    image: andaha-services-collaboration:${TAG}
+    build:
+      context: src/Services/Collaboration/Andaha.Services.Collaboration/
+      dockerfile: Dockerfile
+      args:
+        PatPlaceholder: ${NUGET_FEED_ACCESS_TOKEN}
+    depends_on: 
+      - "andaha.services.collaboration.db"
+
+  andaha.services.collaboration.dapr:
+    image: "daprio/daprd:edge"
+    network_mode: "service:andaha.services.collaboration"
+    depends_on:
+      - "andaha.services.collaboration"
+
+  andaha.services.collaboration.db:
+    image: mcr.microsoft.com/mssql/server:2019-latest   
 
   dapr.placement:
     image: "daprio/dapr"
@@ -51,4 +76,11 @@ services:
     build:
       context: src/WebApps/ServiceStatus/Andaha.WebApps.ServiceStatus
       dockerfile: Dockerfile
-      
+  
+volumes:
+  identitysqlvolume:
+    name: identity_sql_volume
+  shoppingsqlvolume:
+    name: shopping_sql_volume
+  collaborationsqlvolume:
+    name: collaboration_sql_volume

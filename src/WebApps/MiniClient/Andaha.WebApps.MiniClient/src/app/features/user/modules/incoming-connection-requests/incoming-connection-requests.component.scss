@@ -1,0 +1,44 @@
+.master-container {
+  display: flex;
+  justify-content: center;
+}
+
+.list-item {
+  padding: 5px 8px 0px 8px;
+}
+
+.mat-card {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: calc(100% - 20px);
+  padding: 10px;
+  height: 36px;
+}
+
+.truncate-text {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+  overflow: hidden
+}
+
+.email-field {
+  display: flex;
+  align-items: center;
+}
+
+.accept-button {
+  color: green;
+  min-width: 40px;
+  padding: 0px;
+}
+
+.decline-button {
+  margin-left: 10px;
+  color: red;
+  min-width: 40px;
+  padding: 0px;
+}

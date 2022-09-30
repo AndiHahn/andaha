@@ -32,7 +32,6 @@ const routes: Routes = [
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
-    MatChipsModule,
     MatButtonModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,

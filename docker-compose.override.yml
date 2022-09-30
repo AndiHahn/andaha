@@ -6,6 +6,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:80
       Hosts__SHOPPING_API_HOST: http://andaha.services.shopping:80
+      Hosts__COLLABORATION_API_HOST: http://andaha.services.collaboration:80
     ports:
       - "9000:80"
       - "50001:50001"
@@ -24,16 +25,31 @@ services:
       ConnectionStrings__ApplicationDbConnection: Server=andaha.services.identity.db;Database=andaha-identity-db;User Id=sa;Password=Pass@word;
       IssuerUrl: http://localhost:9100
       ExternalUrls__ShoppingApi: http://andaha.services.shopping:80
+      ExternalUrls__CollaborationApi: http://andaha.services.collaboration:80
       ExternalUrls__WebMiniClient: http://localhost:4200
+      Authentication__Facebook__AppId: ${AUTH_FACEBOOK_APP_ID}
+      Authentication__Facebook__AppSecret: ${AUTH_FACEBOOK_APP_SECRET}
     ports:
       - "9100:80"
 
+  andaha.services.identity.dapr:
+    command: [
+      "./daprd",
+      "-app-id", "identity-api",
+      "-app-port", "80",
+      "-log-level", "debug",
+      "-placement-host-address", "dapr.placement:50000",
+    ]
+
   andaha.services.identity.db:
-      environment:
-        ACCEPT_EULA: Y
-        SA_PASSWORD: Pass@word
-      ports:
-        - "9110:1433" 
+    user: root
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: Pass@word
+    ports:
+      - "9110:1433" 
+    volumes:
+      - ./volumes/identitysqlvolume:/var/opt/mssql/data
 
   andaha.services.shopping:
     environment:
@@ -54,11 +70,42 @@ services:
     ]
 
   andaha.services.shopping.db:
+    user: root
     environment:
       ACCEPT_EULA: Y
       SA_PASSWORD: Pass@word
     ports:
-      - "9210:1433"     
+      - "9210:1433"
+    volumes:
+      - ./volumes/shoppingsqlvolume:/var/opt/mssql/data
+
+  andaha.services.collaboration:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:80
+      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.collaboration.db;Database=andaha-collaboration-db;User Id=sa;Password=Pass@word;
+      ExternalUrls__IdentityApi: http://andaha.services.identity:80
+    ports:
+      - "9300:80"
+
+  andaha.services.collaboration.dapr:
+    command: [
+      "./daprd",
+      "-app-id", "collaboration-api",
+      "-app-port", "80",
+      "-log-level", "debug",
+      "-placement-host-address", "dapr.placement:50000",
+    ]
+
+  andaha.services.collaboration.db: 
+    user: root
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: Pass@word
+    ports:
+      - "9310:1433"
+    volumes:
+      - ./volumes/collaborationsqlvolume:/var/opt/mssql/data
 
   dapr.placement:
     command: ["./placement", "--port", "50000", "-log-level", "debug"]
@@ -73,5 +120,7 @@ services:
       HealthChecksUI__HealthChecks__0__Uri: http://andaha.services.identity/hc
       HealthChecksUI__HealthChecks__1__Name: Shopping Service
       HealthChecksUI__HealthChecks__1__Uri: http://andaha.services.shopping/hc
+      HealthChecksUI__HealthChecks__2__Name: Collaboration Service
+      HealthChecksUI__HealthChecks__2__Uri: http://andaha.services.collaboration/hc
     ports:
       - "10000:80"

@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { AuthService } from './core/auth.service';
-import { ContextService } from './core/context.service';
 
 @Component({
   selector: 'app-root',
@@ -15,7 +14,7 @@ export class AppComponent {
   userName: string = '';
   isLoggedIn: boolean = false;
 
-  constructor(private authService: AuthService, context: ContextService) {
+  constructor(private authService: AuthService) {
     this.authService.loggedIn().subscribe(
       {
         next: isLoggedIn => this.isLoggedIn = isLoggedIn
@@ -27,9 +26,5 @@ export class AppComponent {
         next: userInfo => this.userName = userInfo.userName
       }
     );
-  }
-
-  logout(): void {
-    this.authService.logout();
   }
 }

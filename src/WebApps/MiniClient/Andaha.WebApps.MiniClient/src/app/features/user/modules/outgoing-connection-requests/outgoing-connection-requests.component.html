@@ -1,0 +1,19 @@
+<div class="master-container">
+  <div *ngIf="loading && !connectionRequests">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+  
+  <div *ngIf="!loading && connectionRequests && connectionRequests.length == 0">
+    Keine ausgehenden Verbindungsanfragen vorhanden.
+  </div>
+</div>
+
+<div *ngFor="let connectionRequest of connectionRequests">
+  <div class="list-item">
+    <mat-card class="mat-card">
+      <span class="truncate-text">{{ connectionRequest.targetUserEmailAddress }}</span>
+      <span *ngIf="!connectionRequest.declined" class="green-color"> ausstehend </span>
+      <span *ngIf="connectionRequest.declined" class="red-color"> abgelehnt </span>
+    </mat-card>
+  </div>
+</div>

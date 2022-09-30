@@ -5,18 +5,14 @@
       <mat-icon>menu</mat-icon>
     </button>
     -->
-    <span>Andaha</span>
+    <button mat-button routerLink="/">
+      <h2>Andaha</h2>
+    </button>
     <span class="spacer"></span>
     <span class="user-info">{{ userName }}</span>
-    <button mat-icon-button [matMenuTriggerFor]="profile">
+    <button mat-icon-button routerLink="/user">
       <mat-icon>account_circle</mat-icon>
     </button>
-    <mat-menu #profile="matMenu">
-      <button mat-menu-item (click)="logout()">
-        <mat-icon>exit_to_app</mat-icon>
-        <span>Ausloggen</span>
-      </button>
-    </mat-menu>
   </mat-toolbar>
 </div>
 

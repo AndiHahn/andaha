@@ -34,7 +34,9 @@
         "/shopping-api/bill",
         "/api/bill",
         "/shopping-api/billcategory",
-        "/api/billcategory"
+        "/api/billcategory",
+        "/collaboration-api/connection",
+        "/api/connection"
       ],
       "cacheConfig": {
         "strategy": "freshness",
