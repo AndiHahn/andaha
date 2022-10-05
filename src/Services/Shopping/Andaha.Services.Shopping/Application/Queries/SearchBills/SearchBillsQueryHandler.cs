@@ -1,5 +1,6 @@
 ﻿using Andaha.CrossCutting.Application.Identity;
 using Andaha.CrossCutting.Application.Result;
+using Andaha.Services.Shopping.Application.Services;
 using Andaha.Services.Shopping.Dtos.v1_0;
 using Andaha.Services.Shopping.Infrastructure;
 using Andaha.Services.Shopping.Infrastructure.Proxies;
@@ -13,36 +14,23 @@ namespace Andaha.Services.Shopping.Application.Queries.SearchBills;
 internal class SearchBillsQueryHandler : IRequestHandler<SearchBillsQuery, PagedResult<BillDto>>
 {
     private readonly ShoppingDbContext dbContext;
-    private readonly IIdentityService identityService;
-    private readonly ICollaborationApiProxy collaborationApiProxy;
+    private readonly ICollaborationService collaborationService;
 
     public SearchBillsQueryHandler(
         ShoppingDbContext dbContext,
-        IIdentityService identityService,
-        ICollaborationApiProxy collaborationApiProxy)
+        ICollaborationService collaborationService)
     {
         this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        this.identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
-        this.collaborationApiProxy = collaborationApiProxy ?? throw new ArgumentNullException(nameof(collaborationApiProxy));
+        this.collaborationService = collaborationService ?? throw new ArgumentNullException(nameof(collaborationService));
     }
 
     public async Task<PagedResult<BillDto>> Handle(SearchBillsQuery request, CancellationToken cancellationToken)
     {
-        Guid currentUserId = this.identityService.GetUserId();
+        await this.collaborationService.SetConnectedUsersAsync(cancellationToken);
 
-        var connectedUserIds = await this.collaborationApiProxy.GetConnectedUsers(cancellationToken);
-
-        var userIds = new List<Guid> { currentUserId };
-
-        if (connectedUserIds is not null && connectedUserIds.Any())
-        {
-            userIds.AddRange(connectedUserIds);
-        }
-
-        var query = this.dbContext.Bill
+        IQueryable<Core.Bill> query = this.dbContext.Bill
             .Include(bill => bill.Category)
-            .OrderByDescending(b => b.Date)
-            .Where(b => userIds.Contains(b.CreatedByUserId));
+            .OrderByDescending(b => b.Date);
 
         if (request.Search is not null)
         {

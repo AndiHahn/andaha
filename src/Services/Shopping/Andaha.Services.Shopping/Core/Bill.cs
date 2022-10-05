@@ -1,8 +1,9 @@
-﻿using CSharpFunctionalExtensions;
+﻿using Andaha.CrossCutting.Application.Database;
+using CSharpFunctionalExtensions;
 
 namespace Andaha.Services.Shopping.Core;
 
-public class Bill : Entity<Guid>
+public class Bill : Entity<Guid>, IShareableEntity
 {
     private Bill()
     {
@@ -41,7 +42,7 @@ public class Bill : Entity<Guid>
             throw new ArgumentException("Length of notes must not be > 1000 characters.", nameof(notes));
         }
 
-        this.CreatedByUserId = createdByUserId;
+        this.UserId = createdByUserId;
         this.CategoryId = categoryId;
         this.ShopName = shopName;
         this.Price = price;
@@ -49,7 +50,7 @@ public class Bill : Entity<Guid>
         this.Notes = notes;
     }
 
-    public Guid CreatedByUserId { get; private set; }
+    public Guid UserId { get; private set; }
 
     public Guid CategoryId { get; private set; }
 
@@ -63,5 +64,5 @@ public class Bill : Entity<Guid>
 
     public BillCategory Category { get; private set; } = null!;
 
-    public bool HasCreated(Guid userId) => this.CreatedByUserId == userId;
+    public bool HasCreated(Guid userId) => this.UserId == userId;
 }

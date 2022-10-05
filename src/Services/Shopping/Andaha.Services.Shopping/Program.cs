@@ -69,7 +69,7 @@ app.MapGet("/ping", Results.NoContent);
 
 try
 {
-    await app.MigrateAndSeedDatabaseAsync(app.Logger);
+    await app.MigrateDatabaseAsync(app.Logger);
     
     app.Run();
 }

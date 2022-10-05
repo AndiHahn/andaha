@@ -19,7 +19,7 @@ internal class IdentityService : IIdentityService
 
         if (subClaim is null)
         {
-            throw new InvalidOperationException("No sub claim available.");
+            throw new InvalidOperationException($"No {nameof(ClaimTypes.NameIdentifier)} claim available.");
         }
 
         return new Guid(subClaim);

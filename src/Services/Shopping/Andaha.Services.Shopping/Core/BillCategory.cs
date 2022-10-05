@@ -1,8 +1,9 @@
-﻿using CSharpFunctionalExtensions;
+﻿using Andaha.CrossCutting.Application.Database;
+using CSharpFunctionalExtensions;
 
 namespace Andaha.Services.Shopping.Core;
 
-public class BillCategory : Entity<Guid>
+public class BillCategory : Entity<Guid>, IUserDependentEntity
 {
     private readonly List<Bill> _bills = new();
 
@@ -10,10 +11,19 @@ public class BillCategory : Entity<Guid>
     {
     }
 
-    public BillCategory(string name, string color)
+    public BillCategory(Guid userId, string name, string color)
     {
+        if (userId == Guid.Empty)
+        {
+            throw new ArgumentException("UserId must not be empty.", nameof(userId));
+        }
+
+        this.UserId = userId;
+
         this.Update(name, color);
     }
+
+    public Guid UserId { get; private set; }
 
     public string Name { get; private set; } = null!;
 

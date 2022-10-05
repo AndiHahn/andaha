@@ -5,26 +5,21 @@ namespace Andaha.Services.Shopping.Infrastructure;
 
 public static class ShoppingDbContextSeed
 {
-    public static async Task SeedAsync(ShoppingDbContext context)
+    public static IReadOnlyCollection<BillCategory> CreateInitialCategories(Guid userId)
     {
-        if (!await context.BillCategory.AnyAsync())
+        var categories = new List<BillCategory>
         {
-            await PopulateCategoriesAsync(context);
-        }
-    }
+            new BillCategory(userId, "Lebensmittel", "red"),
+            new BillCategory(userId, "Wohnen", "pink"),
+            new BillCategory(userId, "Kleidung", "purple"),
+            new BillCategory(userId, "Ausbildung", "yellow"),
+            new BillCategory(userId, "Freizeit", "indigo"),
+            new BillCategory(userId, "Auto/Motorrad", "orange"),
+            new BillCategory(userId, "Hygiene/Gesundheit", "brown"),
+            new BillCategory(userId, "Geschenke", "grey"),
+            new BillCategory(userId, "Restaurant", "magenta"),
+        };
 
-    private static Task PopulateCategoriesAsync(ShoppingDbContext context)
-    {
-        context.BillCategory.Add(new BillCategory("Lebensmittel", "red"));
-        context.BillCategory.Add(new BillCategory("Wohnen", "pink"));
-        context.BillCategory.Add(new BillCategory("Kleidung", "purple"));
-        context.BillCategory.Add(new BillCategory("Ausbildung", "yellow"));
-        context.BillCategory.Add(new BillCategory("Freizeit", "indigo"));
-        context.BillCategory.Add(new BillCategory("Auto/Motorrad", "orange"));
-        context.BillCategory.Add(new BillCategory("Hygiene/Gesundheit", "brown"));
-        context.BillCategory.Add(new BillCategory("Geschenke", "grey"));
-        context.BillCategory.Add(new BillCategory("Restaurant", "magenta"));
-
-        return context.SaveChangesAsync();
+        return categories;
     }
 }

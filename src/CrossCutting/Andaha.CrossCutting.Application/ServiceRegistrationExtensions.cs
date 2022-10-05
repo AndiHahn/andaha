@@ -28,6 +28,7 @@ public static class ServiceRegistrationExtensions
     public static IServiceCollection AddIdentityService(this IServiceCollection services)
     {
         services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<IConnectedUsersService, ConnectedUsersService>();
 
         return services;
     }
