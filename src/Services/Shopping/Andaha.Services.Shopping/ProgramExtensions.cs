@@ -1,4 +1,6 @@
 ﻿using Andaha.CrossCutting.Application;
+using Andaha.CrossCutting.Application.Identity;
+using Andaha.Services.Shopping.Application.Services;
 using Andaha.Services.Shopping.Filter;
 using Andaha.Services.Shopping.Healthcheck;
 using Andaha.Services.Shopping.Infrastructure;
@@ -25,8 +27,9 @@ internal static class ProgramExtensions
     internal static WebApplicationBuilder AddCustomApplicationServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddCqrs(Assembly.GetExecutingAssembly());
-        builder.Services.AddIdentityService();
+        builder.Services.AddIdentityServices();
         builder.Services.AddScoped<ICollaborationApiProxy, CollaborationApiProxy>();
+        builder.Services.AddScoped<ICollaborationService, CollaborationService>();
 
         return builder;
     }
@@ -128,18 +131,20 @@ internal static class ProgramExtensions
         return builder;
     }
 
-    internal static async Task MigrateAndSeedDatabaseAsync(this WebApplication webApplication, ILogger logger)
+    internal static async Task MigrateDatabaseAsync(this WebApplication webApplication, ILogger logger)
     {
         using var scope = webApplication.Services.CreateScope();
 
         var retryPolicy = CreateRetryPolicy(logger);
 
-        var dbContext = scope.ServiceProvider.GetRequiredService<ShoppingDbContext>();
+        var identityService = new ManualIdentityService();
+
+        var contextOptions = scope.ServiceProvider.GetRequiredService<DbContextOptions<ShoppingDbContext>>();
+        var dbContext = ActivatorUtilities.CreateInstance<ShoppingDbContext>(scope.ServiceProvider, contextOptions, identityService);
 
         await retryPolicy.ExecuteAsync(async () =>
         {
             await dbContext.Database.MigrateAsync();
-            await ShoppingDbContextSeed.SeedAsync(dbContext);
         });
     }
 
