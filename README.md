@@ -27,7 +27,7 @@ Technologystack:
 
 Overview of the application architecture:  
 
-![Picture application architecture](https://github.com/andaha/blob/master/doc/architecture.png)
+![Picture application architecture](https://github.com/AndiHahn/andaha/blob/master/doc/architecture.png)
 
 
 ## Infrastructure as code 
