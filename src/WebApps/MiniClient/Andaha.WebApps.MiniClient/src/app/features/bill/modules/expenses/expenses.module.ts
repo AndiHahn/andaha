@@ -4,7 +4,6 @@ import { ExpensesComponent } from './expenses.component';
 import { RouterModule, Routes } from '@angular/router';
 import { TimerangeSelectionModule } from './timerange-selection/timerange-selection.module';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ChartsModule } from "@rinminase/ng-charts";
 import { ChartModule } from './chart/chart.module';
 
 const routes: Routes = [
@@ -22,9 +21,8 @@ const routes: Routes = [
     CommonModule,
     RouterModule.forChild(routes),
     TimerangeSelectionModule,
-    ChartModule,
     MatProgressSpinnerModule,
-    ChartsModule
+    ChartModule,
   ]
 })
 export class ExpensesModule { }
