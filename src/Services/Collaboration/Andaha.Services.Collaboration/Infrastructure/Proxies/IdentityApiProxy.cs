@@ -1,5 +1,4 @@
 ﻿using Andaha.CrossCutting.Application.Result;
-using Andaha.Services.Collaboration.Dtos;
 using Dapr.Client;
 
 namespace Andaha.Services.Collaboration.Infrastructure.Proxies;
