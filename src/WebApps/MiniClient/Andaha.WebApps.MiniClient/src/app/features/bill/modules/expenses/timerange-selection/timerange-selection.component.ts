@@ -21,7 +21,6 @@ export class TimerangeSelectionComponent implements OnInit, OnChanges {
   
   dateTypeLabelMapping = DateTypeLabelMapping;
   dateType = DateType;
-  test = 'asdf'
   dateTypeOptions = Object.values(DateType);
   selectedDateType: DateType;
   
@@ -75,7 +74,6 @@ export class TimerangeSelectionComponent implements OnInit, OnChanges {
     let endDate = moment(this.availableTimeRange.endDate);
 
     const dates = [];
-    endDate.subtract(1, "month"); //Substract one month to exclude endDate itself
 
     const month = moment(startDate); //clone the startDate
     dates.push(month.format('YYYY-MM'));

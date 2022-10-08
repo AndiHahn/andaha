@@ -1,25 +1,13 @@
-<!--
-<div style="display: block;">
-  <canvas baseChart
-          chartType="pie"
-          [data]="chartData"
-          [colors]="chartColors"
-          [labels]="chartLabels"
-          [options]="chartOptions"
-          [plugins]="chartPlugins"
-          [legend]="chartLegend">
-  </canvas>
+<div class="chart-container">
+  <div class="chart">
+    <canvas
+      baseChart
+      [type]="'pie'"
+      [datasets]="chartDatasets"
+      [labels]="chartLabels"
+      [options]="chartOptions"
+      [legend]="true">
+    </canvas>
+  </div>
 </div>
--->
 
-<div>
-  <canvas
-    baseChart
-    chartType="pie"
-    [data]="chartData"
-    [labels]="chartLabels"
-    [options]="chartOptions"
-    [colors]="chartColors"
-    [legend]="true">
-  </canvas>
-</div>

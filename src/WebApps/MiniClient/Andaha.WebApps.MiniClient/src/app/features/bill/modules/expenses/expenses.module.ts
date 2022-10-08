@@ -5,6 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { TimerangeSelectionModule } from './timerange-selection/timerange-selection.module';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ChartModule } from './chart/chart.module';
+import { MatDividerModule } from '@angular/material/divider';
 
 const routes: Routes = [
   {
@@ -23,6 +24,7 @@ const routes: Routes = [
     TimerangeSelectionModule,
     MatProgressSpinnerModule,
     ChartModule,
+    MatDividerModule
   ]
 })
 export class ExpensesModule { }

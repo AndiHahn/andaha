@@ -7,3 +7,29 @@
   justify-content: center;
   margin-top: 30px;
 }
+
+section {
+  display: table;
+  margin: 8px;
+}
+
+.label {
+  display: table-cell;
+  font-size: 15px;
+  margin-left: 8px;
+  min-width: 180px;
+  font-weight: bold;
+}
+
+.label-row {
+  display: table-cell;
+  margin: 10px;
+}
+
+.text-big {
+  font-weight: bolder;
+}
+
+.margin-20 {
+  margin: 20px;
+}

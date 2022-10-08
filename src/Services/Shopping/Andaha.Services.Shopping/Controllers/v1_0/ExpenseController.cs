@@ -1,7 +1,6 @@
 ﻿using Andaha.CrossCutting.Application.Result;
 using Andaha.Services.Shopping.Application.Expense.Queries.GetAvailableTimeRange;
 using Andaha.Services.Shopping.Application.Expense.Queries.GetExpenses;
-using Andaha.Services.Shopping.Application.Queries.SearchBills;
 using Andaha.Services.Shopping.Dtos.v1_0;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -41,10 +40,12 @@ public class ExpenseController : ControllerBase
     [HttpGet("time-range")]
     [ProducesResponseType(typeof(TimeRangeDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    public Task<TimeRangeDto> GetAvailableTimeRange(CancellationToken cancellationToken)
+    public async Task<TimeRangeDto> GetAvailableTimeRange(CancellationToken cancellationToken)
     {
         var query = new GetAvailableTimeRangeQuery();
 
-        return this.sender.Send(query, cancellationToken);
+        var timeRange = await this.sender.Send(query, cancellationToken);
+
+        return timeRange;
     }
 }

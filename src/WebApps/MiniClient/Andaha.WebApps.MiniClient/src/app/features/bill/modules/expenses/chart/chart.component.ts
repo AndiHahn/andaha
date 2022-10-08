@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { ChartOptions } from 'chart.js';
+import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
 import { ExpenseDto } from 'src/app/api/shopping/dtos/ExpenseDto';
 
 @Component({
@@ -7,21 +8,23 @@ import { ExpenseDto } from 'src/app/api/shopping/dtos/ExpenseDto';
   templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.scss']
 })
-export class ChartComponent implements OnInit {
-  BORDER_COLOR = 'rgb(0,0,0)';
+export class ChartComponent implements OnInit, OnChanges {
 
   @Input()
   expenses!: ExpenseDto[];
 
-  /*
-[data]="chartData"
-[labels]="chartLabels"
-[options]="chartOptions"
-  */
+  @Input()
+  categories!: BillCategoryDto[];
 
   //CHART DATA
   chartLabels: string[] = [];
   chartData: number[] = [];
+  chartDatasets = [
+    {
+      data: [ 1 ],
+      backgroundColor: [ 'red' ]
+    }
+  ];
   chartOptions: ChartOptions = {
     responsive: true,
   }; 
@@ -30,40 +33,48 @@ export class ChartComponent implements OnInit {
     borderColor: []
   }];
 
-   /*
-  chartLegend = true;
-  chartPlugins = [];
-*/
-  constructor() { }
-
   ngOnInit(): void {
     if (!this.expenses) {
       throw new Error("Expenses must be set in order to use this component");
     }
+
+    if (!this.categories) {
+      throw new Error("Categories must be set in order to use this component");
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes?.['expenses']) {
+      this.refreshChart();
+    }
   }
 
   refreshChart() {
-    this.clearChart();
-
-    let backgroundColor: never[] = [];
-    let borderColor: never[] = [];
+    const labels: string[] = [];
+    const data: number[] = [];
+    const colors: string[] = [];
 
     this.expenses.forEach(e => {
-      this.chartLabels.push(e.category);
-      this.chartData.push(e.costs);
-      backgroundColor.push('red' as never); //this.categories.find(c => c.name == e.category).color)
-      borderColor.push(this.BORDER_COLOR as never);
+      labels.push(e.category);
+      data.push(e.costs);
+      colors.push(this.categories.find(c => c.name == e.category)!.color);
     });
 
-    this.chartColors.push({ backgroundColor, borderColor });
-    
-    //this.updateExpensesDataComponent(expenses);
-    //this.refreshDataAvailable();
+    this.clearChart();
+
+    this.chartDatasets = [
+      {
+        data: data,
+        backgroundColor: colors
+      }
+    ];
+
+    this.chartLabels = labels;
   }
 
   clearChart() {
     this.chartLabels = [];
-    this.chartData = [];
+    this.chartDatasets[0].data = [];
     this.chartColors = [];
   }
 }

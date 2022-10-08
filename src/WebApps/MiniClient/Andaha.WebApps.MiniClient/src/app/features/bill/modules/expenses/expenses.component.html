@@ -7,24 +7,26 @@
   <mat-spinner diameter="40"></mat-spinner>
 </div>
 
-<div class="action-container" *ngIf="expenses.length == 0">
+<div class="action-container" *ngIf="!isLoading && expenses.length == 0">
   Keine Daten vorhanden.
 </div>
 
-<div *ngIf="expenses.length > 0">
-  <app-chart [expenses]="expenses"></app-chart>
+<div *ngIf="isLoading" class="action-container">
+  <mat-spinner diameter="40"></mat-spinner>
 </div>
 
-<!--
-<div class="margin-20" *ngIf="dataAvailable">
+<div *ngIf="!isLoading && expenses.length > 0 && categories.length > 0">
+  <app-chart [expenses]="expenses" [categories]="categories"></app-chart>
+</div>
+
+<div class="margin-20" *ngIf="!isLoading && expenses.length > 0">
   <section>
-    <div class="label">Sum of all expenses:</div>
+    <div class="label">Summe der Ausgaben:</div>
     <div class="label-row text-big">{{ sum }} €</div>
   </section>
   <mat-divider></mat-divider>
-  <section *ngFor="let expense of allExpenses">
+  <section *ngFor="let expense of expenses">
     <div class="label">{{ expense?.category }}:</div>
-    <div class="label-row">{{ expense?.costs }} €</div>
+    <div class="label-row">{{ truncate(2, expense?.costs) }} €</div>
   </section>
 </div>
--->
