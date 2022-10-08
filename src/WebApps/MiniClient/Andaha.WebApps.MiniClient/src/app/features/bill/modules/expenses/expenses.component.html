@@ -1,0 +1,30 @@
+<div class="timerange-container" *ngIf="availableTimeRange">
+  <app-timerange-selection [availableTimeRange]="availableTimeRange"
+    (selectionChanged)="timeSelectionChanged($event)">
+  </app-timerange-selection>
+</div>
+<div *ngIf="!availableTimeRange" class="action-container">
+  <mat-spinner diameter="40"></mat-spinner>
+</div>
+
+<div class="action-container" *ngIf="expenses.length == 0">
+  Keine Daten vorhanden.
+</div>
+
+<div *ngIf="expenses.length > 0">
+  <app-chart [expenses]="expenses"></app-chart>
+</div>
+
+<!--
+<div class="margin-20" *ngIf="dataAvailable">
+  <section>
+    <div class="label">Sum of all expenses:</div>
+    <div class="label-row text-big">{{ sum }} €</div>
+  </section>
+  <mat-divider></mat-divider>
+  <section *ngFor="let expense of allExpenses">
+    <div class="label">{{ expense?.category }}:</div>
+    <div class="label-row">{{ expense?.costs }} €</div>
+  </section>
+</div>
+-->

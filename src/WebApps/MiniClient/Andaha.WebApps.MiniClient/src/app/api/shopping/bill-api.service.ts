@@ -1,12 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { PagedResultDto } from '../common-dtos/PagedResultDto';
 import { createHttpParameters } from '../functions/api-utils';
 import { addApiVersion, constructPath } from '../functions/functions';
 import { BillCreateDto } from './dtos/BillCreateDto';
-import { BillDto } from './dtos/BillDto';
+import { BillDto, BillDtoRaw, mapBillDtoRaw, mapPagedBillDtoResultRaw } from './dtos/BillDto';
 import { getSearchBillsHttpParams, SearchBillsParameters } from './dtos/SearchBillsParameters';
 
 @Injectable({
@@ -29,12 +29,14 @@ export class BillApiService {
 
     const httpParameters = createHttpParameters(getSearchBillsHttpParams(parameters));
 
-    return this.httpClient.get<PagedResultDto<BillDto>>(url, { params: httpParameters});
+    return this.httpClient.get<PagedResultDto<BillDtoRaw>>(url, { params: httpParameters})
+      .pipe(map(mapPagedBillDtoResultRaw));
   }
 
   addBill(dto: BillCreateDto): Observable<BillDto> {
     const url = addApiVersion(this.endpointUrl, this.apiVersion);
-    return this.httpClient.post<BillDto>(url, dto);
+    return this.httpClient.post<BillDtoRaw>(url, dto)
+      .pipe(map(mapBillDtoRaw));
   }
 
   deleteBill(id: string): Observable<void> {

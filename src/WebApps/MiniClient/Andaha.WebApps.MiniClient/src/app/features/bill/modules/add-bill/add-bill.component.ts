@@ -6,7 +6,7 @@ import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
 import { BillCreateDto } from 'src/app/api/shopping/dtos/BillCreateDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { BillContextService } from 'src/app/services/bill-context.service';
-import { openErrorSnackbar, openInformationSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
+import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 
 @Component({
   selector: 'app-add-bill',

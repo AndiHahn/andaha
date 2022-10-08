@@ -10,8 +10,8 @@
         <button mat-icon-button routerLink="bill/create" routerLinkActive #rl2="routerLinkActive">
           <mat-icon [ngClass]="{ 'primary-fg-color': rl2.isActive}">add_circle</mat-icon>
         </button>
-        <button mat-icon-button [disabled]="true">
-          <mat-icon>donut_small</mat-icon>
+        <button mat-icon-button routerLink="bill/expenses" routerLinkActive #rl3="routerLinkActive">
+          <mat-icon [ngClass]="{ 'primary-fg-color': rl3.isActive}">donut_small</mat-icon>
         </button>
       </mat-toolbar-row>
     </mat-toolbar>

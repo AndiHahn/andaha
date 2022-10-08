@@ -1,13 +1,9 @@
-﻿using Andaha.CrossCutting.Application.Identity;
-using Andaha.CrossCutting.Application.Result;
+﻿using Andaha.CrossCutting.Application.Result;
 using Andaha.Services.Shopping.Application.Services;
 using Andaha.Services.Shopping.Dtos.v1_0;
 using Andaha.Services.Shopping.Infrastructure;
-using Andaha.Services.Shopping.Infrastructure.Proxies;
-using Dapr.Client;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Net.Http.Headers;
 
 namespace Andaha.Services.Shopping.Application.Queries.SearchBills;
 

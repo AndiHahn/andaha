@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button'
 import { MatToolbarModule } from '@angular/material/toolbar'
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { ErrorHttpInterceptor } from './core/error-http-interceptor.service';
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { AuthService } from './core/auth.service';
@@ -75,7 +75,8 @@ async function initApp(authService: AuthService): Promise<void> {
     {
       provide: OAuthStorage,
       useFactory: storageFactory
-    }
+    },
+    DatePipe
   ],
   bootstrap: [AppComponent]
 })
