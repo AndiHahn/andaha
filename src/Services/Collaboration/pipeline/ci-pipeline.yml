@@ -16,6 +16,13 @@ variables:
   nugetFeed: "andaha/andaha-feed"
 
 steps:
+  - task: UseDotNet@2
+    displayName: 'Use .NET7'
+    inputs:
+      packageType: sdk
+      version: 7.x
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+
   - task: NuGetToolInstaller@1
 
   - task: DotNetCoreCLI@2
