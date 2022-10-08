@@ -1,0 +1,33 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - master
+      - feature/collaboration/*
+  paths:
+    include:
+    - src/Services/Collaboration/*
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  buildConfiguration: "Release"
+  nugetFeed: "andaha/andaha-feed"
+
+steps:
+  - task: NuGetToolInstaller@1
+
+  - task: DotNetCoreCLI@2
+    displayName: dotnet restore
+    inputs:
+      command: restore
+      feedRestore: $(nugetFeed)
+      projects: '**/Andaha.Services.Collaboration.csproj'
+
+  - task: DotNetCoreCLI@2
+    displayName: build
+    inputs:
+      command: "build"
+      projects: '**/Andaha.Services.Collaboration.csproj'
+      arguments: "--configuration $(BuildConfiguration)"

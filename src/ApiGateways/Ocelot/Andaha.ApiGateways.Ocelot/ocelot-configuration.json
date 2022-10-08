@@ -25,6 +25,30 @@
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
     },
     {
+      "DownstreamPathTemplate": "/v1.0/invoke/shopping-api/method/api/expense/time-range",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "127.0.0.1",
+          "Port": "3500"
+        }
+      ],
+      "UpstreamPathTemplate": "/shopping-api/expense/time-range",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    },
+    {
+      "DownstreamPathTemplate": "/v1.0/invoke/shopping-api/method/api/expense",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "127.0.0.1",
+          "Port": "3500"
+        }
+      ],
+      "UpstreamPathTemplate": "/shopping-api/expense",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    },
+    {
       "DownstreamPathTemplate": "/v1.0/invoke/shopping-api/method/ping",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
