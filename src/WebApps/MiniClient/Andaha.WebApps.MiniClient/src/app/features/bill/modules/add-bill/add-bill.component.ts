@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormGroupDirective, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
 import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
 import { BillCreateDto } from 'src/app/api/shopping/dtos/BillCreateDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
@@ -23,7 +22,6 @@ export class AddBillComponent implements OnInit {
   
   constructor(
     private fb: UntypedFormBuilder, 
-    private router: Router,
     private snackbar: MatSnackBar,
     private billContextService: BillContextService,
     private billCategoryContextService: BillCategoryContextService
@@ -34,7 +32,7 @@ export class AddBillComponent implements OnInit {
       category: ['', Validators.required],
       price: ['', [Validators.min(0), Validators.pattern(this.numberRegex)]],
       date: [new Date()]
-    })
+    });
   }
 
   ngOnInit(): void {
@@ -47,7 +45,7 @@ export class AddBillComponent implements OnInit {
     })
   }
 
-  onSubmit() {
+  onSubmit(formDirective: FormGroupDirective) {
     if (!this.form.valid) {
       return;
     }
@@ -60,8 +58,8 @@ export class AddBillComponent implements OnInit {
       {
         next: _ => {
           this.isSaving = false;
-          //openInformationSnackbar('Rechnung gespeichert', this.snackbar);
-          this.router.navigateByUrl("/bill/list");
+          formDirective.resetForm();
+          this.form.reset();
         },
         error: (err) => {
           this.isSaving = false;
