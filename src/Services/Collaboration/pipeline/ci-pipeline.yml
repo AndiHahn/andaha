@@ -20,7 +20,7 @@ steps:
     displayName: 'Use .NET7'
     inputs:
       packageType: sdk
-      version: 7.0.x
+      version: v7.0.0-rc.1
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - task: NuGetToolInstaller@1
