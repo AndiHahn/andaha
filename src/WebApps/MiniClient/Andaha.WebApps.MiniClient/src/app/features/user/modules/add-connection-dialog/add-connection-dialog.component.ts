@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { CollaborationContextService } from 'src/app/services/collaboration-context.service';
 
@@ -10,7 +10,7 @@ import { CollaborationContextService } from 'src/app/services/collaboration-cont
 })
 export class AddConnectionDialogComponent implements OnInit {
 
-  formGroup: FormGroup;
+  formGroup: UntypedFormGroup;
 
   isSaving: boolean = false;
   errorMessage?: string;
@@ -19,9 +19,9 @@ export class AddConnectionDialogComponent implements OnInit {
     private dialogRef: MatDialogRef<AddConnectionDialogComponent>,
     private contextService: CollaborationContextService
   ) {
-    this.formGroup = new FormGroup(
+    this.formGroup = new UntypedFormGroup(
       {
-        emailAddress: new FormControl('', [ Validators.email ])
+        emailAddress: new UntypedFormControl('', [ Validators.email ])
       }
     );
   }

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { TimeRange } from './TimeRange';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { DateType, DateTypeLabelMapping } from './DateType';
 import * as moment from 'moment';
 
@@ -17,7 +17,7 @@ export class TimerangeSelectionComponent implements OnInit, OnChanges {
   @Output()
   selectionChanged: EventEmitter<TimeRange> = new EventEmitter<TimeRange>();
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   
   dateTypeLabelMapping = DateTypeLabelMapping;
   dateType = DateType;
@@ -35,7 +35,7 @@ export class TimerangeSelectionComponent implements OnInit, OnChanges {
   customToDate?: Date;
 
   constructor(
-    private fb: FormBuilder) {
+    private fb: UntypedFormBuilder) {
     this.selectedDateType = DateType.Month;
 
     this.form = this.fb.group({

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
@@ -17,12 +17,12 @@ export class AddBillComponent implements OnInit {
   numberRegex: string = '^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$';
 
   isSaving: boolean = false;
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   categories?: BillCategoryDto[];
   
   constructor(
-    private fb: FormBuilder, 
+    private fb: UntypedFormBuilder, 
     private router: Router,
     private snackbar: MatSnackBar,
     private billContextService: BillContextService,
