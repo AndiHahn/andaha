@@ -8,7 +8,7 @@ var sqlServerAdminLogin = 'andaha-sql-admin'
 var collaborationDbName = 'andaha-collaborationdb-${stage}'
 
 resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' = {
-  name: 'andaha-shopping-sqlserver-${stage}'
+  name: 'andaha-collaboration-sqlserver-${stage}'
   location: location
   properties: {
     administratorLogin: sqlServerAdminLogin
