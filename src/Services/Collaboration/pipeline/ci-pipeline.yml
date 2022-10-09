@@ -13,7 +13,8 @@ pool:
 
 variables:
   - group: Development
-  containerRegistryConnection: "andaha-container-reg-connection"
+  - name: containerRegistryConnection
+    value: "andaha-container-reg-connection"
 
 steps:
   - task: Docker@2
