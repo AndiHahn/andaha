@@ -26,5 +26,4 @@ steps:
       repository: andaha/services/collaboration
       containerRegistry: $(containerRegistryConnection)
       tags: |
-        $(imageTag)
-        latest
+        build
