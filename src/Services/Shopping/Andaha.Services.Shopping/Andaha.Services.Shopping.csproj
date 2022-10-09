@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Andaha.CrossCutting.Application" Version="1.0.7" />
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="6.0.2" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.5" />
     <PackageReference Include="CSharpFunctionalExtensions" Version="2.34.3" />
@@ -35,10 +36,6 @@
     <Folder Include="Application\BillCategory\Commands\" />
     <Folder Include="Application\Commands\" />
     <Folder Include="Infrastructure\Migrations\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\CrossCutting\Andaha.CrossCutting.Application\Andaha.CrossCutting.Application.csproj" />
   </ItemGroup>
 
 </Project>
