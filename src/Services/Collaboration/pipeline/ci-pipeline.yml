@@ -12,29 +12,17 @@ pool:
   vmImage: "ubuntu-latest"
 
 variables:
-  buildConfiguration: "Release"
-  nugetFeed: "andaha/andaha-feed"
+  - group: Development
 
 steps:
-  - task: UseDotNet@2
-    displayName: 'Use .NET7'
+  - task: Docker@2
+    displayName: build image
     inputs:
-      packageType: sdk
-      version: v7.0.x
-      installationPath: $(Agent.ToolsDirectory)/dotnet
-
-  - task: NuGetToolInstaller@1
-
-  - task: DotNetCoreCLI@2
-    displayName: dotnet restore
-    inputs:
-      command: restore
-      feedRestore: $(nugetFeed)
-      projects: '**/Andaha.Services.Collaboration.csproj'
-
-  - task: DotNetCoreCLI@2
-    displayName: build
-    inputs:
-      command: "build"
-      projects: '**/Andaha.Services.Collaboration.csproj'
-      arguments: "--configuration $(BuildConfiguration)"
+      command: build
+      arguments: '--build-arg PatPlaceholder=$(nugetFeedAccessToken)'
+      dockerfile: src/Services/Collaboration/Andaha.Services.Collaboration/Dockerfile
+      repository: andaha/services/collaboration
+      containerRegistry: $(containerRegistryConnection)
+      tags: |
+        $(imageTag)
+        latest
