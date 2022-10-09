@@ -14,7 +14,8 @@ import { environment } from 'src/environments/environment';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { HoldableDirective } from './shared/directives/holdable.directive';
+import { MatListModule } from '@angular/material/list';
+import { MatSidenavModule } from "@angular/material/sidenav"
 
 function storageFactory() : OAuthStorage {
   return localStorage
@@ -53,6 +54,8 @@ async function initApp(authService: AuthService): Promise<void> {
     MatToolbarModule,
     MatIconModule,
     MatMenuModule,
+    MatListModule,
+    MatSidenavModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
       // Register the ServiceWorker as soon as the application is stable

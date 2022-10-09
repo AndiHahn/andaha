@@ -1,24 +1,42 @@
-<div>
+<div class="full-height">
   <mat-toolbar class="toolbar" color="primary">
-    <!--
-    <button mat-icon-button>
+    <button mat-icon-button (click)="sidenav.toggle()">
       <mat-icon>menu</mat-icon>
     </button>
-    -->
     <button mat-button routerLink="/">
       <h2>Andaha</h2>
     </button>
     <span class="spacer"></span>
     <span class="user-info">{{ userName }}</span>
-    <button mat-icon-button routerLink="/user">
+    <button mat-icon-button [matMenuTriggerFor]="userPopup">
       <mat-icon>account_circle</mat-icon>
     </button>
+    <mat-menu #userPopup="matMenu">
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>exit_to_app</mat-icon>
+        <span>Ausloggen</span>
+      </button>
+    </mat-menu>
   </mat-toolbar>
-</div>
 
-<div class="toolbar-placeholder"></div>
+  <div class="toolbar-placeholder"></div>
 
-<div class="wait-login-container" *ngIf="!isLoggedIn">
-  <h2>Warten auf Login...</h2>
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #sidenav>
+      <mat-nav-list>
+        <a mat-list-item routerLink="/" (click)="sidenav.toggle()">
+          <mat-icon class="menu-icon">shopping_cart</mat-icon>Rechnungen
+        </a>
+        <a mat-list-item routerLink="/settings" (click)="sidenav.toggle()">
+          <mat-icon class="menu-icon">settings</mat-icon>Einstellungen
+        </a>
+      </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <div class="wait-login-container" *ngIf="!isLoggedIn">
+        <h2>Warten auf Login...</h2>
+      </div>
+      <router-outlet *ngIf="isLoggedIn"></router-outlet>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
 </div>
-<router-outlet *ngIf="isLoggedIn"></router-outlet>

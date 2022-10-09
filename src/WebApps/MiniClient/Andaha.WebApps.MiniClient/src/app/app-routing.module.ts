@@ -7,8 +7,8 @@ const routes: Routes = [
     loadChildren: () => import('./features/bill/bill.module').then(m => m.BillModule)
   },
   {
-    path: 'user',
-    loadChildren: () => import('./features/user/user.module').then(m => m.UserModule)
+    path: 'settings',
+    loadChildren: () => import('./features/settings/settings.module').then(m => m.SettingsModule)
   }
 ];
 
