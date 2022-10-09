@@ -2,7 +2,6 @@ param stage string
 param location string
 param imageVersion string
 param containerAppsEnvironmentId string
-param containerAppsEnvironmentDomain string
 param containerRegistryUsername string
 @secure()
 param containerRegistryPassword string
@@ -28,13 +27,46 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
               name: 'ASPNETCORE_URLS'
               value: 'http://0.0.0.0:80'
             }
+          ]
+          probes: [
             {
-              name: 'Hosts__SHOPPING_API_HOST'
-              value: 'https://shopping-api-${stage}.${containerAppsEnvironmentDomain}:80'
+              type: 'Readiness'
+              httpGet: {
+                port: 80
+                path: '/hc'
+                scheme: 'HTTP'
+              }
+              initialDelaySeconds: 15
+              periodSeconds: 30
+              timeoutSeconds: 2
+              successThreshold: 1
+              failureThreshold: 3
             }
             {
-              name: 'Hosts__COLLABORATION_API_HOST'
-              value: 'https://collaboration-api-${stage}.${containerAppsEnvironmentDomain}:80'
+              type: 'Liveness'
+              httpGet: {
+                port: 80
+                path: '/liveness'
+                scheme: 'HTTP'
+              }
+              initialDelaySeconds: 15
+              periodSeconds: 30
+              timeoutSeconds: 2
+              successThreshold: 1
+              failureThreshold: 3
+            }
+            {
+              type: 'Startup'
+              httpGet: {
+                port: 80
+                path: '/hc'
+                scheme: 'HTTP'
+              }
+              initialDelaySeconds: 0
+              periodSeconds: 15
+              timeoutSeconds: 3
+              successThreshold: 1
+              failureThreshold: 3
             }
           ]
         }

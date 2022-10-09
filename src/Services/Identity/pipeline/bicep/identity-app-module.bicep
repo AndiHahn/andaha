@@ -121,6 +121,11 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
     }
     configuration: {
       activeRevisionsMode: 'single'
+      dapr: {
+        enabled: true
+        appId: 'identity-api'
+        appPort: 80
+      }
       ingress: {
         external: true
         targetPort: 80

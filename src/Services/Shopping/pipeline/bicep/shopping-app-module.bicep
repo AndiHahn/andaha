@@ -41,18 +41,43 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
           ]
           probes: [
             {
+              type: 'Readiness'
               httpGet: {
                 port: 80
                 path: '/hc'
+                scheme: 'HTTP'
               }
-              type: 'Readiness'
+              initialDelaySeconds: 15
+              periodSeconds: 30
+              timeoutSeconds: 2
+              successThreshold: 1
+              failureThreshold: 3
             }
             {
+              type: 'Liveness'
               httpGet: {
                 port: 80
                 path: '/liveness'
+                scheme: 'HTTP'
               }
-              type: 'Liveness'
+              initialDelaySeconds: 15
+              periodSeconds: 30
+              timeoutSeconds: 2
+              successThreshold: 1
+              failureThreshold: 3
+            }
+            {
+              type: 'Startup'
+              httpGet: {
+                port: 80
+                path: '/hc'
+                scheme: 'HTTP'
+              }
+              initialDelaySeconds: 0
+              periodSeconds: 15
+              timeoutSeconds: 3
+              successThreshold: 1
+              failureThreshold: 3
             }
           ]
         }
@@ -68,11 +93,6 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
         enabled: true
         appId: 'shopping-api'
         appPort: 80
-      }
-      ingress: {
-        external: true
-        targetPort: 80
-        allowInsecure: true
       }
       registries: [
         {
