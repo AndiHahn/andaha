@@ -1,4 +1,4 @@
-<div class="full-height">
+<div class="nav-wrapper">
   <mat-toolbar class="toolbar" color="primary">
     <button mat-icon-button (click)="sidenav.toggle()">
       <mat-icon>menu</mat-icon>
@@ -23,7 +23,7 @@
 
   <mat-sidenav-container class="sidenav-container">
     <mat-sidenav #sidenav>
-      <mat-nav-list>
+      <mat-nav-list style="flex: 1;">
         <a mat-list-item routerLink="/" (click)="sidenav.toggle()">
           <mat-icon class="menu-icon">shopping_cart</mat-icon>Rechnungen
         </a>
@@ -31,7 +31,17 @@
           <mat-icon class="menu-icon">settings</mat-icon>Einstellungen
         </a>
       </mat-nav-list>
+
+      <div>
+        <div style="padding: 5px 15px">
+          <a class="text" appText textInfo routerLink="/agb" (click)="sidenav.toggle()">AGB</a> - 
+          <a class="text" appText textInfo routerLink="/data-protection" (click)="sidenav.toggle()">Datenschutzerklärung</a>
+          <br>
+          <a class="text" appText textInfo routerLink="/user-data" (click)="sidenav.toggle()">Benutzerdaten</a>
+        </div>
+      </div>
     </mat-sidenav>
+    
     <mat-sidenav-content>
       <div class="wait-login-container" *ngIf="!isLoggedIn">
         <h2>Warten auf Login...</h2>

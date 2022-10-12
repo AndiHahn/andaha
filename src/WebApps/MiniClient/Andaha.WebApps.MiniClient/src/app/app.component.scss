@@ -28,14 +28,23 @@ $toolbar-height: 56px;
   font-weight: lighter;
 }
 
-.full-height {
-  height: 100%;
-}
-
 .sidenav-container {
   height: calc(100% - $toolbar-height);
 }
 
 .menu-icon {
   margin-right: 10px;
+}
+
+.nav-wrapper {
+  height: 100%; 
+}
+
+::ng-deep .mat-drawer-inner-container {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.text {
+  color: white;
 }

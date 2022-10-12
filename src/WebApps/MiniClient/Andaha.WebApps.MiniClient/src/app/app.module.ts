@@ -15,7 +15,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatListModule } from '@angular/material/list';
-import { MatSidenavModule } from "@angular/material/sidenav"
+import { MatSidenavModule } from "@angular/material/sidenav";
 
 function storageFactory() : OAuthStorage {
   return localStorage

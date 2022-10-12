@@ -9,6 +9,18 @@ const routes: Routes = [
   {
     path: 'settings',
     loadChildren: () => import('./features/settings/settings.module').then(m => m.SettingsModule)
+  },
+  {
+    path: 'data-protection',
+    loadChildren: () => import('./features/data-protection/data-protection/data-protection.module').then(m => m.DataProtectionModule)
+  },
+  {
+    path: 'agb',
+    loadChildren: () => import('./features/data-protection/agb/agb.module').then(m => m.AgbModule)
+  },
+  {
+    path: 'user-data',
+    loadChildren: () => import('./features/data-protection/user-data/user-data.module').then(m => m.UserDataModule)
   }
 ];
 
