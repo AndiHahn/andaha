@@ -1,0 +1,40 @@
+<div *ngIf="isLoading" class="action-container">
+  <mat-spinner diameter="40"></mat-spinner>
+</div>
+
+<div *ngIf="!isLoading">
+  <div style="margin: 5px 0px;">
+    <div *ngFor="let formGroup of formGroups; index as i">
+      <app-category-item [editing]="isEditing" [isDefault]="isDefaultCategory(i)"
+        [categoryNameControl]="$any(formGroup).controls['categoryName']"
+        [categoryColorControl]="$any(formGroup).controls['categoryColor']"
+        (deleteCategory)="onDeleteCategory(i)">
+      </app-category-item>
+    </div>
+  </div>
+  
+  <div class="add-button">
+    <button mat-icon-button [disabled]="!isEditing" (click)="onAddCategoryClick()">
+      <mat-icon style="font-size: 35px">add_circle</mat-icon>
+    </button>
+  </div>
+  
+  <div class="button-placeholder"></div>
+  
+  <div class="bottom-button">
+    <div *ngIf="!isEditing" style="flex: 1">
+      <button mat-raised-button color="primary" class="button-style" (click)="onEditClick()">
+        <mat-icon>edit</mat-icon><span>Bearbeiten</span>
+      </button>
+    </div>
+    <div *ngIf="isEditing" style="display: flex; flex-direction: row; width: 100%">
+      <button mat-raised-button color="secondary" class="button-style" (click)="onCancelClick()">
+        <mat-icon>close</mat-icon><span>Abbrechen</span>
+      </button>
+      <button mat-raised-button color="primary" class="button-style" 
+          [disabled]="!allCategoriesValid" (click)="onSaveClick()">
+        <mat-icon>save</mat-icon><span>Speichern</span>
+      </button>
+    </div>
+  </div>
+</div>

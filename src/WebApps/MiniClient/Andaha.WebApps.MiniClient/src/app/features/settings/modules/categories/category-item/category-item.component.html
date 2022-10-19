@@ -1,0 +1,27 @@
+<div class="master-container">
+  <mat-card class="mat-card">
+    <div class="name-field">
+      <mat-form-field appearance="fill">
+        <input matInput required [readonly]="!editing || isDefault" [formControl]="categoryNameControl" 
+          placeholder="Kategorie">
+      </mat-form-field>
+    </div>
+  
+    <div class="color-field">
+      <mat-form-field appearance="fill">
+        <mat-select-trigger *ngIf="selectedColor">
+          <app-color-item [color]="selectedColor"></app-color-item>
+        </mat-select-trigger>
+        <mat-select [(ngModel)]="selectedColor" name="color" [formControl]="categoryColorControl">
+          <mat-option *ngFor="let color of colors" [value]="color">
+            <app-color-item [color]="color"></app-color-item>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <button mat-icon-button class="delete-button dark-bg-color" [disabled]="!editing  || isDefault">
+      <mat-icon (click)="onDeleteClick()">delete</mat-icon>
+    </button>
+  </mat-card>
+</div>
+

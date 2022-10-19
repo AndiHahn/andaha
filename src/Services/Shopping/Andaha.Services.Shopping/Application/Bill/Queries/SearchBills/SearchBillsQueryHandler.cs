@@ -1,4 +1,5 @@
-﻿using Andaha.CrossCutting.Application.Result;
+﻿using Andaha.CrossCutting.Application.Identity;
+using Andaha.CrossCutting.Application.Result;
 using Andaha.Services.Shopping.Application.Services;
 using Andaha.Services.Shopping.Dtos.v1_0;
 using Andaha.Services.Shopping.Infrastructure;
@@ -10,13 +11,16 @@ namespace Andaha.Services.Shopping.Application.Queries.SearchBills;
 internal class SearchBillsQueryHandler : IRequestHandler<SearchBillsQuery, PagedResult<BillDto>>
 {
     private readonly ShoppingDbContext dbContext;
+    private readonly IIdentityService identityService;
     private readonly ICollaborationService collaborationService;
 
     public SearchBillsQueryHandler(
         ShoppingDbContext dbContext,
+        IIdentityService identityService,
         ICollaborationService collaborationService)
     {
         this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        this.identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
         this.collaborationService = collaborationService ?? throw new ArgumentNullException(nameof(collaborationService));
     }
 
@@ -41,8 +45,10 @@ internal class SearchBillsQueryHandler : IRequestHandler<SearchBillsQuery, Paged
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
+        Guid userId = this.identityService.GetUserId();
+
         return new PagedResult<BillDto>(
-            queryResult.Select(bill => bill.ToDto()),
+            queryResult.Select(bill => bill.ToDto(userId)),
             totalCount);
     }
 }

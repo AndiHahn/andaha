@@ -9,6 +9,7 @@ public static class ShoppingDbContextSeed
     {
         var categories = new List<BillCategory>
         {
+            new BillCategory(userId, "Keine", "white", true),
             new BillCategory(userId, "Lebensmittel", "red"),
             new BillCategory(userId, "Wohnen", "pink"),
             new BillCategory(userId, "Kleidung", "purple"),

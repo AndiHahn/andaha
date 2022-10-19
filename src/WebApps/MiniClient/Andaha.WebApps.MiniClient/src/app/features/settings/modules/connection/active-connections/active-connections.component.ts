@@ -3,11 +3,11 @@ import { ConnectionDto } from 'src/app/api/collaboration/dtos/ConnectionDto';
 import { CollaborationContextService } from 'src/app/services/collaboration-context.service';
 
 @Component({
-  selector: 'app-connections',
-  templateUrl: './connections.component.html',
-  styleUrls: ['./connections.component.scss']
+  selector: 'app-active-connections',
+  templateUrl: './active-connections.component.html',
+  styleUrls: ['./active-connections.component.scss']
 })
-export class ConnectionsComponent implements OnInit {
+export class ActiveConnectionsComponent implements OnInit {
 
   loading: boolean = false;
   connections?: ConnectionDto[];

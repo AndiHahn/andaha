@@ -1,4 +1,5 @@
 ﻿using Andaha.CrossCutting.Application.Result;
+using Andaha.Services.Shopping.Application.BillCategory.Commands.UpdateBillCateogires;
 using Andaha.Services.Shopping.Application.Queries.ListBillCategories;
 using Andaha.Services.Shopping.Dtos.v1_0;
 using MediatR;
@@ -30,5 +31,15 @@ public class BillCategoryController : ControllerBase
         var query = new ListBillCategoriesQuery();
 
         return sender.Send(query, cancellationToken);
+    }
+
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    public Task<Result> BulkUpdate([FromBody] IEnumerable<BillCategoryUpdateDto> categories, CancellationToken cancellationToken)
+    {
+        var command = new UpdateBillCategoriesCommand(categories.ToArray());
+
+        return sender.Send(command, cancellationToken);
     }
 }

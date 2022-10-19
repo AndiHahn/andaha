@@ -16,6 +16,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from "@angular/material/sidenav";
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { ConfirmationDialogService } from './shared/confirmation-dialog/confirmation-dialog.service';
+import { MatDialog } from '@angular/material/dialog';
 
 function storageFactory() : OAuthStorage {
   return localStorage
@@ -56,6 +59,7 @@ async function initApp(authService: AuthService): Promise<void> {
     MatMenuModule,
     MatListModule,
     MatSidenavModule,
+    MatSnackBarModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
       // Register the ServiceWorker as soon as the application is stable

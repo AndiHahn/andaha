@@ -1,20 +1,32 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { SettingsComponent } from './settings.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { SettingsComponent } from './settings.component';
-import { MatDividerModule } from '@angular/material/divider';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { AddConnectionDialogService } from './modules/connection/add-connection-dialog/add-connection-dialog.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { AddConnectionDialogService } from './modules/add-connection-dialog/add-connection-dialog.service';
-import { IncomingConnectionRequestsModule } from './modules/incoming-connection-requests/incoming-connection-requests.module';
-import { ConnectionsModule } from './modules/connections/connections.module';
-import { OutgoingConnectionRequestsModule } from './modules/outgoing-connection-requests/outgoing-connection-requests.module';
 
 const routes: Routes = [
   {
     path: '',
+    redirectTo: 'settings/connections',
+    pathMatch: 'full'
+  },
+  {
+    path: '',
     component: SettingsComponent,
+    children: [
+      {
+        path: 'settings/connections',
+        loadChildren: () => import('./modules/connection/connection.module').then(m => m.ConnectionModule)
+      },
+      {
+        path: 'settings/categories',
+        loadChildren: () => import('./modules/categories/categories.module').then(m => m.CategoriesModule)
+      }
+    ]
   }
 ];
 
@@ -23,15 +35,12 @@ const routes: Routes = [
     SettingsComponent
   ],
   imports: [
-    RouterModule.forChild(routes),
     CommonModule,
+    RouterModule.forChild(routes),
     MatIconModule,
     MatButtonModule,
-    MatDividerModule,
-    MatDialogModule,
-    IncomingConnectionRequestsModule,
-    OutgoingConnectionRequestsModule,
-    ConnectionsModule
+    MatToolbarModule,
+    MatDialogModule
   ],
   exports: [ RouterModule ],
   providers: [

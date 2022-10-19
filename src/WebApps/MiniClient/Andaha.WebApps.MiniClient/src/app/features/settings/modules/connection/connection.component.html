@@ -1,0 +1,29 @@
+<div class="top-placeholder"></div>
+
+<div class="connections-container">
+
+  <h3 class="title">Verbindungen</h3>
+
+  <app-active-connections></app-active-connections>
+
+  <div class="spacer"></div>
+
+  <button mat-raised-button color="primary" class="button-style" (click)="onAddConnectionClick()">
+    Verbindung herstellen
+  </button>
+
+  <mat-divider></mat-divider>
+
+  <h3 class="title">Eingehende Verbindungsanfragen</h3>
+  
+  <app-incoming-connection-requests></app-incoming-connection-requests>
+
+  <div class="spacer"></div>
+
+  <mat-divider></mat-divider>
+
+  <h3 class="title">Ausgehende Verbindungsanfragen</h3>
+
+  <app-outgoing-connection-requests></app-outgoing-connection-requests>
+
+</div>

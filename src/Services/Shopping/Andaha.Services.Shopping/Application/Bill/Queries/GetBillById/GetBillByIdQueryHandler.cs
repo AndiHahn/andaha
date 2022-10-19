@@ -43,6 +43,6 @@ internal class GetBillByIdQueryHandler : IRequestHandler<GetBillByIdQuery, Resul
             return Result<BillDto>.Forbidden();
         }
 
-        return bill.ToDto();
+        return bill.ToDto(userId);
     }
 }

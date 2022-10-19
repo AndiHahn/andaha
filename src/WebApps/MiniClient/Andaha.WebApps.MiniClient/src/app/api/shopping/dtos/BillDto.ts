@@ -16,6 +16,7 @@ interface BillDtoBase {
   shopName: string;
   price: number;
   notes?: string;
+  isExternal: boolean;
 }
 
 export function mapBillDtoRaw(raw: BillDtoRaw): BillDto {

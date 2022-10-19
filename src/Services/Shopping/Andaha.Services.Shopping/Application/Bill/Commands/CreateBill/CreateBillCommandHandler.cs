@@ -42,6 +42,6 @@ internal class CreateBillCommandHandler : IRequestHandler<CreateBillCommand, Res
             .Include(bill => bill.Category)
             .SingleAsync(bill => bill.Id == newBill.Entity.Id, cancellationToken);
 
-        return bill.ToDto();
+        return bill.ToDto(userId);
     }
 }

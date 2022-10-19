@@ -35,8 +35,16 @@
         "/api/bill",
         "/shopping-api/billcategory",
         "/api/billcategory",
-        "/collaboration-api/connection",
-        "/api/connection"
+        "/shopping-api/expense",
+        "/api/expense",
+        "/shopping-api/expense/time-range",
+        "/api/expense/time-range",
+        "/collaboration-api/connection/established",
+        "/api/connection/established",
+        "/collaboration-api/connection/outgoing",
+        "/api/connection/outgoing",
+        "/collaboration-api/connection/incoming",
+        "/api/connection/incoming"
       ],
       "cacheConfig": {
         "strategy": "freshness",

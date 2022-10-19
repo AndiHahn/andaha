@@ -74,7 +74,9 @@ export class ExpensesComponent implements OnInit {
 
     this.categoryContextService.categories().subscribe(
       {
-        next: categories => this.categories = categories
+        next: categories => {
+          this.categories = categories;
+        }
       }
     );
   }

@@ -12,9 +12,9 @@ import { BillListItemComponent } from './bill-list-item/bill-list-item.component
 import { RouterModule, Routes } from '@angular/router';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatDividerModule } from '@angular/material/divider';
-import { HoldableDirectiveModule } from 'src/app/shared/directives/holdable-directive.module';
 import { BillOptionsDialogService } from './bill-options-dialog/bill-options-dialog.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { HoldableDirectiveModule } from 'src/app/shared/directives/holdable-directive/holdable-directive.module';
 
 const routes: Routes = [
   {

@@ -12,6 +12,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatNativeDateModule } from '@angular/material/core';
 import { AppSnackbarModule } from 'src/app/shared/snackbar/snackbar.module';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
 
 const routes: Routes = [
   {
@@ -37,7 +38,8 @@ const routes: Routes = [
     ReactiveFormsModule,
     MatProgressBarModule,
     AppSnackbarModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatIconModule
   ],
   providers: [
     MatDatepickerModule

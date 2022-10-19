@@ -11,7 +11,8 @@
   ],
   "include": [
     "src/**/*.d.ts",
+    "src/app/shared/confirmation-dialog/confirmation-dialog.module.ts",
     "src/app/features/bill/modules/bill-list/bill-options-dialog/bill-options-dialog.module.ts",
-    "src/app/features/settings/modules/add-connection-dialog/add-connection-dialog.module.ts"
+    "src/app/features/settings/modules/connection/add-connection-dialog/add-connection-dialog.module.ts"
   ]
 }

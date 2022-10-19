@@ -1,0 +1,18 @@
+<div>
+  <mat-dialog-content>
+    <div class="close-container">
+      <button mat-icon-button [mat-dialog-close]="undefined">
+        <mat-icon class="close-icon">close</mat-icon>
+      </button>
+    </div>
+
+    <h3>{{ dialogData.text }}</h3>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <div class="button-container">
+      <button mat-raised-button color="secondary" class="button-style" (click)="onCancelClick()">Abbrechen</button>
+      <button mat-raised-button color="primary" class="button-style" (click)="onAcceptClick()">Bestätigen</button>
+    </div>
+  </mat-dialog-actions>
+</div>

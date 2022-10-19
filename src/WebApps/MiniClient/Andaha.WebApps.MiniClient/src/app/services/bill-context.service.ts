@@ -68,6 +68,10 @@ export class BillContextService {
     this.setPageIndex(this.pageIndex$.value + 1);
   }
 
+  refreshBills(): void {
+    this.fetchBills();
+  }
+
   addBill(dto: BillCreateDto): Observable<BillDto> {
     const returnSubject = new Subject<BillDto>();
 
@@ -161,7 +165,11 @@ export class BillContextService {
     const currentBillList = this.bills$.value;
 
     newBills.forEach(bill => {
-      if (!currentBillList.some(n => n.id == bill.id)) {
+      const existingBill = currentBillList.find(b => b.id == bill.id);
+      if (existingBill) {
+        existingBill.category.name = bill.category.name;
+        existingBill.category.color = bill.category.color;
+      } else {
         currentBillList.push(bill);
       }
     });

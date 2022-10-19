@@ -65,4 +65,10 @@ public class Bill : Entity<Guid>, IShareableEntity
     public BillCategory Category { get; private set; } = null!;
 
     public bool HasCreated(Guid userId) => this.UserId == userId;
+
+    public void UpdateCategory(BillCategory category)
+    {
+        this.CategoryId = category.Id;
+        this.Category = category;
+    }
 }

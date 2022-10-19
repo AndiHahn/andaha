@@ -11,7 +11,7 @@ public class BillCategory : Entity<Guid>, IUserDependentEntity
     {
     }
 
-    public BillCategory(Guid userId, string name, string color)
+    public BillCategory(Guid userId, string name, string color, bool isDefault = false)
     {
         if (userId == Guid.Empty)
         {
@@ -19,6 +19,7 @@ public class BillCategory : Entity<Guid>, IUserDependentEntity
         }
 
         this.UserId = userId;
+        this.IsDefault = isDefault;
 
         this.Update(name, color);
     }
@@ -28,6 +29,8 @@ public class BillCategory : Entity<Guid>, IUserDependentEntity
     public string Name { get; private set; } = null!;
 
     public string Color { get; private set; } = null!;
+
+    public bool IsDefault { get; private set; }
 
     public IReadOnlyCollection<Bill> Bills => _bills;
 

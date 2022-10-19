@@ -41,7 +41,9 @@ export class AddBillComponent implements OnInit {
 
   private loadBillCategories() {
     this.billCategoryContextService.categories().subscribe({
-      next: categories => this.categories = categories
+      next: categories => {
+        this.categories = categories;
+      }
     })
   }
 

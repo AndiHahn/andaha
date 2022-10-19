@@ -27,6 +27,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatProgressBarModule,
     MatIconModule,
     MatDialogModule
-  ]
+  ],
+  providers: [ ]
 })
 export class AddConnectionDialogModule { }

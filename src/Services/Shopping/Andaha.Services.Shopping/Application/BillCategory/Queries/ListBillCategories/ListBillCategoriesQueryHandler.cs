@@ -22,7 +22,9 @@ internal class ListBillCategoriesQueryHandler : IRequestHandler<ListBillCategori
 
     public async Task<Result<IEnumerable<BillCategoryDto>>> Handle(ListBillCategoriesQuery request, CancellationToken cancellationToken)
     {
-        var entities = await this.dbContext.BillCategory.ToListAsync(cancellationToken);
+        var entities = await this.dbContext.BillCategory
+            .OrderBy(category => category.IsDefault)
+            .ToListAsync(cancellationToken);
         if (!entities.Any())
         {
             var initialCategories = ShoppingDbContextSeed.CreateInitialCategories(this.identityService.GetUserId());
@@ -33,7 +35,7 @@ internal class ListBillCategoriesQueryHandler : IRequestHandler<ListBillCategori
             entities = initialCategories.ToList();
         }
 
-        var dtos = entities.Select(entity => new BillCategoryDto(entity.Id, entity.Name, entity.Color));
+        var dtos = entities.Select(entity => entity.ToDto());
 
         return Result<IEnumerable<BillCategoryDto>>.Success(dtos);
     }

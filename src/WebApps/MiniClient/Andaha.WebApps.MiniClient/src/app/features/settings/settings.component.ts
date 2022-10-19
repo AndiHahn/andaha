@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from 'src/app/core/auth.service';
-import { AddConnectionDialogService } from './modules/add-connection-dialog/add-connection-dialog.service';
+import { AddConnectionDialogService } from './modules/connection/add-connection-dialog/add-connection-dialog.service';
 
 @Component({
   selector: 'app-settings',

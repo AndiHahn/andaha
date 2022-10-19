@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { addApiVersion, constructPath } from '../functions/functions';
 import { BillCategoryDto } from './dtos/BillCategoryDto';
+import { BillCategoryUpdateDto } from './dtos/BillCategoryUpdateDto';
 
 @Injectable({
   providedIn: 'root'
@@ -23,5 +24,10 @@ export class BillCategoryApiService {
   getAll(): Observable<BillCategoryDto[]> {
     const url = addApiVersion(this.endpointUrl, this.apiVersion);
     return this.httpClient.get<BillCategoryDto[]>(url);
+  }
+
+  bulkUpdate(categories: BillCategoryUpdateDto[]): Observable<void> {
+    const url = addApiVersion(this.endpointUrl, this.apiVersion);
+    return this.httpClient.put<void>(url, categories);
   }
 }

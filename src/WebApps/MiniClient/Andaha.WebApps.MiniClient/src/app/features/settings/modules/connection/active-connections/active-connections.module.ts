@@ -1,18 +1,18 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ConnectionsComponent } from './connections.component';
+import { ActiveConnectionsComponent } from './active-connections.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   declarations: [
-    ConnectionsComponent
+    ActiveConnectionsComponent
   ],
   imports: [
     CommonModule,
     MatCardModule,
     MatProgressSpinnerModule
   ],
-  exports: [ ConnectionsComponent ]
+  exports: [ ActiveConnectionsComponent ]
 })
-export class ConnectionsModule { }
+export class ActiveConnectionsModule { }

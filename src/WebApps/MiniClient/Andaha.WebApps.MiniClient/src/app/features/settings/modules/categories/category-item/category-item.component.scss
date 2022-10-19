@@ -1,0 +1,54 @@
+.master-container {
+  padding: 5px 8px 0px 8px;
+}
+
+.mat-card {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  max-width: calc(100% - 20px);
+  padding: 10px;
+  height: 40px;
+}
+
+.name-field {
+  flex: 1;
+  margin-right: 5px;
+
+  mat-form-field {
+    width: 100% !important;
+    
+    & ::ng-deep .mat-form-field-infix {
+      width: 100% !important;
+    }
+  }
+}
+
+.color-field {
+  margin-right: 5px;
+
+  mat-form-field {
+    & ::ng-deep .mat-form-field-infix {
+      max-width: 70px !important;
+    }
+  }
+}
+
+.delete-button {
+  color: red;
+}
+
+mat-form-field {
+  & ::ng-deep .mat-form-field-flex {
+    padding-top: 0px !important;
+  }
+  
+  & ::ng-deep .mat-form-field-wrapper {
+    padding-bottom: 0px;
+  }
+  
+  & ::ng-deep .mat-form-field-underline {
+    bottom: 0px;
+  }
+}

@@ -1,5 +1,6 @@
 export interface BillCategoryDto {
-  id: number;
+  id: string;
   name: string;
   color: string;
+  isDefault: boolean;
 }

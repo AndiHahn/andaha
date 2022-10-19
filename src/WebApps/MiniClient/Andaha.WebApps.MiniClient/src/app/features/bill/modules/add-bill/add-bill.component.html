@@ -42,7 +42,9 @@
 
     <div class="bottom-button">
       <div style="flex: 1">
-        <button mat-raised-button color="primary" class="button-style" [disabled]="!form.valid">Speichern</button>
+        <button mat-raised-button color="primary" class="button-style" [disabled]="!form.valid">
+          <mat-icon>save</mat-icon><span>Speichern</span>
+        </button>
       </div>
     </div>
   </form>
