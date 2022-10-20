@@ -15,13 +15,4 @@ internal static class ProgramExtensions
 
         return builder;
     }
-
-    internal static WebApplicationBuilder AddCustomHealthChecks(this WebApplicationBuilder builder)
-    {
-        builder.Services
-            .AddHealthChecks()
-            .AddCheck("self", () => HealthCheckResult.Healthy());
-
-        return builder;
-    }
 }
