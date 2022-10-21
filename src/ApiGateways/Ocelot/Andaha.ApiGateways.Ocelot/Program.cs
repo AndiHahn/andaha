@@ -1,6 +1,4 @@
 using Andaha.ApiGateways.Ocelot;
-using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);

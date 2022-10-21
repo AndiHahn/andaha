@@ -5,8 +5,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:80
-      Hosts__SHOPPING_API_HOST: http://andaha.services.shopping:80
-      Hosts__COLLABORATION_API_HOST: http://andaha.services.collaboration:80
+      Hosts__OCELOT_DAPR_SIDECAR: http://127.0.0.1:3500
     ports:
       - "9000:80"
       - "50001:50001"
@@ -16,6 +15,8 @@ services:
       "./daprd",
       "--app-id", "ocelot-gateway",
       "--app-port", "80",
+      "-log-level", "debug",
+      "-placement-host-address", "dapr.placement:50000"
     ]
 
   andaha.services.identity:
@@ -29,6 +30,8 @@ services:
       ExternalUrls__WebMiniClient: http://localhost:4200
       Authentication__Facebook__AppId: ${AUTH_FACEBOOK_APP_ID}
       Authentication__Facebook__AppSecret: ${AUTH_FACEBOOK_APP_SECRET}
+      Authentication__Google__ClientId: ${AUTH_GOOGLE_CLIENT_ID}
+      Authentication__Google__ClientSecret: ${AUTH_GOOGLE_CLIENT_SECRET}
     ports:
       - "9100:80"
 

@@ -5,7 +5,7 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "127.0.0.1",
+          "Host": "{OCELOT_DAPR_SIDECAR}",
           "Port": "3500"
         }
       ],
@@ -17,7 +17,7 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "127.0.0.1",
+          "Host": "{OCELOT_DAPR_SIDECAR}",
           "Port": "3500"
         }
       ],
@@ -29,7 +29,7 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "127.0.0.1",
+          "Host": "{OCELOT_DAPR_SIDECAR}",
           "Port": "3500"
         }
       ],
@@ -41,7 +41,7 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "127.0.0.1",
+          "Host": "{OCELOT_DAPR_SIDECAR}",
           "Port": "3500"
         }
       ],
@@ -53,7 +53,7 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "127.0.0.1",
+          "Host": "{OCELOT_DAPR_SIDECAR}",
           "Port": "3500"
         }
       ],
@@ -65,7 +65,7 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "127.0.0.1",
+          "Host": "{OCELOT_DAPR_SIDECAR}",
           "Port": "3500"
         }
       ],
@@ -77,7 +77,7 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "127.0.0.1",
+          "Host": "{OCELOT_DAPR_SIDECAR}",
           "Port": "3500"
         }
       ],
@@ -89,7 +89,7 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "127.0.0.1",
+          "Host": "{OCELOT_DAPR_SIDECAR}",
           "Port": "3500"
         }
       ],
@@ -101,7 +101,7 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "127.0.0.1",
+          "Host": "{OCELOT_DAPR_SIDECAR}",
           "Port": "3500"
         }
       ],
@@ -113,7 +113,7 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "127.0.0.1",
+          "Host": "{OCELOT_DAPR_SIDECAR}",
           "Port": "3500"
         }
       ],
@@ -125,7 +125,7 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "127.0.0.1",
+          "Host": "{OCELOT_DAPR_SIDECAR}",
           "Port": "3500"
         }
       ],
@@ -137,7 +137,7 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "127.0.0.1",
+          "Host": "{OCELOT_DAPR_SIDECAR}",
           "Port": "3500"
         }
       ],

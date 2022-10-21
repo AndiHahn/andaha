@@ -13,6 +13,8 @@ internal static class ProgramExtensions
 
         builder.Services.AddOcelot(ocelotConfiguration);
 
+        builder.Services.ConfigureDownstreamHostAndPortsPlaceholders(builder.Configuration);
+
         return builder;
     }
 }

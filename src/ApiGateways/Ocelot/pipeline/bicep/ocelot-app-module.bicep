@@ -27,6 +27,10 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
               name: 'ASPNETCORE_URLS'
               value: 'http://0.0.0.0:80'
             }
+            {
+              name: 'Hosts__OCELOT_DAPR_SIDECAR'
+              value: 'http://127.0.0.1:3500'
+            }
           ]
         }
       ]
