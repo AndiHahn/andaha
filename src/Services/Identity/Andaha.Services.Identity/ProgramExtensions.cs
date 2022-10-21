@@ -99,6 +99,7 @@ internal static class ProgramExtensions
     internal static WebApplicationBuilder AddCustomAuthentication(this WebApplicationBuilder builder)
     {
         var facebookAuthSection = builder.Configuration.GetSection("Authentication").GetSection("Facebook");
+        var googleAuthSection = builder.Configuration.GetSection("Authentication").GetSection("Google");
 
         builder.Services
             .AddAuthentication()
@@ -108,6 +109,13 @@ internal static class ProgramExtensions
 
                 options.AppId = facebookAuthSection.GetValue<string>("AppId");
                 options.AppSecret = facebookAuthSection.GetValue<string>("AppSecret");
+            })
+            .AddGoogle("Google", options =>
+            {
+                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+
+                options.ClientId = googleAuthSection.GetValue<string>("ClientId");
+                options.ClientSecret = googleAuthSection.GetValue<string>("ClientSecret");
             });
 
         return builder;

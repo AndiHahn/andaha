@@ -13,6 +13,8 @@ param containerRegistryPassword string
 param sqlDbConnectionString string
 @secure()
 param facebookAppSecret string
+@secure()
+param googleClientSecret string
 
 var imageName = stage == 'dev' ? 'andaha.azurecr.io/andaha/services/identity:${imageVersion}' : 'andaha.azurecr.io/prod/andaha/services/identity:${imageVersion}'
 
@@ -69,6 +71,14 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
             {
               name: 'Authentication__Facebook__AppSecret'
               value: facebookAppSecret
+            }
+            {
+              name: 'Authentication__Google__ClientId'
+              value: '315088715111-shs10j9f3mndrvrq4bkfn5rrslops7n9.apps.googleusercontent.com'
+            }
+            {
+              name: 'Authentication__Google__ClientSecret'
+              value: googleClientSecret
             }
           ]
           probes: [
