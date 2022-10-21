@@ -13,28 +13,6 @@ module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
   }
 }
 
-resource generateSqlPwScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
-  name: 'andaha-shopping-sql-password'
-  location: location
-  kind: 'AzurePowerShell'
-  properties: {
-    azPowerShellVersion: '3.0' 
-    retentionInterval: 'P1D'
-    scriptContent: loadTextContent('../../../../../pipeline/bicep/scripts/generate-password.ps1')
-  }
-}
-
-var sqlServerAdminPassword = generateSqlPwScript.properties.outputs.password
-
-module sqlDatabase 'shopping-db-module.bicep' = {
-  name: 'andaha-shopping-sql'
-  params: {
-    stage: stage
-    location: location
-    sqlServerAdminLoginPassword: sqlServerAdminPassword
-  }
-}
-
 module containerApp 'shopping-app-module.bicep' = {
   name: 'andaha-shopping-service'
   params: {
@@ -45,6 +23,6 @@ module containerApp 'shopping-app-module.bicep' = {
     containerAppsEnvironmentDomain: coreInfrastructure.outputs.containerAppEnvironmentDomain
     containerRegistryUsername: containerRegistryUsername
     containerRegistryPassword: containerRegistryPassword
-    sqlDbConnectionString: sqlDatabase.outputs.connectionString
+    sqlDbConnectionString: coreInfrastructure.outputs.databaseConnectionString
   }
 }

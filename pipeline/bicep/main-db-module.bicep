@@ -5,10 +5,10 @@ param sqlServerAdminLoginPassword string
 
 var sqlServerAdminLogin = 'andaha-sql-admin'
 
-var identityDbName = 'andaha-identitydb-${stage}'
+var dbName = 'andaha-db-${stage}'
 
 resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' = {
-  name: 'andaha-identity-sqlserver-${stage}'
+  name: 'andaha-sqlserver-${stage}'
   location: location
   properties: {
     administratorLogin: sqlServerAdminLogin
@@ -23,9 +23,9 @@ resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' = {
       endIpAddress: '0.0.0.0'
     }
   }
-  
-  resource identityDb 'databases@2021-05-01-preview' = {
-    name: identityDbName
+
+  resource database 'databases@2021-05-01-preview' = {
+    name: dbName
     location: location
     sku: {
       name: 'Basic'
@@ -38,6 +38,6 @@ resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' = {
   }
 }
 
-var identityDbConnectionString = 'Server=tcp:${sqlServer.name}${environment().suffixes.sqlServerHostname},1433;Initial Catalog=${identityDbName};Persist Security Info=False;User ID=${sqlServerAdminLogin};Password=${sqlServerAdminLoginPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
+var dbConnectionString = 'Server=tcp:${sqlServer.name}${environment().suffixes.sqlServerHostname},1433;Initial Catalog=${dbName};Persist Security Info=False;User ID=${sqlServerAdminLogin};Password=${sqlServerAdminLoginPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
 
-output connectionString string = identityDbConnectionString
+output connectionString string = dbConnectionString

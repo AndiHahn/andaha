@@ -19,29 +19,6 @@ module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
   }
 }
 
-resource generateSqlPwScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
-  name: 'andaha-identity-sql-password'
-  location: location
-  kind: 'AzurePowerShell'
-  properties: {
-    azPowerShellVersion: '3.0' 
-    retentionInterval: 'P1D'
-    scriptContent: loadTextContent('../../../../../pipeline/bicep/scripts/generate-password.ps1')
-  }
-}
-
-var sqlServerAdminPassword = generateSqlPwScript.properties.outputs.password
-
-
-module sqlDatabase 'identity-db-module.bicep' = {
-  name: 'andaha-identity-sql'
-  params: {
-    stage: stage
-    location: location
-    sqlServerAdminLoginPassword: sqlServerAdminPassword
-  }
-}
-
 module keyVault 'identity-keyvault-module.bicep' = {
   name: 'andaha-keyvault'
   params: {
@@ -64,7 +41,7 @@ module containerApp 'identity-app-module.bicep' = {
     certificateKeyvaultKey: 'identityserver-certificate'
     containerRegistryUsername: containerRegistryUsername
     containerRegistryPassword: containerRegistryPassword
-    sqlDbConnectionString: sqlDatabase.outputs.connectionString
+    sqlDbConnectionString: coreInfrastructure.outputs.databaseConnectionString
     facebookAppSecret: facebookAppSecret
     googleClientSecret: googleClientSecret
   }

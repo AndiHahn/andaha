@@ -13,28 +13,6 @@ module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
   }
 }
 
-resource generateSqlPwScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
-  name: 'andaha-collaboration-sql-password'
-  location: location
-  kind: 'AzurePowerShell'
-  properties: {
-    azPowerShellVersion: '3.0' 
-    retentionInterval: 'P1D'
-    scriptContent: loadTextContent('../../../../../pipeline/bicep/scripts/generate-password.ps1')
-  }
-}
-
-var sqlServerAdminPassword = generateSqlPwScript.properties.outputs.password
-
-module sqlDatabase 'collaboration-db-module.bicep' = {
-  name: 'andaha-collaboration-sql'
-  params: {
-    stage: stage
-    location: location
-    sqlServerAdminLoginPassword: sqlServerAdminPassword
-  }
-}
-
 module containerApp 'collaboration-app-module.bicep' = {
   name: 'andaha-collaboration-service'
   params: {
@@ -45,6 +23,6 @@ module containerApp 'collaboration-app-module.bicep' = {
     containerAppsEnvironmentDomain: coreInfrastructure.outputs.containerAppEnvironmentDomain
     containerRegistryUsername: containerRegistryUsername
     containerRegistryPassword: containerRegistryPassword
-    sqlDbConnectionString: sqlDatabase.outputs.connectionString
+    sqlDbConnectionString: coreInfrastructure.outputs.databaseConnectionString
   }
 }
