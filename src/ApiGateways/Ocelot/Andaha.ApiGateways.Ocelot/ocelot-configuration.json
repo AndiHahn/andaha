@@ -1,7 +1,7 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/v1.0/invoke/shopping-api/method/api/bill",
+      "DownstreamPathTemplate": "/v1.0/invoke/shopping-api/method/api/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -9,11 +9,11 @@
           "Port": "3500"
         }
       ],
-      "UpstreamPathTemplate": "/shopping-api/bill",
+      "UpstreamPathTemplate": "/shopping-api/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
     },
     {
-      "DownstreamPathTemplate": "/v1.0/invoke/shopping-api/method/api/billcategory",
+      "DownstreamPathTemplate": "/v1.0/invoke/collaboration-api/method/api/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -21,128 +21,8 @@
           "Port": "3500"
         }
       ],
-      "UpstreamPathTemplate": "/shopping-api/billcategory",
+      "UpstreamPathTemplate": "/collaboration-api/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
-    },
-    {
-      "DownstreamPathTemplate": "/v1.0/invoke/shopping-api/method/api/expense/time-range",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "{OCELOT_DAPR_SIDECAR}",
-          "Port": "3500"
-        }
-      ],
-      "UpstreamPathTemplate": "/shopping-api/expense/time-range",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
-    },
-    {
-      "DownstreamPathTemplate": "/v1.0/invoke/shopping-api/method/api/expense",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "{OCELOT_DAPR_SIDECAR}",
-          "Port": "3500"
-        }
-      ],
-      "UpstreamPathTemplate": "/shopping-api/expense",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
-    },
-    {
-      "DownstreamPathTemplate": "/v1.0/invoke/shopping-api/method/ping",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "{OCELOT_DAPR_SIDECAR}",
-          "Port": "3500"
-        }
-      ],
-      "UpstreamPathTemplate": "/shopping-api/ping",
-      "UpstreamHttpMethod": [ "GET", "OPTIONS" ]
-    },
-    {
-      "DownstreamPathTemplate": "/v1.0/invoke/collaboration-api/method/api/connection/request",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "{OCELOT_DAPR_SIDECAR}",
-          "Port": "3500"
-        }
-      ],
-      "UpstreamPathTemplate": "/collaboration-api/connection/request",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
-    },
-    {
-      "DownstreamPathTemplate": "/v1.0/invoke/collaboration-api/method/api/connection/outgoing",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "{OCELOT_DAPR_SIDECAR}",
-          "Port": "3500"
-        }
-      ],
-      "UpstreamPathTemplate": "/collaboration-api/connection/outgoing",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
-    },
-    {
-      "DownstreamPathTemplate": "/v1.0/invoke/collaboration-api/method/api/connection/incoming",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "{OCELOT_DAPR_SIDECAR}",
-          "Port": "3500"
-        }
-      ],
-      "UpstreamPathTemplate": "/collaboration-api/connection/incoming",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
-    },
-    {
-      "DownstreamPathTemplate": "/v1.0/invoke/collaboration-api/method/api/connection/accept/{fromUserId}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "{OCELOT_DAPR_SIDECAR}",
-          "Port": "3500"
-        }
-      ],
-      "UpstreamPathTemplate": "/collaboration-api/connection/accept/{fromUserId}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
-    },
-    {
-      "DownstreamPathTemplate": "/v1.0/invoke/collaboration-api/method/api/connection/decline/{fromUserId}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "{OCELOT_DAPR_SIDECAR}",
-          "Port": "3500"
-        }
-      ],
-      "UpstreamPathTemplate": "/collaboration-api/connection/decline/{fromUserId}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
-    },
-    {
-      "DownstreamPathTemplate": "/v1.0/invoke/collaboration-api/method/api/connection/established",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "{OCELOT_DAPR_SIDECAR}",
-          "Port": "3500"
-        }
-      ],
-      "UpstreamPathTemplate": "/collaboration-api/connection/established",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
-    },
-    {
-      "DownstreamPathTemplate": "/v1.0/invoke/collaboration-api/method/ping",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "{OCELOT_DAPR_SIDECAR}",
-          "Port": "3500"
-        }
-      ],
-      "UpstreamPathTemplate": "/collaboration-api/ping",
-      "UpstreamHttpMethod": [ "GET", "OPTIONS" ]
     }
   ],
   "GlobalConfiguration": {

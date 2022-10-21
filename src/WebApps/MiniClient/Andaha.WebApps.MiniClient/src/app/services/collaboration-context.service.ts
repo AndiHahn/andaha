@@ -4,6 +4,7 @@ import { CollaborationApiService } from '../api/collaboration/collaboration-api.
 import { ConnectionDto } from '../api/collaboration/dtos/ConnectionDto';
 import { ConnectionRequestDto } from '../api/collaboration/dtos/ConnectionRequestDto';
 import { ContextService } from '../core/context.service';
+import { BillContextService } from './bill-context.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,7 @@ export class CollaborationContextService {
 
   constructor(
     private contextService: ContextService,
+    private billContextService: BillContextService,
     private collaborationApiService: CollaborationApiService) {
     this.initSubscriptions();
     this.fetchConnections();
@@ -76,6 +78,7 @@ export class CollaborationContextService {
           returnSubject.next();
           this.fetchIncomingConnectionRequests();
           this.fetchConnections();
+          this.billContextService.refreshBills();
         },
         error: error => returnSubject.error(error)
       }

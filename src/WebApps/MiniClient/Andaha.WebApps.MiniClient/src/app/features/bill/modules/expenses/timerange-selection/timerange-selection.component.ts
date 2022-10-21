@@ -74,6 +74,7 @@ export class TimerangeSelectionComponent implements OnInit, OnChanges {
     let endDate = moment(this.availableTimeRange.endDate);
 
     const dates = [];
+    endDate.subtract(1, "month"); //Substract one month to exclude endDate itself
 
     const month = moment(startDate); //clone the startDate
     dates.push(month.format('YYYY-MM'));

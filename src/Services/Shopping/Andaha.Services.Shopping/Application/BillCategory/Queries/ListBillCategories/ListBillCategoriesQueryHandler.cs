@@ -26,7 +26,6 @@ internal class ListBillCategoriesQueryHandler : IRequestHandler<ListBillCategori
 
         var entities = await this.dbContext.BillCategory
             .Where(category => category.UserId == userId)
-            .OrderBy(category => category.IsDefault)
             .ToListAsync(cancellationToken);
 
         if (!entities.Any())

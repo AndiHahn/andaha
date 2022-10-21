@@ -62,6 +62,7 @@ export class AddBillComponent implements OnInit {
           this.isSaving = false;
           formDirective.resetForm();
           this.form.reset();
+          this.form.controls['date'].setValue(new Date());
         },
         error: (err) => {
           this.isSaving = false;
