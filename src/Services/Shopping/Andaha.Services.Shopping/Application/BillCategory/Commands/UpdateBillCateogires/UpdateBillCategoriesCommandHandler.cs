@@ -1,7 +1,7 @@
 ﻿using Andaha.CrossCutting.Application.Identity;
 using Andaha.CrossCutting.Application.Result;
-using Andaha.Services.Shopping.Application.Services;
 using Andaha.Services.Shopping.Infrastructure;
+using Andaha.Services.Shopping.Infrastructure.Proxies;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,27 +11,29 @@ internal class UpdateBillCategoriesCommandHandler : IRequestHandler<UpdateBillCa
 {
     private readonly ShoppingDbContext dbContext;
     private readonly IIdentityService identityService;
-    private readonly ICollaborationService collaborationService;
+    private readonly ICollaborationApiProxy collaborationApiProxy;
 
     public UpdateBillCategoriesCommandHandler(
         ShoppingDbContext dbContext,
         IIdentityService identityService,
-        ICollaborationService collaborationService)
+        ICollaborationApiProxy collaborationApiProxy)
     {
         this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         this.identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
-        this.collaborationService = collaborationService ?? throw new ArgumentNullException(nameof(collaborationService));
+        this.collaborationApiProxy = collaborationApiProxy ?? throw new ArgumentNullException(nameof(collaborationApiProxy));
     }
 
     public async Task<Result> Handle(UpdateBillCategoriesCommand request, CancellationToken cancellationToken)
     {
-        var existingCategories = await this.dbContext.BillCategory.ToListAsync(cancellationToken);
+        Guid userId = this.identityService.GetUserId();
+
+        var existingCategories = await this.dbContext.BillCategory
+            .Where(category => category.UserId == userId)
+            .ToListAsync(cancellationToken);
 
         var categoriesToCreate = request.Categories.Where(category => category.Id is null);
         var categoriesToUpdate = request.Categories.Except(categoriesToCreate);
         var categoriesToRemove = existingCategories.Where(category => categoriesToUpdate.All(c => c.Id != category.Id));
-
-        Guid userId = this.identityService.GetUserId();
 
         foreach (var category in categoriesToCreate)
         {
@@ -46,7 +48,7 @@ internal class UpdateBillCategoriesCommandHandler : IRequestHandler<UpdateBillCa
 
         this.dbContext.BillCategory.RemoveRange(categoriesToRemove);
 
-        await UpdateBillsForDeletedCategories(existingCategories, categoriesToRemove, cancellationToken);
+        await UpdateBillsForDeletedCategories(userId, existingCategories, categoriesToRemove, cancellationToken);
 
         await this.dbContext.SaveChangesAsync(cancellationToken);
 
@@ -54,6 +56,7 @@ internal class UpdateBillCategoriesCommandHandler : IRequestHandler<UpdateBillCa
     }
 
     private async Task UpdateBillsForDeletedCategories(
+        Guid userId,
         IEnumerable<Core.BillCategory> existingCategories,
         IEnumerable<Core.BillCategory> categoriesToRemove,
         CancellationToken cancellationToken)
@@ -64,10 +67,9 @@ internal class UpdateBillCategoriesCommandHandler : IRequestHandler<UpdateBillCa
             return;
         }
 
-        await this.collaborationService.SetConnectedUsersAsync(cancellationToken);
-
         var billsWithRemovedCategory = await this.dbContext.Bill
-            .Where(bill => categoriesToRemoveIds.Contains(bill.CategoryId))
+            .Where(bill => bill.UserId == userId &&
+                           categoriesToRemoveIds.Contains(bill.CategoryId))
             .ToListAsync(cancellationToken);
 
         var defaultCategory = existingCategories.Single(category => category.IsDefault);

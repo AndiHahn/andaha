@@ -56,7 +56,10 @@ export class CollaborationContextService {
 
     this.collaborationApiService.requestConnection( { targetUserEmailAddress: targetUserEmailAddress }).subscribe(
       {
-        next: _ => returnSubject.next(),
+        next: _ => {
+          this.fetchOutgoingConnectionRequests();
+          returnSubject.next();
+        },
         error: error => returnSubject.error(error)
       }
     );

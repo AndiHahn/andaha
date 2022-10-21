@@ -1,8 +1,5 @@
-﻿#nullable enable
-
-using Andaha.CrossCutting.Application.Identity;
+﻿using Andaha.CrossCutting.Application.Identity;
 using Andaha.CrossCutting.Application.Result;
-using Andaha.Services.Shopping.Application.Services;
 using Andaha.Services.Shopping.Core;
 using Andaha.Services.Shopping.Dtos.v1_0;
 using Andaha.Services.Shopping.Infrastructure;
@@ -15,16 +12,13 @@ internal class CreateBillCommandHandler : IRequestHandler<CreateBillCommand, Res
 {
     private readonly ShoppingDbContext dbContext;
     private readonly IIdentityService identityService;
-    private readonly ICollaborationService collaborationService;
 
     public CreateBillCommandHandler(
         ShoppingDbContext dbContext,
-        IIdentityService identityService,
-        ICollaborationService collaborationService)
+        IIdentityService identityService)
     {
         this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         this.identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
-        this.collaborationService = collaborationService ?? throw new ArgumentNullException(nameof(collaborationService));
     }
 
     public async Task<Result<BillDto>> Handle(CreateBillCommand request, CancellationToken cancellationToken)
@@ -36,11 +30,12 @@ internal class CreateBillCommandHandler : IRequestHandler<CreateBillCommand, Res
 
         await this.dbContext.SaveChangesAsync(cancellationToken);
 
-        await this.collaborationService.SetConnectedUsersAsync(cancellationToken);
-
         var bill = await this.dbContext.Bill
             .Include(bill => bill.Category)
-            .SingleAsync(bill => bill.Id == newBill.Entity.Id, cancellationToken);
+            .SingleAsync(
+                bill => bill.Id == newBill.Entity.Id &&
+                        bill.UserId == userId,
+                cancellationToken);
 
         return bill.ToDto(userId);
     }

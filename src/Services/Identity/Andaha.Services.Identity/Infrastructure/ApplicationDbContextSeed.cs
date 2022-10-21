@@ -7,7 +7,6 @@ public static class ApplicationDbContextSeed
 {
     public static async Task SeedAsync(UserManager<ApplicationUser> userManager)
     {
-        await TryCreateUserAsync(userManager, "Andreas", "Pass123$");
         await TryCreateUserAsync(userManager, "Test1", "Pass123$");
         await TryCreateUserAsync(userManager, "Test2", "Pass123$");
     }

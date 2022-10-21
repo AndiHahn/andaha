@@ -3,7 +3,7 @@ using CSharpFunctionalExtensions;
 
 namespace Andaha.Services.Shopping.Core;
 
-public class BillCategory : Entity<Guid>, IUserDependentEntity
+public class BillCategory : Entity<Guid>
 {
     private readonly List<Bill> _bills = new();
 

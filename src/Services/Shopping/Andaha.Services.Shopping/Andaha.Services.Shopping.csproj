@@ -33,8 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Application\BillCategory\Mapper\" />
-    <Folder Include="Application\Commands\" />
     <Folder Include="Infrastructure\Migrations\" />
   </ItemGroup>
 

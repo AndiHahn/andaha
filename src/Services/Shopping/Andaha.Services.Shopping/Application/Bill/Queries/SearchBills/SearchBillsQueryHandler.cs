@@ -1,8 +1,8 @@
 ﻿using Andaha.CrossCutting.Application.Identity;
 using Andaha.CrossCutting.Application.Result;
-using Andaha.Services.Shopping.Application.Services;
 using Andaha.Services.Shopping.Dtos.v1_0;
 using Andaha.Services.Shopping.Infrastructure;
+using Andaha.Services.Shopping.Infrastructure.Proxies;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,24 +12,27 @@ internal class SearchBillsQueryHandler : IRequestHandler<SearchBillsQuery, Paged
 {
     private readonly ShoppingDbContext dbContext;
     private readonly IIdentityService identityService;
-    private readonly ICollaborationService collaborationService;
+    private readonly ICollaborationApiProxy collaborationApiProxy;
 
     public SearchBillsQueryHandler(
         ShoppingDbContext dbContext,
         IIdentityService identityService,
-        ICollaborationService collaborationService)
+        ICollaborationApiProxy collaborationApiProxy)
     {
         this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         this.identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
-        this.collaborationService = collaborationService ?? throw new ArgumentNullException(nameof(collaborationService));
+        this.collaborationApiProxy = collaborationApiProxy ?? throw new ArgumentNullException(nameof(collaborationApiProxy));
     }
 
     public async Task<PagedResult<BillDto>> Handle(SearchBillsQuery request, CancellationToken cancellationToken)
     {
-        await this.collaborationService.SetConnectedUsersAsync(cancellationToken);
+        Guid userId = this.identityService.GetUserId();
+        var connectedUsers = await this.collaborationApiProxy.GetConnectedUsers(cancellationToken);
 
         IQueryable<Core.Bill> query = this.dbContext.Bill
             .Include(bill => bill.Category)
+            .Where(bill => bill.UserId == userId ||
+                           connectedUsers.Contains(bill.UserId))
             .OrderByDescending(b => b.Date);
 
         if (request.Search is not null)
@@ -44,8 +47,6 @@ internal class SearchBillsQueryHandler : IRequestHandler<SearchBillsQuery, Paged
             .Skip(request.PageSize * request.PageIndex)
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
-
-        Guid userId = this.identityService.GetUserId();
 
         return new PagedResult<BillDto>(
             queryResult.Select(bill => bill.ToDto(userId)),

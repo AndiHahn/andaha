@@ -1,21 +1,17 @@
-﻿using Andaha.CrossCutting.Application.Database;
-using Andaha.CrossCutting.Application.Identity;
-using Andaha.Services.Shopping.Core;
+﻿using Andaha.Services.Shopping.Core;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace Andaha.Services.Shopping.Infrastructure;
 
-public class ShoppingDbContext : AndahaDbContext<ShoppingDbContext>
+public class ShoppingDbContext : DbContext
 {
     public DbSet<Bill> Bill { get; set; } = null!;
     public DbSet<BillCategory> BillCategory { get; set; } = null!;
 
     public ShoppingDbContext(
-        DbContextOptions<ShoppingDbContext> options,
-        IIdentityService identityService,
-        IConnectedUsersService connectedUsersService)
-        : base(options, identityService, connectedUsersService)
+        DbContextOptions<ShoppingDbContext> options)
+        : base(options)
     {
     }
 

@@ -22,12 +22,17 @@ internal class ListBillCategoriesQueryHandler : IRequestHandler<ListBillCategori
 
     public async Task<Result<IEnumerable<BillCategoryDto>>> Handle(ListBillCategoriesQuery request, CancellationToken cancellationToken)
     {
+        Guid userId = this.identityService.GetUserId();
+
         var entities = await this.dbContext.BillCategory
+            .Where(category => category.UserId == userId)
             .OrderBy(category => category.IsDefault)
             .ToListAsync(cancellationToken);
+
         if (!entities.Any())
         {
-            var initialCategories = ShoppingDbContextSeed.CreateInitialCategories(this.identityService.GetUserId());
+            var initialCategories = ShoppingDbContextSeed.CreateInitialCategories(userId);
+
             this.dbContext.BillCategory.AddRange(initialCategories);
 
             await this.dbContext.SaveChangesAsync(cancellationToken);

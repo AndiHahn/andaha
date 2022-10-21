@@ -61,7 +61,7 @@ export class CategoriesComponent implements OnInit {
 
   onSaveClick(): void {
     const dialogData: ConfirmationDialogData = {
-      text: 'Wurden Kategorien gelöscht, die bereits für Rechnungen verwendet wurden, dann wird für diese die vorkonfigurierte Kategorie "undefiniert" verwendet.'
+      text: 'Wurden Kategorien gelöscht, die bereits für Rechnungen verwendet wurden, dann wird für diese die vorkonfigurierte Kategorie "Keine" verwendet.'
     }
 
     this.confirmationDialogService.openDialog(dialogData).then(dialogRef => dialogRef.afterClosed().subscribe(

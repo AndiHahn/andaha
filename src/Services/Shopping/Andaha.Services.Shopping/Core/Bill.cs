@@ -1,9 +1,8 @@
-﻿using Andaha.CrossCutting.Application.Database;
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
 
 namespace Andaha.Services.Shopping.Core;
 
-public class Bill : Entity<Guid>, IShareableEntity
+public class Bill : Entity<Guid>
 {
     private Bill()
     {
