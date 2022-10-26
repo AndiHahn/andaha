@@ -104,7 +104,7 @@ export class CollaborationContextService {
   }
 
   private initSubscriptions(): void {
-    this.contextService.shoppingApiReady().subscribe(
+    this.contextService.backendReady().subscribe(
       {
         next: ready => {
           if (ready) {

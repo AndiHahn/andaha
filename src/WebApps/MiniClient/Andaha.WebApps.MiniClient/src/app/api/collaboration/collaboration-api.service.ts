@@ -22,6 +22,11 @@ export class CollaborationApiService {
     }
   }
 
+  wakeUp(): Observable<void> {
+    const url = constructPath(this.endpointUrl, 'ping');
+    return this.httpClient.get<void>(url);
+  }
+
   requestConnection(requestData: RequestAccountConnectionRequest): Observable<void> {
     const url = constructPath(this.endpointUrl, 'request');
 

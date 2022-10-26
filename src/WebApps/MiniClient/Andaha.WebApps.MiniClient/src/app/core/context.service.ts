@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { CollaborationApiService } from '../api/collaboration/collaboration-api.service';
 import { ShoppingApiService } from '../api/shopping/shopping-api.service';
 import { AuthService } from './auth.service';
 
@@ -7,14 +8,16 @@ import { AuthService } from './auth.service';
   providedIn: 'root'
 })
 export class ContextService {
-  private shoppingApiReadySubject = new BehaviorSubject<boolean>(false);
+  private backendReady$ = new BehaviorSubject<boolean>(false);
 
   private userIsLoggedInInternal: boolean = false;
   private shoppingApiAwakeInternal: boolean = false;
+  private collaborationApiAwakeInternal: boolean = false;
 
   constructor(
     authService: AuthService,
-    private shoppingApiService: ShoppingApiService) {
+    private shoppingApiService: ShoppingApiService,
+    private collaborationApiService: CollaborationApiService) {
 
       this.wakeUpBackendServices();
 
@@ -22,28 +25,39 @@ export class ContextService {
         {
           next: _ => {
             this.userIsLoggedInInternal = true;
-            this.refreshShoppingApiReady();
+            this.refreshBackendReady();
           } 
         }
       );
   }
 
-  shoppingApiReady(): Observable<boolean> {
-    return this.shoppingApiReadySubject.asObservable();
+  backendReady(): Observable<boolean> {
+    return this.backendReady$.asObservable();
   }
 
   private wakeUpBackendServices(): void {
-    this.shoppingApiService.wakeUp().subscribe({
-      next: _ => {
-        this.shoppingApiAwakeInternal = true;
-        this.refreshShoppingApiReady();
+    this.shoppingApiService.wakeUp().subscribe(
+      {
+        next: _ => {
+          this.shoppingApiAwakeInternal = true;
+          this.refreshBackendReady();
+        }
       }
-    });
+    );
+
+    this.collaborationApiService.wakeUp().subscribe(
+      {
+        next: _ => {
+          this.collaborationApiAwakeInternal = true;
+          this.refreshBackendReady();
+        }
+      }
+    );
   }
 
-  private refreshShoppingApiReady() {
-    if (this.userIsLoggedInInternal && this.shoppingApiAwakeInternal) {
-      this.shoppingApiReadySubject.next(true);
+  private refreshBackendReady() {
+    if (this.userIsLoggedInInternal && this.shoppingApiAwakeInternal && this.collaborationApiAwakeInternal) {
+      this.backendReady$.next(true);
     }
   }
 }
