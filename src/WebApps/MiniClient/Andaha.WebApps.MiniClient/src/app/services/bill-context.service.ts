@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, skip, observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, skip } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { ContextService } from 'src/app/core/context.service';
@@ -234,7 +234,6 @@ export class BillContextService {
   }
 
   private billCompareDateDescending(left: BillDto, right: BillDto): number {
-    console.log(right.date.getTime());
     return right.date.getTime() - left.date.getTime();
   }
 }
