@@ -30,5 +30,10 @@ public class BillModelBuilder : IEntityTypeConfiguration<Bill>
             .Property(b => b.Notes)
             .IsRequired(false)
             .HasMaxLength(1000);
+
+        builder
+            .Property(b => b.CreatedAt)
+            .IsRequired(true)
+            .HasDefaultValueSql("GETDATE()");
     }
 }

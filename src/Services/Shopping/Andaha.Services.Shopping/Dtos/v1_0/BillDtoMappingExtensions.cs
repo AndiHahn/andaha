@@ -7,7 +7,6 @@ internal static class BillDtoMappingExtensions
     public static BillDto ToDto(this Bill bill, Guid currentUserId)
         => new BillDto(
             bill.Id,
-            bill.UserId,
             new BillCategoryDto(bill.Category.Id, bill.Category.Name, bill.Category.Color, bill.Category.IsDefault),
             bill.ShopName,
             bill.Price,

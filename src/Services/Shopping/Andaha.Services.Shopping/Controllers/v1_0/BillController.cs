@@ -49,7 +49,14 @@ public class BillController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> AddBill([FromBody] BillCreateDto createDto, CancellationToken cancellationToken)
     {
-        var command = new CreateBillCommand(createDto.CategoryId, createDto.ShopName, createDto.Price, createDto.Date, createDto.Notes);
+        var command = new CreateBillCommand(
+            createDto.Id,
+            createDto.CategoryId,
+            createDto.ShopName,
+            createDto.Price,
+            createDto.Date,
+            createDto.Notes);
+
         var createdBill = await sender.Send(command, cancellationToken);
 
         if (createdBill.Status != ResultStatus.Success) return this.ToActionResult(createdBill);

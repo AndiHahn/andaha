@@ -26,7 +26,7 @@ public static class ProgramEndpointExtensions
             Predicate = r => r.Name.Contains("self")
         });
 
-        app.MapGet("/ping", Results.NoContent);
+        app.MapGet("/api/ping", Results.NoContent);
 
         app.MediatePost<RequestAccountConnectionRequest>("/api/connection/request");
 

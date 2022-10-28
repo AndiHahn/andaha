@@ -1,4 +1,5 @@
 ﻿using Andaha.Services.Shopping.Core;
+using Andaha.Services.Shopping.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -20,5 +21,7 @@ public class ShoppingDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        modelBuilder.ApplyUtcDateTimeConversion();
     }
 }

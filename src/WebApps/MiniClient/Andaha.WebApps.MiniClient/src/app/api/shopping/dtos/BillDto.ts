@@ -11,7 +11,6 @@ export interface BillDtoRaw extends BillDtoBase {
 
 interface BillDtoBase {
   id: string;
-  createdByUserId: string;
   category: BillCategoryDto;
   shopName: string;
   price: number;

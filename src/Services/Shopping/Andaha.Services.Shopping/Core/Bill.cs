@@ -9,12 +9,14 @@ public class Bill : Entity<Guid>
     }
 
     public Bill(
+        Guid? id,
         Guid createdByUserId,
         Guid categoryId,
         string shopName,
         double price,
         DateTime? date = null,
         string? notes = null)
+        : base(id ?? Guid.NewGuid())
     {
         if (createdByUserId == Guid.Empty)
         {
@@ -60,6 +62,8 @@ public class Bill : Entity<Guid>
     public DateTime Date { get; private set; }
 
     public string? Notes { get; private set; }
+
+    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
     public BillCategory Category { get; private set; } = null!;
 

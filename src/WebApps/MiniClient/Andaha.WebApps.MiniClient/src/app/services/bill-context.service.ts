@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, skip } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, skip, observable } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { ContextService } from 'src/app/core/context.service';
-import { BillCreateDto } from '../api/shopping/dtos/BillCreateDto';
+import { BillCategoryDto } from '../api/shopping/dtos/BillCategoryDto';
+import { BillCreateDto, billCreateDtoToBillDto } from '../api/shopping/dtos/BillCreateDto';
+import { BillCacheService } from './bill-cache.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,12 +16,14 @@ export class BillContextService {
   private pageIndex$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   private pageSize$: BehaviorSubject<number> = new BehaviorSubject<number>(20);
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private syncing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   private searchText: string = '';
 
   constructor(
     private billApiService: BillApiService,
-    private contextService: ContextService
+    private contextService: ContextService,
+    private billCacheService: BillCacheService
   ) {
     this.initSubscriptions();
     this.fetchBills();
@@ -72,27 +76,17 @@ export class BillContextService {
     this.fetchBills();
   }
 
-  addBill(dto: BillCreateDto): Observable<BillDto> {
-    const returnSubject = new Subject<BillDto>();
+  addBill(dto: BillCreateDto, category: BillCategoryDto): void {
+    const returnSubject = new Subject<void>();
 
-    this.billApiService.addBill(dto).subscribe(
-      {
-        next: result => {
-          const bills = [result].concat(this.bills$.value);
-          if (bills.length > this.pageSize$.value) {
-            bills.pop();
-          }
+    const billDto = billCreateDtoToBillDto(dto, category);
+    this.addNewBillToList(billDto);
 
-          this.bills$.next(bills);
-          this.totalResults$.next(this.totalResults$.value + 1);
-          
-          returnSubject.next(result);
-        },
-        error: error => returnSubject.error(error)
-      }
-    );
+    this.billCacheService.saveNewBillLocal(dto);
 
-    return returnSubject.asObservable();
+    this.syncBills();
+
+    returnSubject.next();
   }
 
   deleteBill(id: string): Observable<void> {
@@ -121,6 +115,7 @@ export class BillContextService {
         next: ready => {
           if (ready) {
             this.fetchBills();
+            this.syncBills();
           }
         } 
       }
@@ -137,6 +132,22 @@ export class BillContextService {
         next: _ => this.fetchBills() 
       }
     );
+  }
+
+  addBillInternal(dto: BillCreateDto): Observable<void> {
+    const returnSubject = new Subject<void>();
+
+    this.billApiService.addBill(dto).subscribe(
+      {
+        next: result => {
+          this.billCacheService.removeBillLocal(result.id);
+          returnSubject.next();
+        },
+        error: error => returnSubject.error(error)
+      }
+    );
+
+    return returnSubject.asObservable();
   }
 
   private fetchBills() {
@@ -175,5 +186,44 @@ export class BillContextService {
     });
 
     this.bills$.next(currentBillList);
+  }
+
+  private addNewBillToList(bill: BillDto): void {
+    const bills = [bill].concat(this.bills$.value);
+    if (bills.length > this.pageSize$.value) {
+      bills.pop();
+    }
+
+    this.bills$.next(bills);
+    this.totalResults$.next(this.totalResults$.value + 1);
+  }
+
+  private syncBills(): void {
+    const newBillsLocal = this.billCacheService.getBillsToSync();
+    
+    const nrOfBillsToSync = newBillsLocal.length;
+    let syncedBills = 0;
+
+    const addBillObservables: Observable<void>[] = [];
+
+    if (newBillsLocal.length > 0) {
+      this.syncing$.next(true);
+
+      newBillsLocal.forEach(bill => {
+        addBillObservables.push(this.addBillInternal(bill));
+      });
+    }
+
+    addBillObservables.forEach(observable => observable.subscribe(
+      {
+        next: _ => {
+          syncedBills++;
+          if (syncedBills >= nrOfBillsToSync) {
+            this.syncing$.next(false);
+            this.fetchBills();
+          }
+        } 
+      }
+    ));
   }
 }

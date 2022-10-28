@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroupDirective, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { generateGuid } from 'src/app/api/functions/api-utils';
 import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
 import { BillCreateDto } from 'src/app/api/shopping/dtos/BillCreateDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { BillContextService } from 'src/app/services/bill-context.service';
-import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 
 @Component({
   selector: 'app-add-bill',
@@ -15,14 +15,12 @@ import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 export class AddBillComponent implements OnInit {
   numberRegex: string = '^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$';
 
-  isSaving: boolean = false;
   form: UntypedFormGroup;
 
   categories?: BillCategoryDto[];
   
   constructor(
-    private fb: UntypedFormBuilder, 
-    private snackbar: MatSnackBar,
+    private fb: UntypedFormBuilder,
     private billContextService: BillContextService,
     private billCategoryContextService: BillCategoryContextService
     ) { 
@@ -52,48 +50,35 @@ export class AddBillComponent implements OnInit {
       return;
     }
 
-    this.isSaving = true;
-
     const dto = this.createModelFromForm();
+    const category = this.getCategoryFromForm();
 
-    this.billContextService.addBill(dto).subscribe(
-      {
-        next: _ => {
-          this.isSaving = false;
-          formDirective.resetForm();
-          this.form.reset();
-          this.form.controls['date'].setValue(new Date());
-        },
-        error: (err) => {
-          this.isSaving = false;
-
-          let savingError = '';
-
-          if (err.status == 400) {
-            const errorKeys = Object.keys(err.error.errors);
-            if (errorKeys.length > 0) {
-              savingError = err.error.errors[errorKeys[0]][0];
-            } else {
-              savingError = err.error.detail;
-            }
-          } else {
-            savingError = err.error.detail;
-          }
-
-          openErrorSnackbar(savingError, this.snackbar);
-        }
-      }
-    );
+    this.billContextService.addBill(dto, category);
+    
+    formDirective.resetForm();
+    this.form.reset();
+    this.form.controls['date'].setValue(new Date());
   }
 
   private createModelFromForm(): BillCreateDto {
     const controls = this.form.controls;
     return {
+      id: generateGuid(),
       categoryId: controls['category'].value.id,
       shopName: controls['shopName'].value,
       price: controls['price'].value,
       date: controls['date']?.value,
       notes: controls['notes']?.value
+    }
+  }
+
+  private getCategoryFromForm(): BillCategoryDto {
+    const controls = this.form.controls;
+    return {
+      id: controls['category'].value.id,
+      name: controls['category'].value.name,
+      color: controls['category'].value.color,
+      isDefault: controls['category'].value.isDefault,
     }
   }
 }

@@ -4,4 +4,4 @@ using MediatR;
 
 namespace Andaha.Services.Shopping.Application.Commands.CreateBill;
 
-public record CreateBillCommand(Guid CategoryId, string ShopName, double Price, DateTime? Date, string? Notes) : IRequest<Result<BillDto>>;
+public record CreateBillCommand(Guid? Id, Guid CategoryId, string ShopName, double Price, DateTime Date, string? Notes) : IRequest<Result<BillDto>>;

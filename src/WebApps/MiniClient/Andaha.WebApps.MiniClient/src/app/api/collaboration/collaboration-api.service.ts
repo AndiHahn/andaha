@@ -16,9 +16,9 @@ export class CollaborationApiService {
 
   constructor(private httpClient: HttpClient) {
     if (environment.dapr) {
-      this.endpointUrl = constructPath(environment.gatewayBaseUrl, 'collaboration-api', 'connection');
+      this.endpointUrl = constructPath(environment.gatewayBaseUrl, 'collaboration-api');
     } else {
-      this.endpointUrl = 'https://localhost:8300/api/connection';
+      this.endpointUrl = 'https://localhost:8300/api';
     }
   }
 
@@ -28,7 +28,7 @@ export class CollaborationApiService {
   }
 
   requestConnection(requestData: RequestAccountConnectionRequest): Observable<void> {
-    const url = constructPath(this.endpointUrl, 'request');
+    const url = constructPath(this.endpointUrl, 'connection', 'request');
 
     const httpParameters = createHttpParameters([
       {
@@ -41,27 +41,27 @@ export class CollaborationApiService {
   }
 
   acceptRequest(fromUserId: string): Observable<void> {
-    const url = constructPath(this.endpointUrl, 'accept', fromUserId);
+    const url = constructPath(this.endpointUrl, 'connection', 'accept', fromUserId);
     return this.httpClient.put<void>(url, null);
   }
 
   declineRequest(fromUserId: string): Observable<void> {
-    const url = constructPath(this.endpointUrl, 'decline', fromUserId);
+    const url = constructPath(this.endpointUrl, 'connection', 'decline', fromUserId);
     return this.httpClient.delete<void>(url);
   }
 
   listIncomingConnectionRequests(): Observable<ConnectionRequestDto[]> {
-    const url = constructPath(this.endpointUrl, 'incoming');
+    const url = constructPath(this.endpointUrl, 'connection', 'incoming');
     return this.httpClient.get<ConnectionRequestDto[]>(url);
   }
 
   listOutgoingConnectionRequests(): Observable<ConnectionRequestDto[]> {
-    const url = constructPath(this.endpointUrl, 'outgoing');
+    const url = constructPath(this.endpointUrl, 'connection', 'outgoing');
     return this.httpClient.get<ConnectionRequestDto[]>(url);
   }
 
   listConnections(): Observable<ConnectionDto[]> {
-    const url = constructPath(this.endpointUrl, 'established');
+    const url = constructPath(this.endpointUrl, 'connection', 'established');
 
     return this.httpClient.get<ConnectionDto[]>(url);
   }
