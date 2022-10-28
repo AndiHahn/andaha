@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from './core/auth.service';
+import { BillContextService } from './services/bill-context.service';
 
 @Component({
   selector: 'app-root',
@@ -13,8 +14,19 @@ export class AppComponent {
 
   userName: string = '';
   isLoggedIn: boolean = false;
+  syncActive: boolean = true;
 
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private billContextService: BillContextService) {
+    this.initSubscriptions();
+  }
+
+  logout(): void {
+    this.authService.logout();
+  }
+
+  private initSubscriptions(): void {
     this.authService.loggedIn().subscribe(
       {
         next: isLoggedIn => this.isLoggedIn = isLoggedIn
@@ -26,9 +38,11 @@ export class AppComponent {
         next: userInfo => this.userName = userInfo.userName
       }
     );
-  }
 
-  logout(): void {
-    this.authService.logout();
+    this.billContextService.syncing().subscribe(
+      {
+        next: syncing => this.syncActive = syncing
+      }
+    );
   }
 }

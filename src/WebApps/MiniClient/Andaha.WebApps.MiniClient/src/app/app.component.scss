@@ -28,6 +28,11 @@ $toolbar-height: 56px;
   font-weight: lighter;
 }
 
+.sync-info {
+  display: flex;
+  margin-right: 15px;
+}
+
 .sidenav-container {
   height: calc(100% - $toolbar-height);
 }

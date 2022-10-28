@@ -45,6 +45,10 @@ export class BillContextService {
     return this.loading$.asObservable();
   }
 
+  syncing(): Observable<boolean> {
+    return this.syncing$.asObservable();
+  }
+
   setPageSize(size: number): void {
     if (size != this.pageSize$.value) {
       this.pageSize$.next(size);
@@ -185,6 +189,8 @@ export class BillContextService {
       }
     });
 
+    currentBillList.sort(this.billCompareDateDescending);
+
     this.bills$.next(currentBillList);
   }
 
@@ -225,5 +231,10 @@ export class BillContextService {
         } 
       }
     ));
+  }
+
+  private billCompareDateDescending(left: BillDto, right: BillDto): number {
+    console.log(right.date.getTime());
+    return right.date.getTime() - left.date.getTime();
   }
 }

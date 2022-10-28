@@ -7,6 +7,7 @@
       <h2>Andaha</h2>
     </button>
     <span class="spacer"></span>
+    <span class="sync-info" *ngIf="syncActive"><mat-icon>sync</mat-icon></span>
     <span class="user-info">{{ userName }}</span>
     <button mat-icon-button [matMenuTriggerFor]="userPopup">
       <mat-icon>account_circle</mat-icon>
