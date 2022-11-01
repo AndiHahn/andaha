@@ -4,17 +4,18 @@
   <div class="bottom-navigation">
     <mat-toolbar>  
       <mat-toolbar-row class="toolbar">
-        <button mat-icon-button routerLink="settings/connections" routerLinkActive #rl1="routerLinkActive">
-          <mat-icon [ngClass]="{ 'primary-fg-color': rl1.isActive}">link</mat-icon>
-        </button>
-        <button mat-icon-button routerLink="settings/categories" routerLinkActive #rl2="routerLinkActive">
-          <mat-icon [ngClass]="{ 'primary-fg-color': rl2.isActive}">category</mat-icon>
-        </button>
-        <!--
-        <button mat-icon-button routerLink="bill/expenses" routerLinkActive #rl3="routerLinkActive">
-          <mat-icon [ngClass]="{ 'primary-fg-color': rl3.isActive}">donut_small</mat-icon>
-        </button>
-        -->
+        <div class="menu-item">
+          <button mat-icon-button routerLink="settings/connections" routerLinkActive #rl1="routerLinkActive" class="small-icon-button">
+            <mat-icon [ngClass]="{ 'primary-fg-color': rl1.isActive}">link</mat-icon>
+          </button>
+          <div class="menu-title" [ngClass]="{ 'primary-fg-color': rl1.isActive}">Verbindungen</div>
+        </div>
+        <div class="menu-item">
+          <button mat-icon-button routerLink="settings/categories" routerLinkActive #rl2="routerLinkActive" class="small-icon-button">
+            <mat-icon [ngClass]="{ 'primary-fg-color': rl2.isActive}">category</mat-icon>
+          </button>
+          <div class="menu-title" [ngClass]="{ 'primary-fg-color': rl2.isActive}">Kategorien</div>
+        </div>
       </mat-toolbar-row>
     </mat-toolbar>
   </div>
