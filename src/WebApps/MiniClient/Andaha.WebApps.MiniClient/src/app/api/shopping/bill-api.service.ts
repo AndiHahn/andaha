@@ -4,9 +4,10 @@ import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { PagedResultDto } from '../common-dtos/PagedResultDto';
 import { createHttpParameters } from '../functions/api-utils';
-import { addApiVersion, constructPath } from '../functions/functions';
+import { constructPath, constructVersionedPath } from '../functions/functions';
 import { BillCreateDto } from './dtos/BillCreateDto';
 import { BillDto, BillDtoRaw, mapBillDtoRaw, mapPagedBillDtoResultRaw } from './dtos/BillDto';
+import { BillUpdateDto } from './dtos/BillUpdateDto';
 import { getSearchBillsHttpParams, SearchBillsParameters } from './dtos/SearchBillsParameters';
 
 @Injectable({
@@ -25,7 +26,7 @@ export class BillApiService {
   }
 
   searchBills(parameters: SearchBillsParameters): Observable<PagedResultDto<BillDto>> {
-    const url = addApiVersion(this.endpointUrl, this.apiVersion);
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl);
 
     const httpParameters = createHttpParameters(getSearchBillsHttpParams(parameters));
 
@@ -34,14 +35,19 @@ export class BillApiService {
   }
 
   addBill(dto: BillCreateDto): Observable<BillDto> {
-    const url = addApiVersion(this.endpointUrl, this.apiVersion);
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl);
     return this.httpClient.post<BillDtoRaw>(url, dto)
       .pipe(map(mapBillDtoRaw));
   }
 
+  updateBill(id: string, dto: BillUpdateDto): Observable<BillDto> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
+    return this.httpClient.put<BillDtoRaw>(url, dto)
+      .pipe(map(mapBillDtoRaw));
+  }
+
   deleteBill(id: string): Observable<void> {
-    let url = constructPath(this.endpointUrl, id);
-    url = addApiVersion(url, this.apiVersion);
+    let url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
     
     return this.httpClient.delete<void>(url);
   }

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { createHttpParameters } from '../functions/api-utils';
-import { addApiVersion, constructPath } from '../functions/functions';
+import { constructPath, constructVersionedPath } from '../functions/functions';
 import { ExpenseDto } from './dtos/ExpenseDto';
 import { mapTimeRangeDtoRaw, TimeRangeDto, TimeRangeDtoRaw } from './dtos/TimeRangeDto';
 
@@ -23,7 +23,7 @@ export class ExpenseApiService {
   }
 
   getExpenses(timeRange: TimeRangeDtoRaw): Observable<ExpenseDto[]> {
-    const url = addApiVersion(this.endpointUrl, this.apiVersion);
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl);
 
     const httpParameters = createHttpParameters([
       { key: 'startTimeUtc', value: timeRange.startTimeUtc.toString() },
@@ -34,7 +34,7 @@ export class ExpenseApiService {
   }
 
   getAvailableTimeRange(): Observable<TimeRangeDto> {
-    const url = addApiVersion(constructPath(this.endpointUrl, 'time-range'), this.apiVersion);
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'time-range');
 
     return this.httpClient.get<TimeRangeDtoRaw>(url)
       .pipe(map(mapTimeRangeDtoRaw));

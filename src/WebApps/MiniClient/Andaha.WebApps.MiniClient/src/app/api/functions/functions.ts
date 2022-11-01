@@ -15,14 +15,16 @@ export function constructPath(...urlParts: string[]): string {
   return finalPath.substr(0, finalPath.length - 1);
 }
 
-export function addApiVersion(url: string, apiVersion: string) {
+export function constructVersionedPath(apiVersion: string, ...urlParts: string[]): string {
+  const path = constructPath(...urlParts);
+
   const apiVersionParameter = "api-version=" + apiVersion;
   
-  if (url.includes('?')) {
-    return url + "&" + apiVersionParameter;
+  if (path.includes('?')) {
+    return path + "&" + apiVersionParameter;
   }
 
-  return url + "?" + apiVersionParameter;
+  return path + "?" + apiVersionParameter;
 }
 
 function ensureStringEndsWithSlash(value: string): string {

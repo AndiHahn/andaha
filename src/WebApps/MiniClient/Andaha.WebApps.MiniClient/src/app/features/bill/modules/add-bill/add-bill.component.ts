@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroupDirective, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormGroup, FormGroupDirective, UntypedFormBuilder } from '@angular/forms';
 import { generateGuid } from 'src/app/api/functions/api-utils';
 import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
 import { BillCreateDto } from 'src/app/api/shopping/dtos/BillCreateDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { BillContextService } from 'src/app/services/bill-context.service';
+import { BillForm, getEmptyBillForm } from '../../functions/bill-form-functions';
 
 @Component({
   selector: 'app-add-bill',
@@ -15,7 +15,7 @@ import { BillContextService } from 'src/app/services/bill-context.service';
 export class AddBillComponent implements OnInit {
   numberRegex: string = '^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$';
 
-  form: UntypedFormGroup;
+  form: FormGroup<BillForm>;
 
   categories?: BillCategoryDto[];
   
@@ -23,14 +23,8 @@ export class AddBillComponent implements OnInit {
     private fb: UntypedFormBuilder,
     private billContextService: BillContextService,
     private billCategoryContextService: BillCategoryContextService
-    ) { 
-    this.form = this.fb.group({
-      shopName: ['', [Validators.required, Validators.maxLength(200)]],
-      notes: ['', [Validators.maxLength(1000)]],
-      category: ['', Validators.required],
-      price: ['', [Validators.min(0), Validators.pattern(this.numberRegex)]],
-      date: [new Date()]
-    });
+    ) {
+    this.form = getEmptyBillForm();
   }
 
   ngOnInit(): void {
@@ -64,21 +58,21 @@ export class AddBillComponent implements OnInit {
     const controls = this.form.controls;
     return {
       id: generateGuid(),
-      categoryId: controls['category'].value.id,
-      shopName: controls['shopName'].value,
-      price: controls['price'].value,
-      date: controls['date']?.value,
-      notes: controls['notes']?.value
+      categoryId: controls.category.value!.id,
+      shopName: controls.shopName.value,
+      price: controls.price.value!,
+      date: controls.date?.value,
+      notes: controls.notes?.value ?? ''
     }
   }
 
   private getCategoryFromForm(): BillCategoryDto {
     const controls = this.form.controls;
     return {
-      id: controls['category'].value.id,
-      name: controls['category'].value.name,
-      color: controls['category'].value.color,
-      isDefault: controls['category'].value.isDefault,
+      id: controls.category.value!.id,
+      name: controls.category.value!.name,
+      color: controls.category.value!.color,
+      isDefault: controls.category.value!.isDefault,
     }
   }
 }

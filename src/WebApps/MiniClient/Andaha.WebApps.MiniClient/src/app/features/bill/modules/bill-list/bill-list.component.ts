@@ -1,11 +1,10 @@
 import { CdkScrollable, ScrollDispatcher } from '@angular/cdk/scrolling';
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
-import { filter } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 import { PageEvent } from '@angular/material/paginator';
 import { BillContextService } from '../../../../services/bill-context.service';
 import { BillDataSource } from './BillDataSource';
-import { BillOptionsDialogService } from './bill-options-dialog/bill-options-dialog.service';
-import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-bill-list',
@@ -25,17 +24,26 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   timeoutHandler?: any;
 
+  showFilterBar: boolean = false;
+  initialSearchValue?: string;
+
+  private destroy$: Subject<void> = new Subject();
+
   constructor(
     private scrollDispatcher: ScrollDispatcher,
-    private billListContextService: BillContextService,
-    private billOptionsDialogService: BillOptionsDialogService) { }
-
-  ngOnDestroy(): void {
-    this.billListContextService.searchBills('');
-  }
-
+    private billListContextService: BillContextService) {
+      const searchText = this.billListContextService.getSearchText();
+      if (searchText.length > 0) {
+        this.initialSearchValue = searchText;
+      }      
+    }
+  
   ngOnInit(): void {
     this.initSubscriptions();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
   }
 
   ngAfterViewInit(): void {
@@ -56,12 +64,6 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
     this.billListContextService.searchBills(searchText);
   }
 
-  holdHandler(time: number, bill: BillDto) {
-    if (time === 500) {
-      this.billOptionsDialogService.openDialog(bill.id);
-    }
-  }
-
   private onScroll(data: any) {
     if (data instanceof CdkScrollable) {
       const topOffset = data.measureScrollOffset('top');
@@ -75,7 +77,7 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private initSubscriptions(): void {
-    this.billListContextService.bills().subscribe(
+    this.billListContextService.bills().pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: result => {
           this.billDataSource.update(result);
@@ -84,19 +86,19 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     );
 
-    this.billListContextService.totalResults().subscribe(
+    this.billListContextService.totalResults().pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: totalRresults => this.totalResults = totalRresults
       }
     );
 
-    this.billListContextService.pageSize().subscribe(
+    this.billListContextService.pageSize().pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: pageSize => this.pageSize = pageSize
       }
     );
 
-    this.billListContextService.loading().subscribe(
+    this.billListContextService.loading().pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: loading => this.loading = loading 
       }

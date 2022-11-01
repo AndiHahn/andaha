@@ -12,9 +12,9 @@ import { BillListItemComponent } from './bill-list-item/bill-list-item.component
 import { RouterModule, Routes } from '@angular/router';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatDividerModule } from '@angular/material/divider';
-import { BillOptionsDialogService } from './bill-options-dialog/bill-options-dialog.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { HoldableDirectiveModule } from 'src/app/shared/directives/holdable-directive/holdable-directive.module';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 const routes: Routes = [
   {
@@ -43,12 +43,6 @@ const routes: Routes = [
     MatDialogModule,
     HoldableDirectiveModule
   ],
-  providers: [
-    BillOptionsDialogService,
-    {
-      provide: 'dialog',
-      useValue: MatDialog
-    }
-  ]
+  providers: []
 })
 export class BillListModule { }

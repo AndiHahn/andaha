@@ -11,16 +11,25 @@ export class BillListFilterComponent implements OnInit, AfterViewInit {
   
   @Input()
   deactivate: boolean = false;
+
+  @Input()
+  initialValue?: string;
   
   @Output()
   triggerLoading = new EventEmitter<string>();
 
   isLoading: boolean = false;
   searchBoxKeyup = new EventEmitter<string>();
-  
-  constructor() { }
 
+  inputFieldValue: string = '';
+  
+  constructor() {
+    
+  }
   ngOnInit(): void {
+    if (this.initialValue) {
+      this.inputFieldValue = this.initialValue;
+    }
   }
 
   ngAfterViewInit(): void {

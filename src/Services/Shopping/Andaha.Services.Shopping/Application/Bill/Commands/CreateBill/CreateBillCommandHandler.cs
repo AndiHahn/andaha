@@ -1,6 +1,5 @@
 ﻿using Andaha.CrossCutting.Application.Identity;
 using Andaha.CrossCutting.Application.Result;
-using Andaha.Services.Shopping.Core;
 using Andaha.Services.Shopping.Dtos.v1_0;
 using Andaha.Services.Shopping.Infrastructure;
 using MediatR;
@@ -26,7 +25,7 @@ internal class CreateBillCommandHandler : IRequestHandler<CreateBillCommand, Res
         Guid userId = this.identityService.GetUserId();
 
         var newBill = this.dbContext.Bill.Add(
-            new Bill(request.Id, userId, request.CategoryId, request.ShopName, request.Price, request.Date, request.Notes));
+            new Core.Bill(request.Id, userId, request.CategoryId, request.ShopName, request.Price, request.Date, request.Notes));
 
         await this.dbContext.SaveChangesAsync(cancellationToken);
 

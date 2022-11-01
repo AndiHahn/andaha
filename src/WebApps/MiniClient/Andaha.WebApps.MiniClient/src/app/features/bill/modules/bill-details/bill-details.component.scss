@@ -1,0 +1,49 @@
+.back-button {
+  margin-left: 10px;
+  margin-top: 5px;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  margin: 5px 15px 0px 15px;
+}
+
+.progressbar-placeholder {
+  height: 4px;
+}
+
+.progressbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 157px;
+  z-index: 1000;
+}
+
+.floating-button {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: row;
+}
+
+.edit-buttons {
+  bottom: 107px;
+}
+
+.delete-button {
+  bottom: 56px;
+}
+
+.button-placeholder {
+  height: 50px;
+}
+
+.button-with-icon {
+  mat-icon {
+    margin-right: 10px;
+  }
+}

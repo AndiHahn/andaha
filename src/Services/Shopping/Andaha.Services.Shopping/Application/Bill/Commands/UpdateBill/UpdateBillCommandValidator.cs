@@ -3,19 +3,21 @@ using Andaha.Services.Shopping.Infrastructure;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-namespace Andaha.Services.Shopping.Application.Commands.CreateBill;
+namespace Andaha.Services.Shopping.Application.Bill.Commands.UpdateBill;
 
-public class CreateBillCommandValidator : AbstractValidator<CreateBillCommand>
+public class UpdateBillCommandValidator : AbstractValidator<UpdateBillCommand>
 {
     private readonly ShoppingDbContext dbContext;
     private readonly IIdentityService identityService;
 
-    public CreateBillCommandValidator(
+    public UpdateBillCommandValidator(
         ShoppingDbContext dbContext,
         IIdentityService identityService)
     {
         this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         this.identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
+
+        RuleFor(command => command.Id).NotEmpty();
 
         RuleFor(command => command.CategoryId).NotNull().NotEmpty().MustAsync(CategoryAvailable);
 

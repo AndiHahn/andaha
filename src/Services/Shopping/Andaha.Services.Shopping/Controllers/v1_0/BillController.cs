@@ -1,4 +1,5 @@
 ﻿using Andaha.CrossCutting.Application.Result;
+using Andaha.Services.Shopping.Application.Bill.Commands.UpdateBill;
 using Andaha.Services.Shopping.Application.Commands.CreateBill;
 using Andaha.Services.Shopping.Application.Commands.DeleteBill;
 using Andaha.Services.Shopping.Application.Queries.GetBillById;
@@ -27,10 +28,12 @@ public class BillController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(typeof(PagedResultDto<BillDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public Task<PagedResult<BillDto>> List([FromQuery] SearchBillsParameters searchParameters, CancellationToken cancellationToken)
     {
         var query = new SearchBillsQuery(searchParameters.PageSize, searchParameters.PageIndex, searchParameters.Search);
+
         return sender.Send(query, cancellationToken);
     }
 
@@ -41,11 +44,13 @@ public class BillController : ControllerBase
     public Task<Result<BillDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetBillByIdQuery(id);
+
         return sender.Send(query, cancellationToken);
     }
 
     [HttpPost]
     [ProducesResponseType(typeof(BillDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> AddBill([FromBody] BillCreateDto createDto, CancellationToken cancellationToken)
     {
@@ -64,14 +69,31 @@ public class BillController : ControllerBase
         return Created($"{HttpContext.Request.Path}/{createdBill.Value.Id}", createdBill.Value);
     }
 
+    [HttpPut("{id}")]
+    [ProducesResponseType(typeof(BillDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    public async Task<Result<BillDto>> UpdateBill(Guid id, [FromBody] BillUpdateDto updateDto, CancellationToken cancellationToken)
+    {
+        var command = new UpdateBillCommand(
+            id,
+            updateDto.CategoryId,
+            updateDto.ShopName,
+            updateDto.Price,
+            updateDto.Date,
+            updateDto.Notes);
+
+        return await sender.Send(command, cancellationToken);
+    }
+
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeleteBill(Guid id, CancellationToken cancellationToken)
+    public async Task<Result> DeleteBill(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeleteBillCommand(id);
-        await sender.Send(command, cancellationToken);
-        return NoContent();
+
+        return await sender.Send(command, cancellationToken);
     }
 }

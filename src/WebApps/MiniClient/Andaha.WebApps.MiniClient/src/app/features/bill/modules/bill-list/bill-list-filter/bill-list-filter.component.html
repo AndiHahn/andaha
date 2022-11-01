@@ -7,6 +7,7 @@
           class="search-box"
           [readonly]="deactivate"
           #searchTerm
+          [value]="inputFieldValue"
           (keyup)="searchBoxKeyup.emit(searchTerm.value)"
           (keydown)="searchBoxKeyDown($event)"
           placeholder="Suche Rechnungen...">

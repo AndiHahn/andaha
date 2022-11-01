@@ -7,7 +7,7 @@ import { ConfirmationDialogData } from './ConfirmationDialogData';
   templateUrl: './confirmation-dialog.component.html',
   styleUrls: ['./confirmation-dialog.component.scss']
 })
-export class ConfirmationDialogComponent implements OnInit {
+export class ConfirmationDialogComponent {
 
   dialogData: ConfirmationDialogData;
 
@@ -18,11 +18,8 @@ export class ConfirmationDialogComponent implements OnInit {
     this.dialogData = data;
   }
 
-  ngOnInit(): void {
-  }
-
   onCancelClick(): void {
-    this.dialogRef.close(undefined);
+    this.dialogRef.close();
   }
 
   onAcceptClick(): void {

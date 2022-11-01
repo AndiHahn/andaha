@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { BillCategoryApiService } from '../api/shopping/bill-category-api.service';
 import { BillCategoryDto } from '../api/shopping/dtos/BillCategoryDto';
 import { BillCategoryUpdateDto } from '../api/shopping/dtos/BillCategoryUpdateDto';
@@ -29,8 +29,8 @@ export class BillCategoryContextService {
     return this.categories$.asObservable();
   }
 
-  updateCategories(categories: BillCategoryUpdateDto[]): void {
-    this.bulkUpdate(categories);
+  updateCategories(categories: BillCategoryUpdateDto[]): Observable<void> {
+    return this.bulkUpdate(categories);
   }
   
   private initSubscriptions(): void {
@@ -53,18 +53,23 @@ export class BillCategoryContextService {
     );
   }
 
-  private bulkUpdate(categories: BillCategoryUpdateDto[]): void {
+  private bulkUpdate(categories: BillCategoryUpdateDto[]): Observable<void> {
+    const returnSubject = new Subject<void>();
+
     this.billCategoryApiService.bulkUpdate(categories).subscribe(
       {
         next: _ => {
           this.fetchBillCategories();
           this.billContextService.refreshBills();
+          returnSubject.next();
         },
-        error: _ => {
-          openErrorSnackbar('Kategorien konnten nicht gespeichert werden.', this.snackbar);
+        error: error => {
+          returnSubject.error(error);
         }
       }
     );
+
+    return returnSubject.asObservable();
   }
 
   private compareCategoryDefaultFirst(left: BillCategoryDto, right: BillCategoryDto): number {

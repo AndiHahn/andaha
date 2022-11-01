@@ -74,4 +74,18 @@ public class Bill : Entity<Guid>
         this.CategoryId = category.Id;
         this.Category = category;
     }
+
+    public void Update(
+        Guid? categoryId = null,
+        string? shopName = null,
+        double? price = null,
+        DateTime? date = null,
+        string? notes = null)
+    {
+        this.CategoryId = categoryId ?? this.CategoryId;
+        this.ShopName = shopName ?? this.ShopName;
+        this.Price = price ?? this.Price;
+        this.Date = date ?? this.Date;
+        this.Notes = notes ?? this.Notes;
+    }
 }

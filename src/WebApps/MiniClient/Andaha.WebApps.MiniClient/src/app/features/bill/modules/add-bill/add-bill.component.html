@@ -1,17 +1,18 @@
 <div>
   <form [formGroup]="form" #formDirective="ngForm" (ngSubmit)="onSubmit(formDirective)">
     <div class="form-container">
-      <br>
       <mat-form-field appearance="fill">
         <mat-label>Shopname</mat-label>
         <input matInput formControlName="shopName" required>
       </mat-form-field>
-      <br>
+      <mat-form-field appearance="fill">
+        <mat-label>Notizen</mat-label>
+        <textarea matInput formControlName="notes"></textarea>
+      </mat-form-field>
       <mat-form-field appearance="fill">
         <mat-label>Preis</mat-label>
         <input matInput formControlName="price" type="number" required>
       </mat-form-field>
-      <br>
       <mat-form-field appearance="fill">
         <mat-label>Kategorie</mat-label>
         <mat-select formControlName="category" required>
@@ -20,18 +21,12 @@
           </mat-option>
         </mat-select>
       </mat-form-field>
-      <br>
       <mat-form-field appearance="fill">
         <mat-label>Datum</mat-label>
         <input matInput [matDatepicker]="picker" formControlName="date">
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field>
-      <br>
-      <mat-form-field appearance="fill">
-        <mat-label>Notizen</mat-label>
-        <textarea matInput formControlName="notes"></textarea>
-      </mat-form-field>
+      </mat-form-field>      
     </div>
 
     <div class="button-placeholder"></div>

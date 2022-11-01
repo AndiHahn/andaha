@@ -21,6 +21,18 @@
   }
 }
 
+.progressbar-placeholder {
+  height: 4px;
+}
+
+.progressbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 106px;
+  z-index: 1000;
+}
+
 .bottom-button {
   position: fixed;
   left: 0;

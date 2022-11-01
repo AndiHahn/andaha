@@ -1,10 +1,12 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
 import { BillCategoryUpdateDto } from 'src/app/api/shopping/dtos/BillCategoryUpdateDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/ConfirmationDialogData';
+import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 
 @Component({
   selector: 'app-categories',
@@ -33,6 +35,7 @@ export class CategoriesComponent implements OnInit {
   }
 
   constructor(
+    private snackbar: MatSnackBar,
     private confirmationDialogService: ConfirmationDialogService,
     private categoryContextService: BillCategoryContextService) { }
 
@@ -80,11 +83,22 @@ export class CategoriesComponent implements OnInit {
       return;
     }
     
-    this.isEditing = false;
+    this.isSaving = true;
 
     const dtos = this.formGroups.map(group => this.createCategoryUpdateDto(group));
 
-    this.categoryContextService.updateCategories(dtos);
+    this.categoryContextService.updateCategories(dtos).subscribe(
+      {
+        next: _ => {
+          this.isEditing = false;
+          this.isSaving = false;
+        },
+        error: _ => {
+          this.isSaving = false;
+          openErrorSnackbar('Kategorien konnten nicht gespeichert werden.', this.snackbar);
+        } 
+      }
+    );
   }
 
   isDefaultCategory(index: number): boolean {

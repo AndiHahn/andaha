@@ -5,6 +5,7 @@ import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { ContextService } from 'src/app/core/context.service';
 import { BillCategoryDto } from '../api/shopping/dtos/BillCategoryDto';
 import { BillCreateDto, billCreateDtoToBillDto } from '../api/shopping/dtos/BillCreateDto';
+import { BillUpdateDto } from '../api/shopping/dtos/BillUpdateDto';
 import { BillCacheService } from './bill-cache.service';
 
 @Injectable({
@@ -49,6 +50,10 @@ export class BillContextService {
     return this.syncing$.asObservable();
   }
 
+  getSearchText(): string {
+    return this.searchText;
+  }
+
   setPageSize(size: number): void {
     if (size != this.pageSize$.value) {
       this.pageSize$.next(size);
@@ -63,7 +68,6 @@ export class BillContextService {
 
   searchBills(searchText: string): void {
     this.searchText = searchText;
-    this.bills$.next([]);
 
     this.pageIndex$.next(0);
   }
@@ -81,36 +85,64 @@ export class BillContextService {
   }
 
   addBill(dto: BillCreateDto, category: BillCategoryDto): void {
-    const returnSubject = new Subject<void>();
-
     const billDto = billCreateDtoToBillDto(dto, category);
     this.addNewBillToList(billDto);
 
     this.billCacheService.saveNewBillLocal(dto);
 
-    this.syncBills();
-
-    returnSubject.next();
+    this.syncNewBills();
   }
 
-  deleteBill(id: string): Observable<void> {
+  updateBill(id: string, updateDto: BillUpdateDto, category: BillCategoryDto): Observable<void> {
     const returnSubject = new Subject<void>();
 
-    this.billApiService.deleteBill(id).subscribe(
+    const bill = this.bills$.value.find(bill => bill.id == id);
+    if (bill) {
+      bill.shopName = updateDto.shopName;
+      bill.notes = updateDto.notes;
+      bill.price = updateDto.price;
+      bill.date = updateDto.date;
+      bill.category = category;
+    }
+
+    this.billApiService.updateBill(id, updateDto).subscribe(
       {
         next: _ => {
-          const bills = this.bills$.value.filter(bill => bill.id != id);
-
-          this.bills$.next(bills);
-          this.totalResults$.next(this.totalResults$.value - 1);
-          
+          this.fetchBills();
           returnSubject.next();
-        },
+        } ,
         error: error => returnSubject.error(error)
       }
     );
 
     return returnSubject.asObservable();
+  }
+
+  deleteBill(id: string): Observable<void> {
+    const returnSubject = new Subject<void>();
+
+    const billsWithoutDeleted = this.bills$.value.filter(bill => bill.id != id);
+    this.bills$.next(billsWithoutDeleted);
+    this.totalResults$.next(this.totalResults$.value - 1);
+
+    this.billApiService.deleteBill(id).subscribe(
+      {
+        next: _ => {
+          this.fetchBills();
+          returnSubject.next();
+        },
+        error: error => {
+          this.fetchBills();
+          returnSubject.error(error);
+        } 
+      }
+    );
+
+    return returnSubject.asObservable();
+  }
+
+  getBillById(id: string): BillDto | undefined {
+    return this.bills$.value.find(bill => bill.id == id);
   }
 
   private initSubscriptions(): void {
@@ -119,7 +151,7 @@ export class BillContextService {
         next: ready => {
           if (ready) {
             this.fetchBills();
-            this.syncBills();
+            this.syncNewBills();
           }
         } 
       }
@@ -177,21 +209,25 @@ export class BillContextService {
   }
 
   private updateBillList(newBills: BillDto[]) {
-    const currentBillList = this.bills$.value;
+    let bills: BillDto[] = [];
+    
+    if (!this.searchText) {
+      bills = this.bills$.value;
+    }
 
     newBills.forEach(bill => {
-      const existingBill = currentBillList.find(b => b.id == bill.id);
+      const existingBill = bills.find(b => b.id == bill.id);
       if (existingBill) {
         existingBill.category.name = bill.category.name;
         existingBill.category.color = bill.category.color;
       } else {
-        currentBillList.push(bill);
+        bills.push(bill);
       }
     });
 
-    currentBillList.sort(this.billCompareDateDescending);
+    bills.sort(this.billCompareDateDescending);
 
-    this.bills$.next(currentBillList);
+    this.bills$.next(bills);
   }
 
   private addNewBillToList(bill: BillDto): void {
@@ -204,7 +240,7 @@ export class BillContextService {
     this.totalResults$.next(this.totalResults$.value + 1);
   }
 
-  private syncBills(): void {
+  private syncNewBills(): void {
     const newBillsLocal = this.billCacheService.getBillsToSync();
     
     const nrOfBillsToSync = newBillsLocal.length;
