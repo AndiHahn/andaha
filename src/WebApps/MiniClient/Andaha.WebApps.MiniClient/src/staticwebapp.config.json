@@ -2,5 +2,13 @@
   "navigationFallback": {
     "rewrite": "/index.html",
     "exclude": ["/assets/icons*.{png,jpg,gif}"]
-  }
+  },
+  "routes": [
+    {
+      "route": "index.html",
+      "headers": {
+        "cache-control": "no-cache, max-age=0, must-revalidate"
+      }
+    }
+  ]
 }
