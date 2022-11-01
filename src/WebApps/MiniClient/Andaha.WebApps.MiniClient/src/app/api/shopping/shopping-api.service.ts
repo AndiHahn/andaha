@@ -14,7 +14,7 @@ export class ShoppingApiService {
     if (environment.dapr) {
       this.endpointUrl = constructPath(environment.gatewayBaseUrl, 'shopping-api');
     } else {
-      this.endpointUrl = 'https://localhost:8200';
+      this.endpointUrl = 'https://localhost:8200/api';
     }
   }
 

@@ -65,7 +65,7 @@ app.MapHealthChecks("/liveness", new HealthCheckOptions
     Predicate = r => r.Name.Contains("self")
 });
 
-app.MapGet("/ping", Results.NoContent);
+app.MapGet("/api/ping", Results.NoContent);
 
 try
 {
