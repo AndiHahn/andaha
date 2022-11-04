@@ -1,0 +1,52 @@
+<app-dialog>
+  <mat-dialog-content>    
+    <mat-radio-group (change)="onRadioButtonChange($event)" class="radio-group">
+      <mat-radio-button class="radio-button"
+          [checked]="selectedOption == uploadSelection.TakePicture"
+          [value]="uploadSelection.TakePicture">
+        Foto aufnehmen
+      </mat-radio-button>
+      <mat-radio-button class="radio-button"
+          [checked]="selectedOption == uploadSelection.UploadFromGallery"
+          [value]="uploadSelection.UploadFromGallery">
+        Aus Galerie hochladen
+      </mat-radio-button>
+    </mat-radio-group>
+
+    <div *ngIf="selectedOption == uploadSelection.TakePicture">
+      <div *ngIf="!image" class="webcam-container">
+        <webcam class="webcam" [trigger]="triggerObservable" (imageCapture)="handleImage($event)"
+          [width]="maxVideoWidth" [height]="maxVideoHeight">
+        </webcam>
+      
+        <div style="flex: 1">
+          <button mat-raised-button color="primary" class="button-style" [disabled]="image"
+              (click)="triggerSnapshot()">
+            Foto aufnehmen
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="selectedOption == uploadSelection.UploadFromGallery">
+      <button *ngIf="!image" mat-raised-button color="primary" class="button-style" (click)="hiddenImageInput.click()">
+        Foto auswählen
+        <input style="display: none" #hiddenImageInput type="file" accept="image/*" (change)="onChooseFile(hiddenImageInput)">
+      </button>
+    </div>
+
+    <div *ngIf="image">
+      <img src="{{ image.src }}" [width]="maxVideoWidth" alt="image">
+    </div>
+    
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <div style="flex: 1">
+      <button mat-raised-button color="primary" class="button-style" [disabled]="!image"
+          (click)="onChooseImageClick()">
+        Übernehmen
+      </button>
+    </div>
+  </mat-dialog-actions>
+</app-dialog>

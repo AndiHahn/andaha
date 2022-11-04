@@ -13,6 +13,7 @@ import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/Confi
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { getParametersFromRouteRecursive } from 'src/app/shared/utils/routing-helper';
 import { BillForm, getBillForm } from '../../functions/bill-form-functions';
+import { ImageSnippet } from '../add-bill-image-dialog/add-bill-image-dialog.component';
 
 @Component({
   selector: 'app-bill-details',
@@ -25,6 +26,7 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
 
   bill: BillDto;
   categories?: BillCategoryDto[];
+  image?: ImageSnippet;
   
   isSaving: boolean = false;
   isDeleting: boolean = false;
@@ -94,7 +96,7 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
     const dto = this.createModelFromForm();
     const category = this.getCategoryFromForm();
 
-    this.billContextService.updateBill(this.bill.id, dto, category).subscribe(
+    this.billContextService.updateBill(this.bill.id, dto, category, this.bill.imageAvailable).subscribe(
       {
         next: _ => this.isSaving = false,
         error: _ => {
@@ -121,6 +123,10 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
     ));
   }
 
+  onImageSelected(image: ImageSnippet): void {
+    this.image = image;
+  }
+
   private delete(): void {
     this.isDeleting = true;
 
@@ -136,7 +142,6 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
         }
       }
     );
-            
   }
 
   private updateCategory(): void {
@@ -168,7 +173,8 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
       shopName: controls.shopName.value,
       price: controls.price.value!,
       date: controls.date.value,
-      notes: controls.notes?.value ?? undefined
+      notes: controls.notes?.value ?? undefined,
+      image: this.image?.file ?? undefined
     }
   }
 

@@ -1,21 +1,24 @@
 ﻿using Andaha.CrossCutting.Application.Identity;
 using Andaha.CrossCutting.Application.Result;
+using Andaha.Services.Shopping.Application.Bill.Commands.UploadBillImage;
 using Andaha.Services.Shopping.Dtos.v1_0;
 using Andaha.Services.Shopping.Infrastructure;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Andaha.Services.Shopping.Application.Bill.Commands.UpdateBill;
 
 internal class UpdateBillCommandHandler : IRequestHandler<UpdateBillCommand, Result<BillDto>>
 {
+    private readonly ISender sender;
     private readonly ShoppingDbContext dbContext;
     private readonly IIdentityService identityService;
 
     public UpdateBillCommandHandler(
+        ISender sender,
         ShoppingDbContext dbContext,
         IIdentityService identityService)
     {
+        this.sender = sender ?? throw new ArgumentNullException(nameof(sender));
         this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         this.identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
     }
@@ -39,13 +42,13 @@ internal class UpdateBillCommandHandler : IRequestHandler<UpdateBillCommand, Res
 
         await this.dbContext.SaveChangesAsync(cancellationToken);
 
-        var updatedBill = await this.dbContext.Bill
-            .Include(billDb => billDb.Category)
-            .SingleAsync(
-                billDb => billDb.Id == bill.Id &&
-                          billDb.UserId == userId,
-                cancellationToken);
+        if (request.Image is not null)
+        {
+            var command = new UploadBillImageCommand(bill.Id, request.Image);
 
-        return bill.ToDto(userId);
+            await this.sender.Send(command, cancellationToken);
+        }
+
+        return await this.dbContext.FindBillDtoByIdAsync(bill.Id, userId, cancellationToken);
     }
 }

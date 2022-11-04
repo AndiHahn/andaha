@@ -2,6 +2,7 @@
 using Andaha.CrossCutting.Application.Result;
 using Andaha.Services.Shopping.Dtos.v1_0;
 using Andaha.Services.Shopping.Infrastructure;
+using LinqKit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,11 +25,14 @@ internal class ListBillCategoriesQueryHandler : IRequestHandler<ListBillCategori
     {
         Guid userId = this.identityService.GetUserId();
 
-        var entities = await this.dbContext.BillCategory
+        var categoryDtos = await this.dbContext.BillCategory
+            .AsNoTracking()
             .Where(category => category.UserId == userId)
+            .AsExpandable()
+            .Select(category => BillCategoryDtoMapping.EntityToDto.Invoke(category))
             .ToListAsync(cancellationToken);
 
-        if (!entities.Any())
+        if (!categoryDtos.Any())
         {
             var initialCategories = ShoppingDbContextSeed.CreateInitialCategories(userId);
 
@@ -36,11 +40,11 @@ internal class ListBillCategoriesQueryHandler : IRequestHandler<ListBillCategori
 
             await this.dbContext.SaveChangesAsync(cancellationToken);
 
-            entities = initialCategories.ToList();
+            categoryDtos = initialCategories
+                .Select(category => BillCategoryDtoMapping.EntityToDto.Invoke(category))
+                .ToList();
         }
 
-        var dtos = entities.Select(entity => entity.ToDto());
-
-        return Result<IEnumerable<BillCategoryDto>>.Success(dtos);
+        return Result<IEnumerable<BillCategoryDto>>.Success(categoryDtos);
     }
 }

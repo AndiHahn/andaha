@@ -93,7 +93,7 @@ export class BillContextService {
     this.syncNewBills();
   }
 
-  updateBill(id: string, updateDto: BillUpdateDto, category: BillCategoryDto): Observable<void> {
+  updateBill(id: string, updateDto: BillUpdateDto, category: BillCategoryDto, imageAvailable: boolean): Observable<void> {
     const returnSubject = new Subject<void>();
 
     const bill = this.bills$.value.find(bill => bill.id == id);
@@ -103,6 +103,7 @@ export class BillContextService {
       bill.price = updateDto.price;
       bill.date = updateDto.date;
       bill.category = category;
+      bill.imageAvailable = updateDto.image != undefined || imageAvailable;
     }
 
     this.billApiService.updateBill(id, updateDto).subscribe(

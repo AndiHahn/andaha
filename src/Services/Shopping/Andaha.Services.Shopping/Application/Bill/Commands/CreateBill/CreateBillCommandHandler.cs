@@ -1,9 +1,9 @@
 ﻿using Andaha.CrossCutting.Application.Identity;
 using Andaha.CrossCutting.Application.Result;
+using Andaha.Services.Shopping.Application.Bill;
 using Andaha.Services.Shopping.Dtos.v1_0;
 using Andaha.Services.Shopping.Infrastructure;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Andaha.Services.Shopping.Application.Commands.CreateBill;
 
@@ -29,13 +29,6 @@ internal class CreateBillCommandHandler : IRequestHandler<CreateBillCommand, Res
 
         await this.dbContext.SaveChangesAsync(cancellationToken);
 
-        var bill = await this.dbContext.Bill
-            .Include(bill => bill.Category)
-            .SingleAsync(
-                bill => bill.Id == newBill.Entity.Id &&
-                        bill.UserId == userId,
-                cancellationToken);
-
-        return bill.ToDto(userId);
+        return await this.dbContext.FindBillDtoByIdAsync(newBill.Entity.Id, userId, cancellationToken);
     }
 }

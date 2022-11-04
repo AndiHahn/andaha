@@ -16,6 +16,7 @@ interface BillDtoBase {
   price: number;
   notes?: string;
   isExternal: boolean;
+  imageAvailable: boolean;
 }
 
 export function mapBillDtoRaw(raw: BillDtoRaw): BillDto {

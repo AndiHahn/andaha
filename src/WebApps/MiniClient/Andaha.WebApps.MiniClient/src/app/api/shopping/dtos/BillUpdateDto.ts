@@ -4,4 +4,5 @@ export interface BillUpdateDto {
   price: number;
   date: Date;
   notes?: string;
+  image?: File;
 }

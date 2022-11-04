@@ -4,4 +4,4 @@ using MediatR;
 
 namespace Andaha.Services.Shopping.Application.Bill.Commands.UpdateBill;
 
-public record UpdateBillCommand(Guid Id, Guid CategoryId, string ShopName, double Price, DateTime Date, string? Notes) : IRequest<Result<BillDto>>;
+public record UpdateBillCommand(Guid Id, Guid CategoryId, string ShopName, double Price, DateTime Date, string? Notes, IFormFile? Image) : IRequest<Result<BillDto>>;

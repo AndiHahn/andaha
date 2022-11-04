@@ -29,6 +29,7 @@ internal class GetExpensesQueryHandler : IRequestHandler<GetExpensesQuery, IRead
         var connectedUsers = await this.collaborationApiProxy.GetConnectedUsers(cancellationToken);
 
         var result = await this.dbContext.Bill
+            .AsNoTracking()
             .Where(bill => (bill.UserId == userId ||
                            connectedUsers.Contains(bill.UserId)) &&
                            bill.Date >= request.StartTime &&

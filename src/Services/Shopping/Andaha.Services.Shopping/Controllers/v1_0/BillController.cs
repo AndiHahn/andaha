@@ -1,5 +1,8 @@
 ﻿using Andaha.CrossCutting.Application.Result;
+using Andaha.Services.Shopping.Application.Bill.Commands.DeleteBillImage;
 using Andaha.Services.Shopping.Application.Bill.Commands.UpdateBill;
+using Andaha.Services.Shopping.Application.Bill.Commands.UploadBillImage;
+using Andaha.Services.Shopping.Application.Bill.Queries.GetBillImage;
 using Andaha.Services.Shopping.Application.Commands.CreateBill;
 using Andaha.Services.Shopping.Application.Commands.DeleteBill;
 using Andaha.Services.Shopping.Application.Queries.GetBillById;
@@ -69,11 +72,12 @@ public class BillController : ControllerBase
         return Created($"{HttpContext.Request.Path}/{createdBill.Value.Id}", createdBill.Value);
     }
 
+    [Consumes("multipart/form-data")]
     [HttpPut("{id}")]
     [ProducesResponseType(typeof(BillDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    public async Task<Result<BillDto>> UpdateBill(Guid id, [FromBody] BillUpdateDto updateDto, CancellationToken cancellationToken)
+    public async Task<Result<BillDto>> UpdateBill(Guid id, [FromForm] BillUpdateDto updateDto, CancellationToken cancellationToken)
     {
         var command = new UpdateBillCommand(
             id,
@@ -81,7 +85,8 @@ public class BillController : ControllerBase
             updateDto.ShopName,
             updateDto.Price,
             updateDto.Date,
-            updateDto.Notes);
+            updateDto.Notes,
+            updateDto.Image);
 
         return await sender.Send(command, cancellationToken);
     }
@@ -93,6 +98,47 @@ public class BillController : ControllerBase
     public async Task<Result> DeleteBill(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeleteBillCommand(id);
+
+        return await sender.Send(command, cancellationToken);
+    }
+
+    [Consumes("multipart/form-data")]
+    [HttpPost("{id}/image")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<Result> UploadImage(Guid id, IFormFile image, CancellationToken cancellationToken)
+    {
+        var command = new UploadBillImageCommand(id, image);
+
+        return await sender.Send(command, cancellationToken);
+    }
+
+    [HttpGet("{id}/image")]
+    [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DownloadImage(Guid id, CancellationToken cancellationToken)
+    {
+        var query = new GetBillImageQuery(id);
+
+        var result = await this.sender.Send(query, cancellationToken);
+
+        if (result.Status != ResultStatus.Success)
+        {
+            return this.ToActionResult(result);
+        }
+
+        return this.File(result.Value!.Content, result.Value!.ContentType);
+    }
+
+    [HttpDelete("{id}/image")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<Result> DeleteImage(Guid id, CancellationToken cancellationToken)
+    {
+        var command = new DeleteBillImageCommand(id);
 
         return await sender.Send(command, cancellationToken);
     }

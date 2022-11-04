@@ -91,6 +91,37 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
                     b.ToTable("BillCategory");
                 });
 
+            modelBuilder.Entity("Andaha.Services.Shopping.Core.BillImage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BillId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<byte[]>("Thumbnail")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BillId");
+
+                    b.ToTable("BillImage");
+                });
+
             modelBuilder.Entity("Andaha.Services.Shopping.Core.Bill", b =>
                 {
                     b.HasOne("Andaha.Services.Shopping.Core.BillCategory", "Category")
@@ -100,6 +131,22 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Andaha.Services.Shopping.Core.BillImage", b =>
+                {
+                    b.HasOne("Andaha.Services.Shopping.Core.Bill", "Bill")
+                        .WithMany("Images")
+                        .HasForeignKey("BillId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Bill");
+                });
+
+            modelBuilder.Entity("Andaha.Services.Shopping.Core.Bill", b =>
+                {
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("Andaha.Services.Shopping.Core.BillCategory", b =>

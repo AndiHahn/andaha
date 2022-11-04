@@ -67,6 +67,18 @@ public class Bill : Entity<Guid>
 
     public BillCategory Category { get; private set; } = null!;
 
+    public virtual ICollection<BillImage> Images { get; private set; } = null!;
+
+    public void AddImage(string imageName, byte[] thumbnail)
+    {
+        this.Images.Add(new BillImage(this.Id, imageName, thumbnail));
+    }
+
+    public void RemoveImage(BillImage image)
+    {
+        this.Images.Remove(image);
+    }
+
     public bool HasCreated(Guid userId) => this.UserId == userId;
 
     public void UpdateCategory(BillCategory category)

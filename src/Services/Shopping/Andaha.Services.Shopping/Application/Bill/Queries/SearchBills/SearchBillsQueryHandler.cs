@@ -3,6 +3,7 @@ using Andaha.CrossCutting.Application.Result;
 using Andaha.Services.Shopping.Dtos.v1_0;
 using Andaha.Services.Shopping.Infrastructure;
 using Andaha.Services.Shopping.Infrastructure.Proxies;
+using LinqKit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,7 +31,7 @@ internal class SearchBillsQueryHandler : IRequestHandler<SearchBillsQuery, Paged
         var connectedUsers = await this.collaborationApiProxy.GetConnectedUsers(cancellationToken);
 
         IQueryable<Core.Bill> query = this.dbContext.Bill
-            .Include(bill => bill.Category)
+            .AsNoTracking()
             .Where(bill => bill.UserId == userId ||
                            connectedUsers.Contains(bill.UserId))
             .OrderByDescending(b => b.Date);
@@ -44,12 +45,12 @@ internal class SearchBillsQueryHandler : IRequestHandler<SearchBillsQuery, Paged
         int totalCount = await query.CountAsync(cancellationToken);
 
         var queryResult = await query
+            .AsExpandable()
+            .Select(bill => BillDtoMapping.EntityToDto.Invoke(bill, userId))
             .Skip(request.PageSize * request.PageIndex)
             .Take(request.PageSize)
-            .ToListAsync(cancellationToken);
+            .ToArrayAsync(cancellationToken);
 
-        return new PagedResult<BillDto>(
-            queryResult.Select(bill => bill.ToDto(userId)),
-            totalCount);
+        return new PagedResult<BillDto>(queryResult, totalCount);
     }
 }

@@ -11,6 +11,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { BillImageModule } from '../bill-image/bill-image.module';
 
 const routes: Routes = [
   {
@@ -35,7 +36,8 @@ const routes: Routes = [
     MatNativeDateModule,
     MatDatepickerModule,
     MatSelectModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    BillImageModule
   ]
 })
 export class BillDetailsModule { }

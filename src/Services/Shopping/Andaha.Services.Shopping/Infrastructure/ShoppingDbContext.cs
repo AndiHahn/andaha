@@ -9,6 +9,7 @@ public class ShoppingDbContext : DbContext
 {
     public DbSet<Bill> Bill { get; set; } = null!;
     public DbSet<BillCategory> BillCategory { get; set; } = null!;
+    public DbSet<BillImage> BillImage { get; set; } = null!;
 
     public ShoppingDbContext(
         DbContextOptions<ShoppingDbContext> options)

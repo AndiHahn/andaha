@@ -1,0 +1,23 @@
+.radio-button {
+  margin: 10px;
+}
+
+.radio-group {
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.webcam-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.webcam {
+  width: 100%;
+}
+
+button {
+  mat-icon {
+    margin-right: 10px;
+  }
+}

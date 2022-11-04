@@ -1,0 +1,22 @@
+<app-dialog>
+  <mat-dialog-content>    
+    <div *ngIf="imageSrc">
+      <img src="{{ imageSrc }}" [width]="imageWidth" alt="image">
+    </div>
+
+    <div *ngIf="isLoading" class="action-container">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <div style="flex: 1">
+      <mat-progress-bar *ngIf="isDeleting" mode="indeterminate" color="accent"></mat-progress-bar>
+
+      <button mat-raised-button color="primary" class="button-style" [disabled]="isDeleting || isLoading || !imageSrc"
+          (click)="onDeleteImageClick()">
+        <mat-icon>delete</mat-icon><span>Löschen</span>
+      </button>
+    </div>
+  </mat-dialog-actions>
+</app-dialog>

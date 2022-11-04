@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
+import { getRecordOfProperties } from 'src/app/shared/utils/utils';
 import { environment } from 'src/environments/environment';
 import { PagedResultDto } from '../common-dtos/PagedResultDto';
 import { createHttpParameters } from '../functions/api-utils';
@@ -42,13 +43,41 @@ export class BillApiService {
 
   updateBill(id: string, dto: BillUpdateDto): Observable<BillDto> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
-    return this.httpClient.put<BillDtoRaw>(url, dto)
+
+    const formData = new FormData();
+    const updateDtoData = getRecordOfProperties<BillUpdateDto>(dto);
+    for (const key in updateDtoData) {
+      formData.set(key, updateDtoData[key]);
+    }
+
+    return this.httpClient.put<BillDtoRaw>(url, formData)
       .pipe(map(mapBillDtoRaw));
   }
 
   deleteBill(id: string): Observable<void> {
     let url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
     
+    return this.httpClient.delete<void>(url);
+  }
+
+  uploadImage(billId: string, file: File): Observable<void> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, billId, 'image');
+
+    const formData = new FormData();
+    formData.set('image', file);
+    
+    return this.httpClient.post<void>(url, formData);
+  }
+
+  downloadImage(billId: string) {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, billId, 'image');
+
+    return this.httpClient.get(url, { responseType: 'blob' as 'blob' });
+  }
+
+  deleteImage(billId: string): Observable<void> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, billId, 'image');
+
     return this.httpClient.delete<void>(url);
   }
 }

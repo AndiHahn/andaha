@@ -6,6 +6,12 @@
   <mat-icon>arrow_back</mat-icon>
 </button>
 
+<div class="image">
+  <app-bill-image [bill]="bill" [editing]="isEditing" [saving]="isSaving"
+      (imageSelected)="onImageSelected($event)">
+  </app-bill-image>
+</div>
+
 <!--
   FORM
 -->
@@ -48,14 +54,14 @@
 
     <div class="progressbar-placeholder"></div>
 
-    <mat-progress-bar *ngIf="isSaving || isDeleting" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
+    <mat-progress-bar *ngIf="isSaving || isDeleting || isLoading" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
 
     <div class="button-placeholder"></div>
 
     <div class="floating-button edit-buttons">
       <div *ngIf="!isEditing" style="flex: 1">
         <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onEditClick()"
-            [disabled]="isReadOnly || isDeleting || isLoading">
+            [disabled]="isReadOnly || isDeleting || isLoading || isSaving">
           <mat-icon>edit</mat-icon><span>Bearbeiten</span>
         </button>
       </div>
@@ -75,7 +81,7 @@
     <div class="floating-button delete-button">
       <div style="flex: 1">
         <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onDeleteClick()"
-            [disabled]="isReadOnly || isEditing || isDeleting || isLoading">
+            [disabled]="isReadOnly || isEditing || isDeleting || isLoading || isSaving">
           <mat-icon>delete</mat-icon><span>Löschen</span>
         </button>
       </div>

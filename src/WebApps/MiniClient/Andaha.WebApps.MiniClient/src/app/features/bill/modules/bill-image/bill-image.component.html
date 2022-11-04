@@ -1,0 +1,10 @@
+<div *ngIf="!bill.imageAvailable">
+  <button mat-icon-button [disabled]="!editing" (click)="onAddImageClick()">
+    <mat-icon>add_a_photo</mat-icon>
+  </button>
+</div>
+<div *ngIf="bill.imageAvailable">
+  <button mat-icon-button [disabled]="saving" (click)="onShowImageClick()">
+    <mat-icon>receipt_long</mat-icon>
+  </button>
+</div>

@@ -1,8 +1,10 @@
 ﻿using Andaha.CrossCutting.Application;
 using Andaha.CrossCutting.Application.Identity;
+using Andaha.Services.Shopping.Dtos.v1_0;
 using Andaha.Services.Shopping.Filter;
 using Andaha.Services.Shopping.Healthcheck;
 using Andaha.Services.Shopping.Infrastructure;
+using Andaha.Services.Shopping.Infrastructure.ImageRepository;
 using Andaha.Services.Shopping.Infrastructure.Proxies;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +30,7 @@ internal static class ProgramExtensions
         builder.Services.AddCqrs(Assembly.GetExecutingAssembly());
         builder.Services.AddIdentityServices();
         builder.Services.AddScoped<ICollaborationApiProxy, CollaborationApiProxy>();
+        builder.Services.AddSingleton<IImageRepository, FileSystemImageRepository>();
 
         return builder;
     }

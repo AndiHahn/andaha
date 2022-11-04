@@ -1,5 +1,6 @@
 ﻿using Andaha.CrossCutting.Application.Identity;
 using Andaha.CrossCutting.Application.Result;
+using Andaha.Services.Shopping.Application.Bill;
 using Andaha.Services.Shopping.Dtos.v1_0;
 using Andaha.Services.Shopping.Infrastructure;
 using Andaha.Services.Shopping.Infrastructure.Proxies;
@@ -29,20 +30,17 @@ internal class GetBillByIdQueryHandler : IRequestHandler<GetBillByIdQuery, Resul
         Guid userId = this.identityService.GetUserId();
         var connectedUsers = await this.collaborationApiProxy.GetConnectedUsers(cancellationToken);
 
-        var bill = await this.dbContext.Bill
-            .Include(bill => bill.Category)
-            .FirstOrDefaultAsync(bill => bill.Id == request.BillId, cancellationToken);
-
+        var bill = await this.dbContext.FindBillDtoByIdAsync(request.BillId, userId, cancellationToken);
         if (bill is null)
         {
             return Result<BillDto>.NotFound($"Bill with id {request.BillId} not found.");
         }
 
-        if (bill.UserId != userId && !connectedUsers.Contains(userId))
+        if (bill.IsExternal && !connectedUsers.Contains(userId))
         {
             return Result<BillDto>.Forbidden($"User do not have access to bill.");
         }
 
-        return bill.ToDto(userId);
+        return bill;
     }
 }

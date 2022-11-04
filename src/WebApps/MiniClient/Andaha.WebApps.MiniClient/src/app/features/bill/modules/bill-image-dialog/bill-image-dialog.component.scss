@@ -1,0 +1,11 @@
+.action-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.button-with-icon {
+  mat-icon {
+    margin-right: 10px;
+  }
+}

@@ -30,6 +30,7 @@ internal class GetAvailableTimeRangeQueryHandler : IRequestHandler<GetAvailableT
         var connectedUsers = await this.collaborationApiProxy.GetConnectedUsers(cancellationToken);
 
         var result = await this.dbContext.Bill
+            .AsNoTracking()
             .Select(bill => new
             {
                 StartDate = this.dbContext.Bill.Where(GetUserFilterExpression(userId, connectedUsers)).Min(b => b.Date),

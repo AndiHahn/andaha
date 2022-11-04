@@ -70,3 +70,58 @@ body {
 .dark-bg-color {
   background-color: #303030;
 }
+
+//############################
+//#### FULLSCREEN DIALOG #####
+//############################
+
+$toolbar-height: 56px;
+$mat-dialog-container-padding: 20px;
+$dialog-actions-height: 52px;
+$dialog-actions-padding: 8px;
+
+.fullscreen-dialog {
+  max-width: 100% !important;
+  margin-top: $toolbar-height !important;
+  height: calc(100% - #{$toolbar-height}) !important;
+
+  & .mat-dialog-content {
+    width: auto !important;
+    max-height : auto;
+    overflow: hidden;
+  }
+
+  & .mat-dialog-actions {
+    height: $dialog-actions-height;
+    margin-bottom: 0px;
+    padding: 0px $mat-dialog-container-padding 10px $mat-dialog-container-padding;
+    justify-content: space-evenly !important;
+    //background-color: #424242;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    z-index: 1000;
+    //box-shadow: 1px 5px 8px 5px map-get($accent, 400);
+  }
+
+  /*
+  & .mat-dialog-actions {
+    height: $dialog-actions-height;
+    margin-bottom: 0px;
+    padding: 8px;
+    justify-content: space-evenly !important;
+    background-color: #424242;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    z-index: 1000;
+    box-shadow: 1px 5px 8px 5px map-get($accent, 400);
+  }
+  */
+
+  & .dialog-actions-placeholder {
+    height: calc(#{$dialog-actions-height} + (2 * #{$dialog-actions-padding}) - #{$mat-dialog-container-padding});
+  }
+}
