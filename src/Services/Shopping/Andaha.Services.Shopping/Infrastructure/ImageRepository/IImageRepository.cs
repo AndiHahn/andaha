@@ -2,9 +2,9 @@
 
 internal interface IImageRepository
 {
-    Task<byte[]?> GetImageAsync(string name, CancellationToken cancellationToken);
+    Task<Stream> GetImageStreamAsync(string name, CancellationToken cancellationToken);
 
-    Task UploadImageAsync(string name, byte[] image, CancellationToken cancellationToken);
+    Task UploadImageAsync(string name, Stream imageStream, CancellationToken cancellationToken);
 
     Task DeleteImageAsync(string name, CancellationToken cancellationToken);
 }

@@ -48,12 +48,12 @@ internal class GetBillImageQueryHandler : IRequestHandler<GetBillImageQuery, Res
 
         var imageName = bill.Images.First().Name;
 
-        var image = await this.imageRepository.GetImageAsync(imageName, cancellationToken);
-        if (image is null)
+        var imageStream = await this.imageRepository.GetImageStreamAsync(imageName, cancellationToken);
+        if (imageStream is null)
         {
             return Result<BillImageModel>.NotFound($"No image available for bill {request.BillId}");
         }
 
-        return new BillImageModel(new MemoryStream(image), "image/png", DateTime.UtcNow);
+        return new BillImageModel(imageStream, "image/png", DateTime.UtcNow);
     }
 }

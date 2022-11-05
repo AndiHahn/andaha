@@ -8,6 +8,7 @@ using Andaha.Services.Shopping.Infrastructure.ImageRepository;
 using Andaha.Services.Shopping.Infrastructure.Proxies;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using Polly;
@@ -30,7 +31,22 @@ internal static class ProgramExtensions
         builder.Services.AddCqrs(Assembly.GetExecutingAssembly());
         builder.Services.AddIdentityServices();
         builder.Services.AddScoped<ICollaborationApiProxy, CollaborationApiProxy>();
-        builder.Services.AddSingleton<IImageRepository, FileSystemImageRepository>();
+
+        if (builder.Environment.IsDevelopment())
+        {
+            builder.Services.AddSingleton<IImageRepository, FileSystemImageRepository>();
+        }
+        else
+        {
+            builder.Services.AddSingleton<IImageRepository, AzureStorageImageRepository>();
+        }
+
+        builder.Services.AddAzureClients(clientBuilder =>
+        {
+            string storageConnectionString = builder.Configuration.GetConnectionString("BlobStorageConnectionString");
+
+            clientBuilder.AddBlobServiceClient(storageConnectionString);
+        });
 
         return builder;
     }
