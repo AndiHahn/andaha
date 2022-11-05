@@ -3,6 +3,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MatRadioChange } from '@angular/material/radio';
 import { WebcamImage } from 'ngx-webcam';
 import { Observable, Subject } from 'rxjs';
+import { blobToDataUrl, fileDataUriToBlob, imageBlobToFile } from 'src/app/shared/utils/file-utils';
 
 export class ImageSnippet {
   constructor(public src: string, public file: File) {}
@@ -59,8 +60,8 @@ export class AddBillImageDialogComponent {
 
   public handleImage(webcamImage: WebcamImage): void {
     const imageName = 'capturedImage_' + new Date().toDateString() + '.png';
-    const imageBlob = this.dataUriToBlob(webcamImage.imageAsBase64);
-    const imageFile = new File([imageBlob], imageName, { type: 'image/png' });
+    const imageBlob = fileDataUriToBlob(webcamImage.imageAsBase64);
+    const imageFile = imageBlobToFile(imageBlob, imageName);
     
     this.image = new ImageSnippet(webcamImage.imageAsDataUrl, imageFile);
   }
@@ -68,13 +69,11 @@ export class AddBillImageDialogComponent {
   public onChooseFile(imageInput: any) {
     const file = imageInput.files[0];
     if (file) {
-      const reader = new FileReader();
-
-      reader.addEventListener('load', (event: any) => {
-        this.image = new ImageSnippet(event.target.result, file);
+      blobToDataUrl(file).then(fileDataUrl => {
+        if (fileDataUrl) {
+          this.image = new ImageSnippet(fileDataUrl, file);
+        }
       });
-
-      reader.readAsDataURL(file);
     }
   }
 
@@ -85,18 +84,4 @@ export class AddBillImageDialogComponent {
 
     this.dialogRef.close(this.image);
   }
-
-  private dataUriToBlob(dataUri: string): Blob {
-    const byteString = window.atob(dataUri);
-    const arrayBuffer = new ArrayBuffer(byteString.length);
-    const int8Array = new Uint8Array(arrayBuffer);
-    
-    for (let i = 0; i < byteString.length; i++) {
-      int8Array[i] = byteString.charCodeAt(i);
-    }
-
-    const blob = new Blob([int8Array], { type: 'image/png' });  
-
-    return blob;
- }
 }

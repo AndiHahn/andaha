@@ -89,8 +89,6 @@ export class BillContextService {
     this.addNewBillToList(billDto);
 
     this.billCacheService.saveNewBillLocal(dto);
-
-    this.syncNewBills();
   }
 
   updateBill(id: string, updateDto: BillUpdateDto, category: BillCategoryDto, imageAvailable: boolean): Observable<void> {
@@ -167,6 +165,12 @@ export class BillContextService {
     this.pageSize$.asObservable().pipe(skip(1)).subscribe(
       {
         next: _ => this.fetchBills() 
+      }
+    );
+
+    this.billCacheService.billAdded().subscribe(
+      {
+        next: _ => this.syncNewBills()
       }
     );
   }

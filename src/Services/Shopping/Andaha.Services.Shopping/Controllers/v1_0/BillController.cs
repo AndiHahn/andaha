@@ -51,11 +51,12 @@ public class BillController : ControllerBase
         return sender.Send(query, cancellationToken);
     }
 
+    [Consumes("multipart/form-data")]
     [HttpPost]
     [ProducesResponseType(typeof(BillDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> AddBill([FromBody] BillCreateDto createDto, CancellationToken cancellationToken)
+    public async Task<IActionResult> AddBill([FromForm] BillCreateDto createDto, CancellationToken cancellationToken)
     {
         var command = new CreateBillCommand(
             createDto.Id,
@@ -63,7 +64,8 @@ public class BillController : ControllerBase
             createDto.ShopName,
             createDto.Price,
             createDto.Date,
-            createDto.Notes);
+            createDto.Notes,
+            createDto.Image);
 
         var createdBill = await sender.Send(command, cancellationToken);
 

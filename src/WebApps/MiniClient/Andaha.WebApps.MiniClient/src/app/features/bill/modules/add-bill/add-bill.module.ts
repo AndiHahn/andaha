@@ -13,6 +13,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { AppSnackbarModule } from 'src/app/shared/snackbar/snackbar.module';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
+import { BillImageModule } from '../bill-image/bill-image.module';
 
 const routes: Routes = [
   {
@@ -39,7 +40,8 @@ const routes: Routes = [
     MatProgressBarModule,
     AppSnackbarModule,
     MatSnackBarModule,
-    MatIconModule
+    MatIconModule,
+    BillImageModule
   ],
   providers: [
     MatDatepickerModule

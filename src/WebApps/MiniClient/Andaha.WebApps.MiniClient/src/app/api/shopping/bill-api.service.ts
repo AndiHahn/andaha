@@ -37,7 +37,14 @@ export class BillApiService {
 
   addBill(dto: BillCreateDto): Observable<BillDto> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl);
-    return this.httpClient.post<BillDtoRaw>(url, dto)
+
+    const formData = new FormData();
+    const createDtoData = getRecordOfProperties<BillCreateDto>(dto);
+    for (const key in createDtoData) {
+      formData.set(key, createDtoData[key]);
+    }
+
+    return this.httpClient.post<BillDtoRaw>(url, formData)
       .pipe(map(mapBillDtoRaw));
   }
 

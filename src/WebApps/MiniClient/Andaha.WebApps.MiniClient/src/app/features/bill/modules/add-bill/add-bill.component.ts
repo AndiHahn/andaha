@@ -6,6 +6,7 @@ import { BillCreateDto } from 'src/app/api/shopping/dtos/BillCreateDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { BillContextService } from 'src/app/services/bill-context.service';
 import { BillForm, getEmptyBillForm } from '../../functions/bill-form-functions';
+import { ImageSnippet } from '../add-bill-image-dialog/add-bill-image-dialog.component';
 
 @Component({
   selector: 'app-add-bill',
@@ -18,6 +19,8 @@ export class AddBillComponent implements OnInit {
   form: FormGroup<BillForm>;
 
   categories?: BillCategoryDto[];
+
+  image?: ImageSnippet;
   
   constructor(
     private fb: UntypedFormBuilder,
@@ -54,6 +57,10 @@ export class AddBillComponent implements OnInit {
     this.form.controls['date'].setValue(new Date());
   }
 
+  onImageSelected(image: ImageSnippet): void {
+    this.image = image;
+  }
+
   private createModelFromForm(): BillCreateDto {
     const controls = this.form.controls;
     return {
@@ -62,7 +69,8 @@ export class AddBillComponent implements OnInit {
       shopName: controls.shopName.value,
       price: controls.price.value!,
       date: controls.date?.value,
-      notes: controls.notes?.value ?? ''
+      notes: controls.notes?.value ?? '',
+      image: this.image?.file ?? undefined
     }
   }
 

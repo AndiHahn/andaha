@@ -1,6 +1,12 @@
 <div>
   <form [formGroup]="form" #formDirective="ngForm" (ngSubmit)="onSubmit(formDirective)">
     <div class="form-container">
+      <div class="image">
+        <app-bill-image [editing]="true" [saving]="false" [onlyUpload]="true"
+            (imageSelected)="onImageSelected($event)">
+        </app-bill-image>
+      </div>
+
       <mat-form-field appearance="fill">
         <mat-label>Shopname</mat-label>
         <input matInput formControlName="shopName" required>

@@ -1,14 +1,21 @@
 import { Injectable } from '@angular/core';
-import { BillCreateDto } from '../api/shopping/dtos/BillCreateDto';
+import { Observable, Subject } from 'rxjs';
+import { BillCreateCacheItem, BillCreateDto } from '../api/shopping/dtos/BillCreateDto';
+import { blobToDataUrl, dataUrlToBase64, fileDataUriToBlob, imageBlobToFile } from '../shared/utils/file-utils';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BillCacheService {
+  private billAdded$: Subject<void> = new Subject();
 
   private NEW_BILLS_CACHE_KEY: string = 'Bills|New';
 
-  private currentlySyncing: BillCreateDto[] = [];
+  private currentlySyncing: BillCreateCacheItem[] = [];
+
+  public billAdded(): Observable<void> {
+    return this.billAdded$.asObservable();
+  }
 
   public saveNewBillLocal(bill: BillCreateDto): void {
     this.saveBill(bill);
@@ -37,7 +44,10 @@ export class BillCacheService {
 
     this.currentlySyncing = this.currentlySyncing.concat(billsToSync);
 
-    return billsToSync;
+    const billCreateDtos: BillCreateDto[] = [];
+    billsToSync.forEach(bill => billCreateDtos.push(this.cacheItemToDto(bill)));
+
+    return billCreateDtos;
   }
 
   private removeBill(billId: string): void {
@@ -57,19 +67,64 @@ export class BillCacheService {
 
   private saveBill(bill: BillCreateDto): void {
     const allBills = this.getSavedBills();
-    allBills.push(bill);
 
-    localStorage.setItem(this.NEW_BILLS_CACHE_KEY, JSON.stringify(allBills));
+    this.dtoToCacheItem(bill).then(billToCache => {
+      allBills.push(billToCache);
+
+      localStorage.setItem(this.NEW_BILLS_CACHE_KEY, JSON.stringify(allBills));
+
+      this.billAdded$.next();
+    });
   }
-
-  private getSavedBills(): BillCreateDto[] {
+  
+  private getSavedBills(): BillCreateCacheItem[] {
     const billsJson = localStorage.getItem(this.NEW_BILLS_CACHE_KEY);
     if (!billsJson) {
       return [];
     }
 
-    const bills: BillCreateDto[] = JSON.parse(billsJson);
+    const cachedBills: BillCreateCacheItem[] = JSON.parse(billsJson);
 
-    return bills;
+    return cachedBills;
+  }
+
+  private dtoToCacheItem(bill: BillCreateDto): Promise<BillCreateCacheItem> {
+    const cacheItem: BillCreateCacheItem = {
+      id: bill.id,
+      shopName: bill.shopName,
+      categoryId: bill.categoryId,
+      date: bill.date,
+      price: bill.price,
+      notes: bill.notes
+    }
+
+    return new Promise((resolve, _) => {
+      blobToDataUrl(bill.image).then(dataUrl => {
+        if (dataUrl) {
+          cacheItem.image = dataUrl;
+        }
+
+        resolve(cacheItem);
+      })
+    });
+  }
+
+  private cacheItemToDto(bill: BillCreateCacheItem): BillCreateDto {
+    let file: File | undefined = undefined;
+    if (bill.image) {
+      const base64 = dataUrlToBase64(bill.image);
+      const blob = fileDataUriToBlob(base64);
+      file = imageBlobToFile(blob);
+    }
+
+    return {
+      id: bill.id,
+      shopName: bill.shopName,
+      date: bill.date,
+      categoryId: bill.categoryId,
+      price: bill.price,
+      notes: bill.notes,
+      image: file
+    }
   }
 }

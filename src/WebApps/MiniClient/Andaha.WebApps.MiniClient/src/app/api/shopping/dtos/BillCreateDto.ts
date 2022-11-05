@@ -1,7 +1,15 @@
 import { BillCategoryDto } from "./BillCategoryDto";
 import { BillDto } from "./BillDto";
 
-export interface BillCreateDto {
+export interface BillCreateDto extends BillCreateDtoBase {
+  image?: File;
+}
+
+export interface BillCreateCacheItem extends BillCreateDtoBase {
+  image?: string;
+}
+
+interface BillCreateDtoBase {
   id: string;
   categoryId: string;
   shopName: string;
@@ -18,6 +26,7 @@ export function billCreateDtoToBillDto(bill: BillCreateDto, category: BillCatego
     date: bill.date,
     price: bill.price,
     notes: bill.notes,
-    isExternal: false
+    isExternal: false,
+    imageAvailable: bill.image != undefined
   }
 }
