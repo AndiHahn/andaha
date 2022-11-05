@@ -14,8 +14,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Andaha.Services.Shopping.Controllers.v1_0;
 [MapToProblemDetails]
-[Consumes("application/json")]
-[Produces("application/json")]
 [ApiVersion("1.0")]
 [Authorize]
 [Route("api/[controller]")]
@@ -30,6 +28,8 @@ public class BillController : ControllerBase
     }
 
     [HttpGet]
+    [Consumes("application/json")]
+    [Produces("application/json")]
     [ProducesResponseType(typeof(PagedResultDto<BillDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -41,6 +41,7 @@ public class BillController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Produces("application/json")]
     [ProducesResponseType(typeof(BillDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -51,8 +52,9 @@ public class BillController : ControllerBase
         return sender.Send(query, cancellationToken);
     }
 
-    [Consumes("multipart/form-data")]
     [HttpPost]
+    [Consumes("multipart/form-data")]
+    [Produces("application/json")]
     [ProducesResponseType(typeof(BillDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -74,8 +76,9 @@ public class BillController : ControllerBase
         return Created($"{HttpContext.Request.Path}/{createdBill.Value.Id}", createdBill.Value);
     }
 
-    [Consumes("multipart/form-data")]
     [HttpPut("{id}")]
+    [Consumes("multipart/form-data")]
+    [Produces("application/json")]
     [ProducesResponseType(typeof(BillDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -104,8 +107,8 @@ public class BillController : ControllerBase
         return await sender.Send(command, cancellationToken);
     }
 
-    [Consumes("multipart/form-data")]
     [HttpPost("{id}/image")]
+    [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -117,6 +120,7 @@ public class BillController : ControllerBase
     }
 
     [HttpGet("{id}/image")]
+    [Produces("image/png")]
     [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
