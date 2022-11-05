@@ -29,11 +29,10 @@ export async function blobToDataUrl(blob: Blob | undefined): Promise<string | un
 }
 
 export function dataUrlToBase64(dataUrl: string): string {
-  const dataUrlPrefix = "data:image/jpeg;base64,";
+  const result = dataUrl.match('data:image\/.{2,15};base64,');
 
-  const index = dataUrl.indexOf(dataUrlPrefix);
-  if (index > 0) {
-    return dataUrl.substring(dataUrlPrefix.length - 1);
+  if (result != null && result.length > 0) {
+    return dataUrl.substring(result[0].length);
   }
 
   return dataUrl;

@@ -16,7 +16,7 @@
     <div *ngIf="selectedOption == uploadSelection.TakePicture">
       <div *ngIf="!image" class="webcam-container">
         <webcam class="webcam" [trigger]="triggerObservable" (imageCapture)="handleImage($event)"
-          [width]="maxVideoWidth" [height]="maxVideoHeight">
+          (imageClick)="onCameraClick()" [width]="maxVideoWidth" [height]="maxVideoHeight">
         </webcam>
       
         <div style="flex: 1">

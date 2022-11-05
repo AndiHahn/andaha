@@ -58,6 +58,10 @@ export class AddBillImageDialogComponent {
     this.trigger.next();
   }
 
+  public onCameraClick(): void {
+    this.trigger.next();
+  }
+
   public handleImage(webcamImage: WebcamImage): void {
     const imageName = 'capturedImage_' + new Date().toDateString() + '.png';
     const imageBlob = fileDataUriToBlob(webcamImage.imageAsBase64);
