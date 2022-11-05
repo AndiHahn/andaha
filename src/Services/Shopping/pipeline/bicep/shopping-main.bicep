@@ -13,6 +13,14 @@ module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
   }
 }
 
+module storage 'shopping-storage-module.bicep' = {
+  name: 'andaha-shopping-storage'
+  params: {
+    stage: stage
+    location: location
+  }
+}
+
 module containerApp 'shopping-app-module.bicep' = {
   name: 'andaha-shopping-service'
   params: {
@@ -24,5 +32,6 @@ module containerApp 'shopping-app-module.bicep' = {
     containerRegistryUsername: containerRegistryUsername
     containerRegistryPassword: containerRegistryPassword
     sqlDbConnectionString: coreInfrastructure.outputs.databaseConnectionString
+    storageConnectionString: storage.outputs.storageConnectionString
   }
 }

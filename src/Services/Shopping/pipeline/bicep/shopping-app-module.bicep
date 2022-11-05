@@ -8,6 +8,8 @@ param containerRegistryUsername string
 param containerRegistryPassword string
 @secure()
 param sqlDbConnectionString string
+@secure()
+param storageConnectionString string
 
 var imageName = stage == 'dev' ? 'andaha.azurecr.io/andaha/services/shopping:${imageVersion}' : 'andaha.azurecr.io/prod/andaha/services/shopping:${imageVersion}'
 
@@ -33,6 +35,10 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
             {
               name: 'ConnectionStrings__ApplicationDbConnection'
               secretRef: 'shoppingdb-connection-string'
+            }
+            {
+              name: 'ConnectionStrings__BlobStorageConnectionString'
+              secretRef: 'storage-connection-string'
             }
             {
               name: 'ExternalUrls__IdentityApi'
@@ -109,6 +115,10 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
         {
           name: 'shoppingdb-connection-string'
           value: sqlDbConnectionString
+        }
+        {
+          name: 'storage-connection-string'
+          value: storageConnectionString
         }
       ]
     }
