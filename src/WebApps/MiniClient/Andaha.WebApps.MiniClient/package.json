@@ -5,7 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:prod": "ng build --configuration production --base-href src",
+    "build:prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "start-pwa": "ng build --configuration local-pwa && http-server -p 4200 -c-1 dist/andaha.web-apps.mini-client"

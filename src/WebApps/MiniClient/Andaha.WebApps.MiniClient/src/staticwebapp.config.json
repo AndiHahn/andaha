@@ -9,6 +9,12 @@
       "headers": {
         "cache-control": "no-cache, max-age=0, must-revalidate"
       }
+    },
+    {
+      "route": "*.js",
+      "headers": {
+        "cache-control": "public, max-age=1209600"
+      }
     }
   ]
 }
