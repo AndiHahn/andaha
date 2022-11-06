@@ -10,6 +10,6 @@ public class IncomeEntityConfiguration : IEntityTypeConfiguration<Income>
     {
         builder.HasKey(entity => entity.Id);
 
-        builder.ToTable("", config => config.)
+        builder.ConfigureTemporalTable("Income");
     }
 }
