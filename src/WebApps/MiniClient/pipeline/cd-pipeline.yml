@@ -120,8 +120,9 @@ stages:
     - task: AzureStaticWebApp@0
       displayName: 'Deploy to static web app'
       inputs:
-        app_location: src/WebApps/MiniClient/Andaha.WebApps.MiniClient/
-        config_file_location: drop/
+        app_location: src/WebApps/MiniClient/Andaha.WebApps.MiniClient/src
+        config_file_location: src/WebApps/MiniClient/Andaha.WebApps.MiniClient/src
+        output_location: drop
         skip_app_build: true # (Optional) Skips Oryx build for app folder.
         azure_static_web_apps_api_token: $(webAppDeploymentToken) # (Optional) Api token for deployment. Not required if passed as an environment variable.
         workingDirectory: $(System.DefaultWorkingDirectory)
