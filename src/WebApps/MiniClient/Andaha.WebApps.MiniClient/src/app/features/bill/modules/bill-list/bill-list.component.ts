@@ -18,6 +18,7 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   totalCount?: number;
   loading: boolean = false;
+  searchActive: boolean = false;
 
   pageSize?: number;
   totalResults?: number;
@@ -61,6 +62,7 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onSearchInput(searchText: string): void {
+    this.searchActive = true;
     this.billListContextService.searchBills(searchText);
   }
 
@@ -100,7 +102,13 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.billListContextService.loading().pipe(takeUntil(this.destroy$)).subscribe(
       {
-        next: loading => this.loading = loading 
+        next: loading => {
+          this.loading = loading;
+          
+          if (!loading) {
+            this.searchActive = false;
+          }
+        } 
       }
     );
   }
