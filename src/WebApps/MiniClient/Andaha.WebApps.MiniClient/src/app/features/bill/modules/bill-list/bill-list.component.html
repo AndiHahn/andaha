@@ -5,7 +5,7 @@
 
 <div class="filter-placeholder"></div>
 
-<div *ngIf="loading" class="action-container">
+<div *ngIf="(loading && !totalCount) || searchActive" class="action-container">
   <mat-spinner diameter="40"></mat-spinner>
 </div>
 

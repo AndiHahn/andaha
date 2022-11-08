@@ -1,13 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from './core/auth.service';
 import { BillContextService } from './services/bill-context.service';
+import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'Andaha.WebApps.MiniClient';
 
   isDisabled = true;
@@ -17,9 +19,20 @@ export class AppComponent {
   syncActive: boolean = true;
 
   constructor(
+    private serviceWorkerUpdate: SwUpdate,
     private authService: AuthService,
     private billContextService: BillContextService) {
     this.initSubscriptions();
+  }
+
+  ngOnInit(): void {
+    this.serviceWorkerUpdate.versionUpdates
+      .pipe(filter((event): event is VersionReadyEvent => event.type === 'VERSION_READY'))
+      .subscribe(
+        {
+          next: _ => this.serviceWorkerUpdate.activateUpdate().then(_ => document.location.reload())
+        }
+      );
   }
 
   logout(): void {

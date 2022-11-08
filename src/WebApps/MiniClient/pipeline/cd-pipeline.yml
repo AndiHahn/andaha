@@ -76,7 +76,7 @@ stages:
       inputs:
         buildType: 'current'
         artifact: drop
-        targetPath: '$(System.ArtifactsDirectory)/drop'
+        targetPath: '$(System.DefaultWorkingDirectory)/drop'
 
     - task: AzureCLI@2
       displayName: 'Infrastructure provisioning'
@@ -107,7 +107,7 @@ stages:
     - task: replacetokens@3
       displayName: 'App environment substitution'
       inputs:
-        targetFiles: '$(System.ArtifactsDirectory)/drop/*.js'
+        targetFiles: '$(System.DefaultWorkingDirectory)/drop/*.js'
         encoding: 'auto'
         writeBOM: true
         actionOnMissing: 'warn'
@@ -120,10 +120,12 @@ stages:
     - task: AzureStaticWebApp@0
       displayName: 'Deploy to static web app'
       inputs:
-        app_location: drop # (Optional) File path. Directory location of the application source code relative to working directory
+        app_location: drop
+        config_file_location: drop
+        output_location: drop
         skip_app_build: true # (Optional) Skips Oryx build for app folder.
         azure_static_web_apps_api_token: $(webAppDeploymentToken) # (Optional) Api token for deployment. Not required if passed as an environment variable.
-        workingDirectory: $(System.ArtifactsDirectory)
+        workingDirectory: $(System.DefaultWorkingDirectory)
 
 - stage: deploy_prod
   displayName: Deploy to prod
@@ -142,7 +144,7 @@ stages:
       inputs:
         buildType: 'current'
         artifact: drop
-        targetPath: '$(System.ArtifactsDirectory)/drop'
+        targetPath: '$(System.DefaultWorkingDirectory)/drop'
 
     - task: AzureCLI@2
       displayName: 'Infrastructure provisioning'
@@ -173,7 +175,7 @@ stages:
     - task: replacetokens@3
       displayName: 'App environment substitution'
       inputs:
-        targetFiles: '$(System.ArtifactsDirectory)/drop/*.js'
+        targetFiles: '$(System.DefaultWorkingDirectory)/drop/*.js'
         encoding: 'auto'
         writeBOM: true
         actionOnMissing: 'warn'
@@ -186,7 +188,9 @@ stages:
     - task: AzureStaticWebApp@0
       displayName: 'Deploy to static web app'
       inputs:
-        app_location: drop # (Optional) File path. Directory location of the application source code relative to working directory
+        app_location: drop
+        config_file_location: drop
+        output_location: drop
         skip_app_build: true # (Optional) Skips Oryx build for app folder.
         azure_static_web_apps_api_token: $(webAppDeploymentToken) # (Optional) Api token for deployment. Not required if passed as an environment variable.
-        workingDirectory: $(System.ArtifactsDirectory)
+        workingDirectory: $(System.DefaultWorkingDirectory)
