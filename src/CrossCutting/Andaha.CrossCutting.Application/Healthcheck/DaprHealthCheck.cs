@@ -3,7 +3,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Andaha.CrossCutton.Application.Healthcheck;
 
-internal class DaprHealthCheck : IHealthCheck
+public class DaprHealthCheck : IHealthCheck
 {
     private readonly DaprClient daprClient;
 
