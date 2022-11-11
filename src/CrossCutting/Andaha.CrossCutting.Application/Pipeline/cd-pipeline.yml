@@ -14,6 +14,13 @@ variables:
 name: "$(Build.SourceBranchName)"
 
 steps:
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core 7'
+    inputs:
+      packageType: sdk
+      version: 7.x
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+
   - task: PowerShell@2
     displayName: set version environment variable
     inputs:
