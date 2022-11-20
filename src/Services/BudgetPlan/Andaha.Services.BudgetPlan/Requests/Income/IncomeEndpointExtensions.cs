@@ -22,13 +22,7 @@ public static class IncomeEndpointExtensions
     {
         groupBuilder
             .MediateGet<ListIncomes.V1.ListIncomesRequest>("/")
-            .Produces<List<Dtos.V1.IncomeDto>>()
-            .MapToApiVersion(1.0);
-
-        groupBuilder
-            .MediateGet<ListIncomes.V2.ListIncomesRequest>("/")
-            .Produces<List<Dtos.V2.IncomeDto>>()
-            .MapToApiVersion(2.0);
+            .Produces<List<Dtos.V1.IncomeDto>>();
 
         return app;
     }
