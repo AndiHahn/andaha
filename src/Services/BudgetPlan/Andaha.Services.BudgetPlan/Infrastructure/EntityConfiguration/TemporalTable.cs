@@ -17,10 +17,6 @@ internal static class TemporalTable
     /// </summary>
     public static string ValidTo = "ValidTo";
 
-    public static DateTime AccessValidFrom(object entity) => EF.Property<DateTime>(entity, ValidFrom);
-
-    public static DateTime AccessValidTo(object entity) => EF.Property<DateTime>(entity, ValidTo);
-
     public static void ConfigureTemporalTable<TEntity>(this EntityTypeBuilder<TEntity> builder, string tableName)
         where TEntity : class
     {

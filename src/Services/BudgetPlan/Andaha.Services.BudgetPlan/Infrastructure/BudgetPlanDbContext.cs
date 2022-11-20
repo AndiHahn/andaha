@@ -1,11 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Andaha.Services.BudgetPlan.Core;
+using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace Andaha.Services.BudgetPlan.Infrastructure;
 
 public class BudgetPlanDbContext : DbContext
 {
-    //public DbSet<Connection> Connection { get; set; } = null!;
+    public DbSet<Income> Income { get; set; } = null!;
+
+    public DbSet<Income> FixedCost { get; set; } = null!;
 
     public BudgetPlanDbContext(DbContextOptions<BudgetPlanDbContext> options)
 		: base(options)
