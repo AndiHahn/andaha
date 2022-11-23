@@ -12,6 +12,7 @@ public static class IncomeEndpointExtensions
         app.MapGetIncomeHistory(groupBuilder);
         app.MapCreateIncome(groupBuilder);
         app.MapUpdateIncomeIncome(groupBuilder);
+        app.MapDeleteIncome(groupBuilder);
 
         return app;
     }
@@ -55,6 +56,18 @@ public static class IncomeEndpointExtensions
     {
         groupBuilder
             .MediatePut<UpdateIncome.V1.UpdateIncomeRequest>("/{id}")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
+        return app;
+    }
+
+    private static WebApplication MapDeleteIncome(
+        this WebApplication app,
+        RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediateDelete<DeleteIncome.V1.DeleteIncomeRequest>("/{id}")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound);
 

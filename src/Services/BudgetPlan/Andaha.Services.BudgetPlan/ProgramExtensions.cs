@@ -2,6 +2,7 @@
 using Andaha.CrossCutton.Application.Healthcheck;
 using Andaha.Services.BudgetPlan.Common;
 using Andaha.Services.BudgetPlan.Infrastructure;
+using Andaha.Services.Shopping.Infrastructure.Proxies;
 using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -41,6 +42,8 @@ public static class ProgramExtensions
     {
         builder.Services.AddCqrs(Assembly.GetExecutingAssembly());
         builder.Services.AddIdentityServices();
+
+        builder.Services.AddScoped<ICollaborationApiProxy, CollaborationApiProxy>();
 
         return builder;
     }

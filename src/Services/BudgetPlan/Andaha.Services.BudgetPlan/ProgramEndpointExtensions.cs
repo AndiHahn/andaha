@@ -29,7 +29,5 @@ public static class ProgramEndpointExtensions
     }
 
     internal static RouteGroupBuilder ApplyApiVersions(this RouteGroupBuilder groupBuilder)
-        => groupBuilder
-            .HasApiVersion(1.0)
-            .HasApiVersion(2.0);
+        => groupBuilder.HasApiVersion(1.0);
 }

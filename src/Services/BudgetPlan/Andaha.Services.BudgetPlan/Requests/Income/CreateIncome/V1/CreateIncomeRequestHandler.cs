@@ -20,8 +20,7 @@ internal class CreateIncomeRequestHandler : IRequestHandler<CreateIncomeRequest,
 
     public async Task<IResult> Handle(CreateIncomeRequest request, CancellationToken cancellationToken)
     {
-        //Guid userId = this.identityService.GetUserId();
-        Guid userId = Guid.NewGuid();
+        Guid userId = this.identityService.GetUserId();
 
         var income = new Core.Income(userId, request.Name, request.Value, Duration.Monthly);
 

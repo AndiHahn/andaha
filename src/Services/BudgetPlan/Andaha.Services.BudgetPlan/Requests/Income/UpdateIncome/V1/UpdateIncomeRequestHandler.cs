@@ -20,12 +20,17 @@ internal class UpdateIncomeRequestHandler : IRequestHandler<UpdateIncomeRequest,
 
     public async Task<IResult> Handle(UpdateIncomeRequest request, CancellationToken cancellationToken)
     {
-        //Guid userId = this.identityService.GetUserId();
+        Guid userId = this.identityService.GetUserId();
 
         var income = await dbContext.Income.FindByIdAsync(request.Id, cancellationToken);
         if (income is null)
         {
             return Results.NotFound($"Income with id '{request.Id}' not found.");
+        }
+
+        if (income.UserId != userId)
+        {
+            return Results.Forbid();
         }
 
         income.Update(request.Income.Name, request.Income.Value, null);

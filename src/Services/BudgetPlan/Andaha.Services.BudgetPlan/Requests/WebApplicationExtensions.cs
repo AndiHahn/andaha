@@ -11,21 +11,21 @@ public static class WebApplicationExtensions
         this IEndpointRouteBuilder routeBuilder,
         string template) where TRequest : IHttpRequest
     {
-        return routeBuilder.MapGet(template, (IMediator mediator, [AsParameters] TRequest request) => mediator.Send(request));
+        return routeBuilder.MapGet(template, [Authorize] async (IMediator mediator, [AsParameters] TRequest request) => await mediator.Send(request));
     }
 
     public static RouteHandlerBuilder MediatePost<TRequest>(
         this IEndpointRouteBuilder routeBuilder,
         string template) where TRequest : IHttpRequest
     {
-        return routeBuilder.MapPost(template, (IMediator mediator, [FromBody] TRequest request) => mediator.Send(request));
+        return routeBuilder.MapPost(template, [Authorize] (IMediator mediator, [FromBody] TRequest request) => mediator.Send(request));
     }
 
     public static RouteHandlerBuilder MediatePut<TRequest>(
         this IEndpointRouteBuilder routeBuilder,
         string template) where TRequest : IHttpRequest
     {
-        return routeBuilder.MapPut(template, (IMediator mediator, [AsParameters] TRequest request) => mediator.Send(request));
+        return routeBuilder.MapPut(template, [Authorize] (IMediator mediator, [AsParameters] TRequest request) => mediator.Send(request));
     }
 
     public static RouteHandlerBuilder MediateDelete<TRequest>(

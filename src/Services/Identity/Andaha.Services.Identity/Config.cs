@@ -1,6 +1,7 @@
 ﻿using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
 using IdentityModel;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace Andaha.Services.Identity;
 
@@ -18,7 +19,8 @@ internal static class Config
         new ApiScope[]
         {
             new("shopping", "Access to Shopping API"),
-            new("collaboration", "Access to Collaboration API")
+            new("collaboration", "Access to Collaboration API"),
+            new("budgetplan", "Access to Budgetplan API")
         };
 
     public static IEnumerable<ApiResource> ApiResources =>
@@ -31,6 +33,10 @@ internal static class Config
             new("collaboration-api", "Collaboration API", new List<string> { JwtClaimTypes.Email, JwtClaimTypes.Name })
             {
                 Scopes = { "collaboration" }
+            },
+            new("budgetplan-api", "Budgetplan API", new List<string> { JwtClaimTypes.Email, JwtClaimTypes.Name })
+            {
+                Scopes = { "budgetplan" }
             }
         };
 
@@ -86,6 +92,29 @@ internal static class Config
             },
             new()
             {
+                ClientId = "budgetplanswaggerui",
+                ClientName = "Budgetplan Swagger UI",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowAccessTokensViaBrowser = true,
+
+                RedirectUris =
+                {
+                    $"{configuration["ExternalUrls:BudgetplanApi"]}/swagger/oauth2-redirect.html"
+                },
+                PostLogoutRedirectUris =
+                {
+                    $"{configuration["ExternalUrls:BudgetplanApi"]}/swagger/"
+                },
+
+                AllowedScopes =
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    "budgetplan"
+                }
+            },
+            new()
+            {
                 ClientId = "miniclient",
                 ClientName = "Webapp Mini Client",
                 AllowedGrantTypes = GrantTypes.Code,
@@ -117,7 +146,8 @@ internal static class Config
                     IdentityServerConstants.StandardScopes.OfflineAccess,
                     IdentityServerConstants.StandardScopes.Email,
                     "shopping",
-                    "collaboration"
+                    "collaboration",
+                    "budgetplan"
                 },
                 AccessTokenLifetime = 60 * 60 * 24 * 30 // 60 * 60 * 24 * 30 = 1 month
             }
