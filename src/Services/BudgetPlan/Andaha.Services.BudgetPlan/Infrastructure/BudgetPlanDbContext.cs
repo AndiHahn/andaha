@@ -8,7 +8,7 @@ public class BudgetPlanDbContext : DbContext
 {
     public DbSet<Income> Income { get; set; } = null!;
 
-    public DbSet<Income> FixedCost { get; set; } = null!;
+    public DbSet<FixedCost> FixedCost { get; set; } = null!;
 
     public BudgetPlanDbContext(DbContextOptions<BudgetPlanDbContext> options)
 		: base(options)

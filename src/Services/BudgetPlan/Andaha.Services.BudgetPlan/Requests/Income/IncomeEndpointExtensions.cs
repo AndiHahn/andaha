@@ -1,4 +1,6 @@
-﻿namespace Andaha.Services.BudgetPlan.Requests.Income;
+﻿using Andaha.CrossCutting.Application.Extensions;
+
+namespace Andaha.Services.BudgetPlan.Requests.Income;
 
 public static class IncomeEndpointExtensions
 {
@@ -44,7 +46,7 @@ public static class IncomeEndpointExtensions
         RouteGroupBuilder groupBuilder)
     {
         groupBuilder
-            .MediatePost<CreateIncome.V1.CreateIncomeRequest>("/")
+            .MediatePost<CreateIncome.V1.CreateFixedCostRequest>("/")
             .Produces(StatusCodes.Status204NoContent);
 
         return app;

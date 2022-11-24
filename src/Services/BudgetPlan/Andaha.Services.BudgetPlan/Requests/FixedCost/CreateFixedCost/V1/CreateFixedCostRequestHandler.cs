@@ -3,7 +3,7 @@ using Andaha.Services.BudgetPlan.Core;
 using Andaha.Services.BudgetPlan.Infrastructure;
 using MediatR;
 
-namespace Andaha.Services.BudgetPlan.Requests.Income.CreateIncome.V1;
+namespace Andaha.Services.BudgetPlan.Requests.FixedCost.CreateFixedCost.V1;
 
 internal class CreateFixedCostRequestHandler : IRequestHandler<CreateFixedCostRequest, IResult>
 {
@@ -22,9 +22,9 @@ internal class CreateFixedCostRequestHandler : IRequestHandler<CreateFixedCostRe
     {
         Guid userId = this.identityService.GetUserId();
 
-        var income = new Core.Income(userId, request.Name, request.Value, Duration.Monthly);
+        var fixedCost = new Core.FixedCost(userId, request.Name, request.Value, Duration.Monthly, request.Category);
 
-        dbContext.Income.Add(income);
+        dbContext.FixedCost.Add(fixedCost);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

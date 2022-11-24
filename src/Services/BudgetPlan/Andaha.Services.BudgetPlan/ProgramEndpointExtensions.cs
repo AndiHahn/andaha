@@ -1,4 +1,5 @@
-﻿using Andaha.Services.BudgetPlan.Requests.Income;
+﻿using Andaha.Services.BudgetPlan.Requests.FixedCost;
+using Andaha.Services.BudgetPlan.Requests.Income;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
@@ -24,6 +25,8 @@ public static class ProgramEndpointExtensions
         app.MapGet("/api/ping", Results.NoContent).WithApiVersionSet(versionSet).IsApiVersionNeutral();
 
         app.MapIncomeEndpoint();
+
+        app.MapFixedCostEndpoint();
 
         return app;
     }

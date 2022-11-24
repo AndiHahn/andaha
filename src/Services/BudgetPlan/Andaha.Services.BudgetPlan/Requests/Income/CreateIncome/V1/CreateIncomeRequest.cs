@@ -2,4 +2,4 @@
 
 namespace Andaha.Services.BudgetPlan.Requests.Income.CreateIncome.V1;
 
-public record CreateIncomeRequest(string Name, double Value) : IHttpRequest;
+public record CreateFixedCostRequest(string Name, double Value) : IHttpRequest;

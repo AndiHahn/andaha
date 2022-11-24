@@ -1,4 +1,5 @@
 ﻿using Andaha.CrossCutting.Application;
+using Andaha.CrossCutting.Application.Swagger;
 using Andaha.CrossCutton.Application.Healthcheck;
 using Andaha.Services.BudgetPlan.Common;
 using Andaha.Services.BudgetPlan.Infrastructure;
@@ -134,6 +135,8 @@ public static class ProgramExtensions
             });
 
             config.OperationFilter<AuthorizeCheckOperationFilter>();
+
+            config.OperationFilter<SwaggerDefaultValues>();
 
             config.SchemaFilter<SmartEnumSchemaFilter>();
         });

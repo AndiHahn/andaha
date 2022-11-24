@@ -43,4 +43,12 @@ public class FixedCost : Entity<Guid>
     public CostCategory Category { get; private set; }
 
     public double GetMonthlyValue() => this.Duration.GetMonthlyValue(this.Value);
+
+    public void Update(string? name, double? value, Duration? duration, CostCategory? category)
+    {
+        this.Name = name ?? this.Name;
+        this.Value = value ?? this.Value;
+        this.Duration = duration ?? this.Duration;
+        this.Category = category ?? this.Category;
+    }
 }
