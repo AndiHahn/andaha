@@ -4,48 +4,33 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 
 namespace Andaha.CrossCutting.Application.Extensions;
 
 public static class WebApplicationExtensions
 {
-    public static WebApplication MediateGet<TRequest>(
-        this WebApplication app,
+    public static RouteHandlerBuilder MediateGet<TRequest>(
+        this IEndpointRouteBuilder routeBuilder,
         string template) where TRequest : IHttpRequest
-    {
-        app.MapGet(template, [Authorize] async (IMediator mediator, [AsParameters] TRequest request)
+        => routeBuilder.MapGet(template, [Authorize] async (IMediator mediator, [AsParameters] TRequest request)
             => await mediator.Send(request));
 
-        return app;
-    }
-
-    public static WebApplication MediatePost<TRequest>(
-        this WebApplication app,
+    public static RouteHandlerBuilder MediatePost<TRequest>(
+        this IEndpointRouteBuilder routeBuilder,
         string template) where TRequest : IHttpRequest
-    {
-        app.MapPost(template, [Authorize] async (IMediator mediator, [FromBody] TRequest request)
-            => await mediator.Send(request));
+        => routeBuilder.MapPost(template, [Authorize] (IMediator mediator, [FromBody] TRequest request)
+            => mediator.Send(request));
 
-        return app;
-    }
-
-    public static WebApplication MediatePut<TRequest>(
-        this WebApplication app,
+    public static RouteHandlerBuilder MediatePut<TRequest>(
+        this IEndpointRouteBuilder routeBuilder,
         string template) where TRequest : IHttpRequest
-    {
-        app.MapPut(template, [Authorize] async (IMediator mediator, [AsParameters] TRequest request)
-            => await mediator.Send(request));
+    => routeBuilder.MapPut(template, [Authorize] (IMediator mediator, [AsParameters] TRequest request)
+        => mediator.Send(request));
 
-        return app;
-    }
-
-    public static WebApplication MediateDelete<TRequest>(
-        this WebApplication app,
+    public static RouteHandlerBuilder MediateDelete<TRequest>(
+        this IEndpointRouteBuilder routeBuilder,
         string template) where TRequest : IHttpRequest
-    {
-        app.MapDelete(template, [Authorize] async (IMediator mediator, [AsParameters] TRequest request)
-            => await mediator.Send(request));
-
-        return app;
-    }
+    => routeBuilder.MapDelete(template, [Authorize] (IMediator mediator, [AsParameters] TRequest request)
+        => mediator.Send(request));
 }

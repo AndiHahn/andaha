@@ -135,8 +135,6 @@ public static class ProgramExtensions
 
             config.OperationFilter<AuthorizeCheckOperationFilter>();
 
-            config.OperationFilter<SwaggerDefaultValues>();
-
             config.SchemaFilter<SmartEnumSchemaFilter>();
         });
 
