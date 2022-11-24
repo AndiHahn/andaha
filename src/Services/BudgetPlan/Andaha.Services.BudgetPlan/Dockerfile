@@ -1,20 +1,19 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:7.0-bullseye-slim AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:7.0-bullseye-slim AS build
 WORKDIR /src
-COPY ["src/Services/BudgetPlan/Andaha.Services.BudgetPlan/Andaha.Services.BudgetPlan.csproj", "src/Services/BudgetPlan/Andaha.Services.BudgetPlan/"]
-RUN dotnet restore "src/Services/BudgetPlan/Andaha.Services.BudgetPlan/Andaha.Services.BudgetPlan.csproj"
+COPY [".", "Andaha.Services.BudgetPlan/"]
+ARG PatPlaceholder
+RUN dotnet restore "Andaha.Services.BudgetPlan/Andaha.Services.BudgetPlan.csproj" --configfile "Andaha.Services.BudgetPlan/nuget.config"
 COPY . .
-WORKDIR "/src/src/Services/BudgetPlan/Andaha.Services.BudgetPlan"
+WORKDIR "/src/Andaha.Services.BudgetPlan"
 RUN dotnet build "Andaha.Services.BudgetPlan.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Andaha.Services.BudgetPlan.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Andaha.Services.BudgetPlan.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app

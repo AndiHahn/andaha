@@ -1,7 +1,10 @@
 ﻿using Ardalis.SmartEnum;
+using Ardalis.SmartEnum.SystemTextJson;
+using System.Text.Json.Serialization;
 
 namespace Andaha.Services.BudgetPlan.Core;
 
+[JsonConverter(typeof(SmartEnumNameConverter<CostCategory, int>))]
 public sealed class CostCategory : SmartEnum<CostCategory>
 {
     private CostCategory(string name, int value) : base(name, value)

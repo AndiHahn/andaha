@@ -1,16 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Andaha.Services.BudgetPlan.Core;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
-using Andaha.Services.BudgetPlan.Core;
 
 namespace Andaha.Services.BudgetPlan.Infrastructure.EntityConfiguration;
 
-public class IncomeEntityConfiguration : IEntityTypeConfiguration<Income>
+public class FixedCostEntityConfiguration : IEntityTypeConfiguration<FixedCost>
 {
-    public void Configure(EntityTypeBuilder<Income> builder)
+    public void Configure(EntityTypeBuilder<FixedCost> builder)
     {
         builder.HasKey(entity => entity.Id);
 
-        builder.ConfigureTemporalTable("Income");
+        builder.ConfigureTemporalTable("FixedCost");
 
         builder.Property(entity => entity.Name).IsRequired().IsUnicode(false).HasMaxLength(200);
 
@@ -19,5 +19,9 @@ public class IncomeEntityConfiguration : IEntityTypeConfiguration<Income>
         builder.Property(entity => entity.Duration).HasConversion(
             duration => duration.Value,
             duration => Duration.FromValue(duration));
+
+        builder.Property(entity => entity.Category).HasConversion(
+            category => category.Value,
+            category => CostCategory.FromValue(category));
     }
 }

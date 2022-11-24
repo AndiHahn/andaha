@@ -38,4 +38,11 @@ public class Income : Entity<Guid>
     public double Value { get; private set; }
 
     public Duration Duration { get; private set; }
+
+    public void Update(string? name, double? value, Duration? duration)
+    {
+        this.Name = name ?? this.Name;
+        this.Value = value ?? this.Value;
+        this.Duration = duration ?? this.Duration;
+    }
 }

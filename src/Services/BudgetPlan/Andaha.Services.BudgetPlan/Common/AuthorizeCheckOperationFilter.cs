@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -9,8 +10,9 @@ public class AuthorizeCheckOperationFilter : IOperationFilter
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
         // Check for authorize attribute
-        var hasAuthorize = context.MethodInfo.DeclaringType?.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any() ?? false ||
-            context.MethodInfo.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any();
+        var hasAuthorize =
+            context.MethodInfo.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any() ||
+            (context.MethodInfo.DeclaringType?.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any() ?? false);
 
         if (!hasAuthorize) return;
 

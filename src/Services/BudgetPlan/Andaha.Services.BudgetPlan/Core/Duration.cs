@@ -1,7 +1,10 @@
 ﻿using Ardalis.SmartEnum;
+using Ardalis.SmartEnum.SystemTextJson;
+using System.Text.Json.Serialization;
 
 namespace Andaha.Services.BudgetPlan.Core;
 
+[JsonConverter(typeof(SmartEnumNameConverter<Duration, int>))]
 public abstract class Duration : SmartEnum<Duration>
 {
     private Duration(string name, int value) : base(name, value)
