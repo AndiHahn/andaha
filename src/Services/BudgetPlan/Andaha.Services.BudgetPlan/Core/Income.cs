@@ -39,6 +39,8 @@ public class Income : Entity<Guid>
 
     public Duration Duration { get; private set; }
 
+    public double GetMonthlyValue() => this.Duration.GetMonthlyValue(this.Value);
+
     public void Update(string? name, double? value, Duration? duration)
     {
         this.Name = name ?? this.Name;

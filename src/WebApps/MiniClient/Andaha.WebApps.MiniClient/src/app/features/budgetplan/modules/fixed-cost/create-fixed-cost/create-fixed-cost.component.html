@@ -1,0 +1,52 @@
+<button mat-icon-button routerLink="/budgetplan/fixedcost" class="back-button">
+  <mat-icon>arrow_back</mat-icon>
+</button>
+
+<div>
+  <form [formGroup]="form" #formDirective="ngForm" (ngSubmit)="onSubmit(formDirective)">
+    <div class="form-container">
+
+      <mat-form-field appearance="fill">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Kategorie</mat-label>
+        <mat-select formControlName="category" required>
+          <mat-option *ngFor="let category of costCategoryOptions" [value]="category">
+            {{ costCategoryLabel.get(category) }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Intervall</mat-label>
+        <mat-select formControlName="duration" required>
+          <mat-option *ngFor="let duration of durationOptions" [value]="duration">
+            {{ durationLabel.get(duration) }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Kosten</mat-label>
+        <input matInput formControlName="value" type="number" required>
+      </mat-form-field>
+    </div>
+
+    <div *ngIf="!isSaving" class="progressbar-placeholder"></div>
+
+    <mat-progress-bar *ngIf="isSaving" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
+
+    <div class="button-placeholder"></div>
+
+    <div class="bottom-button">
+      <div style="flex: 1">
+        <button mat-raised-button color="primary" class="button-style" [disabled]="!form.valid">
+          <mat-icon>save</mat-icon><span>Speichern</span>
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

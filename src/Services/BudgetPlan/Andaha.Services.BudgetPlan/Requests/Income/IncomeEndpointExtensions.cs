@@ -13,7 +13,7 @@ public static class IncomeEndpointExtensions
         app.MapListIncomes(groupBuilder);
         app.MapGetIncomeHistory(groupBuilder);
         app.MapCreateIncome(groupBuilder);
-        app.MapUpdateIncomeIncome(groupBuilder);
+        app.MapUpdateIncome(groupBuilder);
         app.MapDeleteIncome(groupBuilder);
 
         return app;
@@ -46,13 +46,13 @@ public static class IncomeEndpointExtensions
         RouteGroupBuilder groupBuilder)
     {
         groupBuilder
-            .MediatePost<CreateIncome.V1.CreateFixedCostRequest>("/")
+            .MediatePost<CreateIncome.V1.CreateIncomeRequest>("/")
             .Produces(StatusCodes.Status204NoContent);
 
         return app;
     }
 
-    private static WebApplication MapUpdateIncomeIncome(
+    private static WebApplication MapUpdateIncome(
         this WebApplication app,
         RouteGroupBuilder groupBuilder)
     {

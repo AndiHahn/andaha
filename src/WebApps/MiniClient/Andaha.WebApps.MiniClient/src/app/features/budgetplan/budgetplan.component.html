@@ -1,0 +1,28 @@
+<ng-container>
+  <router-outlet></router-outlet>
+  <div class="bottom-navigation-placeholder"></div>
+  <div class="bottom-navigation">
+    <mat-toolbar>  
+      <mat-toolbar-row class="toolbar">
+        <div class="menu-item">
+          <button mat-icon-button routerLink="overview" routerLinkActive #rl1="routerLinkActive" class="small-icon-button">
+            <mat-icon [ngClass]="{ 'primary-fg-color': rl1.isActive}">savings</mat-icon>
+          </button>
+          <div class="menu-title" [ngClass]="{ 'primary-fg-color': rl1.isActive}">Haushaltsplan</div>
+        </div>
+        <div class="menu-item">
+          <button mat-icon-button routerLink="fixedcost" routerLinkActive #rl2="routerLinkActive" class="small-icon-button">
+            <mat-icon [ngClass]="{ 'primary-fg-color': rl2.isActive}">east</mat-icon>
+          </button>
+          <div class="menu-title" [ngClass]="{ 'primary-fg-color': rl2.isActive}">Fixkosten</div>
+        </div>
+        <div class="menu-item">
+          <button mat-icon-button routerLink="income" routerLinkActive #rl3="routerLinkActive" class="small-icon-button">
+            <mat-icon [ngClass]="{ 'primary-fg-color': rl3.isActive}">west</mat-icon>
+          </button>
+          <div class="menu-title" [ngClass]="{ 'primary-fg-color': rl3.isActive}">Einkommen</div>
+        </div>
+      </mat-toolbar-row>
+    </mat-toolbar>
+  </div>
+</ng-container>

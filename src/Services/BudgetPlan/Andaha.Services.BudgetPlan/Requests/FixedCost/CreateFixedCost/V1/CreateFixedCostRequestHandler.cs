@@ -1,5 +1,4 @@
 ﻿using Andaha.CrossCutting.Application.Identity;
-using Andaha.Services.BudgetPlan.Core;
 using Andaha.Services.BudgetPlan.Infrastructure;
 using MediatR;
 
@@ -22,7 +21,7 @@ internal class CreateFixedCostRequestHandler : IRequestHandler<CreateFixedCostRe
     {
         Guid userId = this.identityService.GetUserId();
 
-        var fixedCost = new Core.FixedCost(userId, request.Name, request.Value, Duration.Monthly, request.Category);
+        var fixedCost = new Core.FixedCost(userId, request.Name, request.Value, request.Duration, request.Category);
 
         dbContext.FixedCost.Add(fixedCost);
 

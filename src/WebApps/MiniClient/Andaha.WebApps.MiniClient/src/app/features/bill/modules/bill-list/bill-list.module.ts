@@ -12,9 +12,7 @@ import { BillListItemComponent } from './bill-list-item/bill-list-item.component
 import { RouterModule, Routes } from '@angular/router';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatDividerModule } from '@angular/material/divider';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { HoldableDirectiveModule } from 'src/app/shared/directives/holdable-directive/holdable-directive.module';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDialogModule } from '@angular/material/dialog';
 
 const routes: Routes = [
   {
@@ -40,8 +38,7 @@ const routes: Routes = [
     MatChipsModule,
     MatDividerModule,
     ScrollingModule,
-    MatDialogModule,
-    HoldableDirectiveModule
+    MatDialogModule
   ],
   providers: []
 })

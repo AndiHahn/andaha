@@ -1,0 +1,81 @@
+<button mat-icon-button routerLink="/budgetplan/fixedcost" class="back-button">
+  <mat-icon>arrow_back</mat-icon>
+</button>
+
+<div class="history">
+  <button mat-icon-button (click)="onShowHistoryClick()">
+    <mat-icon class="history-icon">history</mat-icon>
+  </button>
+</div>
+
+<div>
+  <form [formGroup]="form">
+    <div class="form-container">
+
+      <mat-form-field appearance="fill">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Kategorie</mat-label>
+        <mat-select formControlName="category" required>
+          <mat-option *ngFor="let category of costCategoryOptions" [value]="category">
+            {{ costCategoryLabel.get(category) }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Intervall</mat-label>
+        <mat-select formControlName="duration" required>
+          <mat-option *ngFor="let duration of durationOptions" [value]="duration">
+            {{ durationLabel.get(duration) }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Kosten</mat-label>
+        <input matInput formControlName="value" type="number" required>
+      </mat-form-field>
+    </div>
+  </form>
+</div>
+
+<div>
+  <div *ngIf="!isSaving" class="progressbar-placeholder"></div>
+
+  <mat-progress-bar *ngIf="isSaving" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
+  
+  <div class="button-placeholder"></div>
+  
+  <div class="floating-button edit-buttons">
+    <div *ngIf="!isEditing" style="flex: 1">
+      <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onEditClick()"
+          [disabled]="isDeleting || isLoading || isSaving">
+        <mat-icon>edit</mat-icon><span>Bearbeiten</span>
+      </button>
+    </div>
+    <div *ngIf="isEditing" style="display: flex; flex-direction: row; width: 100%">
+      <button mat-raised-button color="secondary" class="button-style button-with-icon" (click)="onCancelClick()">
+        <mat-icon>close</mat-icon><span>Abbrechen</span>
+      </button>
+      <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onSaveClick()"
+          [disabled]="isSaving">
+        <mat-icon>save</mat-icon><span>Speichern</span>
+      </button>
+    </div>
+  </div>
+  
+  <div class="button-placeholder"></div>
+  
+  <div class="floating-button delete-button">
+    <div style="flex: 1">
+      <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onDeleteClick()"
+          [disabled]="isEditing || isDeleting || isLoading || isSaving">
+        <mat-icon>delete</mat-icon><span>Löschen</span>
+      </button>
+    </div>
+  </div>
+</div>

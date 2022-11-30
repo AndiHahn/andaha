@@ -2,4 +2,4 @@
 
 namespace Andaha.Services.BudgetPlan.Requests.Income.Dtos.V1;
 
-public record FixedCostUpdateDto(string? Name, double? Value, Duration? Duration, CostCategory? Category);
+public record IncomeUpdateDto(string? Name, double? Value, Duration? Duration);

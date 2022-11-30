@@ -1,0 +1,19 @@
+<div *ngIf="!fixedCosts" class="action-container">
+  <mat-spinner diameter="40"></mat-spinner>
+</div>
+
+<div *ngIf="fixedCosts">
+  <app-fixed-cost-list *ngFor="let costCategoryOption of costCategoryOptions"
+    [category]="costCategoryOption" [fixedCosts]="fixedCosts[costCategoryOption.toString()]">
+  </app-fixed-cost-list>
+</div>
+
+<div class="button-placeholder"></div>
+
+<div class="bottom-button">
+  <div style="flex: 1">
+    <button mat-raised-button color="primary" class="button-style" routerLink="create">
+      <mat-icon>add_circle</mat-icon><span>Hinzufügen</span>
+    </button>
+  </div>
+</div>

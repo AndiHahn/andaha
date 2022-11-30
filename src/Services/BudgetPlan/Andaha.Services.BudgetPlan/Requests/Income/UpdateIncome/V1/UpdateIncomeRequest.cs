@@ -4,4 +4,4 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Andaha.Services.BudgetPlan.Requests.Income.UpdateIncome.V1;
 
-public record UpdateIncomeRequest(Guid Id, [property: FromBody] FixedCostUpdateDto Income) : IHttpRequest;
+public record UpdateIncomeRequest(Guid Id, [property: FromBody] IncomeUpdateDto Income) : IHttpRequest;

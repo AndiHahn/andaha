@@ -23,7 +23,6 @@ export class AddBillComponent implements OnInit {
   image?: ImageSnippet;
   
   constructor(
-    private fb: UntypedFormBuilder,
     private billContextService: BillContextService,
     private billCategoryContextService: BillCategoryContextService
     ) {
