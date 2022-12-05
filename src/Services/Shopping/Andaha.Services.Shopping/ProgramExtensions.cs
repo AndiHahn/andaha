@@ -1,6 +1,4 @@
 ﻿using Andaha.CrossCutting.Application;
-using Andaha.CrossCutting.Application.Identity;
-using Andaha.Services.Shopping.Dtos.v1_0;
 using Andaha.Services.Shopping.Filter;
 using Andaha.Services.Shopping.Healthcheck;
 using Andaha.Services.Shopping.Infrastructure;
@@ -16,8 +14,15 @@ using System.Reflection;
 
 namespace Andaha.Services.Shopping;
 
-internal static class ProgramExtensions
+public static class ProgramExtensions
 {
+    public static WebApplicationBuilder AddShoppingServices(this WebApplicationBuilder builder)
+    {
+        return builder
+            .AddCustomDatabase()
+            .AddCustomApplicationServices();
+    }
+
     internal static WebApplicationBuilder AddCustomDatabase(this WebApplicationBuilder builder)
     {
         builder.Services.AddDbContext<ShoppingDbContext>(options
@@ -148,7 +153,7 @@ internal static class ProgramExtensions
         return builder;
     }
 
-    internal static async Task MigrateDatabaseAsync(this WebApplication webApplication, ILogger logger)
+    public static async Task MigrateShoppingDatabaseAsync(this WebApplication webApplication, ILogger logger)
     {
         using var scope = webApplication.Services.CreateScope();
 

@@ -13,21 +13,8 @@ namespace Andaha.Services.Collaboration;
 
 public static class ProgramEndpointExtensions
 {
-    internal static WebApplication MapEndpoints(this WebApplication app)
+    public static WebApplication MapCollaborationEndpoints(this WebApplication app)
     {
-        app.MapHealthChecks("/hc", new HealthCheckOptions
-        {
-            Predicate = _ => true,
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        });
-
-        app.MapHealthChecks("/liveness", new HealthCheckOptions
-        {
-            Predicate = r => r.Name.Contains("self")
-        });
-
-        app.MapGet("/api/ping", Results.NoContent);
-
         app.MediatePost<RequestAccountConnectionRequest>("/api/connection/request");
 
         app.MediateGet<ListOutgoingConnectionRequestsRequest>("/api/connection/outgoing");
@@ -41,6 +28,24 @@ public static class ProgramEndpointExtensions
         app.MediateGet<ListConnectedAccountsRequest>("/api/connection/established");
 
         app.MediateGet<GetConnectedUserIdsRequest>("/api/connection/users");
+
+        return app;
+    }
+
+    internal static WebApplication MapHealthChecks(this WebApplication app)
+    {
+        app.MapHealthChecks("/hc", new HealthCheckOptions
+        {
+            Predicate = _ => true,
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+
+        app.MapHealthChecks("/liveness", new HealthCheckOptions
+        {
+            Predicate = r => r.Name.Contains("self")
+        });
+
+        app.MapGet("/api/ping", Results.NoContent);
 
         return app;
     }

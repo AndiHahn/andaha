@@ -23,7 +23,9 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.MapEndpoints();
+app.MapHealthChecks();
+
+app.MapBudgetPlanEndpoints();
 
 await Task.Delay(10);
 
@@ -49,7 +51,7 @@ if (app.Environment.IsDevelopment())
 
 try
 {
-    await app.MigrateDatabaseAsync(app.Logger);
+    await app.MigrateBudgetPlanDatabaseAsync(app.Logger);
 
     app.Run();
 }

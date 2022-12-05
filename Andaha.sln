@@ -39,7 +39,11 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BudgetPlan", "BudgetPlan", "{422B7095-B406-4E41-97C1-C24A33ACD73D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Andaha.Services.BudgetPlan", "src\Services\BudgetPlan\Andaha.Services.BudgetPlan\Andaha.Services.BudgetPlan.csproj", "{538D8A03-49E1-4EA4-A6AB-FC1922884648}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Andaha.Services.BudgetPlan", "src\Services\BudgetPlan\Andaha.Services.BudgetPlan\Andaha.Services.BudgetPlan.csproj", "{538D8A03-49E1-4EA4-A6AB-FC1922884648}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MonolithApi", "MonolithApi", "{C60AAC87-E69B-4CB7-96BF-4B2DD67E9745}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Andaha.Services.MonolithApi", "src\Services\MonolithApi\Andaha.Services.MonolithApi\Andaha.Services.MonolithApi.csproj", "{EBBFCB68-915D-4EBF-97E7-EB88627F1A94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,6 +83,10 @@ Global
 		{538D8A03-49E1-4EA4-A6AB-FC1922884648}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{538D8A03-49E1-4EA4-A6AB-FC1922884648}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{538D8A03-49E1-4EA4-A6AB-FC1922884648}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBBFCB68-915D-4EBF-97E7-EB88627F1A94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBBFCB68-915D-4EBF-97E7-EB88627F1A94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBBFCB68-915D-4EBF-97E7-EB88627F1A94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBBFCB68-915D-4EBF-97E7-EB88627F1A94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -101,6 +109,8 @@ Global
 		{914569A8-1786-4C83-AE60-AEF8C015FE36} = {DC04CE16-B880-4979-BCE8-79BF76B2D976}
 		{422B7095-B406-4E41-97C1-C24A33ACD73D} = {62E1C896-5270-4CBA-9E5E-3390D39C5EFC}
 		{538D8A03-49E1-4EA4-A6AB-FC1922884648} = {422B7095-B406-4E41-97C1-C24A33ACD73D}
+		{C60AAC87-E69B-4CB7-96BF-4B2DD67E9745} = {62E1C896-5270-4CBA-9E5E-3390D39C5EFC}
+		{EBBFCB68-915D-4EBF-97E7-EB88627F1A94} = {C60AAC87-E69B-4CB7-96BF-4B2DD67E9745}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {567A126D-B3A9-4A9F-BD29-25679B16C0C5}

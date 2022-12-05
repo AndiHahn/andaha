@@ -29,11 +29,13 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.MapEndpoints();
+app.MapHealthChecks();
+
+app.MapCollaborationEndpoints();
 
 try
 {
-    await app.MigrateDatabaseAsync(app.Logger);
+    await app.MigrateCollaborationDatabaseAsync(app.Logger);
 
     app.Run();
 }

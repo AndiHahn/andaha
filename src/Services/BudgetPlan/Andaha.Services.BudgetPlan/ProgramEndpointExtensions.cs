@@ -8,7 +8,18 @@ namespace Andaha.Services.BudgetPlan;
 
 public static class ProgramEndpointExtensions
 {
-    internal static WebApplication MapEndpoints(this WebApplication app)
+    public static WebApplication MapBudgetPlanEndpoints(this WebApplication app)
+    {
+        app.MapIncomeEndpoint();
+
+        app.MapFixedCostEndpoint();
+
+        app.MapBudgetPlanEndpoint();
+
+        return app;
+    }
+
+    internal static WebApplication MapHealthChecks(this WebApplication app)
     {
         var versionSet = app.NewApiVersionSet().ReportApiVersions().Build();
 
@@ -24,12 +35,6 @@ public static class ProgramEndpointExtensions
         }).WithApiVersionSet(versionSet).IsApiVersionNeutral();
 
         app.MapGet("/api/ping", Results.NoContent).WithApiVersionSet(versionSet).IsApiVersionNeutral();
-
-        app.MapIncomeEndpoint();
-
-        app.MapFixedCostEndpoint();
-
-        app.MapBudgetPlanEndpoint();
 
         return app;
     }

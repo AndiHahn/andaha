@@ -69,7 +69,7 @@ app.MapGet("/api/ping", Results.NoContent);
 
 try
 {
-    await app.MigrateDatabaseAsync(app.Logger);
+    await app.MigrateShoppingDatabaseAsync(app.Logger);
     
     app.Run();
 }

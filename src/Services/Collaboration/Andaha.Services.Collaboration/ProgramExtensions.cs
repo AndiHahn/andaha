@@ -13,6 +13,13 @@ namespace Andaha.Services.Collaboration;
 
 public static class ProgramExtensions
 {
+    public static WebApplicationBuilder AddCollaborationServices(this WebApplicationBuilder builder)
+    {
+        return builder
+            .AddCustomDatabase()
+            .AddCustomApplicationServices();
+    }
+
     internal static WebApplicationBuilder AddCustomDapr(this WebApplicationBuilder builder)
     {
         builder.Services.AddDaprClient();
@@ -38,7 +45,8 @@ public static class ProgramExtensions
     internal static WebApplicationBuilder AddCustomApplicationServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddCqrs(Assembly.GetExecutingAssembly());
-        builder.Services.AddIdentityService();
+        builder.Services.AddIdentityServices();
+
         builder.Services.AddScoped<IIdentityApiProxy, IdentityApiProxy>();
 
         return builder;
@@ -131,7 +139,7 @@ public static class ProgramExtensions
         return builder;
     }
 
-    internal static async Task MigrateDatabaseAsync(this WebApplication webApplication, ILogger logger)
+    public static async Task MigrateCollaborationDatabaseAsync(this WebApplication webApplication, ILogger logger)
     {
         using var scope = webApplication.Services.CreateScope();
 
