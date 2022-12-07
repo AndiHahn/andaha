@@ -6,19 +6,6 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-//builder.Services.AddEndpointsApiExplorer();
-
-//builder.Services.AddSwaggerGen();
-
-/*
-var mvcBuilder = builder.Services
-    .AddControllers()
-    .AddApplicationPart(Assembly.Load("Andaha.Services.Shopping"))
-    .AddDapr();
-*/
-
 builder
     .AddCustomDapr()
     .AddCustomCors()
@@ -29,8 +16,8 @@ builder
 
 builder
     .AddCollaborationServices()
-    .AddBudgetPlanServices();
-    //.AddShoppingServices();
+    .AddBudgetPlanServices()
+    .AddShoppingServices();
 
 var app = builder.Build();
 
@@ -67,12 +54,13 @@ app.UseAuthorization();
 
 app
     .MapBudgetPlanEndpoints()
-    .MapCollaborationEndpoints();
+    .MapCollaborationEndpoints()
+    .MapShoppingEndpoints();
 
 app.MapControllers();
 
 await app.MigrateBudgetPlanDatabaseAsync(app.Logger);
 await app.MigrateCollaborationDatabaseAsync(app.Logger);
-//await app.MigrateShoppingDatabaseAsync(app.Logger);
+await app.MigrateShoppingDatabaseAsync(app.Logger);
 
 app.Run();

@@ -1,15 +1,18 @@
 ﻿using Andaha.CrossCutting.Application;
-using Andaha.Services.Shopping.Filter;
+using Andaha.CrossCutting.Application.Swagger;
+using Andaha.Services.Shopping.Common;
 using Andaha.Services.Shopping.Healthcheck;
 using Andaha.Services.Shopping.Infrastructure;
 using Andaha.Services.Shopping.Infrastructure.ImageRepository;
 using Andaha.Services.Shopping.Infrastructure.Proxies;
-using Microsoft.AspNetCore.Mvc.Versioning;
+using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Polly;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 
 namespace Andaha.Services.Shopping;
@@ -21,6 +24,20 @@ public static class ProgramExtensions
         return builder
             .AddCustomDatabase()
             .AddCustomApplicationServices();
+    }
+
+    internal static WebApplicationBuilder AddCustomDapr(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddDaprClient();
+
+        return builder;
+    }
+
+    internal static WebApplicationBuilder AddCustomLogging(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddLogging();
+
+        return builder;
     }
 
     internal static WebApplicationBuilder AddCustomDatabase(this WebApplicationBuilder builder)
@@ -58,12 +75,20 @@ public static class ProgramExtensions
 
     internal static WebApplicationBuilder AddCustomApiVersioning(this WebApplicationBuilder builder)
     {
-        builder.Services.AddApiVersioning(
-            options =>
-            {
-                options.ReportApiVersions = true;
-                options.ApiVersionReader = new QueryStringApiVersionReader("api-version");
-            });
+        builder.Services
+            .AddEndpointsApiExplorer()
+            .AddApiVersioning(
+                options =>
+                {
+                    options.ReportApiVersions = true;
+                    options.ApiVersionReader = new QueryStringApiVersionReader("api-version");
+                })
+            .AddApiExplorer(
+                options =>
+                {
+                    options.GroupNameFormat = "'v'VVV";
+                })
+            .EnableApiVersionBinding();
 
         return builder;
     }
@@ -104,11 +129,13 @@ public static class ProgramExtensions
 
     internal static WebApplicationBuilder AddCustomSwagger(this WebApplicationBuilder builder)
     {
-        builder.Services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'VVV");
+        builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
         builder.Services.AddSwaggerGen(config =>
         {
             config.SupportNonNullableReferenceTypes();
+
+            config.CustomSchemaIds(type => type.ToString());
 
             var identityApiBaseUrl = builder.Configuration.GetSection("ExternalUrls").GetValue<string>("IdentityApi");
 
@@ -130,6 +157,10 @@ public static class ProgramExtensions
             });
 
             config.OperationFilter<AuthorizeCheckOperationFilter>();
+
+            config.OperationFilter<SwaggerDefaultValues>();
+
+            config.SchemaFilter<SmartEnumSchemaFilter>();
         });
 
         return builder;

@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\BudgetPlan\Andaha.Services.BudgetPlan\Andaha.Services.BudgetPlan.csproj" />
     <ProjectReference Include="..\..\Collaboration\Andaha.Services.Collaboration\Andaha.Services.Collaboration.csproj" />
+    <ProjectReference Include="..\..\Shopping\Andaha.Services.Shopping\Andaha.Services.Shopping.csproj" />
   </ItemGroup>
 
 </Project>
