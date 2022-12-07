@@ -1,6 +1,8 @@
 ﻿using Andaha.CrossCutting.Application.Swagger;
+using Andaha.CrossCutton.Application.Healthcheck;
 using Andaha.Services.BudgetPlan.Common;
 using Asp.Versioning;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -59,6 +61,20 @@ internal static class ProgramExtensions
                 });
 
         builder.Services.AddAuthorization();
+
+        return builder;
+    }
+
+    internal static WebApplicationBuilder AddCustomHealthChecks(this WebApplicationBuilder builder)
+    {
+        builder.Services
+            .AddHealthChecks()
+            .AddCheck("self", () => HealthCheckResult.Healthy())
+            .AddCheck<DaprHealthCheck>("dapr")
+            .AddSqlServer(
+                builder.Configuration["ConnectionStrings:ApplicationDbConnection"],
+                name: "sql-db-check",
+                tags: new[] { "sql-db" });
 
         return builder;
     }

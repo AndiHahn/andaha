@@ -10,6 +10,7 @@ builder
     .AddCustomDapr()
     .AddCustomCors()
     .AddCustomLogging()
+    .AddCustomHealthChecks()
     .AddCustomAuthentication()
     .AddCustomApiVersioning()
     .AddCustomSwagger();
@@ -52,10 +53,9 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app
-    .MapBudgetPlanEndpoints()
-    .MapCollaborationEndpoints()
-    .MapShoppingEndpoints();
+app.MapHealthChecks();
+
+app.MapMonolithEndpoints();
 
 app.MapControllers();
 
