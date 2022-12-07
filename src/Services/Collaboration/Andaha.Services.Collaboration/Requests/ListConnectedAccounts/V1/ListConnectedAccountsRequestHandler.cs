@@ -1,17 +1,17 @@
 ﻿using Andaha.CrossCutting.Application.Identity;
-using Andaha.Services.Collaboration.Dtos;
+using Andaha.Services.Collaboration.Dtos.V1;
 using Andaha.Services.Collaboration.Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Andaha.Services.Collaboration.Requests.ListConnectedAccounts;
+namespace Andaha.Services.Collaboration.Requests.ListConnectedAccounts.V1;
 
-public class ListConnectedAccountsHandler : IRequestHandler<ListConnectedAccountsRequest, IResult>
+public class ListConnectedAccountsRequestHandler : IRequestHandler<ListConnectedAccountsRequest, IResult>
 {
     private readonly IIdentityService identityService;
     private readonly CollaborationDbContext dbContext;
 
-    public ListConnectedAccountsHandler(
+    public ListConnectedAccountsRequestHandler(
         IIdentityService identityService,
         CollaborationDbContext dbContext)
     {

@@ -11,6 +11,8 @@
 
   <ItemGroup>
     <PackageReference Include="Andaha.CrossCutting.Application" Version="1.2.1" />
+	<PackageReference Include="Asp.Versioning.Http" Version="7.0.0-preview.2" />
+	<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.0.0-preview.2" />
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="6.0.2" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.5" />
     <PackageReference Include="CSharpFunctionalExtensions" Version="2.37.0" />

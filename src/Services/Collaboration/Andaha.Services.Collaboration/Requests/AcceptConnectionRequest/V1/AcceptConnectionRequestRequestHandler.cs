@@ -4,14 +4,14 @@ using Andaha.Services.Collaboration.Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Andaha.Services.Collaboration.Requests.AcceptConnectionRequest;
+namespace Andaha.Services.Collaboration.Requests.AcceptConnectionRequest.V1;
 
-public class AcceptConnectionRequestHandler : IRequestHandler<AcceptConnectionRequestRequest, IResult>
+public class AcceptConnectionRequestRequestHandler : IRequestHandler<AcceptConnectionRequestRequest, IResult>
 {
     private readonly IIdentityService identityService;
     private readonly CollaborationDbContext dbContext;
 
-    public AcceptConnectionRequestHandler(
+    public AcceptConnectionRequestRequestHandler(
         IIdentityService identityService,
         CollaborationDbContext dbContext)
     {
@@ -24,7 +24,7 @@ public class AcceptConnectionRequestHandler : IRequestHandler<AcceptConnectionRe
         Guid currentUserId = identityService.GetUserId();
         Guid fromUserId = request.FromUserId;
 
-        var connectionRequest = await this.dbContext.ConnectionRequest
+        var connectionRequest = await dbContext.ConnectionRequest
             .FirstOrDefaultAsync(
                 request => request.FromUserId == fromUserId &&
                            request.TargetUserId == currentUserId,
@@ -39,8 +39,8 @@ public class AcceptConnectionRequestHandler : IRequestHandler<AcceptConnectionRe
         var connection1 = new Connection(connectionRequest.FromUserId, connectionRequest.TargetUserId);
         var connection2 = new Connection(connectionRequest.TargetUserId, connectionRequest.FromUserId);
 
-        this.dbContext.Connection.Add(connection1);
-        this.dbContext.Connection.Add(connection2);
+        dbContext.Connection.Add(connection1);
+        dbContext.Connection.Add(connection2);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

@@ -1,4 +1,4 @@
-﻿using Andaha.Services.Collaboration.Requests;
+﻿using Andaha.CrossCutting.Application.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 

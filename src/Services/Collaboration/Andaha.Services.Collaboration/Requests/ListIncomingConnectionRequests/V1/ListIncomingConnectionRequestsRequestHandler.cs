@@ -1,17 +1,17 @@
 ﻿using Andaha.CrossCutting.Application.Identity;
-using Andaha.Services.Collaboration.Dtos;
+using Andaha.Services.Collaboration.Dtos.V1;
 using Andaha.Services.Collaboration.Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Andaha.Services.Collaboration.Requests.ListConnectionRequests;
+namespace Andaha.Services.Collaboration.Requests.ListIncomingConnectionRequests.V1;
 
-public class ListOutgoingConnectionRequestsHandler : IRequestHandler<ListOutgoingConnectionRequestsRequest, IResult>
+internal class ListIncomingConnectionRequestsRequestHandler : IRequestHandler<ListIncomingConnectionRequestsRequest, IResult>
 {
     private readonly IIdentityService identityService;
     private readonly CollaborationDbContext dbContext;
 
-    public ListOutgoingConnectionRequestsHandler(
+    public ListIncomingConnectionRequestsRequestHandler(
         IIdentityService identityService,
         CollaborationDbContext dbContext)
     {
@@ -19,13 +19,14 @@ public class ListOutgoingConnectionRequestsHandler : IRequestHandler<ListOutgoin
         this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
 
-    public async Task<IResult> Handle(ListOutgoingConnectionRequestsRequest request, CancellationToken cancellationToken)
+    public async Task<IResult> Handle(ListIncomingConnectionRequestsRequest request, CancellationToken cancellationToken)
     {
         Guid currentUserId = identityService.GetUserId();
 
         var connectionRequests = await dbContext.ConnectionRequest
-            .Where(request => request.FromUserId == currentUserId &&
-                              request.AcceptedAt == null)
+            .Where(request => request.TargetUserId == currentUserId &&
+                              request.AcceptedAt == null &&
+                              request.DeclinedAt == null)
             .ToListAsync(cancellationToken);
 
         return Results.Ok(connectionRequests

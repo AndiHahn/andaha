@@ -3,14 +3,14 @@ using Andaha.Services.Collaboration.Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Andaha.Services.Collaboration.Requests.GetConnectedUserIds;
+namespace Andaha.Services.Collaboration.Requests.GetConnectedUserIds.V1;
 
-public class GetConnectedUserIdsHandler : IRequestHandler<GetConnectedUserIdsRequest, IResult>
+public class GetConnectedUserIdsRequestHandler : IRequestHandler<GetConnectedUserIdsRequest, IResult>
 {
     private readonly IIdentityService identityService;
     private readonly CollaborationDbContext dbContext;
 
-    public GetConnectedUserIdsHandler(
+    public GetConnectedUserIdsRequestHandler(
         IIdentityService identityService,
         CollaborationDbContext dbContext)
     {

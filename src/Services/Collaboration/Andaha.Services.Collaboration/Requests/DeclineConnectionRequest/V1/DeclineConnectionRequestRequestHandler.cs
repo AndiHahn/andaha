@@ -3,14 +3,14 @@ using Andaha.Services.Collaboration.Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Andaha.Services.Collaboration.Requests.DeclineConnectionRequest;
+namespace Andaha.Services.Collaboration.Requests.DeclineConnectionRequest.V1;
 
-public class DeclineConnectionRequestHandler : IRequestHandler<DeclineConnectionRequestRequest, IResult>
+public class DeclineConnectionRequestRequestHandler : IRequestHandler<DeclineConnectionRequestRequest, IResult>
 {
     private readonly IIdentityService identityService;
     private readonly CollaborationDbContext dbContext;
 
-    public DeclineConnectionRequestHandler(
+    public DeclineConnectionRequestRequestHandler(
         IIdentityService identityService,
         CollaborationDbContext dbContext)
     {
@@ -23,7 +23,7 @@ public class DeclineConnectionRequestHandler : IRequestHandler<DeclineConnection
         Guid currentUserId = identityService.GetUserId();
         Guid fromUserId = request.FromUserId;
 
-        var connectionRequest = await this.dbContext.ConnectionRequest
+        var connectionRequest = await dbContext.ConnectionRequest
             .FirstOrDefaultAsync(
                 request => request.FromUserId == fromUserId &&
                            request.TargetUserId == currentUserId,

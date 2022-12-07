@@ -1,11 +1,4 @@
-﻿using Andaha.Services.Collaboration.Extensions;
-using Andaha.Services.Collaboration.Requests.AcceptConnectionRequest;
-using Andaha.Services.Collaboration.Requests.DeclineConnectionRequest;
-using Andaha.Services.Collaboration.Requests.GetConnectedUserIds;
-using Andaha.Services.Collaboration.Requests.ListConnectedAccounts;
-using Andaha.Services.Collaboration.Requests.ListConnectionRequests;
-using Andaha.Services.Collaboration.Requests.ListIncomingConnectionRequests;
-using Andaha.Services.Collaboration.Requests.RequestAccountConnection;
+﻿using Andaha.Services.Collaboration.Requests;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
@@ -15,38 +8,31 @@ public static class ProgramEndpointExtensions
 {
     public static WebApplication MapCollaborationEndpoints(this WebApplication app)
     {
-        app.MediatePost<RequestAccountConnectionRequest>("/api/connection/request");
-
-        app.MediateGet<ListOutgoingConnectionRequestsRequest>("/api/connection/outgoing");
-
-        app.MediateGet<ListIncomingConnectionRequestsRequest>("/api/connection/incoming");
-
-        app.MediatePut<AcceptConnectionRequestRequest>("/api/connection/accept/{fromUserId}");
-
-        app.MediateDelete<DeclineConnectionRequestRequest>("/api/connection/decline/{fromUserId}");
-
-        app.MediateGet<ListConnectedAccountsRequest>("/api/connection/established");
-
-        app.MediateGet<GetConnectedUserIdsRequest>("/api/connection/users");
+        app.MapConnectionEndpoint();
 
         return app;
     }
 
     internal static WebApplication MapHealthChecks(this WebApplication app)
     {
+        var versionSet = app.NewApiVersionSet().ReportApiVersions().Build();
+
         app.MapHealthChecks("/hc", new HealthCheckOptions
         {
             Predicate = _ => true,
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        });
+        }).WithApiVersionSet(versionSet).IsApiVersionNeutral();
 
         app.MapHealthChecks("/liveness", new HealthCheckOptions
         {
             Predicate = r => r.Name.Contains("self")
-        });
+        }).WithApiVersionSet(versionSet).IsApiVersionNeutral();
 
-        app.MapGet("/api/ping", Results.NoContent);
+        app.MapGet("/api/ping", Results.NoContent).WithApiVersionSet(versionSet).IsApiVersionNeutral();
 
         return app;
     }
+
+    internal static RouteGroupBuilder ApplyApiVersions(this RouteGroupBuilder groupBuilder)
+        => groupBuilder.HasApiVersion(1.0);
 }
