@@ -1,8 +1,7 @@
 using Andaha.Services.BudgetPlan;
 using Andaha.Services.Collaboration;
-using Andaha.Services.MonolithApi;
+using Andaha.Services.Monolith;
 using Andaha.Services.Shopping;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Andaha.Services.MonolithApi;
+namespace Andaha.Services.Monolith;
 
 internal static class ProgramExtensions
 {

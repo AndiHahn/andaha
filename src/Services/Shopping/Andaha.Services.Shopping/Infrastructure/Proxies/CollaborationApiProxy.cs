@@ -1,4 +1,5 @@
 ﻿using Dapr.Client;
+using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
 
 namespace Andaha.Services.Shopping.Infrastructure.Proxies;
@@ -7,15 +8,18 @@ public class CollaborationApiProxy : ICollaborationApiProxy
 {
     private readonly DaprClient daprClient;
     private readonly IHttpContextAccessor httpContextAccessor;
+    private readonly DaprConfiguration daprConfiguration;
     private readonly ILogger<CollaborationApiProxy> logger;
 
     public CollaborationApiProxy(
         DaprClient daprClient,
         IHttpContextAccessor httpContextAccessor,
+        IOptions<DaprConfiguration> daprConfiguration,
         ILogger<CollaborationApiProxy> logger)
     {
         this.daprClient = daprClient ?? throw new ArgumentNullException(nameof(daprClient));
         this.httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+        this.daprConfiguration = daprConfiguration?.Value ?? throw new ArgumentNullException(nameof(daprConfiguration));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -39,7 +43,7 @@ public class CollaborationApiProxy : ICollaborationApiProxy
     {
         string bearerToken = GetUserBearerToken();
 
-        var request = this.daprClient.CreateInvokeMethodRequest(HttpMethod.Get, "collaboration-api", requestUrl);
+        var request = this.daprClient.CreateInvokeMethodRequest(HttpMethod.Get, this.daprConfiguration.CollaborationAppId, requestUrl);
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
 
         return request;

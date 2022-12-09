@@ -47,6 +47,8 @@ public static class ProgramExtensions
         builder.Services.AddCqrs(Assembly.GetExecutingAssembly());
         builder.Services.AddIdentityServices();
 
+        builder.Services.Configure<DaprConfiguration>(builder.Configuration.GetSection("Dapr"));
+
         builder.Services.AddScoped<IIdentityApiProxy, IdentityApiProxy>();
 
         return builder;

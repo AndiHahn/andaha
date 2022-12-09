@@ -4,7 +4,7 @@ using Andaha.Services.Shopping;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
-namespace Andaha.Services.MonolithApi;
+namespace Andaha.Services.Monolith;
 
 internal static class ProgramEndpointExtensions
 {
