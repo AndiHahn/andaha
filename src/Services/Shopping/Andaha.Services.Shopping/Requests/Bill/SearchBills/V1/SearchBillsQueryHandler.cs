@@ -50,6 +50,6 @@ internal class SearchBillsQueryHandler : IRequestHandler<SearchBillsQuery, IResu
             .Take(request.PageSize)
             .ToArrayAsync(cancellationToken);
 
-        return Results.Ok(new Andaha.CrossCutting.Application.Result.PagedResult<BillDto>(queryResult, totalCount));
+        return Results.Ok(new PagedResultDto<BillDto>(queryResult, totalCount));
     }
 }

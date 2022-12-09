@@ -13,6 +13,8 @@ export class ShoppingApiService {
   constructor(private httpClient: HttpClient) {
     if (environment.dapr) {
       this.endpointUrl = constructPath(environment.gatewayBaseUrl, 'shopping-api');
+    } else if (environment.useMonolithApi) {
+      this.endpointUrl = constructPath(environment.monolithApiBaseUrl, 'api');
     } else {
       this.endpointUrl = 'https://localhost:8200/api';
     }

@@ -32,8 +32,8 @@ internal class GetExpensesQueryHandler : IRequestHandler<GetExpensesQuery, IResu
             .AsNoTracking()
             .Where(bill => (bill.UserId == userId ||
                            connectedUsers.Contains(bill.UserId)) &&
-                           bill.Date >= request.StartTime &&
-                           bill.Date <= request.EndTime)
+                           bill.Date >= request.StartTimeUtc &&
+                           bill.Date <= request.EndTimeUtc)
             .GroupBy(bill => bill.Category.Name)
             .Select(group => new ExpenseDto(group.Key, group.Sum(b => b.Price)))
             .ToListAsync(cancellationToken);

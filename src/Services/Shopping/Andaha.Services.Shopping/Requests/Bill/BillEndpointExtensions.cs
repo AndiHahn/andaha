@@ -32,7 +32,7 @@ internal static class BillEndpointExtensions
     {
         groupBuilder
             .MediateGet<SearchBills.V1.SearchBillsQuery>("/")
-            .Produces<PagedResult<Dtos.V1.BillDto>>()
+            .Produces<PagedResultDto<Dtos.V1.BillDto>>()
             .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest)
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
 
@@ -66,11 +66,13 @@ internal static class BillEndpointExtensions
                     id = parsedId;
                 }
 
+                var priceParameter = httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.Price)];
+
                 var command = new CreateBill.V1.CreateBillCommand(
                     id,
                     Guid.Parse(httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.CategoryId)]!),
                     httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.ShopName)]!,
-                    double.Parse(httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.Price)]!),
+                    double.Parse(priceParameter.ToString().Replace(".", ",")),
                     DateTime.Parse(httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.Date)]!),
                     httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.Notes)],
                     httpContext.Request.Form.Files.FirstOrDefault());
@@ -90,13 +92,15 @@ internal static class BillEndpointExtensions
        RouteGroupBuilder groupBuilder)
     {
         groupBuilder
-            .MapPost("{id}", [Authorize] async (IMediator mediator, HttpContext httpContext, CancellationToken cancellationToken, Guid id) =>
+            .MapPut("{id}", [Authorize] async (IMediator mediator, HttpContext httpContext, CancellationToken cancellationToken, Guid id) =>
             {
+                var priceParameter = httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.Price)];
+
                 var command = new UpdateBill.V1.UpdateBillCommand(
                     id,
                     Guid.Parse(httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.CategoryId)]!),
                     httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.ShopName)]!,
-                    double.Parse(httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.Price)]!),
+                    double.Parse(priceParameter.ToString().Replace(".", ",")),
                     DateTime.Parse(httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.Date)]!),
                     httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.Notes)],
                     httpContext.Request.Form.Files.FirstOrDefault());

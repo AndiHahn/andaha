@@ -2,4 +2,4 @@
 
 namespace Andaha.Services.Shopping.Requests.Expense.GetExpenses.V1;
 
-public record GetExpensesQuery(DateTime StartTime, DateTime EndTime) : IHttpRequest;
+public record GetExpensesQuery(DateTime StartTimeUtc, DateTime EndTimeUtc) : IHttpRequest;

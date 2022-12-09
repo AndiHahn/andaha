@@ -17,6 +17,8 @@ export class ExpenseApiService {
   constructor(private httpClient: HttpClient) {
     if (environment.dapr) {
       this.endpointUrl = constructPath(environment.gatewayBaseUrl, 'shopping-api', 'expense');
+    } else if (environment.useMonolithApi) {
+      this.endpointUrl = constructPath(environment.monolithApiBaseUrl, 'api', 'expense');
     } else {
       this.endpointUrl = 'https://localhost:8200/api/expense';
     }
