@@ -1,23 +1,45 @@
 ﻿using Andaha.CrossCutting.Application;
-using Andaha.CrossCutting.Application.Identity;
-using Andaha.Services.Shopping.Dtos.v1_0;
-using Andaha.Services.Shopping.Filter;
+using Andaha.CrossCutting.Application.Swagger;
+using Andaha.Services.Shopping.Common;
 using Andaha.Services.Shopping.Healthcheck;
 using Andaha.Services.Shopping.Infrastructure;
 using Andaha.Services.Shopping.Infrastructure.ImageRepository;
 using Andaha.Services.Shopping.Infrastructure.Proxies;
-using Microsoft.AspNetCore.Mvc.Versioning;
+using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Polly;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 
 namespace Andaha.Services.Shopping;
 
-internal static class ProgramExtensions
+public static class ProgramExtensions
 {
+    public static WebApplicationBuilder AddShoppingServices(this WebApplicationBuilder builder)
+    {
+        return builder
+            .AddCustomDatabase()
+            .AddCustomApplicationServices();
+    }
+
+    internal static WebApplicationBuilder AddCustomDapr(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddDaprClient();
+
+        return builder;
+    }
+
+    internal static WebApplicationBuilder AddCustomLogging(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddLogging();
+
+        return builder;
+    }
+
     internal static WebApplicationBuilder AddCustomDatabase(this WebApplicationBuilder builder)
     {
         builder.Services.AddDbContext<ShoppingDbContext>(options
@@ -30,6 +52,9 @@ internal static class ProgramExtensions
     {
         builder.Services.AddCqrs(Assembly.GetExecutingAssembly());
         builder.Services.AddIdentityServices();
+
+        builder.Services.Configure<DaprConfiguration>(builder.Configuration.GetSection("Dapr"));
+
         builder.Services.AddScoped<ICollaborationApiProxy, CollaborationApiProxy>();
 
         if (builder.Environment.IsDevelopment())
@@ -53,12 +78,20 @@ internal static class ProgramExtensions
 
     internal static WebApplicationBuilder AddCustomApiVersioning(this WebApplicationBuilder builder)
     {
-        builder.Services.AddApiVersioning(
-            options =>
-            {
-                options.ReportApiVersions = true;
-                options.ApiVersionReader = new QueryStringApiVersionReader("api-version");
-            });
+        builder.Services
+            .AddEndpointsApiExplorer()
+            .AddApiVersioning(
+                options =>
+                {
+                    options.ReportApiVersions = true;
+                    options.ApiVersionReader = new QueryStringApiVersionReader("api-version");
+                })
+            .AddApiExplorer(
+                options =>
+                {
+                    options.GroupNameFormat = "'v'VVV";
+                })
+            .EnableApiVersionBinding();
 
         return builder;
     }
@@ -99,11 +132,13 @@ internal static class ProgramExtensions
 
     internal static WebApplicationBuilder AddCustomSwagger(this WebApplicationBuilder builder)
     {
-        builder.Services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'VVV");
+        builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
         builder.Services.AddSwaggerGen(config =>
         {
             config.SupportNonNullableReferenceTypes();
+
+            config.CustomSchemaIds(type => type.ToString());
 
             var identityApiBaseUrl = builder.Configuration.GetSection("ExternalUrls").GetValue<string>("IdentityApi");
 
@@ -125,6 +160,10 @@ internal static class ProgramExtensions
             });
 
             config.OperationFilter<AuthorizeCheckOperationFilter>();
+
+            config.OperationFilter<SwaggerDefaultValues>();
+
+            config.SchemaFilter<SmartEnumSchemaFilter>();
         });
 
         return builder;
@@ -148,7 +187,7 @@ internal static class ProgramExtensions
         return builder;
     }
 
-    internal static async Task MigrateDatabaseAsync(this WebApplication webApplication, ILogger logger)
+    public static async Task MigrateShoppingDatabaseAsync(this WebApplication webApplication, ILogger logger)
     {
         using var scope = webApplication.Services.CreateScope();
 

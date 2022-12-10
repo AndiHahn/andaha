@@ -23,10 +23,12 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:80
-      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.identity.db;Database=andaha-identity-db;User Id=sa;Password=Pass@word;
+      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.identity.db;Database=andaha-identity-db;User Id=sa;Password=Pass@word;Encrypt=false
       IssuerUrl: http://localhost:9100
       ExternalUrls__ShoppingApi: http://andaha.services.shopping:80
       ExternalUrls__CollaborationApi: http://andaha.services.collaboration:80
+      ExternalUrls__BudgetplanApi: http://andaha.services.budgetplan:80
+      ExternalUrls__MonolithApi: http://andaha.services.monolith:80
       ExternalUrls__WebMiniClient: http://localhost:4200
       Authentication__Facebook__AppId: ${AUTH_FACEBOOK_APP_ID}
       Authentication__Facebook__AppSecret: ${AUTH_FACEBOOK_APP_SECRET}
@@ -58,8 +60,9 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:80
-      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.shopping.db;Database=andaha-shopping-db;User Id=sa;Password=Pass@word;
+      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.shopping.db;Database=andaha-shopping-db;User Id=sa;Password=Pass@word;Encrypt=false
       ExternalUrls__IdentityApi: http://andaha.services.identity:80
+      Dapr__CollaborationAppId: collaboration-api
     ports:
       - "9200:80"
 
@@ -86,8 +89,9 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:80
-      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.collaboration.db;Database=andaha-collaboration-db;User Id=sa;Password=Pass@word;
+      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.collaboration.db;Database=andaha-collaboration-db;User Id=sa;Password=Pass@word;Encrypt=false
       ExternalUrls__IdentityApi: http://andaha.services.identity:80
+      Dapr__IdentityAppId: identity-api
     ports:
       - "9300:80"
 
@@ -109,6 +113,65 @@ services:
       - "9310:1433"
     volumes:
       - ./volumes/collaborationsqlvolume:/var/opt/mssql/data
+  
+  andaha.services.budgetplan:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:80
+      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.budgetplan.db;Database=andaha-budgetplan-db;User Id=sa;Password=Pass@word;Encrypt=false
+      ExternalUrls__IdentityApi: http://andaha.services.identity:80
+      Dapr__CollaborationAppId: collaboration-api
+    ports:
+      - "9400:80"
+
+  andaha.services.budgetplan.dapr:
+    command: [
+      "./daprd",
+      "-app-id", "budgetplan-api",
+      "-app-port", "80",
+      "-log-level", "debug",
+      "-placement-host-address", "dapr.placement:50000",
+    ]
+
+  andaha.services.budgetplan.db:
+    user: root
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: Pass@word
+    ports:
+      - "9410:1433"
+    volumes:
+      - ./volumes/budgetplansqlvolume:/var/opt/mssql/data
+
+  andaha.services.monolith:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:80
+      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.monolith.db;Database=andaha-monolith-db;User Id=sa;Password=Pass@word;Encrypt=false
+      ExternalUrls__IdentityApi: http://andaha.services.identity:80
+      Dapr__IdentityAppId: identity-api
+      Dapr__CollaborationAppId: monolith-api
+    ports:
+      - "9900:80"
+
+  andaha.services.monolith.dapr:
+    command: [
+      "./daprd",
+      "-app-id", "monolith-api",
+      "-app-port", "80",
+      "-log-level", "debug",
+      "-placement-host-address", "dapr.placement:50000",
+    ]
+
+  andaha.services.monolith.db:
+    user: root
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: Pass@word
+    ports:
+      - "9910:1433"
+    volumes:
+      - ./volumes/monolithsqlvolume:/var/opt/mssql/data
 
   dapr.placement:
     command: ["./placement", "--port", "50000", "-log-level", "debug"]

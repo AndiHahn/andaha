@@ -17,6 +17,13 @@ namespace Andaha.Services.BudgetPlan;
 
 public static class ProgramExtensions
 {
+    public static WebApplicationBuilder AddBudgetPlanServices(this WebApplicationBuilder builder)
+    {
+        return builder
+            .AddCustomDatabase()
+            .AddCustomApplicationServices();
+    }
+
     internal static WebApplicationBuilder AddCustomDapr(this WebApplicationBuilder builder)
     {
         builder.Services.AddDaprClient();
@@ -43,6 +50,8 @@ public static class ProgramExtensions
     {
         builder.Services.AddCqrs(Assembly.GetExecutingAssembly());
         builder.Services.AddIdentityServices();
+
+        builder.Services.Configure<DaprConfiguration>(builder.Configuration.GetSection("Dapr"));
 
         builder.Services.AddScoped<ICollaborationApiProxy, CollaborationApiProxy>();
 
@@ -162,7 +171,7 @@ public static class ProgramExtensions
         return builder;
     }
 
-    internal static async Task MigrateDatabaseAsync(this WebApplication webApplication, ILogger logger)
+    public static async Task MigrateBudgetPlanDatabaseAsync(this WebApplication webApplication, ILogger logger)
     {
         using var scope = webApplication.Services.CreateScope();
 

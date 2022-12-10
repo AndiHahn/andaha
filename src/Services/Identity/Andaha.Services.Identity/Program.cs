@@ -1,7 +1,6 @@
 using Andaha.Services.Identity;
 using Andaha.Services.Identity.Domain;
 using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

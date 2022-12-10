@@ -42,6 +42,7 @@ async function initApp(authService: AuthService): Promise<void> {
       resourceServer: {
         allowedUrls: [
           environment.gatewayBaseUrl,
+          environment.monolithApiBaseUrl,
           'https://localhost:8100/api',
           'https://localhost:8200/api',
           'https://localhost:8300/api',

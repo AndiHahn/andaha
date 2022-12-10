@@ -13,7 +13,9 @@ export class BudgetPlanApiService {
   private apiVersion: string = '1.0';
 
   constructor(private httpClient: HttpClient) {
-    if (environment.dapr) {
+    if (environment.useMonolithApi) {
+      this.endpointUrl = constructPath(environment.monolithApiBaseUrl, 'api');
+    } else if (environment.dapr) {
       this.endpointUrl = constructPath(environment.gatewayBaseUrl, 'budgetplan-api');
     } else {
       this.endpointUrl = 'https://localhost:8400/api';

@@ -11,7 +11,9 @@ export class ShoppingApiService {
   private endpointUrl: string;
 
   constructor(private httpClient: HttpClient) {
-    if (environment.dapr) {
+    if (environment.useMonolithApi) {
+      this.endpointUrl = constructPath(environment.monolithApiBaseUrl, 'api');
+    } else if (environment.dapr) {
       this.endpointUrl = constructPath(environment.gatewayBaseUrl, 'shopping-api');
     } else {
       this.endpointUrl = 'https://localhost:8200/api';

@@ -3,8 +3,6 @@ import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { constructPath, constructVersionedPath } from '../functions/functions';
-import { CostCategory } from './dtos/CostCategory';
-import { Duration } from './dtos/Duration';
 import { FixedCostCreateDto } from './dtos/FixedCostCreateDto';
 import { FixedCostDto } from './dtos/FixedCostDto';
 import { FixedCostHistoryDto, RawFixedCostHistoryDto } from './dtos/FixedCostHistoryDto';
@@ -19,7 +17,9 @@ export class FixedCostApiService {
   private apiVersion: string = "1.0";
 
   constructor(private httpClient: HttpClient) {
-    if (environment.dapr) {
+    if (environment.useMonolithApi) {
+      this.endpointUrl = constructPath(environment.monolithApiBaseUrl, 'api', 'fixedcost');
+    } else if (environment.dapr) {
       this.endpointUrl = constructPath(environment.gatewayBaseUrl, 'budgetplan-api', 'fixedcost');
     } else {
       this.endpointUrl = 'https://localhost:8400/api/fixedcost';

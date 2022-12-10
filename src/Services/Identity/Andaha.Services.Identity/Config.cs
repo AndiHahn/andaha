@@ -20,7 +20,8 @@ internal static class Config
         {
             new("shopping", "Access to Shopping API"),
             new("collaboration", "Access to Collaboration API"),
-            new("budgetplan", "Access to Budgetplan API")
+            new("budgetplan", "Access to Budgetplan API"),
+            new("monolith", "Access to all APIs")
         };
 
     public static IEnumerable<ApiResource> ApiResources =>
@@ -37,6 +38,10 @@ internal static class Config
             new("budgetplan-api", "Budgetplan API", new List<string> { JwtClaimTypes.Email, JwtClaimTypes.Name })
             {
                 Scopes = { "budgetplan" }
+            },
+            new("monolith-api", "Monolith API", new List<string> { JwtClaimTypes.Email, JwtClaimTypes.Name })
+            {
+                Scopes = { "monolith" }
             }
         };
 
@@ -115,6 +120,29 @@ internal static class Config
             },
             new()
             {
+                ClientId = "monolithswaggerui",
+                ClientName = "Monolith Swagger UI",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowAccessTokensViaBrowser = true,
+
+                RedirectUris =
+                {
+                    $"{configuration["ExternalUrls:MonolithApi"]}/swagger/oauth2-redirect.html"
+                },
+                PostLogoutRedirectUris =
+                {
+                    $"{configuration["ExternalUrls:MonolithApi"]}/swagger/"
+                },
+
+                AllowedScopes =
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    "monolith"
+                }
+            },
+            new()
+            {
                 ClientId = "miniclient",
                 ClientName = "Webapp Mini Client",
                 AllowedGrantTypes = GrantTypes.Code,
@@ -147,7 +175,8 @@ internal static class Config
                     IdentityServerConstants.StandardScopes.Email,
                     "shopping",
                     "collaboration",
-                    "budgetplan"
+                    "budgetplan",
+                    "monolith"
                 },
                 AccessTokenLifetime = 60 * 60 * 24 * 30 // 60 * 60 * 24 * 30 = 1 month
             }

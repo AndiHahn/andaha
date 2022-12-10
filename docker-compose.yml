@@ -68,8 +68,46 @@ services:
   andaha.services.collaboration.db:
     image: mcr.microsoft.com/mssql/server:2019-latest   
 
+  andaha.services.budgetplan:
+    image: andaha-services-budgetplan:${TAG}
+    build:
+      context: src/Services/BudgetPlan/Andaha.Services.BudgetPlan/
+      dockerfile: Dockerfile
+      args:
+        PatPlaceholder: ${NUGET_FEED_ACCESS_TOKEN}
+    depends_on: 
+      - "andaha.services.budgetplan.db"
+
+  andaha.services.budgetplan.dapr:
+    image: "daprio/daprd:edge"
+    network_mode: "service:andaha.services.budgetplan"
+    depends_on:
+      - "andaha.services.budgetplan"
+
+  andaha.services.budgetplan.db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+
   dapr.placement:
     image: "daprio/dapr"
+
+  andaha.services.monolith:
+    image: andaha-services-monolith:${TAG}
+    build:
+      context: .
+      dockerfile: src/Services/Monolith/Andaha.Services.Monolith/Dockerfile
+      args:
+        PatPlaceholder: ${NUGET_FEED_ACCESS_TOKEN}
+    depends_on: 
+      - "andaha.services.monolith.db"
+
+  andaha.services.monolith.dapr:
+    image: "daprio/daprd:edge"
+    network_mode: "service:andaha.services.monolith"
+    depends_on:
+      - "andaha.services.monolith"
+
+  andaha.services.monolith.db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
 
   andaha.webapps.servicestatus:
     image: andaha-webapps-servicestatus:${TAG}
@@ -84,3 +122,5 @@ volumes:
     name: shopping_sql_volume
   collaborationsqlvolume:
     name: collaboration_sql_volume
+  monolithsqlvolume:
+    name: monolith_sql_volume

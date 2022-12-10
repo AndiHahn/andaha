@@ -1,7 +1,4 @@
 using Andaha.Services.Shopping;
-using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +8,8 @@ builder.Services.AddControllers().AddDapr();
 
 builder
     .AddCustomDatabase()
+    .AddCustomDapr()
+    .AddCustomLogging()
     .AddCustomApplicationServices()
     .AddCustomApiVersioning()
     .AddCustomAuthentication()
@@ -18,15 +17,22 @@ builder
     .AddCustomSwagger()
     .AddCustomCors();
 
-builder.Services.AddDaprClient();
-
-builder.Services.AddLogging();
-
 var app = builder.Build();
 
-var versionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+app.UseHttpsRedirection();
 
-// Configure the HTTP request pipeline.
+app.UseCors();
+
+app.UseAuthentication();
+
+app.UseAuthorization();
+
+app.MapHealthChecks();
+
+app.MapShoppingEndpoints();
+
+await Task.Delay(10);
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -35,41 +41,21 @@ if (app.Environment.IsDevelopment())
         {
             options.OAuthClientId("shoppingswaggerui");
 
-            foreach (var version in versionProvider.ApiVersionDescriptions.Select(description => description.GroupName))
+            var descriptions = app.DescribeApiVersions();
+
+            // build a swagger endpoint for each discovered API version
+            foreach (var description in descriptions)
             {
-                options.SwaggerEndpoint($"/swagger/{version}/swagger.json", version.ToUpperInvariant());
+                var url = $"/swagger/{description.GroupName}/swagger.json";
+                var name = description.GroupName.ToUpperInvariant();
+                options.SwaggerEndpoint(url, name);
             }
         });
 }
 
-app.UseHttpsRedirection();
-
-app.UseCloudEvents();
-
-app.UseCors();
-
-app.UseAuthentication();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.MapHealthChecks("/hc", new HealthCheckOptions
-{
-    Predicate = _ => true,
-    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-});
-
-app.MapHealthChecks("/liveness", new HealthCheckOptions
-{
-    Predicate = r => r.Name.Contains("self")
-});
-
-app.MapGet("/api/ping", Results.NoContent);
-
 try
 {
-    await app.MigrateDatabaseAsync(app.Logger);
+    await app.MigrateShoppingDatabaseAsync(app.Logger);
     
     app.Run();
 }

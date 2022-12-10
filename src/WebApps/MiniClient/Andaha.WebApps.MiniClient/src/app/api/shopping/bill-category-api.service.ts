@@ -14,7 +14,9 @@ export class BillCategoryApiService {
   private apiVersion: string = "1.0";
 
   constructor(private httpClient: HttpClient) {
-    if (environment.dapr) {
+    if (environment.useMonolithApi) {
+      this.endpointUrl = constructPath(environment.monolithApiBaseUrl, 'api', 'billcategory');
+    } else if (environment.dapr) {
       this.endpointUrl = constructPath(environment.gatewayBaseUrl, 'shopping-api', 'billcategory');
     } else {
       this.endpointUrl = 'https://localhost:8200/api/billcategory';

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { createHttpParameters } from '../functions/api-utils';
-import { constructPath } from '../functions/functions';
+import { constructPath, constructVersionedPath } from '../functions/functions';
 import { ConnectionDto } from './dtos/ConnectionDto';
 import { ConnectionRequestDto } from './dtos/ConnectionRequestDto';
 import { RequestAccountConnectionRequest } from './dtos/RequestAccountConnectionRequest';
@@ -13,9 +13,12 @@ import { RequestAccountConnectionRequest } from './dtos/RequestAccountConnection
 })
 export class CollaborationApiService {
   private endpointUrl: string;
+  private apiVersion: string = "1.0";
 
   constructor(private httpClient: HttpClient) {
-    if (environment.dapr) {
+    if (environment.useMonolithApi) {
+      this.endpointUrl = constructPath(environment.monolithApiBaseUrl, 'api');
+    } else if (environment.dapr) {
       this.endpointUrl = constructPath(environment.gatewayBaseUrl, 'collaboration-api');
     } else {
       this.endpointUrl = 'https://localhost:8300/api';
@@ -28,7 +31,7 @@ export class CollaborationApiService {
   }
 
   requestConnection(requestData: RequestAccountConnectionRequest): Observable<void> {
-    const url = constructPath(this.endpointUrl, 'connection', 'request');
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'connection', 'request');
 
     const httpParameters = createHttpParameters([
       {
@@ -41,27 +44,27 @@ export class CollaborationApiService {
   }
 
   acceptRequest(fromUserId: string): Observable<void> {
-    const url = constructPath(this.endpointUrl, 'connection', 'accept', fromUserId);
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'connection', 'accept', fromUserId);
     return this.httpClient.put<void>(url, null);
   }
 
   declineRequest(fromUserId: string): Observable<void> {
-    const url = constructPath(this.endpointUrl, 'connection', 'decline', fromUserId);
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'connection', 'decline', fromUserId);
     return this.httpClient.delete<void>(url);
   }
 
   listIncomingConnectionRequests(): Observable<ConnectionRequestDto[]> {
-    const url = constructPath(this.endpointUrl, 'connection', 'incoming');
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'connection', 'incoming');
     return this.httpClient.get<ConnectionRequestDto[]>(url);
   }
 
   listOutgoingConnectionRequests(): Observable<ConnectionRequestDto[]> {
-    const url = constructPath(this.endpointUrl, 'connection', 'outgoing');
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'connection', 'outgoing');
     return this.httpClient.get<ConnectionRequestDto[]>(url);
   }
 
   listConnections(): Observable<ConnectionDto[]> {
-    const url = constructPath(this.endpointUrl, 'connection', 'established');
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'connection', 'established');
 
     return this.httpClient.get<ConnectionDto[]>(url);
   }

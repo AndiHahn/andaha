@@ -36,12 +36,6 @@ public static class ProgramEndpointExtensions
 
         app.MapGet("/api/ping", Results.NoContent).WithApiVersionSet(versionSet).IsApiVersionNeutral();
 
-        app.MapIncomeEndpoint();
-
-        app.MapFixedCostEndpoint();
-
-        app.MapBudgetPlanEndpoint();
-
         return app;
     }
 
