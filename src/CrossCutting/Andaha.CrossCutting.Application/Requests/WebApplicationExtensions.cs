@@ -1,12 +1,10 @@
-﻿using Andaha.CrossCutting.Application.Requests;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
-namespace Andaha.CrossCutting.Application.Extensions;
+namespace Andaha.CrossCutting.Application.Requests;
 
 public static class WebApplicationExtensions
 {
@@ -19,7 +17,7 @@ public static class WebApplicationExtensions
     public static RouteHandlerBuilder MediatePost<TRequest>(
         this IEndpointRouteBuilder routeBuilder,
         string template) where TRequest : IHttpRequest
-        => routeBuilder.MapPost(template, [Authorize] (IMediator mediator, [FromBody] TRequest request)
+        => routeBuilder.MapPost(template, [Authorize] (IMediator mediator, [AsParameters] TRequest request)
             => mediator.Send(request));
 
     public static RouteHandlerBuilder MediatePut<TRequest>(
