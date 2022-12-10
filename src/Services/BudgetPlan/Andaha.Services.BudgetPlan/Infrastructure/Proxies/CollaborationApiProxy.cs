@@ -28,7 +28,7 @@ internal class CollaborationApiProxy : ICollaborationApiProxy
     {
         try
         {
-            var request = GetRequestMessage("/api/connection/users");
+            var request = GetRequestMessage("/api/connection/users?api-version=1.0");
 
             return await this.daprClient.InvokeMethodAsync<IReadOnlyCollection<Guid>>(request, cancellationToken);
         }
