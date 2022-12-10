@@ -1,3 +1,6 @@
 ﻿namespace Andaha.Services.Collaboration.Infrastructure;
 
-public record DaprConfiguration(string IdentityAppId);
+public class DaprConfiguration
+{
+    public string IdentityAppId { get; set; } = null!;
+}

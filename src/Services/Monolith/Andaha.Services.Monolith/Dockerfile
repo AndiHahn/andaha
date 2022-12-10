@@ -1,22 +1,25 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:7.0-bullseye-slim AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:7.0-bullseye-slim AS build
 WORKDIR /src
-COPY ["src/Services/MonolithApi/Andaha.Services.MonolithApi/Andaha.Services.MonolithApi.csproj", "src/Services/MonolithApi/Andaha.Services.MonolithApi/"]
-RUN dotnet restore "src/Services/MonolithApi/Andaha.Services.MonolithApi/Andaha.Services.MonolithApi.csproj"
+COPY ["src/Services/Monolith/Andaha.Services.Monolith/", "Monolith/Andaha.Services.Monolith/"]
+COPY ["src/Services/BudgetPlan/Andaha.Services.BudgetPlan/", "BudgetPlan/Andaha.Services.BudgetPlan/"]
+COPY ["src/Services/Collaboration/Andaha.Services.Collaboration/", "Collaboration/Andaha.Services.Collaboration/"]
+COPY ["src/Services/Shopping/Andaha.Services.Shopping/", "Shopping/Andaha.Services.Shopping/"]
+
+ARG PatPlaceholder
+RUN dotnet restore "Monolith/Andaha.Services.Monolith/Andaha.Services.Monolith.csproj" --configfile "Monolith/Andaha.Services.Monolith/nuget.config"
 COPY . .
-WORKDIR "/src/src/Services/MonolithApi/Andaha.Services.MonolithApi"
-RUN dotnet build "Andaha.Services.MonolithApi.csproj" -c Release -o /app/build
+WORKDIR "/src/Monolith/Andaha.Services.Monolith"
+RUN dotnet build "Andaha.Services.Monolith.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Andaha.Services.MonolithApi.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Andaha.Services.Monolith.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Andaha.Services.MonolithApi.dll"]
+ENTRYPOINT ["dotnet", "Andaha.Services.Monolith.dll"]

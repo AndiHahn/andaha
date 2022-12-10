@@ -16,10 +16,10 @@ export class IncomeApiService {
   private apiVersion: string = "1.0";
 
   constructor(private httpClient: HttpClient) {
-    if (environment.dapr) {
-      this.endpointUrl = constructPath(environment.gatewayBaseUrl, 'budgetplan-api', 'income');
-    } else if (environment.useMonolithApi) {
+    if (environment.useMonolithApi) {
       this.endpointUrl = constructPath(environment.monolithApiBaseUrl, 'api', 'income');
+    } else if (environment.dapr) {
+      this.endpointUrl = constructPath(environment.gatewayBaseUrl, 'budgetplan-api', 'income');
     } else {
       this.endpointUrl = 'https://localhost:8400/api/income';
     }

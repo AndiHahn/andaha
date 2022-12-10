@@ -23,7 +23,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:80
-      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.identity.db;Database=andaha-identity-db;User Id=sa;Password=Pass@word;
+      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.identity.db;Database=andaha-identity-db;User Id=sa;Password=Pass@word;Encrypt=false
       IssuerUrl: http://localhost:9100
       ExternalUrls__ShoppingApi: http://andaha.services.shopping:80
       ExternalUrls__CollaborationApi: http://andaha.services.collaboration:80
@@ -60,7 +60,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:80
-      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.shopping.db;Database=andaha-shopping-db;User Id=sa;Password=Pass@word;
+      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.shopping.db;Database=andaha-shopping-db;User Id=sa;Password=Pass@word;Encrypt=false
       ExternalUrls__IdentityApi: http://andaha.services.identity:80
       Dapr__CollaborationAppId: collaboration-api
     ports:
@@ -89,7 +89,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:80
-      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.collaboration.db;Database=andaha-collaboration-db;User Id=sa;Password=Pass@word;
+      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.collaboration.db;Database=andaha-collaboration-db;User Id=sa;Password=Pass@word;Encrypt=false
       ExternalUrls__IdentityApi: http://andaha.services.identity:80
       Dapr__IdentityAppId: identity-api
     ports:
@@ -118,7 +118,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:80
-      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.budgetplan.db;Database=andaha-budgetplan-db;User Id=sa;Password=Pass@word;
+      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.budgetplan.db;Database=andaha-budgetplan-db;User Id=sa;Password=Pass@word;Encrypt=false
       ExternalUrls__IdentityApi: http://andaha.services.identity:80
       Dapr__CollaborationAppId: collaboration-api
     ports:
@@ -147,7 +147,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:80
-      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.monolith.db;Database=andaha-monolith-db;User Id=sa;Password=Pass@word;
+      ConnectionStrings__ApplicationDbConnection: Server=andaha.services.monolith.db;Database=andaha-monolith-db;User Id=sa;Password=Pass@word;Encrypt=false
       ExternalUrls__IdentityApi: http://andaha.services.identity:80
       Dapr__IdentityAppId: identity-api
       Dapr__CollaborationAppId: monolith-api

@@ -16,11 +16,11 @@ export class CollaborationApiService {
   private apiVersion: string = "1.0";
 
   constructor(private httpClient: HttpClient) {
-    if (environment.dapr) {
-      this.endpointUrl = constructPath(environment.gatewayBaseUrl, 'collaboration-api');
-    } else if (environment.useMonolithApi) {
+    if (environment.useMonolithApi) {
       this.endpointUrl = constructPath(environment.monolithApiBaseUrl, 'api');
-    }else {
+    } else if (environment.dapr) {
+      this.endpointUrl = constructPath(environment.gatewayBaseUrl, 'collaboration-api');
+    } else {
       this.endpointUrl = 'https://localhost:8300/api';
     }
   }

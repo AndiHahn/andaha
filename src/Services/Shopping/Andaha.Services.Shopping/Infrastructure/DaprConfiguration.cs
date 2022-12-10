@@ -1,3 +1,6 @@
 ﻿namespace Andaha.Services.Shopping.Infrastructure;
 
-public record DaprConfiguration(string CollaborationAppId);
+public class DaprConfiguration
+{
+    public string CollaborationAppId { get; set; } = null!;
+}

@@ -93,8 +93,8 @@ services:
   andaha.services.monolith:
     image: andaha-services-monolith:${TAG}
     build:
-      context: src/Services/Monolith/Andaha.Services.Monolith/
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: src/Services/Monolith/Andaha.Services.Monolith/Dockerfile
       args:
         PatPlaceholder: ${NUGET_FEED_ACCESS_TOKEN}
     depends_on: 
@@ -122,3 +122,5 @@ volumes:
     name: shopping_sql_volume
   collaborationsqlvolume:
     name: collaboration_sql_volume
+  monolithsqlvolume:
+    name: monolith_sql_volume
