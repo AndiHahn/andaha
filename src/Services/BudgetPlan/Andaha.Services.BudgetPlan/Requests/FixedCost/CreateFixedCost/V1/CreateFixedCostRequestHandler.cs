@@ -21,7 +21,12 @@ internal class CreateFixedCostRequestHandler : IRequestHandler<CreateFixedCostRe
     {
         Guid userId = this.identityService.GetUserId();
 
-        var fixedCost = new Core.FixedCost(userId, request.Name, request.Value, request.Duration, request.Category);
+        var fixedCost = new Core.FixedCost(
+            userId,
+            request.FixedCost.Name,
+            request.FixedCost.Value,
+            request.FixedCost.Duration,
+            request.FixedCost.Category);
 
         dbContext.FixedCost.Add(fixedCost);
 

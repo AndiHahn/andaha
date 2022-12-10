@@ -21,7 +21,7 @@ internal class CreateIncomeRequestHandler : IRequestHandler<CreateIncomeRequest,
     {
         Guid userId = this.identityService.GetUserId();
 
-        var income = new Core.Income(userId, request.Name, request.Value, request.Duration);
+        var income = new Core.Income(userId, request.Income.Name, request.Income.Value, request.Income.Duration);
 
         dbContext.Income.Add(income);
 

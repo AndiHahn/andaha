@@ -23,7 +23,7 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.MapEndpoints();
+app.MapBudgetPlanEndpoints();
 
 await Task.Delay(10);
 
