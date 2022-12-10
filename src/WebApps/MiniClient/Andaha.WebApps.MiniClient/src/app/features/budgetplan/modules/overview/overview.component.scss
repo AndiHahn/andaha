@@ -1,0 +1,64 @@
+.action-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.master-container {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.heading {
+  margin-top: 20px;
+}
+
+section {
+  display: table;
+  margin: 8px;
+}
+
+.label {
+  display: table-cell;
+  font-size: 15px;
+  margin-left: 8px;
+  min-width: 180px;
+}
+
+.label-row {
+  display: table-cell;
+  margin: 10px;
+}
+
+.text-big {
+  font-weight: bolder;
+}
+
+.text-green {
+  color: green;
+}
+
+.text-red {
+  color: red;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.budgetplan-bar-container {
+  margin: 20px 0px 20px 0px;
+}
+
+::ng-deep .budget-plan-bar .mat-progress-bar-fill::after {
+  background-color: red;
+}
+
+::ng-deep .budget-plan-bar .mat-progress-bar-buffer {
+  background: green;
+}
+
+::ng-deep .budget-plan-bar.mat-progress-bar {
+  height: 20px !important;
+  border-radius: 2px;
+}

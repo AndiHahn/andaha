@@ -21,7 +21,7 @@ public static class BudgetPlanEndpointExtensions
     {
         groupBuilder
             .MediateGet<GetBudgetPlan.V1.GetBudgetPlanRequest>("/")
-            .Produces<List<Dtos.V1.BudgetPlanDto>>();
+            .Produces<Dtos.V1.BudgetPlanDto>();
 
         return app;
     }

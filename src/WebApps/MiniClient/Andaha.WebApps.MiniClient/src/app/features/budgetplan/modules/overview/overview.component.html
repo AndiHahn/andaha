@@ -1,1 +1,43 @@
-<p>overview works!</p>
+<div *ngIf="!budgetPlan" class="action-container">
+  <mat-spinner diameter="40"></mat-spinner>
+</div>
+
+<div *ngIf="budgetPlan" class="master-container">  
+  <h2 class="heading">Haushaltsplan</h2>
+
+  <section>
+    <div class="label text-big">Einkommen:</div>
+    <div class="label-row">{{ budgetPlan.income }} €</div>
+  </section>
+
+  <mat-divider></mat-divider>
+
+  <section>
+    <div class="label text-big">Ausgaben:</div>
+  </section>
+  <section>
+    <div class="label">Lebenserhaltungskosten:</div>
+    <div class="label-row">{{ livingCosts }} €</div>
+  </section>
+  <section *ngFor="let expense of budgetPlan.expenses">
+    <div class="label">{{ costCategoryLabel.get(expense.category) }}:</div>
+    <div class="label-row">{{ expense.value }} €</div>
+  </section>
+
+  <mat-divider></mat-divider>
+
+  <section>
+    <div class="label text-big">Monatlicher Überschuss:</div>
+    <div class="label-row text-big text-green" *ngIf="monthlySurplus >= 0">{{ monthlySurplus }} €</div>
+    <div class="label-row text-big text-red" *ngIf="monthlySurplus < 0">{{ monthlySurplus }} €</div>
+  </section>
+  
+  <div class="budgetplan-bar-container">
+    <div style="display: flex; justify-content: space-between">
+      <div class="text-red">{{ monthlyExpensesPercent }} %</div>
+      <div class="text-green">{{ monthlySurplusPercent }} %</div>
+    </div>
+
+    <mat-progress-bar class="budget-plan-bar" mode="determinate" value={{monthlyExpensesPercent}}></mat-progress-bar>
+  </div>
+</div>
