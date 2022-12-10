@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  dapr: true,
+  useGateway: false,
   useMonolithApi: true,
   monolithApiBaseUrl: "#{monolithApiBaseUrl}",
   gatewayBaseUrl : "#{gatewayBaseUrl}#",

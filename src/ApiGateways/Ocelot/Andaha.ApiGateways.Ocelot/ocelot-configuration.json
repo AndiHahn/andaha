@@ -23,6 +23,18 @@
       ],
       "UpstreamPathTemplate": "/collaboration-api/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    },
+    {
+      "DownstreamPathTemplate": "/v1.0/invoke/budgetplan-api/method/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "{OCELOT_DAPR_SIDECAR}",
+          "Port": "3500"
+        }
+      ],
+      "UpstreamPathTemplate": "/budgetplan-api/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
     }
   ],
   "GlobalConfiguration": {

@@ -17,6 +17,7 @@ module staticWebApp 'miniclient-staticwebapp-module.bicep' = {
   }
 }
 
+output monolithApiBaseUrl string = 'https://monolith-api-${stage}.${coreInfrastructure.outputs.containerAppEnvironmentDomain}'
 output gatewayBaseUrl string = 'https://ocelot-gateway-${stage}.${coreInfrastructure.outputs.containerAppEnvironmentDomain}'
 output authIssuerUrl string = 'https://identity-api-${stage}.${coreInfrastructure.outputs.containerAppEnvironmentDomain}'
 output webAppDeploymentToken string = staticWebApp.outputs.deploymentToken

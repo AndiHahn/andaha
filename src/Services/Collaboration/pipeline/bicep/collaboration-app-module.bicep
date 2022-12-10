@@ -38,6 +38,10 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
               name: 'ExternalUrls__IdentityApi'
               value: 'https://identity-api-${stage}.${containerAppsEnvironmentDomain}'
             }
+            {
+              name: 'Dapr__IdentityAppId'
+              value: 'identity-api'
+            }
           ]
           probes: [
             {

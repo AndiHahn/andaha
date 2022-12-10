@@ -19,7 +19,7 @@ export class FixedCostApiService {
   constructor(private httpClient: HttpClient) {
     if (environment.useMonolithApi) {
       this.endpointUrl = constructPath(environment.monolithApiBaseUrl, 'api', 'fixedcost');
-    } else if (environment.dapr) {
+    } else if (environment.useGateway) {
       this.endpointUrl = constructPath(environment.gatewayBaseUrl, 'budgetplan-api', 'fixedcost');
     } else {
       this.endpointUrl = 'https://localhost:8400/api/fixedcost';

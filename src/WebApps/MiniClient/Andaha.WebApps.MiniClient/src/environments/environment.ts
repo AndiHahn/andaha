@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  dapr: true,
+  useGateway: false,
   useMonolithApi: true,
   monolithApiBaseUrl: "http://localhost:9900",
   gatewayBaseUrl : "http://localhost:9000",
@@ -19,7 +19,7 @@ export const environment = {
 /*
 export const environment = {
   production: false,
-  dapr: false,
+  useGateway: false,
   useMonolithApi: true,
   monolithApiBaseUrl: "https://localhost:8900",
   gatewayBaseUrl : "https://localhost:8000",

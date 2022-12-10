@@ -11,17 +11,17 @@ param sqlDbConnectionString string
 @secure()
 param storageConnectionString string
 
-var imageName = stage == 'dev' ? 'andaha.azurecr.io/andaha/services/shopping:${imageVersion}' : 'andaha.azurecr.io/prod/andaha/services/shopping:${imageVersion}'
+var imageName = stage == 'dev' ? 'andaha.azurecr.io/andaha/services/monolith:${imageVersion}' : 'andaha.azurecr.io/prod/andaha/services/monolith:${imageVersion}'
 
 resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
-  name: 'shopping-api-${stage}'
+  name: 'monolith-api-${stage}'
   location: location
   properties: {
     managedEnvironmentId: containerAppsEnvironmentId
     template: {
       containers: [
         {
-          name: 'shopping-api'
+          name: 'monolith-api'
           image: imageName
           env: [
             {
@@ -34,7 +34,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
             }
             {
               name: 'ConnectionStrings__ApplicationDbConnection'
-              secretRef: 'shoppingdb-connection-string'
+              secretRef: 'db-connection-string'
             }
             {
               name: 'ConnectionStrings__BlobStorageConnectionString'
@@ -43,6 +43,10 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
             {
               name: 'ExternalUrls__IdentityApi'
               value: 'https://identity-api-${stage}.${containerAppsEnvironmentDomain}'
+            }
+            {
+              name: 'Dapr__IdentityAppId'
+              value: 'identity-api'
             }
             {
               name: 'Dapr__CollaborationAppId'
@@ -101,7 +105,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
       activeRevisionsMode: 'single'
       dapr: {
         enabled: true
-        appId: 'shopping-api'
+        appId: 'monolith-api'
         appPort: 80
       }
       registries: [
@@ -117,7 +121,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
           value: containerRegistryPassword
         }
         {
-          name: 'shoppingdb-connection-string'
+          name: 'db-connection-string'
           value: sqlDbConnectionString
         }
         {

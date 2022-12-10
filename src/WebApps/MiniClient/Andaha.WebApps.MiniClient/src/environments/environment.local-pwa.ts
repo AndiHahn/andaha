@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  dapr: false,
+  useGateway: false,
   useMonolithApi: true,
   monolithApiBaseUrl: "https://localhost:8900",
   gatewayBaseUrl : "https://localhost:8000",
