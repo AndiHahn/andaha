@@ -19,6 +19,8 @@ name: "$(Build.SourceBranchName)"
 stages:
 - stage: build
   displayName: Build
+  variables:
+  - group: Development
   jobs:
     - job: build_and_push_image
       steps:
@@ -26,7 +28,7 @@ stages:
         displayName: build image
         inputs:
           command: build
-          arguments: '--build-arg PatPlaceholder=$(NugetFeedAccessToken)'
+          arguments: '--build-arg PatPlaceholder=$(nugetFeedAccessToken)'
           dockerfile: src/Services/Monolith/Andaha.Services.Monolith/Dockerfile
           repository: andaha/services/monolith
           containerRegistry: $(containerRegistryConnection)
@@ -80,7 +82,7 @@ stages:
       displayName: build image
       inputs:
         command: build
-        arguments: '--build-arg PatPlaceholder=$(NugetFeedAccessToken)'
+        arguments: '--build-arg PatPlaceholder=$(nugetFeedAccessToken)'
         dockerfile: src/Services/Monolith/Andaha.Services.Monolith/Dockerfile
         repository: prod/andaha/services/monolith
         containerRegistry: $(containerRegistryConnection)

@@ -6,6 +6,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:7.0-bullseye-slim AS build
 WORKDIR /src
 COPY [".", "Andaha.Services.BudgetPlan/"]
+
 ARG PatPlaceholder
 RUN dotnet restore "Andaha.Services.BudgetPlan/Andaha.Services.BudgetPlan.csproj" --configfile "Andaha.Services.BudgetPlan/nuget.config"
 COPY . .

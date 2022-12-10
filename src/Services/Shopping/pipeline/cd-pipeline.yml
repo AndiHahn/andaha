@@ -19,6 +19,8 @@ name: "$(Build.SourceBranchName)"
 stages:
 - stage: build
   displayName: Build
+  variables:
+  - group: Development
   jobs:
     - job: build_and_push_image
       steps:
@@ -26,7 +28,7 @@ stages:
         displayName: build image
         inputs:
           command: build
-          arguments: '--build-arg PatPlaceholder=$(NugetFeedAccessToken)'
+          arguments: '--build-arg PatPlaceholder=$(nugetFeedAccessToken)'
           dockerfile: src/Services/Shopping/Andaha.Services.Shopping/Dockerfile
           repository: andaha/services/shopping
           containerRegistry: $(containerRegistryConnection)
@@ -80,7 +82,7 @@ stages:
       displayName: build image
       inputs:
         command: build
-        arguments: '--build-arg PatPlaceholder=$(NugetFeedAccessToken)'
+        arguments: '--build-arg PatPlaceholder=$(nugetFeedAccessToken)'
         dockerfile: src/Services/Shopping/Andaha.Services.Shopping/Dockerfile
         repository: prod/andaha/services/shopping
         containerRegistry: $(containerRegistryConnection)
