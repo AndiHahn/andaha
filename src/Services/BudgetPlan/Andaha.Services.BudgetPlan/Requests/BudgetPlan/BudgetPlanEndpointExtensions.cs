@@ -1,4 +1,4 @@
-﻿using Andaha.CrossCutting.Application.Extensions;
+﻿using Andaha.CrossCutting.Application.Requests;
 
 namespace Andaha.Services.BudgetPlan.Requests.BudgetPlan;
 
