@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { IncomeDto } from 'src/app/api/budgetplan/dtos/IncomeDto';
+import { IncomeContextService } from '../../services/income-context.service';
 
 @Component({
   selector: 'app-income',
@@ -7,9 +9,26 @@ import { Component, OnInit } from '@angular/core';
 })
 export class IncomeComponent implements OnInit {
 
-  constructor() { }
+  incomes?: IncomeDto[];
+
+  constructor(
+    private incomeContextService: IncomeContextService
+  ) {
+    this.initSubscriptions();
+  }
 
   ngOnInit(): void {
   }
 
+  private initSubscriptions(): void {
+    this.incomeContextService.incomes().subscribe(
+      {
+        next: incomes => {
+          if (incomes) {
+            this.incomes = incomes;
+          }
+        }
+      }
+    );
+  }
 }

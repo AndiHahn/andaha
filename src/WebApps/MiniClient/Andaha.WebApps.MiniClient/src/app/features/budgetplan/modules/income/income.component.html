@@ -1,1 +1,18 @@
-<p>income works!</p>
+<div *ngIf="!incomes" class="action-container">
+  <mat-spinner diameter="40"></mat-spinner>
+</div>
+
+<div *ngIf="incomes">
+  <app-income-list [incomes]="incomes">
+  </app-income-list>
+</div>
+
+<div class="button-placeholder"></div>
+
+<div class="bottom-button">
+  <div style="flex: 1">
+    <button mat-raised-button color="primary" class="button-style" routerLink="create">
+      <mat-icon>add_circle</mat-icon><span>Hinzufügen</span>
+    </button>
+  </div>
+</div>

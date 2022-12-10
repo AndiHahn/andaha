@@ -4,8 +4,10 @@ import { Duration } from 'moment';
 import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { constructPath, constructVersionedPath } from '../functions/functions';
+import { IncomeCreateDto } from './dtos/IncomeCreateDto';
 import { IncomeDto } from './dtos/IncomeDto';
 import { IncomeHistoryDto, RawIncomeHistoryDto } from './dtos/IncomeHistoryDto';
+import { IncomeUpdateDto } from './dtos/IncomeUpdateDto';
 import { mapIncomeHistoryList } from './pipes/income-history-pipe';
 
 @Injectable({
@@ -38,28 +40,16 @@ export class IncomeApiService {
       .pipe(map(mapIncomeHistoryList));
   }
 
-  create(name: string, value: number, duration: Duration): Observable<void> {
+  create(createDto: IncomeCreateDto): Observable<void> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl);
 
-    const body = {
-      name: name,
-      value: value,
-      duration: duration
-    }
-
-    return this.httpClient.post<void>(url, body);
+    return this.httpClient.post<void>(url, createDto);
   }
 
-  update(id: string, name?: string, value?: number, duration?: Duration): Observable<void> {
+  update(id: string, updateDto: IncomeUpdateDto): Observable<void> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
 
-    const body = {
-      name: name,
-      value: value,
-      duration: duration
-    }
-
-    return this.httpClient.put<void>(url, body);
+    return this.httpClient.put<void>(url, updateDto);
   }
 
   delete(id: string): Observable<void> {

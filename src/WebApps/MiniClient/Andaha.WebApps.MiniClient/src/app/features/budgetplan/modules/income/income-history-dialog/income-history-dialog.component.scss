@@ -1,0 +1,40 @@
+.action-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.items {
+  margin-bottom: 10px;
+}
+
+.list-item {
+  padding: 5px 0px 0px 0px;
+}
+
+.column-layout {
+  display: flex;
+  flex-direction: column;
+}
+
+.mat-card {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: calc(100% - 20px);
+  padding: 10px;
+  height: 36px;
+}
+
+.truncate-text {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+  overflow: hidden
+}
+
+.mat-dialog-content {
+  overflow: auto !important;
+}
