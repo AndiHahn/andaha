@@ -1,4 +1,4 @@
-﻿using Andaha.CrossCutting.Application.Extensions;
+﻿using Andaha.CrossCutting.Application.Requests;
 using Andaha.CrossCutting.Application.Result;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
