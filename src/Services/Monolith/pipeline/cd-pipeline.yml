@@ -29,6 +29,7 @@ stages:
         inputs:
           command: build
           arguments: '--build-arg PatPlaceholder=$(nugetFeedAccessToken)'
+          buildContext: .
           dockerfile: src/Services/Monolith/Andaha.Services.Monolith/Dockerfile
           repository: andaha/services/monolith
           containerRegistry: $(containerRegistryConnection)
@@ -40,6 +41,7 @@ stages:
         displayName: push image
         inputs:
           command: push
+          buildContext: .
           dockerfile: src/Services/Monolith/Andaha.Services.Monolith/Dockerfile
           repository: andaha/services/monolith
           containerRegistry: $(containerRegistryConnection)
