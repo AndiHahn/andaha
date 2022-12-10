@@ -104,6 +104,11 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
     }
     configuration: {
       activeRevisionsMode: 'single'
+      ingress: {
+        external: true
+        targetPort: 80
+        allowInsecure: false
+      }
       dapr: {
         enabled: true
         appId: 'monolith-api'
