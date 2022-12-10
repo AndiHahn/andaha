@@ -12,6 +12,7 @@ param sqlDbConnectionString string
 param storageConnectionString string
 
 var imageName = stage == 'dev' ? 'andaha.azurecr.io/andaha/services/monolith:${imageVersion}' : 'andaha.azurecr.io/prod/andaha/services/monolith:${imageVersion}'
+var minReplicas = stage == 'dev' ? 0 : 1
 
 resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: 'monolith-api-${stage}'
@@ -97,8 +98,8 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
         }
       ]
       scale: {
-        minReplicas: 0
-        maxReplicas: 2
+        minReplicas: minReplicas
+        maxReplicas: 3
       }
     }
     configuration: {
