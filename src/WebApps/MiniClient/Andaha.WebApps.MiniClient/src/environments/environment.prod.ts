@@ -2,7 +2,7 @@ export const environment = {
   production: true,
   useGateway: false,
   useMonolithApi: true,
-  monolithApiBaseUrl: "#{monolithApiBaseUrl}",
+  monolithApiBaseUrl: "#{monolithApiBaseUrl}#",
   gatewayBaseUrl : "#{gatewayBaseUrl}#",
   authIssuerUrl: '#{authIssuerUrl}#',
   authRedirectUrl: window.location.origin,
