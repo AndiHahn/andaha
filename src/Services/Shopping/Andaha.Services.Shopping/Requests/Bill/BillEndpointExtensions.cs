@@ -1,8 +1,10 @@
 ﻿using Andaha.CrossCutting.Application.Requests;
 using Andaha.CrossCutting.Application.Result;
+using Andaha.Services.Shopping.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 namespace Andaha.Services.Shopping.Requests.Bill;
 
@@ -67,12 +69,13 @@ internal static class BillEndpointExtensions
                 }
 
                 var priceParameter = httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.Price)];
+                var parsedPrice = priceParameter.First()!.ToDouble();
 
                 var command = new CreateBill.V1.CreateBillCommand(
                     id,
                     Guid.Parse(httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.CategoryId)]!),
                     httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.ShopName)]!,
-                    double.Parse(priceParameter.ToString().Replace(".", ",")),
+                    parsedPrice,
                     DateTime.Parse(httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.Date)]!),
                     httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.Notes)],
                     httpContext.Request.Form.Files.FirstOrDefault());
@@ -95,12 +98,13 @@ internal static class BillEndpointExtensions
             .MapPut("{id}", [Authorize] async (IMediator mediator, HttpContext httpContext, CancellationToken cancellationToken, Guid id) =>
             {
                 var priceParameter = httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.Price)];
+                var parsedPrice = priceParameter.First()!.ToDouble();
 
                 var command = new UpdateBill.V1.UpdateBillCommand(
                     id,
                     Guid.Parse(httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.CategoryId)]!),
                     httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.ShopName)]!,
-                    double.Parse(priceParameter.ToString().Replace(".", ",")),
+                    parsedPrice,
                     DateTime.Parse(httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.Date)]!),
                     httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.Notes)],
                     httpContext.Request.Form.Files.FirstOrDefault());
