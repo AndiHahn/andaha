@@ -14,7 +14,7 @@
         <mat-chip *ngIf="bill.isExternal" style="background-color: limegreen" selected>EXT</mat-chip>
       </mat-chip-list>
       <div class="vertical-center">  
-        <span class="date-text"> {{ bill.date | date:'fullDate' }} </span>
+        <span class="date-text"> {{ bill.date | date:'dd.MM.YYYY' }} </span>
       </div>
     </div>
   </div>
