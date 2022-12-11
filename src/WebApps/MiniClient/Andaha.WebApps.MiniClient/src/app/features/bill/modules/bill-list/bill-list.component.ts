@@ -90,7 +90,7 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.billListContextService.totalResults().pipe(takeUntil(this.destroy$)).subscribe(
       {
-        next: totalRresults => this.totalResults = totalRresults
+        next: totalResults => this.totalResults = totalResults
       }
     );
 

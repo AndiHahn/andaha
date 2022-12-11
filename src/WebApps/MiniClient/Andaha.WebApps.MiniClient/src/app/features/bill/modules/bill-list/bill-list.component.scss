@@ -1,11 +1,25 @@
 .filter-placeholder {
-  height: 37px;
+  height: 42px;
 }
 
 .filter-container {
   position: fixed;
   left: 0;
   right: 0;
+  top: 60px;
+  z-index: 1000;
+  padding-bottom: 5px;
+}
+
+.progressbar-placeholder {
+  height: 4px;
+}
+
+.progressbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 56px;
   z-index: 1000;
 }
 

@@ -15,7 +15,7 @@ export class BillContextService {
   private bills$: BehaviorSubject<BillDto[]> = new BehaviorSubject<BillDto[]>([]);
   private totalResults$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   private pageIndex$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-  private pageSize$: BehaviorSubject<number> = new BehaviorSubject<number>(20);
+  private pageSize$: BehaviorSubject<number> = new BehaviorSubject<number>(50);
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private syncing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 

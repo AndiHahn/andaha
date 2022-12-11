@@ -1,3 +1,6 @@
+<div class="progressbar-placeholder"></div>
+<mat-progress-bar *ngIf="loading || searchActive" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
+
 <div class="filter-container dark-bg-color">
   <app-bill-list-filter [deactivate]="loading" (triggerLoading)="onSearchInput($event)" [initialValue]="initialSearchValue">
   </app-bill-list-filter>    
@@ -5,15 +8,11 @@
 
 <div class="filter-placeholder"></div>
 
-<div *ngIf="(loading && !totalCount) || searchActive" class="action-container">
-  <mat-spinner diameter="40"></mat-spinner>
-</div>
-
 <div class="action-container" *ngIf="!loading && totalCount === 0">
   Keine Rechnungen verfügbar.
 </div>
 
-<cdk-virtual-scroll-viewport class="cdk-container" [itemSize]="pixelHeightPerItem" *ngIf="!loading">
+<cdk-virtual-scroll-viewport class="cdk-container" [itemSize]="pixelHeightPerItem">
   <div *cdkVirtualFor="let bill of billDataSource">
     <div class="cdk-item" routerLink="/bill/{{bill.id}}">
       <app-bill-list-item [bill]="bill"></app-bill-list-item>
