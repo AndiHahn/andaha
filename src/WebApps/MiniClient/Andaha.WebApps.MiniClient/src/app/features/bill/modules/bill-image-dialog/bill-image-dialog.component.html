@@ -1,7 +1,8 @@
 <app-dialog>
   <mat-dialog-content>    
-    <div *ngIf="imageSrc">
-      <img src="{{ imageSrc }}" [width]="imageWidth" alt="image">
+
+    <div *ngIf="imageSrc" style="width: 100%;">
+      <lib-ngx-image-zoom [thumbImage]="imageSrc" [enableScrollZoom]="true"></lib-ngx-image-zoom>
     </div>
 
     <div *ngIf="isLoading" class="action-container">

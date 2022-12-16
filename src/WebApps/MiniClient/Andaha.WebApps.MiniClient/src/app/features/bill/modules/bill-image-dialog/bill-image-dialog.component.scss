@@ -9,3 +9,7 @@
     margin-right: 10px;
   }
 }
+
+::ng-deep .ngxImageZoomContainer > img {
+  max-width: calc(100vw - 48px);
+}
