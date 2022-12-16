@@ -85,7 +85,7 @@ stages:
         scriptType: bash
         scriptLocation: inlineScript
         inlineScript: |
-          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile) --parameters stage="dev"
+          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile) --parameters stage="dev" sqlServerAdminPassword=$(sqlServerAdminPassword)
 
     - task: AzureCLI@2
       displayName: Set appsetting variables
@@ -153,7 +153,7 @@ stages:
         scriptType: bash
         scriptLocation: inlineScript
         inlineScript: |
-          az deployment group create --resource-group andaha-prod --template-file $(bicepTemplateFile) --parameters stage="prod"
+          az deployment group create --resource-group andaha-prod --template-file $(bicepTemplateFile) --parameters stage="prod" sqlServerAdminPassword=$(sqlServerAdminPassword)
 
     - task: AzureCLI@2
       displayName: Set appsetting variables

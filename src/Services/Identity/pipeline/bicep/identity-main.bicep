@@ -10,12 +10,15 @@ param containerRegistryPassword string
 param facebookAppSecret string
 @secure()
 param googleClientSecret string
+@secure()
+param sqlServerAdminPassword string
 
 module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
   name: 'andaha-core-infrastructure'
   params: {
     stage: stage
     location: location
+    sqlServerAdminPassword: sqlServerAdminPassword
   }
 }
 

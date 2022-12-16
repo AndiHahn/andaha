@@ -4,12 +4,15 @@ param location string = resourceGroup().location
 param containerRegistryUsername string
 @secure()
 param containerRegistryPassword string
+@secure()
+param sqlServerAdminPassword string
 
 module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
   name: 'andaha-core-infrastructure'
   params: {
     stage: stage
     location: location
+    sqlServerAdminPassword: sqlServerAdminPassword
   }
 }
 
