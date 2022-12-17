@@ -37,7 +37,7 @@ steps:
       command: custom
       workingDir: src/WebApps/MiniClient/Andaha.WebApps.MiniClient
       verbose: false
-      customCommand: ci
+      customCommand: install --force
 
   - task: Npm@1
     displayName: "npm build"
