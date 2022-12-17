@@ -3,10 +3,42 @@
   overflow: hidden;
 }
 
+.master-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.row-1-container {
+  margin: 10px 10px 5px 10px;
+}
+
 .search-container {
-  margin: 5px 10px 0px 10px;
+  flex: 1;
 }
 
 .mat-chip {
   width: 100%;
+}
+
+.row-2-container {
+  margin: 0px 15px 0px 10px;
+  
+  .mat-chip-list .mat-chip {
+    width: auto;
+    min-width: 0;
+  }
+
+  ::ng-deep ::-webkit-scrollbar {
+    height: 0;
+  }
+  
+  ::ng-deep div.mat-chip-list-wrapper {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    white-space: nowrap;
+  
+    .mat-chip {
+      flex: 0 0 auto;
+    }
+  }
 }

@@ -6,7 +6,8 @@
       [datasets]="chartDatasets"
       [labels]="chartLabels"
       [options]="chartOptions"
-      [legend]="true">
+      [legend]="true"
+      (chartClick)="chartClicked($event)">
     </canvas>
   </div>
 </div>

@@ -1,8 +1,12 @@
 <div class="progressbar-placeholder"></div>
-<mat-progress-bar *ngIf="loading || searchActive" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
+<mat-progress-bar *ngIf="loading" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
 
 <div class="filter-container dark-bg-color">
-  <app-bill-list-filter [deactivate]="loading" (triggerLoading)="onSearchInput($event)" [initialValue]="initialSearchValue">
+  <app-bill-list-filter [deactivate]="loading"
+      [initialSearchText]="initialSearchValue"
+      [initialCategoryFilters]="initialCategoryFilters"
+      (searchTextChanged)="onSearchInput($event)"
+      (categoryFilterChanged)="onCategoryFilterChanged($event)" >
   </app-bill-list-filter>    
 </div>
 

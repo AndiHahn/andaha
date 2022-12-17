@@ -20,6 +20,7 @@ export class BillContextService {
   private syncing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   private searchText: string = '';
+  private categoryFilter?: string[];
 
   constructor(
     private billApiService: BillApiService,
@@ -54,6 +55,10 @@ export class BillContextService {
     return this.searchText;
   }
 
+  getCategoryFilter(): string[] {
+    return this.categoryFilter ?? [];
+  }
+
   setPageSize(size: number): void {
     if (size != this.pageSize$.value) {
       this.pageSize$.next(size);
@@ -66,9 +71,16 @@ export class BillContextService {
     }
   }
 
-  searchBills(searchText: string): void {
-    this.searchText = searchText;
+  searchBills(searchText?: string, categoryFilter?: string[]): void {
+    if (searchText) {
+      this.searchText = searchText;
+    }
 
+    if (categoryFilter) {
+      this.categoryFilter = categoryFilter;
+    }
+
+    this.bills$.next([]);
     this.pageIndex$.next(0);
   }
 
@@ -199,7 +211,8 @@ export class BillContextService {
         {
           pageIndex: this.pageIndex$.value,
           pageSize: this.pageSize$.value,
-          search: this.searchText
+          search: this.searchText,
+          categoryFilter: this.categoryFilter
         })
       .subscribe(
         {
@@ -216,9 +229,7 @@ export class BillContextService {
   private updateBillList(newBills: BillDto[]) {
     let bills: BillDto[] = [];
     
-    if (!this.searchText) {
-      bills = this.bills$.value;
-    }
+    bills = this.bills$.value;
 
     newBills.forEach(bill => {
       const existingBill = bills.find(b => b.id == bill.id);

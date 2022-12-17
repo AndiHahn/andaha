@@ -5,6 +5,7 @@ import { PageEvent } from '@angular/material/paginator';
 import { BillContextService } from '../../../../services/bill-context.service';
 import { BillDataSource } from './BillDataSource';
 import { Subject } from 'rxjs';
+import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
 
 @Component({
   selector: 'app-bill-list',
@@ -18,7 +19,6 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   totalCount?: number;
   loading: boolean = false;
-  searchActive: boolean = false;
 
   pageSize?: number;
   totalResults?: number;
@@ -27,6 +27,7 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   showFilterBar: boolean = false;
   initialSearchValue?: string;
+  initialCategoryFilters?: string[];
 
   private destroy$: Subject<void> = new Subject();
 
@@ -36,7 +37,12 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
       const searchText = this.billListContextService.getSearchText();
       if (searchText.length > 0) {
         this.initialSearchValue = searchText;
-      }      
+      }
+
+      const categoryFilters = this.billListContextService.getCategoryFilter();
+      if (categoryFilters?.length > 0) {
+        this.initialCategoryFilters = categoryFilters;
+      }
     }
   
   ngOnInit(): void {
@@ -62,8 +68,13 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onSearchInput(searchText: string): void {
-    this.searchActive = true;
-    this.billListContextService.searchBills(searchText);
+    this.billListContextService.searchBills(searchText, undefined);
+  }
+
+  onCategoryFilterChanged(selectedCategories: BillCategoryDto[]) {
+    const categoryFilter = selectedCategories.map(category => category.name);
+
+    this.billListContextService.searchBills(undefined, categoryFilter);
   }
 
   private onScroll(data: any) {
@@ -102,13 +113,7 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.billListContextService.loading().pipe(takeUntil(this.destroy$)).subscribe(
       {
-        next: loading => {
-          this.loading = loading;
-          
-          if (!loading) {
-            this.searchActive = false;
-          }
-        } 
+        next: loading => this.loading = loading 
       }
     );
   }

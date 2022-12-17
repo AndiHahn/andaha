@@ -49,6 +49,14 @@ export class ChartComponent implements OnInit, OnChanges {
     }
   }
 
+  public chartClicked(event: any): void {
+    if (event.active.length > 0) {
+      const index = event.active[0].index;
+
+      console.log("clicked on: " + this.expenses[index].category);
+    }
+  }
+
   refreshChart() {
     const labels: string[] = [];
     const data: number[] = [];

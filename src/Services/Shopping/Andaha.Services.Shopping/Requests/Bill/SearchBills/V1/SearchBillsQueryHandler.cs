@@ -41,6 +41,11 @@ internal class SearchBillsQueryHandler : IRequestHandler<SearchBillsQuery, IResu
                                      b.Notes != null && b.Notes.Contains(request.Search));
         }
 
+        if (request.CategoryFilter?.Length > 0)
+        {
+            query = query.Where(bill => request.CategoryFilter.Contains(bill.Category.Name));
+        }
+
         int totalCount = await query.CountAsync(cancellationToken);
 
         var queryResult = await query
