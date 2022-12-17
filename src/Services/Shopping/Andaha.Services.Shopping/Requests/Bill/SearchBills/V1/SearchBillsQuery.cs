@@ -7,4 +7,6 @@ public record SearchBillsQuery(
     [FromQuery] int PageSize,
     [FromQuery] int PageIndex,
     [FromQuery] string? Search,
-    [FromQuery] string[]? CategoryFilter) : IHttpRequest;
+    [FromQuery] string[]? CategoryFilter,
+    [FromQuery] DateTime? FromDateFilter,
+    [FromQuery] DateTime? UntilDateFilter) : IHttpRequest;

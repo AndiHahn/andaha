@@ -21,6 +21,8 @@ export class BillContextService {
 
   private searchText: string = '';
   private categoryFilter?: string[];
+  private fromDateFilter?: Date;
+  private untilDateFilter?: Date;
 
   constructor(
     private billApiService: BillApiService,
@@ -59,6 +61,14 @@ export class BillContextService {
     return this.categoryFilter ?? [];
   }
 
+  getFromDateFilter(): Date | undefined {
+    return this.fromDateFilter;
+  }
+
+  getUntilDateFilter(): Date | undefined {
+    return this.untilDateFilter;
+  }
+
   setPageSize(size: number): void {
     if (size != this.pageSize$.value) {
       this.pageSize$.next(size);
@@ -79,6 +89,14 @@ export class BillContextService {
     if (categoryFilter) {
       this.categoryFilter = categoryFilter;
     }
+
+    this.bills$.next([]);
+    this.pageIndex$.next(0);
+  }
+
+  searchWithDateFilter(fromDateFilter?: Date, untilDateFilter?: Date) {
+    this.fromDateFilter = fromDateFilter;
+    this.untilDateFilter = untilDateFilter;
 
     this.bills$.next([]);
     this.pageIndex$.next(0);
@@ -212,7 +230,9 @@ export class BillContextService {
           pageIndex: this.pageIndex$.value,
           pageSize: this.pageSize$.value,
           search: this.searchText,
-          categoryFilter: this.categoryFilter
+          categoryFilter: this.categoryFilter,
+          fromDateFilter: this.fromDateFilter,
+          untilDateFilter: this.untilDateFilter
         })
       .subscribe(
         {

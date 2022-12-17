@@ -2,17 +2,21 @@
   <app-bill-list-filter [deactivate]="loading"
       [initialSearchText]="initialSearchValue"
       [initialCategoryFilters]="initialCategoryFilters"
+      [initialDateFilter]="initialDateFilter"
       (searchTextChanged)="onSearchInput($event)"
-      (categoryFilterChanged)="onCategoryFilterChanged($event)" >
+      (categoryFilterChanged)="onCategoryFilterChanged($event)"
+      (dateFilterChanged)="onDateFilterChanged($event)" >
   </app-bill-list-filter>    
 </div>
 
-<div [class.filter-placeholder] = "showFilterBar == true"
+<div [class.filter-placeholder] = "showFilterBar == true && !dateFilterEnabled"
+     [class.filter-placeholder-with-date] = "showFilterBar == true && dateFilterEnabled"
      [class.filter-placeholder-none] = "showFilterBar == false"></div>
 
 <mat-progress-bar *ngIf="loading" mode="indeterminate" color="accent"
     [class.progressbar-top] = "showFilterBar == false"
-    [class.progressbar-below-filter] = "showFilterBar == true"></mat-progress-bar>
+    [class.progressbar-below-filter] = "showFilterBar == true && !dateFilterEnabled"
+    [class.progressbar-below-date-filter] = "showFilterBar == true && dateFilterEnabled"></mat-progress-bar>
 
 <div class="action-container" *ngIf="!loading && totalCount === 0">
   Keine Rechnungen verfügbar.

@@ -46,6 +46,16 @@ internal class SearchBillsQueryHandler : IRequestHandler<SearchBillsQuery, IResu
             query = query.Where(bill => request.CategoryFilter.Contains(bill.Category.Name));
         }
 
+        if (request.FromDateFilter is not null)
+        {
+            query = query.Where(bill => bill.Date >= request.FromDateFilter);
+        }
+
+        if (request.UntilDateFilter is not null)
+        {
+            query = query.Where(bill => bill.Date <= request.UntilDateFilter);
+        }
+
         int totalCount = await query.CountAsync(cancellationToken);
 
         var queryResult = await query

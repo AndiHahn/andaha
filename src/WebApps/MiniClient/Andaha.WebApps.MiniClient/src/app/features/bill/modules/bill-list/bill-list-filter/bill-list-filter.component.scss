@@ -10,10 +10,28 @@
 
 .row-1-container {
   margin: 5px 10px 5px 10px;
+
+  display: flex;
+  flex-direction: row;
 }
 
 .search-container {
   flex: 1;
+}
+
+.filter-list-button {
+  flex: 40px 0 0;
+  text-align: center;
+}
+
+.filter-icon-button {
+  width: 32px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+
+  .material-icons {
+     font-size: 24px !important;
+  }
 }
 
 .mat-chip {
@@ -21,7 +39,7 @@
 }
 
 .row-2-container {
-  margin: 0px 15px 0px 10px;
+  margin: 0px 15px 5px 10px;
   
   .mat-chip-list .mat-chip {
     width: auto;
@@ -40,5 +58,20 @@
     .mat-chip {
       flex: 0 0 auto;
     }
+  }
+}
+
+.row-3-container {
+  margin: 0px 15px 0px 10px;
+
+  button {
+    display: flex;
+    width: 24px;
+    padding-left: 5px;
+  }
+
+  .mat-chip-list .mat-chip {
+    width: auto;
+    min-width: 0;
   }
 }

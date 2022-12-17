@@ -2,6 +2,10 @@
   height: 79px;
 }
 
+.filter-placeholder-with-date {
+  height: 111px;
+}
+
 .filter-placeholder-none {
   height: 0px;
 }
@@ -28,6 +32,14 @@
   left: 0;
   right: 0;
   top: 135px;
+  z-index: 1000;
+}
+
+.progressbar-below-date-filter {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 172px;
   z-index: 1000;
 }
 

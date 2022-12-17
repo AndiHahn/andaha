@@ -1,8 +1,11 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatChip } from '@angular/material/chips';
 import { distinctUntilChanged, debounceTime, tap } from 'rxjs/operators';
 import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
+import { BillListFilterDialogService } from './bill-list-filter-dialog/bill-list-filter-dialog.service';
+import { BillListFilterDialogData } from './bill-list-filter-dialog/BillListFilterDialogData';
+import { BillListDateFilter } from './BillListDateFilter';
 
 interface CategorySelection {
   selected: boolean;
@@ -26,6 +29,9 @@ export class BillListFilterComponent implements OnInit, AfterViewInit {
 
   @Input()
   initialCategoryFilters?: string[];
+
+  @Input()
+  initialDateFilter?: BillListDateFilter;
   
   @Output()
   searchTextChanged = new EventEmitter<string>();
@@ -33,19 +39,30 @@ export class BillListFilterComponent implements OnInit, AfterViewInit {
   @Output()
   categoryFilterChanged = new EventEmitter<BillCategoryDto[]>();
 
+  @Output()
+  dateFilterChanged = new EventEmitter<BillListDateFilter>();
+
   isLoading: boolean = false;
   searchBoxKeyup = new EventEmitter<string>();
 
   inputFieldValue: string = '';
 
   categories?: CategorySelection[];
+
+  fromDateFilter?: Date;
+  untilDateFilter?: Date;
   
-  constructor(private billCategoryContextService: BillCategoryContextService) { }
+  constructor(
+    private billListFilterDialogService: BillListFilterDialogService,
+    private billCategoryContextService: BillCategoryContextService) { }
 
   ngOnInit(): void {
     if (this.initialSearchText) {
       this.inputFieldValue = this.initialSearchText;
     }
+
+    this.fromDateFilter = this.initialDateFilter?.fromDate;
+    this.untilDateFilter = this.initialDateFilter?.untilDate;
 
     this.loadBillCategories();
   }
@@ -65,6 +82,23 @@ export class BillListFilterComponent implements OnInit, AfterViewInit {
   onClearSearch(): void {
     this.searchInput.nativeElement.value = '';
     this.searchTextChanged.next('');
+  }
+
+  onFilterClick(): void {
+    const data: BillListFilterDialogData = {
+      from: this.fromDateFilter,
+      until: this.untilDateFilter
+    };
+
+    this.billListFilterDialogService.openDialog(data).then(dialogRef => dialogRef.afterClosed().subscribe(
+      {
+        next: result => {
+          this.fromDateFilter = result?.from;
+          this.untilDateFilter = result?.until;
+          this.triggerDateFilterChanged();
+        }
+      }
+    ));
   }
 
   onChipClick(chip: MatChip, newSelectedValue: boolean, index: number): void {
@@ -106,6 +140,16 @@ export class BillListFilterComponent implements OnInit, AfterViewInit {
     this.triggerCategorySelection();
   }
 
+  onFromDateFilterRemoveClick(): void {
+    this.fromDateFilter = undefined;
+    this.triggerDateFilterChanged();
+  }
+
+  onUntilDateFilterRemoveClick(): void {
+    this.untilDateFilter = undefined;
+    this.triggerDateFilterChanged();
+  }
+
   private triggerCategorySelection(): void {
     if (!this.categories) {
       return;
@@ -116,6 +160,15 @@ export class BillListFilterComponent implements OnInit, AfterViewInit {
       .map(category => category.category!);
 
     this.categoryFilterChanged.emit(selectedCategories);
+  }
+
+  private triggerDateFilterChanged(): void {
+    const dateFilter: BillListDateFilter = {
+      fromDate: this.fromDateFilter,
+      untilDate: this.untilDateFilter
+    }
+
+    this.dateFilterChanged.emit(dateFilter);
   }
 
   private loadBillCategories() {

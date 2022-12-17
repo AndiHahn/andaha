@@ -18,6 +18,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 function storageFactory() : OAuthStorage {
   return localStorage
@@ -62,6 +63,7 @@ async function initApp(authService: AuthService): Promise<void> {
     MatSidenavModule,
     MatSnackBarModule,
     MatDialogModule,
+    MatDatepickerModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
       // Register the ServiceWorker as soon as the application is stable

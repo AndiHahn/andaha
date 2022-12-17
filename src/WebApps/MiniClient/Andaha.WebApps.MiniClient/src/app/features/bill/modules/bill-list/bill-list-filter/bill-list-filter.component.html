@@ -20,6 +20,12 @@
         </mat-chip>
       </mat-chip-list>
     </div>
+
+    <div class="filter-list-button">
+      <button mat-icon-button (click)="onFilterClick()" class="filter-icon-button">
+        <mat-icon>filter_list</mat-icon>
+      </button>
+    </div>
   </div>
   
   <div class="row-2-container">
@@ -27,6 +33,23 @@
       <mat-chip *ngFor="let category of categories; index as i" #chip="matChip" [selectable]="true"  [selected]="category.selected"
         (click)="onChipClick(chip, !chip.selected, i)">
         {{ category.displayName }}
+      </mat-chip>
+    </mat-chip-list>
+  </div>
+
+  <div *ngIf="fromDateFilter || untilDateFilter" class="row-3-container">
+    <mat-chip-list>
+      <mat-chip *ngIf="fromDateFilter">
+        Von: {{ fromDateFilter | date:'dd.MM.YYYY' }}
+        <button mat-icon-button (click)="onFromDateFilterRemoveClick()">
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </mat-chip>
+      <mat-chip *ngIf="untilDateFilter">
+        Bis: {{ untilDateFilter | date:'dd.MM.YYYY' }}
+        <button mat-icon-button (click)="onUntilDateFilterRemoveClick()">
+          <mat-icon>cancel</mat-icon>
+        </button>
       </mat-chip>
     </mat-chip-list>
   </div>

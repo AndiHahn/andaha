@@ -14,6 +14,7 @@
     "src/app/shared/confirmation-dialog/confirmation-dialog.module.ts",
     "src/app/features/bill/modules/add-bill-image-dialog/add-bill-image-dialog.module.ts",
     "src/app/features/bill/modules/bill-image-dialog/bill-image-dialog.module.ts",
+    "src/app/features/bill/modules/bill-list/bill-list-filter/bill-list-filter-dialog/bill-list-filter-dialog.module.ts",
     "src/app/features/budgetplan/modules/income/income-history-dialog/income-history-dialog.module.ts",
     "src/app/features/budgetplan/modules/fixed-cost/fixed-cost-history-dialog/fixed-cost-history-dialog.module.ts",
     "src/app/features/settings/modules/connection/add-connection-dialog/add-connection-dialog.module.ts"

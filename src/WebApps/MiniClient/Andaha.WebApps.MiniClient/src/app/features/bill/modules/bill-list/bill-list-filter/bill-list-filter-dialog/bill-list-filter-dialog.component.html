@@ -1,0 +1,43 @@
+<app-dialog>
+  <mat-dialog-content>
+
+    <h3>Datumfilter:</h3>
+
+    <div>
+      <mat-form-field appearance="fill">
+        <mat-label>Von</mat-label>
+        <input matInput [matDatepicker]="dpFrom" [formControl]="dateFrom">
+        <mat-hint>DD.MM.YYYY</mat-hint>
+        <mat-datepicker-toggle matSuffix [for]="dpFrom"></mat-datepicker-toggle>
+        <mat-datepicker #dpFrom></mat-datepicker>
+      </mat-form-field>
+  
+      <button mat-icon-button (click)="onClearFromDateClick()">
+        <mat-icon style="color: red;">close</mat-icon>
+      </button>
+    </div>
+
+    <div class="gap"></div>
+    
+    <div>
+      <mat-form-field appearance="fill">
+        <mat-label>Bis</mat-label>
+        <input matInput [matDatepicker]="dpUntil" [formControl]="dateUntil">
+        <mat-hint>DD.MM.YYYY</mat-hint>
+        <mat-datepicker-toggle matSuffix [for]="dpUntil"></mat-datepicker-toggle>
+        <mat-datepicker #dpUntil></mat-datepicker>
+      </mat-form-field>
+  
+      <button mat-icon-button (click)="onClearUntilDateClick()">
+        <mat-icon style="color: red;">close</mat-icon>
+      </button>
+    </div>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-raised-button color="primary" class="button-style" (click)="onTakeOverClick()">
+      <span>Übernehmen</span>
+    </button>
+  </mat-dialog-actions>
+</app-dialog>

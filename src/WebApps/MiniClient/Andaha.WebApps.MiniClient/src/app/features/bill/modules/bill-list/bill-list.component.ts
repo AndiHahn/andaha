@@ -6,6 +6,7 @@ import { BillContextService } from '../../../../services/bill-context.service';
 import { BillDataSource } from './BillDataSource';
 import { Subject } from 'rxjs';
 import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
+import { BillListDateFilter } from './bill-list-filter/BillListDateFilter';
 
 @Component({
   selector: 'app-bill-list',
@@ -28,21 +29,34 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   showFilterBar: boolean = true;
   initialSearchValue?: string;
   initialCategoryFilters?: string[];
-
+  initialDateFilter?: BillListDateFilter;
+  dateFilterEnabled: boolean = false;
+  
   private destroy$: Subject<void> = new Subject();
 
   constructor(
     private scrollDispatcher: ScrollDispatcher,
-    private billListContextService: BillContextService) {
-      const searchText = this.billListContextService.getSearchText();
+    private billContextService: BillContextService) {
+      const searchText = this.billContextService.getSearchText();
       if (searchText.length > 0) {
         this.initialSearchValue = searchText;
       }
 
-      const categoryFilters = this.billListContextService.getCategoryFilter();
+      const categoryFilters = this.billContextService.getCategoryFilter();
       if (categoryFilters?.length > 0) {
         this.initialCategoryFilters = categoryFilters;
       }
+
+      const fromDateFilter = this.billContextService.getFromDateFilter();
+      const untilDateFilter = this.billContextService.getUntilDateFilter();
+      if (fromDateFilter || untilDateFilter) {
+        this.initialDateFilter = {
+          fromDate: fromDateFilter,
+          untilDate: untilDateFilter
+        }
+      }
+
+      this.updateDateFilterEnabled();
     }
   
   ngOnInit(): void {
@@ -63,19 +77,25 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onPageChange(event: PageEvent): void {
-    this.billListContextService.setPageIndex(event.pageIndex);
-    this.billListContextService.setPageSize(event.pageSize);
+    this.billContextService.setPageIndex(event.pageIndex);
+    this.billContextService.setPageSize(event.pageSize);
   }
 
   onSearchInput(searchText: string): void {
-    this.billListContextService.searchBills(searchText, undefined);
+    this.billContextService.searchBills(searchText, undefined);
   }
 
-  onCategoryFilterChanged(selectedCategories: BillCategoryDto[]) {
+  onCategoryFilterChanged(selectedCategories: BillCategoryDto[]): void {
     const categoryFilter = selectedCategories.map(category => category.name);
 
     this.initialCategoryFilters = categoryFilter;
-    this.billListContextService.searchBills(undefined, categoryFilter);
+    this.billContextService.searchBills(undefined, categoryFilter);
+  }
+
+  onDateFilterChanged(dateFilter: BillListDateFilter): void {
+    this.initialDateFilter = dateFilter;
+    this.updateDateFilterEnabled();
+    this.billContextService.searchWithDateFilter(dateFilter.fromDate, dateFilter.untilDate);
   }
 
   private previousTop: number = 0;
@@ -86,23 +106,31 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
       const bottomOffset = data.measureScrollOffset('bottom');
 
       // hide filterbar on scroll down and show it on scroll up
-      if (topOffset > this.previousTop) {
-        this.showFilterBar = false;
-      } else {
+      if (topOffset < this.previousTop || topOffset <= 0) {
         this.showFilterBar = true;
+      } else {
+        this.showFilterBar = false;
       }
 
       const thresholdReached = bottomOffset < (topOffset + bottomOffset) / 2;
       if (thresholdReached && !this.loading) {
-        this.billListContextService.fetchNextBills();
+        this.billContextService.fetchNextBills();
       }
 
       this.previousTop = topOffset;
     }
   }
 
+  private updateDateFilterEnabled(): void {
+    if (!this.initialDateFilter?.fromDate && !this.initialDateFilter?.untilDate) {
+      this.dateFilterEnabled = false;
+    } else {
+      this.dateFilterEnabled = true;
+    }
+  }
+
   private initSubscriptions(): void {
-    this.billListContextService.bills().pipe(takeUntil(this.destroy$)).subscribe(
+    this.billContextService.bills().pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: result => {
           this.billDataSource.update(result);
@@ -111,19 +139,19 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     );
 
-    this.billListContextService.totalResults().pipe(takeUntil(this.destroy$)).subscribe(
+    this.billContextService.totalResults().pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: totalResults => this.totalResults = totalResults
       }
     );
 
-    this.billListContextService.pageSize().pipe(takeUntil(this.destroy$)).subscribe(
+    this.billContextService.pageSize().pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: pageSize => this.pageSize = pageSize
       }
     );
 
-    this.billListContextService.loading().pipe(takeUntil(this.destroy$)).subscribe(
+    this.billContextService.loading().pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: loading => this.loading = loading 
       }
