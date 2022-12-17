@@ -1,9 +1,9 @@
 <app-dialog>
   <mat-dialog-content>    
 
-    <div *ngIf="imageSrc" style="width: 100%;">
-      <lib-ngx-image-zoom [thumbImage]="imageSrc" [enableScrollZoom]="true"></lib-ngx-image-zoom>
-    </div>
+    <pinch-zoom *ngIf="imageSrc" style="width: 100%;">
+      <img [src]="imageSrc" /> 
+    </pinch-zoom>
 
     <div *ngIf="isLoading" class="action-container">
       <mat-spinner diameter="40"></mat-spinner>

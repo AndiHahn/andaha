@@ -8,7 +8,7 @@ import { DialogModule } from 'src/app/shared/dialog/dialog.module';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { NgxImageZoomModule } from 'ngx-image-zoom';
+import { PinchZoomModule } from '@olafvv/ngx-pinch-zoom';
 
 @NgModule({
   declarations: [
@@ -23,7 +23,7 @@ import { NgxImageZoomModule } from 'ngx-image-zoom';
     MatProgressSpinnerModule,
     MatProgressBarModule,
     MatSnackBarModule,
-    NgxImageZoomModule
+    PinchZoomModule //original project: https://github.com/drozhzhin-n-e/ngx-pinch-zoom (no longer maintained since angular 11)
   ]
 })
 export class BillImageDialogModule { }

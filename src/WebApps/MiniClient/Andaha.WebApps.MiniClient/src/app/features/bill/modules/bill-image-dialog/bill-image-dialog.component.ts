@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
+import { blobToDataUrl } from 'src/app/shared/utils/file-utils';
 import { BillImageDialogData } from './BillImageDialogData';
 
 @Component({
@@ -59,7 +60,7 @@ export class BillImageDialogComponent {
     this.billApiService.downloadImage(this.bill.id).subscribe(
       {
         next: async blob => {
-          this.imageSrc = await this.blobToDataUrl(blob);
+          this.imageSrc = await blobToDataUrl(blob);
           this.isLoading = false;
         },
         error: _ => {
@@ -68,17 +69,5 @@ export class BillImageDialogComponent {
         }
       }
     );
-  }
-
-  private async blobToDataUrl(blob: Blob | null): Promise<string | undefined> {
-    if (blob == null) {
-      return Promise.resolve(undefined);
-    }
-
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.readAsDataURL(blob);
-    });
   }
 }
