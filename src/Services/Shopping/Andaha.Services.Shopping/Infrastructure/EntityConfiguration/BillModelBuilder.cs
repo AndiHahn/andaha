@@ -10,6 +10,8 @@ public class BillModelBuilder : IEntityTypeConfiguration<Bill>
     {
         builder.HasKey(b => b.Id);
 
+        builder.HasIndex(b => b.Date);
+
         builder
             .HasOne(b => b.Category)
             .WithMany(c => c.Bills)

@@ -10,6 +10,8 @@ public class BillCategoryModelBuilder : IEntityTypeConfiguration<BillCategory>
     {
         builder.HasKey(b => b.Id);
 
+        builder.HasIndex(b => b.Name);
+
         builder
             .Property(b => b.Name)
             .IsRequired()
