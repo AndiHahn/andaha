@@ -1,7 +1,9 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Router } from '@angular/router';
 import { ChartOptions } from 'chart.js';
 import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
 import { ExpenseDto } from 'src/app/api/shopping/dtos/ExpenseDto';
+import { BillContextService } from 'src/app/services/bill-context.service';
 
 @Component({
   selector: 'app-chart',
@@ -33,6 +35,10 @@ export class ChartComponent implements OnInit, OnChanges {
     borderColor: []
   }];
 
+  constructor(
+    private router: Router,
+    private billContextService: BillContextService) {}
+
   ngOnInit(): void {
     if (!this.expenses) {
       throw new Error("Expenses must be set in order to use this component");
@@ -53,7 +59,9 @@ export class ChartComponent implements OnInit, OnChanges {
     if (event.active.length > 0) {
       const index = event.active[0].index;
 
-      console.log("clicked on: " + this.expenses[index].category);
+      this.billContextService.searchBills(undefined, [ this.expenses[index].category]);
+      
+      this.router.navigateByUrl('bill/list');
     }
   }
 
