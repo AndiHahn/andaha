@@ -74,6 +74,7 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   onCategoryFilterChanged(selectedCategories: BillCategoryDto[]) {
     const categoryFilter = selectedCategories.map(category => category.name);
 
+    this.initialCategoryFilters = categoryFilter;
     this.billListContextService.searchBills(undefined, categoryFilter);
   }
 
