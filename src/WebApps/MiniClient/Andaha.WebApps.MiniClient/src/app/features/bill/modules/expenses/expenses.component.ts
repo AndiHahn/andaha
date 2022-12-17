@@ -19,6 +19,8 @@ export class ExpensesComponent implements OnInit {
 
   sum: number = 0.0;
 
+  selectedTimeRange?: TimeRange;
+
   constructor(
     private expenseContextService: ExpenseContextService,
     private categoryContextService: BillCategoryContextService) { }
@@ -29,6 +31,7 @@ export class ExpensesComponent implements OnInit {
 
   timeSelectionChanged(timeRange: TimeRange): void {
     this.isLoading = true;
+    this.selectedTimeRange = timeRange;
     this.expenseContextService.loadExpenses(timeRange);
   }
 

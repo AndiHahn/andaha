@@ -82,20 +82,23 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onSearchInput(searchText: string): void {
-    this.billContextService.searchBills(searchText, undefined);
+    this.billContextService.setSearchText(searchText);
+    this.billContextService.searchBills();
   }
 
   onCategoryFilterChanged(selectedCategories: BillCategoryDto[]): void {
     const categoryFilter = selectedCategories.map(category => category.name);
 
     this.initialCategoryFilters = categoryFilter;
-    this.billContextService.searchBills(undefined, categoryFilter);
+    this.billContextService.setCategoryFilter(categoryFilter);
+    this.billContextService.searchBills();
   }
 
   onDateFilterChanged(dateFilter: BillListDateFilter): void {
     this.initialDateFilter = dateFilter;
     this.updateDateFilterEnabled();
-    this.billContextService.searchWithDateFilter(dateFilter.fromDate, dateFilter.untilDate);
+    this.billContextService.setDateFilter(dateFilter.fromDate, dateFilter.untilDate);
+    this.billContextService.searchBills();
   }
 
   private previousTop: number = 0;

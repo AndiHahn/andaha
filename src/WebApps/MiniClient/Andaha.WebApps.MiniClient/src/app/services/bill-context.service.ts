@@ -81,25 +81,22 @@ export class BillContextService {
     }
   }
 
-  searchBills(searchText?: string, categoryFilter?: string[]): void {
-    if (searchText) {
-      this.searchText = searchText;
-    }
-
-    if (categoryFilter) {
-      this.categoryFilter = categoryFilter;
-    }
-
+  searchBills(): void {
     this.bills$.next([]);
     this.pageIndex$.next(0);
   }
 
-  searchWithDateFilter(fromDateFilter?: Date, untilDateFilter?: Date) {
+  setSearchText(searchText: string): void {
+    this.searchText = searchText;
+  }
+
+  setCategoryFilter(categoryFilter: string[]): void {
+    this.categoryFilter = categoryFilter;
+  }
+
+  setDateFilter(fromDateFilter?: Date, untilDateFilter?: Date) {
     this.fromDateFilter = fromDateFilter;
     this.untilDateFilter = untilDateFilter;
-
-    this.bills$.next([]);
-    this.pageIndex$.next(0);
   }
 
   fetchNextBills(): void {

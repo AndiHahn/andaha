@@ -4,6 +4,7 @@ import { ChartOptions } from 'chart.js';
 import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
 import { ExpenseDto } from 'src/app/api/shopping/dtos/ExpenseDto';
 import { BillContextService } from 'src/app/services/bill-context.service';
+import { TimeRange } from '../timerange-selection/TimeRange';
 
 @Component({
   selector: 'app-chart',
@@ -17,6 +18,9 @@ export class ChartComponent implements OnInit, OnChanges {
 
   @Input()
   categories!: BillCategoryDto[];
+
+  @Input()
+  selectedTimeRange?: TimeRange;
 
   //CHART DATA
   chartLabels: string[] = [];
@@ -59,7 +63,9 @@ export class ChartComponent implements OnInit, OnChanges {
     if (event.active.length > 0) {
       const index = event.active[0].index;
 
-      this.billContextService.searchBills(undefined, [ this.expenses[index].category]);
+      this.billContextService.setCategoryFilter([ this.expenses[index].category]);
+      this.billContextService.setDateFilter(this.selectedTimeRange?.startDate, this.selectedTimeRange?.endDate);
+      this.billContextService.searchBills();
       
       this.router.navigateByUrl('bill/list');
     }

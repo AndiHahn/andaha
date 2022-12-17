@@ -16,7 +16,7 @@
 </div>
 
 <div *ngIf="!isLoading && expenses.length > 0 && categories.length > 0">
-  <app-chart [expenses]="expenses" [categories]="categories"></app-chart>
+  <app-chart [expenses]="expenses" [categories]="categories" [selectedTimeRange]="selectedTimeRange"></app-chart>
 </div>
 
 <div class="margin-20" *ngIf="!isLoading && expenses.length > 0">
