@@ -2,6 +2,10 @@
   height: 79px;
 }
 
+.filter-placeholder-none {
+  height: 0px;
+}
+
 .filter-container {
   position: fixed;
   left: 0;
@@ -11,11 +15,15 @@
   padding-bottom: 5px;
 }
 
-.progressbar-placeholder {
-  height: 4px;
+.progressbar-top {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 56px;
+  z-index: 1000;
 }
 
-.progressbar {
+.progressbar-below-filter {
   position: fixed;
   left: 0;
   right: 0;

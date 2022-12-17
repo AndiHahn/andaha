@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
 import { ExpenseDto } from 'src/app/api/shopping/dtos/ExpenseDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
-import { BillContextService } from 'src/app/services/bill-context.service';
 import { ExpenseContextService } from 'src/app/services/expense-context.service';
 import { mapTimeRangeDto, TimeRange } from './timerange-selection/TimeRange';
 

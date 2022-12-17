@@ -25,7 +25,7 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   timeoutHandler?: any;
 
-  showFilterBar: boolean = false;
+  showFilterBar: boolean = true;
   initialSearchValue?: string;
   initialCategoryFilters?: string[];
 
@@ -77,15 +77,26 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
     this.billListContextService.searchBills(undefined, categoryFilter);
   }
 
+  private previousTop: number = 0;
+
   private onScroll(data: any) {
     if (data instanceof CdkScrollable) {
       const topOffset = data.measureScrollOffset('top');
       const bottomOffset = data.measureScrollOffset('bottom');
 
+      // hide filterbar on scroll down and show it on scroll up
+      if (topOffset > this.previousTop) {
+        this.showFilterBar = false;
+      } else {
+        this.showFilterBar = true;
+      }
+
       const thresholdReached = bottomOffset < (topOffset + bottomOffset) / 2;
       if (thresholdReached && !this.loading) {
         this.billListContextService.fetchNextBills();
       }
+
+      this.previousTop = topOffset;
     }
   }
 

@@ -1,4 +1,4 @@
-<div class="filter-container dark-bg-color">
+<div *ngIf="showFilterBar" #filterBar class="filter-container dark-bg-color">
   <app-bill-list-filter [deactivate]="loading"
       [initialSearchText]="initialSearchValue"
       [initialCategoryFilters]="initialCategoryFilters"
@@ -7,10 +7,12 @@
   </app-bill-list-filter>    
 </div>
 
-<div class="filter-placeholder"></div>
+<div [class.filter-placeholder] = "showFilterBar == true"
+     [class.filter-placeholder-none] = "showFilterBar == false"></div>
 
-<div class="progressbar-placeholder"></div>
-<mat-progress-bar *ngIf="loading" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
+<mat-progress-bar *ngIf="loading" mode="indeterminate" color="accent"
+    [class.progressbar-top] = "showFilterBar == false"
+    [class.progressbar-below-filter] = "showFilterBar == true"></mat-progress-bar>
 
 <div class="action-container" *ngIf="!loading && totalCount === 0">
   Keine Rechnungen verfügbar.
