@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { MatChip } from '@angular/material/chips';
+import { MatChip, MatChipList } from '@angular/material/chips';
 import { distinctUntilChanged, debounceTime, tap } from 'rxjs/operators';
 import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
@@ -107,43 +107,32 @@ export class BillListFilterComponent implements OnInit, AfterViewInit {
     ));
   }
 
-  onChipClick(chip: MatChip, newSelectedValue: boolean, index: number): void {
+  onChipClick(chipList: MatChipList, chip: MatChip, index: number): void {
     if (!this.categories) {
       return;
     }
-    
-    // chip 'Alle' clicked
-    if (index == 0) {
-      if (newSelectedValue) {
-        // deselect all other chips
-        chip.select();
-        this.categories[index].selected = true;
 
-        const selectedCategoriesWithoutAllSelection = this.categories.slice(1);
-        selectedCategoriesWithoutAllSelection.forEach(category => category.selected = false);
-
-        this.triggerCategorySelection();
-
-        return;
-      }
-
-      // if 'Alle' is deselected -> do nothing
-      return;
-    }
-
-    if (this.categories[index].selected) {
-      chip.deselect();
-    } else {
+    if (!this.categories[index].selected) {
       chip.select();
     }
 
-    this.categories[index].selected = newSelectedValue;
+    this.categories[index].selected = true;
 
-    const selectedCategoriesWithoutAllSelection = this.categories.slice(1);
-    const anySelected = selectedCategoriesWithoutAllSelection.some(category => category.selected);
-    this.categories[0].selected = !anySelected;
-
+    this.deselectAllExcept(chipList, index);
+    
     this.triggerCategorySelection();
+  }
+
+  private deselectAllExcept(chipList: MatChipList, index: number): void {
+    if (!this.categories) {
+      return;
+    }
+
+    const allChipsExceptGiven = chipList.chips.filter((_, idx) => idx != index);
+    allChipsExceptGiven.forEach(chip => chip.deselect());
+
+    const allExceptGiven = this.categories.filter((_, idx) => idx != index);
+    allExceptGiven.forEach(category => category.selected = false);
   }
 
   onFromDateFilterRemoveClick(): void {

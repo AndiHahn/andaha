@@ -31,7 +31,7 @@
   <div class="row-2-container">
     <mat-chip-list #chipList [multiple]="true" [selectable]="true">
       <mat-chip *ngFor="let category of categories; index as i" #chip="matChip" [selectable]="true"  [selected]="category.selected"
-        (click)="onChipClick(chip, !chip.selected, i)">
+        (click)="onChipClick(chipList, chip, i)">
         {{ category.displayName }}
       </mat-chip>
     </mat-chip-list>
