@@ -1,9 +1,16 @@
+$toolbar-height: 64px;
+$toolbar-height-mobile: 56px;
+$toolbar-bottom-height: 64px;
+$toolbar-bottom-height-mobile: 56px;
+$filterbar-height: 79px;
+$filterbar-withdate-height: 111px;
+
 .filter-placeholder {
-  height: 79px;
+  height: $filterbar-height;
 }
 
 .filter-placeholder-with-date {
-  height: 111px;
+  height: $filterbar-withdate-height;
 }
 
 .filter-placeholder-none {
@@ -14,33 +21,29 @@
   position: fixed;
   left: 0;
   right: 0;
-  top: 56px;
+  top: $toolbar-height;
   z-index: 1000;
   padding-bottom: 5px;
 }
 
-.progressbar-top {
+.progressbar {
   position: fixed;
   left: 0;
   right: 0;
-  top: 56px;
   z-index: 1000;
+}
+
+.progressbar-top {
+  top: $toolbar-height;
 }
 
 .progressbar-below-filter {
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 135px;
-  z-index: 1000;
+  top: $toolbar-height + $filterbar-height;
 }
 
 .progressbar-below-date-filter {
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 172px;
-  z-index: 1000;
+  // +5px padding
+  top: $toolbar-height + $filterbar-withdate-height + 5px;
 }
 
 .action-container {
@@ -58,6 +61,45 @@
   width: 100%;
 }
 
-.cdk-container {
-  height: calc(100% - 56px - 37px);
+.cdk-list-container-full {
+  height: calc(100% - #{$toolbar-bottom-height});
+}
+
+.cdk-list-container-with-filterbar {
+  height: calc(100% - #{$toolbar-bottom-height} - #{$filterbar-height});
+}
+
+.cdk-list-container-with-datefilterbar {
+  height: calc(100% - #{$toolbar-bottom-height} - #{$filterbar-withdate-height});
+}
+
+@media only screen and (max-width: 600px) {
+  .filter-container {
+    top: $toolbar-height-mobile;
+  }
+
+  .progressbar-top {
+    top: $toolbar-height-mobile;
+  }
+  
+  .progressbar-below-filter {
+    top: $toolbar-height-mobile + $filterbar-height;
+  }
+  
+  .progressbar-below-date-filter {
+    // +5px padding
+    top: $toolbar-height-mobile + $filterbar-withdate-height + 5px;
+  }
+
+  .cdk-list-container-full {
+    height: calc(100% - #{$toolbar-bottom-height-mobile});
+  }
+  
+  .cdk-list-container-with-filterbar {
+    height: calc(100% - #{$toolbar-bottom-height-mobile} - #{$filterbar-height});
+  }
+  
+  .cdk-list-container-with-datefilterbar {
+    height: calc(100% - #{$toolbar-bottom-height-mobile} - #{$filterbar-withdate-height});
+  }
 }

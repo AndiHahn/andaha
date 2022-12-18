@@ -93,9 +93,15 @@ export class BillListFilterComponent implements OnInit, AfterViewInit {
     this.billListFilterDialogService.openDialog(data).then(dialogRef => dialogRef.afterClosed().subscribe(
       {
         next: result => {
+          const dateChanged = this.fromDateFilter?.getTime() != result?.from?.getTime() ||
+                              this.untilDateFilter?.getTime() != result?.until?.getTime();
+
           this.fromDateFilter = result?.from;
           this.untilDateFilter = result?.until;
-          this.triggerDateFilterChanged();
+          
+          if (dateChanged) {
+            this.triggerDateFilterChanged();
+          }
         }
       }
     ));

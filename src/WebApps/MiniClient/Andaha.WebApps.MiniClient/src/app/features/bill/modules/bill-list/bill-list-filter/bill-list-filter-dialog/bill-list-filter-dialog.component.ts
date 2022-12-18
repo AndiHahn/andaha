@@ -42,7 +42,7 @@ export const MY_FORMATS = {
 })
 export class BillListFilterDialogComponent implements OnInit {
 
-  dateFrom: FormControl = new FormControl(moment());
+  dateFrom: FormControl = new FormControl();
   dateUntil: FormControl = new FormControl();
 
   constructor(
@@ -54,7 +54,7 @@ export class BillListFilterDialogComponent implements OnInit {
     }
 
     if (data.until) {
-      this.dateFrom.setValue(data.until);
+      this.dateUntil.setValue(data.until);
     }
   }
 

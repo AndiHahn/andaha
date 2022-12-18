@@ -39,13 +39,13 @@
 
   <div *ngIf="fromDateFilter || untilDateFilter" class="row-3-container">
     <mat-chip-list>
-      <mat-chip *ngIf="fromDateFilter">
+      <mat-chip *ngIf="fromDateFilter" (click)="onFilterClick()">
         Von: {{ fromDateFilter | date:'dd.MM.YYYY' }}
         <button mat-icon-button (click)="onFromDateFilterRemoveClick()">
           <mat-icon>cancel</mat-icon>
         </button>
       </mat-chip>
-      <mat-chip *ngIf="untilDateFilter">
+      <mat-chip *ngIf="untilDateFilter" (click)="onFilterClick()">
         Bis: {{ untilDateFilter | date:'dd.MM.YYYY' }}
         <button mat-icon-button (click)="onUntilDateFilterRemoveClick()">
           <mat-icon>cancel</mat-icon>

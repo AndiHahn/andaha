@@ -13,7 +13,7 @@
      [class.filter-placeholder-with-date] = "showFilterBar == true && dateFilterEnabled"
      [class.filter-placeholder-none] = "showFilterBar == false"></div>
 
-<mat-progress-bar *ngIf="loading" mode="indeterminate" color="accent"
+<mat-progress-bar *ngIf="loading" mode="indeterminate" color="accent" class="progressbar"
     [class.progressbar-top] = "showFilterBar == false"
     [class.progressbar-below-filter] = "showFilterBar == true && !dateFilterEnabled"
     [class.progressbar-below-date-filter] = "showFilterBar == true && dateFilterEnabled"></mat-progress-bar>
@@ -22,7 +22,10 @@
   Keine Rechnungen verfügbar.
 </div>
 
-<cdk-virtual-scroll-viewport class="cdk-container" [itemSize]="pixelHeightPerItem">
+<cdk-virtual-scroll-viewport [itemSize]="pixelHeightPerItem"
+    [class.cdk-list-container-full] = "showFilterBar == false"
+    [class.cdk-list-container-with-filterbar] = "showFilterBar == true && !dateFilterEnabled"
+    [class.cdk-list-container-with-datefilterbar] = "showFilterBar == true && dateFilterEnabled">
   <div *cdkVirtualFor="let bill of billDataSource">
     <div class="cdk-item" routerLink="/bill/{{bill.id}}">
       <app-bill-list-item [bill]="bill"></app-bill-list-item>
