@@ -6,6 +6,7 @@ import { TimeRangeDto, TimeRangeDtoRaw } from '../api/shopping/dtos/TimeRangeDto
 import { ExpenseApiService } from '../api/shopping/expense-api.service';
 import { ContextService } from '../core/context.service';
 import { TimeRange } from '../features/bill/modules/expenses/timerange-selection/TimeRange';
+import { BillContextService } from './bill-context.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ export class ExpenseContextService {
   private expenses$ : BehaviorSubject<ExpenseDto[] | undefined> = new BehaviorSubject<ExpenseDto[] | undefined>(undefined);
 
   constructor(
+    private billContextService: BillContextService,
     private contextService: ContextService,
     private apiService: ExpenseApiService,
     private datePipe: DatePipe
@@ -46,6 +48,36 @@ export class ExpenseContextService {
         next: ready => {
           if (ready) {
             this.fetchTimeRange();
+          }
+        }
+      }
+    );
+
+    this.billContextService.bills().subscribe(
+      {
+        next: bills => {
+          if (bills.length > 0) {
+            const firstBill = bills[0];
+            const lastBill = bills[bills.length - 1];
+
+            if (!this.availableTimeRange$.value) {
+              this.availableTimeRange$.next({
+                startTimeUtc: lastBill.date,
+                endTimeUtc: firstBill.date
+              });
+
+              return;
+            }
+
+            var startTime = this.availableTimeRange$.value.startTimeUtc;
+            var endTime = this.availableTimeRange$.value.endTimeUtc;
+            
+            if (firstBill.date > endTime || lastBill.date < startTime) {
+              this.availableTimeRange$.next({
+                startTimeUtc: lastBill.date < startTime ? lastBill.date : startTime,
+                endTimeUtc: firstBill.date > endTime ? firstBill.date : endTime
+              });
+            }
           }
         }
       }

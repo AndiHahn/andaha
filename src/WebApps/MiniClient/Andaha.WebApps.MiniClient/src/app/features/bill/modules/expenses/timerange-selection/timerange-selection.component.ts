@@ -122,8 +122,8 @@ export class TimerangeSelectionComponent implements OnInit, OnChanges {
       const endOfMonth   = moment(this.currentMonth).endOf('month').format('YYYY-MM-DD');
       this.selectionChanged.emit(this.createTimeRange(startOfMonth, endOfMonth));
     } else if (this.selectedDateType == DateType.Year) {
-      const startOfYear = moment(this.currentMonth).startOf('year').format('YYYY-MM-DD');
-      const endOfYear   = moment(this.currentMonth).endOf('year').format('YYYY-MM-DD');
+      const startOfYear = moment(this.currentYear).startOf('year').format('YYYY-MM-DD');
+      const endOfYear   = moment(this.currentYear).endOf('year').format('YYYY-MM-DD');
       this.selectionChanged.emit(this.createTimeRange(startOfYear, endOfYear));
     } else if (this.selectedDateType == DateType.Custom && this.customFromDate && this.customToDate) {
       this.selectionChanged.emit(this.createTimeRangeWithDate(this.customFromDate, this.customToDate));

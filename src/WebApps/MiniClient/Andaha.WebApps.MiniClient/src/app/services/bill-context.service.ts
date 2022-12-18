@@ -269,6 +269,8 @@ export class BillContextService {
       bills.pop();
     }
 
+    bills.sort(this.billCompareDateDescending);
+
     this.bills$.next(bills);
     this.totalResults$.next(this.totalResults$.value + 1);
   }
