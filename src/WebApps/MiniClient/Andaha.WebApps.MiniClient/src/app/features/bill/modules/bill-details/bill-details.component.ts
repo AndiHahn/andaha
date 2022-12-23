@@ -1,5 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -15,10 +17,34 @@ import { getParametersFromRouteRecursive } from 'src/app/shared/utils/routing-he
 import { BillForm, getBillForm } from '../../functions/bill-form-functions';
 import { ImageSnippet } from '../add-bill-image-dialog/add-bill-image-dialog.component';
 
+export const MY_FORMATS = {
+  parse: {
+    dateInput: 'LL',
+  },
+  display: {
+    dateInput: 'DD.MM.YYYY',
+    monthYearLabel: 'MMMM YYYY',
+    dateA11yLabel: 'DD.MM.YYYY',
+    monthYearA11yLabel: 'MMMM YYYY'
+  },
+};
+
 @Component({
   selector: 'app-bill-details',
   templateUrl: './bill-details.component.html',
-  styleUrls: ['./bill-details.component.scss']
+  styleUrls: ['./bill-details.component.scss'],
+  providers: [
+    // `MomentDateAdapter` can be automatically provided by importing `MomentDateModule` in your
+    // application's root module. We provide it at the component level here, due to limitations of
+    // our example generation script.
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
+    },
+
+    {provide: MAT_DATE_FORMATS, useValue: MY_FORMATS},
+  ],
 })
 export class BillDetailsComponent implements OnInit, OnDestroy {
 
@@ -172,7 +198,7 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
       categoryId: controls.category.value!.id,
       shopName: controls.shopName.value,
       price: controls.price.value!,
-      date: controls.date.value,
+      date: new Date(controls.date.value),
       notes: controls.notes?.value ?? undefined,
       image: this.image?.file ?? undefined
     }

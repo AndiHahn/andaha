@@ -29,6 +29,10 @@ public class BillModelBuilder : IEntityTypeConfiguration<Bill>
             .IsRequired();
 
         builder
+            .Property(b => b.Date)
+            .HasColumnType("date");
+
+        builder
             .Property(b => b.Notes)
             .IsRequired(false)
             .HasMaxLength(1000);

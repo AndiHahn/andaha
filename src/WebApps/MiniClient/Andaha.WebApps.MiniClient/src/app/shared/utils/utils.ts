@@ -5,7 +5,7 @@ export function getRecordOfProperties<T extends object>(object: T): Record<strin
 
   for (const [key, value] of Object.entries(object)) {
     if (value instanceof Date) {
-      record[key] = moment(new Date(value)).utc(false).toISOString();
+      record[key] = moment(new Date(value)).utc(true).toISOString();
     } else {
       record[key] = value;
     }

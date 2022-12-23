@@ -70,6 +70,7 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.scrollDispatcher
       .scrolled()
+      .pipe(takeUntil(this.destroy$))
       .pipe(filter(data => data instanceof CdkScrollable))
       .subscribe(data => {
         this.onScroll(data);

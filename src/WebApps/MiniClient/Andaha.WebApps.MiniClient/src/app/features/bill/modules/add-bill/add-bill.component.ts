@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormGroupDirective, UntypedFormBuilder } from '@angular/forms';
+import { FormGroup, FormGroupDirective } from '@angular/forms';
+import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { generateGuid } from 'src/app/api/functions/api-utils';
 import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
 import { BillCreateDto } from 'src/app/api/shopping/dtos/BillCreateDto';
@@ -8,10 +10,34 @@ import { BillContextService } from 'src/app/services/bill-context.service';
 import { BillForm, getEmptyBillForm } from '../../functions/bill-form-functions';
 import { ImageSnippet } from '../add-bill-image-dialog/add-bill-image-dialog.component';
 
+export const MY_FORMATS = {
+  parse: {
+    dateInput: 'LL',
+  },
+  display: {
+    dateInput: 'DD.MM.YYYY',
+    monthYearLabel: 'MMMM YYYY',
+    dateA11yLabel: 'DD.MM.YYYY',
+    monthYearA11yLabel: 'MMMM YYYY'
+  },
+};
+
 @Component({
   selector: 'app-add-bill',
   templateUrl: './add-bill.component.html',
-  styleUrls: ['./add-bill.component.scss']
+  styleUrls: ['./add-bill.component.scss'],
+  providers: [
+    // `MomentDateAdapter` can be automatically provided by importing `MomentDateModule` in your
+    // application's root module. We provide it at the component level here, due to limitations of
+    // our example generation script.
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
+    },
+
+    {provide: MAT_DATE_FORMATS, useValue: MY_FORMATS},
+  ],
 })
 export class AddBillComponent implements OnInit {
   numberRegex: string = '^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$';
@@ -67,7 +93,7 @@ export class AddBillComponent implements OnInit {
       categoryId: controls.category.value!.id,
       shopName: controls.shopName.value,
       price: controls.price.value!,
-      date: controls.date?.value,
+      date: new Date(controls.date?.value),
       notes: controls.notes?.value ?? '',
       image: this.image?.file ?? undefined
     }
