@@ -6,6 +6,9 @@ trigger:
       - feature/monolith/*
   paths:
     include:
+    - src/Services/BudgetPlan/*
+    - src/Services/Collaboration/*
+    - src/Services/Shopping/*
     - src/Services/Monolith/*
 
 pool:
