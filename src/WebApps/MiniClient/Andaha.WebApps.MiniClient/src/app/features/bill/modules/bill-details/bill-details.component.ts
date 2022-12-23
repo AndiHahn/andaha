@@ -57,8 +57,8 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
   isSaving: boolean = false;
   isDeleting: boolean = false;
   isEditing: boolean = false;
-  isReadOnly: boolean = true;
   isLoading: boolean = false;
+  isExternal: boolean = false;
 
   private destroy$: Subject<void> = new Subject<void>();
 
@@ -81,13 +81,26 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
       throw new Error("Bill with id: " + billId + " is not available.");
     }
 
-    if (!bill.isExternal) {
-      this.isReadOnly = false;
-    }
-
     this.bill = bill;
     this.form = getBillForm(bill);
     this.form.disable();
+  }
+
+  private updateCategories(): void {
+    if (!this.categories || !this.bill) {
+      return;
+    }
+    
+    const containsCategory = this.categories.some(category => category.id == this.bill.category.id);
+    if (!containsCategory) {
+      const categoryWithSameName = this.categories.find(category => category.name == this.bill.category.name);
+      if (categoryWithSameName) {
+        categoryWithSameName.id = this.bill.category.id;
+        categoryWithSameName.color = this.bill.category.color;
+      } else {
+        this.categories.push(this.bill.category);
+      }
+    }
   }
   
   ngOnInit(): void {
@@ -171,6 +184,8 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
   }
 
   private updateCategory(): void {
+    this.updateCategories();
+
     const category = this.categories?.find(category => category.id == this.bill.category.id);
     if (category) {
       this.form.controls.category.setValue(category);

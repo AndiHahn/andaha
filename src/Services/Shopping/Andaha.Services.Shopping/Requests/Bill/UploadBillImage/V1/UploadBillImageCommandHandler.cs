@@ -39,10 +39,14 @@ internal class UploadBillImageCommandHandler : IRequestHandler<UploadBillImageCo
         }
 
         Guid userId = identityService.GetUserId();
-        var connectedUsers = await collaborationApiProxy.GetConnectedUsers(cancellationToken);
-        if (!bill.HasCreated(userId) && !connectedUsers.Contains(userId))
+        
+        if (!bill.HasCreated(userId))
         {
-            return Results.Forbid();
+            var connectedUsers = await collaborationApiProxy.GetConnectedUsers(cancellationToken);
+            if (!connectedUsers.Contains(bill.UserId))
+            {
+                return Results.Forbid();
+            }
         }
 
         if (bill.Images.Any())

@@ -62,7 +62,7 @@
     <div class="floating-button edit-buttons">
       <div *ngIf="!isEditing" style="flex: 1">
         <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onEditClick()"
-            [disabled]="isReadOnly || isDeleting || isLoading || isSaving">
+            [disabled]="isDeleting || isLoading || isSaving">
           <mat-icon>edit</mat-icon><span>Bearbeiten</span>
         </button>
       </div>
@@ -71,7 +71,7 @@
           <mat-icon>close</mat-icon><span>Abbrechen</span>
         </button>
         <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onSaveClick()"
-            [disabled]="isReadOnly || isSaving">
+            [disabled]="isSaving">
           <mat-icon>save</mat-icon><span>Speichern</span>
         </button>
       </div>
@@ -82,7 +82,7 @@
     <div class="floating-button delete-button">
       <div style="flex: 1">
         <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onDeleteClick()"
-            [disabled]="isReadOnly || isEditing || isDeleting || isLoading || isSaving">
+            [disabled]="isExternal || isEditing || isDeleting || isLoading || isSaving">
           <mat-icon>delete</mat-icon><span>Löschen</span>
         </button>
       </div>

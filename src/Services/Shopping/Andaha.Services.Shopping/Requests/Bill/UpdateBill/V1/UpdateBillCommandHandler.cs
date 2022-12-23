@@ -1,5 +1,6 @@
 ﻿using Andaha.CrossCutting.Application.Identity;
 using Andaha.Services.Shopping.Infrastructure;
+using Andaha.Services.Shopping.Infrastructure.Proxies;
 using Andaha.Services.Shopping.Requests.Bill.UploadBillImage.V1;
 using MediatR;
 
@@ -10,15 +11,18 @@ internal class UpdateBillCommandHandler : IRequestHandler<UpdateBillCommand, IRe
     private readonly ISender sender;
     private readonly ShoppingDbContext dbContext;
     private readonly IIdentityService identityService;
+    private readonly ICollaborationApiProxy collaborationApiProxy;
 
     public UpdateBillCommandHandler(
         ISender sender,
         ShoppingDbContext dbContext,
-        IIdentityService identityService)
+        IIdentityService identityService,
+        ICollaborationApiProxy collaborationApiProxy)
     {
         this.sender = sender ?? throw new ArgumentNullException(nameof(sender));
         this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         this.identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
+        this.collaborationApiProxy = collaborationApiProxy ?? throw new ArgumentNullException(nameof(collaborationApiProxy));
     }
 
     public async Task<IResult> Handle(UpdateBillCommand request, CancellationToken cancellationToken)
@@ -33,7 +37,11 @@ internal class UpdateBillCommandHandler : IRequestHandler<UpdateBillCommand, IRe
 
         if (bill.UserId != userId)
         {
-            return Results.Forbid();
+            var connectedUsers = await collaborationApiProxy.GetConnectedUsers(cancellationToken);
+            if (!connectedUsers.Contains(bill.UserId))
+            {
+                return Results.Forbid();
+            }
         }
 
         bill.Update(request.CategoryId, request.ShopName, request.Price, request.Date, request.Notes);
