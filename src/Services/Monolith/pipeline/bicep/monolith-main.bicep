@@ -19,6 +19,7 @@ module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
 module applicationInsights 'monolith-appinsights-module.bicep' = {
   name: 'andaha-monolith-appinsights'
   params: {
+    stage: stage
     location: location
   }
 }
