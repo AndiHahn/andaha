@@ -10,6 +10,8 @@ param containerRegistryPassword string
 param sqlDbConnectionString string
 @secure()
 param storageConnectionString string
+@secure()
+param applicationInsightsConnectionString string
 
 var imageName = stage == 'dev' ? 'andaha.azurecr.io/andaha/services/monolith:${imageVersion}' : 'andaha.azurecr.io/prod/andaha/services/monolith:${imageVersion}'
 var minReplicas = stage == 'dev' ? 0 : 1
@@ -52,6 +54,10 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
             {
               name: 'Dapr__CollaborationAppId'
               value: 'monolith-api'
+            }
+            {
+              name: 'ApplicationInsights__ConnectionString'
+              secretRef: 'application-insights-connection-string'
             }
           ]
           probes: [
@@ -133,6 +139,10 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
         {
           name: 'storage-connection-string'
           value: storageConnectionString
+        }
+        {
+          name: 'application-insights-connection-string'
+          value: applicationInsightsConnectionString
         }
       ]
     }

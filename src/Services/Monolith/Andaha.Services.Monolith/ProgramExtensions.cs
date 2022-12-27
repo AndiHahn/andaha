@@ -38,7 +38,10 @@ internal static class ProgramExtensions
 
     internal static WebApplicationBuilder AddCustomLogging(this WebApplicationBuilder builder)
     {
-        builder.Services.AddLogging();
+        if (builder.Environment.IsProduction())
+        {
+            builder.Services.AddApplicationInsightsTelemetry();
+        }
 
         return builder;
     }

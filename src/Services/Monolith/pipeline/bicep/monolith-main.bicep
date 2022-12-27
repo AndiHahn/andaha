@@ -16,6 +16,13 @@ module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
   }
 }
 
+module applicationInsights 'monolith-appinsights-module.bicep' = {
+  name: 'andaha-monolith-appinsights'
+  params: {
+    location: location
+  }
+}
+
 module storage '../../../Shopping/pipeline/bicep/shopping-storage-module.bicep' = {
   name: 'andaha-shopping-storage'
   params: {
@@ -36,5 +43,6 @@ module containerApp 'monolith-app-module.bicep' = {
     containerRegistryPassword: containerRegistryPassword
     sqlDbConnectionString: coreInfrastructure.outputs.databaseConnectionString
     storageConnectionString: storage.outputs.storageConnectionString
+    applicationInsightsConnectionString: applicationInsights.outputs.connectionString
   }
 }
