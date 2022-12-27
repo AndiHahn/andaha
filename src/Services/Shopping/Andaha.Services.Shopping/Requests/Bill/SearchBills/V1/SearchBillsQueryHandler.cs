@@ -33,7 +33,8 @@ internal class SearchBillsQueryHandler : IRequestHandler<SearchBillsQuery, IResu
             .AsNoTracking()
             .Where(bill => bill.UserId == userId ||
                            connectedUsers.Contains(bill.UserId))
-            .OrderByDescending(b => b.Date);
+            .OrderByDescending(b => b.Date)
+            .ThenByDescending(b => b.CreatedAt);
 
         if (request.Search is not null)
         {
