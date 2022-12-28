@@ -15,7 +15,7 @@ export const environment = {
   authRedirectUrl: window.location.origin + "/",
   authClientId: 'bfbbb429-801d-4ac2-8dcf-f9d51bb010dc',
   authResponseType: 'code',
-  authScope: 'openid offline_access https://andreasorganization.onmicrosoft.com/3b6deee3-2974-4acf-87e8-a0013be3bc8d/access_as_user',
+  authScope: 'https://andreasorganization.onmicrosoft.com/3b6deee3-2974-4acf-87e8-a0013be3bc8d/access_as_user',
   authShowDebugInformation: true,
 };
 */
@@ -32,6 +32,6 @@ export const environment = {
   authRedirectUrl: window.location.origin + "/",
   authClientId: 'bfbbb429-801d-4ac2-8dcf-f9d51bb010dc',
   authResponseType: 'code',
-  authScope: 'openid offline_access https://andreasorganization.onmicrosoft.com/3b6deee3-2974-4acf-87e8-a0013be3bc8d/access_as_user',
+  authScope: 'https://andreasorganization.onmicrosoft.com/3b6deee3-2974-4acf-87e8-a0013be3bc8d/access_as_user',
   authShowDebugInformation: true,
 };

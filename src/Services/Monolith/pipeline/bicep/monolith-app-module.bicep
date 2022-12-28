@@ -2,7 +2,8 @@ param stage string
 param location string
 param imageVersion string
 param containerAppsEnvironmentId string
-param containerAppsEnvironmentDomain string
+param authAzureAdB2CClientId string
+param authAzureAdB2CGraphApiClientId string
 param containerRegistryUsername string
 @secure()
 param containerRegistryPassword string
@@ -12,6 +13,8 @@ param sqlDbConnectionString string
 param storageConnectionString string
 @secure()
 param applicationInsightsConnectionString string
+@secure()
+param authAzureAdB2CGraphApiClientSecret string
 
 var imageName = stage == 'dev' ? 'andaha.azurecr.io/andaha/services/monolith:${imageVersion}' : 'andaha.azurecr.io/prod/andaha/services/monolith:${imageVersion}'
 var minReplicas = stage == 'dev' ? 0 : 1
@@ -44,20 +47,44 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
               secretRef: 'storage-connection-string'
             }
             {
-              name: 'ExternalUrls__IdentityApi'
-              value: 'https://identity-api-${stage}.${containerAppsEnvironmentDomain}'
-            }
-            {
-              name: 'Dapr__IdentityAppId'
-              value: 'identity-api'
-            }
-            {
               name: 'Dapr__CollaborationAppId'
               value: 'monolith-api'
             }
             {
               name: 'ApplicationInsights__ConnectionString'
               secretRef: 'application-insights-connection-string'
+            }
+            {
+              name: 'Authentication__AzureAdB2C__Instance'
+              value: 'andreasorganization'
+            }
+            {
+              name: 'Authentication__AzureAdB2C__ClientId'
+              value: authAzureAdB2CClientId
+            }
+            {
+              name: 'Authentication__AzureAdB2C__Domain'
+              value: 'andreasorganization.onmicrosoft.com'
+            }
+            {
+              name: 'Authentication__AzureAdB2C__TenantId'
+              value: '3e43c7d4-5672-4b6f-b26d-0c65646378d8'
+            }
+            {
+              name: 'Authentication__AzureAdB2C__SignUpSignInPolicyId'
+              value: 'B2C_1_SignUpSignIn'
+            }
+            {
+              name: 'Authentication__AzureAdB2CGraphApi__TenantId'
+              value: '3e43c7d4-5672-4b6f-b26d-0c65646378d8'
+            }
+            {
+              name: 'Authentication__AzureAdB2CGraphApi__ClientId'
+              value: authAzureAdB2CGraphApiClientId
+            }
+            {
+              name: 'Authentication__AzureAdB2CGraphApi__ClientSecret'
+              secretRef: 'authentication-graphapi-clientsecret'
             }
           ]
           probes: [
@@ -143,6 +170,10 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
         {
           name: 'application-insights-connection-string'
           value: applicationInsightsConnectionString
+        }
+        {
+          name: 'authentication-graphapi-clientsecret'
+          value: authAzureAdB2CGraphApiClientSecret
         }
       ]
     }

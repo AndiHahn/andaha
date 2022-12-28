@@ -63,6 +63,15 @@ services:
       ConnectionStrings__ApplicationDbConnection: Server=andaha.services.shopping.db;Database=andaha-shopping-db;User Id=sa;Password=Pass@word;Encrypt=false
       ExternalUrls__IdentityApi: http://andaha.services.identity:80
       Dapr__CollaborationAppId: collaboration-api
+      Authentication__AzureAdB2C__Instance: ${AUTH_B2C_INSTANCE}
+      Authentication__AzureAdB2C__ClientId: ${AUTH_B2C_CLIENTID}
+      Authentication__AzureAdB2C__Domain: ${AUTH_B2C_DOMAIN}
+      Authentication__AzureAdB2C__TenantId: ${AUTH_B2C_TENANTID}
+      Authentication__AzureAdB2C__SignUpSignInPolicyId: ${AUTH_B2C_POLICY}
+      Authentication__AzureAdB2CSwagger__Tenant: ${AUTH_B2CSWAGGER_TENANT}
+      Authentication__AzureAdB2CSwagger__SignUpSignInPolicyId: ${AUTH_B2CSWAGGER_POLICY}
+      Authentication__AzureAdB2CSwagger__ClientId: ${AUTH_B2CSWAGGER_CLIENTID}
+      Authentication__AzureAdB2CSwagger__Scope: ${AUTH_B2CSWAGGER_SCOPE}
     ports:
       - "9200:80"
 
@@ -90,8 +99,18 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:80
       ConnectionStrings__ApplicationDbConnection: Server=andaha.services.collaboration.db;Database=andaha-collaboration-db;User Id=sa;Password=Pass@word;Encrypt=false
-      ExternalUrls__IdentityApi: http://andaha.services.identity:80
-      Dapr__IdentityAppId: identity-api
+      Authentication__AzureAdB2C__Instance: ${AUTH_B2C_INSTANCE}
+      Authentication__AzureAdB2C__ClientId: ${AUTH_B2C_CLIENTID}
+      Authentication__AzureAdB2C__Domain: ${AUTH_B2C_DOMAIN}
+      Authentication__AzureAdB2C__TenantId: ${AUTH_B2C_TENANTID}
+      Authentication__AzureAdB2C__SignUpSignInPolicyId: ${AUTH_B2C_POLICY}
+      Authentication__AzureAdB2CSwagger__Tenant: ${AUTH_B2CSWAGGER_TENANT}
+      Authentication__AzureAdB2CSwagger__SignUpSignInPolicyId: ${AUTH_B2CSWAGGER_POLICY}
+      Authentication__AzureAdB2CSwagger__ClientId: ${AUTH_B2CSWAGGER_CLIENTID}
+      Authentication__AzureAdB2CSwagger__Scope: ${AUTH_B2CSWAGGER_SCOPE}
+      Authentication__AzureAdB2CGraphApi__TenantId: ${AUTH_B2CGRAPH_TENANTID}
+      Authentication__AzureAdB2CGraphApi__ClientId: ${AUTH_B2CGRAPH_CLIENTID}
+      Authentication__AzureAdB2CGraphApi__ClientSecret: ${AUTH_B2CGRAPH_CLIENTSECRET}
     ports:
       - "9300:80"
 
@@ -119,8 +138,16 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:80
       ConnectionStrings__ApplicationDbConnection: Server=andaha.services.budgetplan.db;Database=andaha-budgetplan-db;User Id=sa;Password=Pass@word;Encrypt=false
-      ExternalUrls__IdentityApi: http://andaha.services.identity:80
       Dapr__CollaborationAppId: collaboration-api
+      Authentication__AzureAdB2C__Instance: ${AUTH_B2C_INSTANCE}
+      Authentication__AzureAdB2C__ClientId: ${AUTH_B2C_CLIENTID}
+      Authentication__AzureAdB2C__Domain: ${AUTH_B2C_DOMAIN}
+      Authentication__AzureAdB2C__TenantId: ${AUTH_B2C_TENANTID}
+      Authentication__AzureAdB2C__SignUpSignInPolicyId: ${AUTH_B2C_POLICY}
+      Authentication__AzureAdB2CSwagger__Tenant: ${AUTH_B2CSWAGGER_TENANT}
+      Authentication__AzureAdB2CSwagger__SignUpSignInPolicyId: ${AUTH_B2CSWAGGER_POLICY}
+      Authentication__AzureAdB2CSwagger__ClientId: ${AUTH_B2CSWAGGER_CLIENTID}
+      Authentication__AzureAdB2CSwagger__Scope: ${AUTH_B2CSWAGGER_SCOPE}
     ports:
       - "9400:80"
 
@@ -148,9 +175,19 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:80
       ConnectionStrings__ApplicationDbConnection: Server=andaha.services.monolith.db;Database=andaha-monolith-db;User Id=sa;Password=Pass@word;Encrypt=false
-      ExternalUrls__IdentityApi: http://andaha.services.identity:80
-      Dapr__IdentityAppId: identity-api
       Dapr__CollaborationAppId: monolith-api
+      Authentication__AzureAdB2C__Instance: ${AUTH_B2C_INSTANCE}
+      Authentication__AzureAdB2C__ClientId: ${AUTH_B2C_CLIENTID}
+      Authentication__AzureAdB2C__Domain: ${AUTH_B2C_DOMAIN}
+      Authentication__AzureAdB2C__TenantId: ${AUTH_B2C_TENANTID}
+      Authentication__AzureAdB2C__SignUpSignInPolicyId: ${AUTH_B2C_POLICY}
+      Authentication__AzureAdB2CSwagger__Tenant: ${AUTH_B2CSWAGGER_TENANT}
+      Authentication__AzureAdB2CSwagger__SignUpSignInPolicyId: ${AUTH_B2CSWAGGER_POLICY}
+      Authentication__AzureAdB2CSwagger__ClientId: ${AUTH_B2CSWAGGER_CLIENTID}
+      Authentication__AzureAdB2CSwagger__Scope: ${AUTH_B2CSWAGGER_SCOPE}
+      Authentication__AzureAdB2CGraphApi__TenantId: ${AUTH_B2CGRAPH_TENANTID}
+      Authentication__AzureAdB2CGraphApi__ClientId: ${AUTH_B2CGRAPH_CLIENTID}
+      Authentication__AzureAdB2CGraphApi__ClientSecret: ${AUTH_B2CGRAPH_CLIENTSECRET}
     ports:
       - "9900:80"
 

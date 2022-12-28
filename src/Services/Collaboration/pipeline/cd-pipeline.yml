@@ -64,7 +64,7 @@ stages:
         inlineScript: |
           acrUser=$(az acr credential show --name andaha --resource-group andaha --query username -o tsv)
           acrPassword=$(az acr credential show --name andaha --resource-group andaha --query "passwords[0].value" -o tsv)
-          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile) --parameters stage="dev" containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)" sqlServerAdminPassword=$(sqlServerAdminPassword)
+          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile) --parameters stage="dev" containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)" sqlServerAdminPassword=$(sqlServerAdminPassword) authAzureAdB2CClientId=$(authServerB2CClientId) authAzureAdB2CGraphApiClientId=$(authServerB2CGraphClientId) authAzureAdB2CGraphApiClientSecret=$(authServerB2CGraphClientSecret)
 
 - stage: deploy_prod
   displayName: Deploy to prod
@@ -110,4 +110,4 @@ stages:
         inlineScript: |
           acrUser=$(az acr credential show --name andaha --resource-group andaha --query username -o tsv)
           acrPassword=$(az acr credential show --name andaha --resource-group andaha --query "passwords[0].value" -o tsv)
-          az deployment group create --resource-group andaha-prod --template-file $(bicepTemplateFile) --parameters stage="prod" containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)" sqlServerAdminPassword=$(sqlServerAdminPassword)
+          az deployment group create --resource-group andaha-prod --template-file $(bicepTemplateFile) --parameters stage="prod" containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)" sqlServerAdminPassword=$(sqlServerAdminPassword) authAzureAdB2CClientId=$(authServerB2CClientId) authAzureAdB2CGraphApiClientId=$(authServerB2CGraphClientId) authAzureAdB2CGraphApiClientSecret=$(authServerB2CGraphClientSecret)

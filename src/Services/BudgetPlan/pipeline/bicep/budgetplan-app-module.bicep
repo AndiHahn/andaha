@@ -2,7 +2,7 @@ param stage string
 param location string
 param imageVersion string
 param containerAppsEnvironmentId string
-param containerAppsEnvironmentDomain string
+param authAzureAdB2CClientId string
 param containerRegistryUsername string
 @secure()
 param containerRegistryPassword string
@@ -35,12 +35,28 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
               secretRef: 'budgetplandb-connection-string'
             }
             {
-              name: 'ExternalUrls__IdentityApi'
-              value: 'https://identity-api-${stage}.${containerAppsEnvironmentDomain}'
-            }
-            {
               name: 'Dapr__CollaborationAppId'
               value: 'monolith-api'
+            }
+            {
+              name: 'Authentication__AzureAdB2C__Instance'
+              value: 'andreasorganization'
+            }
+            {
+              name: 'Authentication__AzureAdB2C__ClientId'
+              value: authAzureAdB2CClientId
+            }
+            {
+              name: 'Authentication__AzureAdB2C__Domain'
+              value: 'andreasorganization.onmicrosoft.com'
+            }
+            {
+              name: 'Authentication__AzureAdB2C__TenantId'
+              value: '3e43c7d4-5672-4b6f-b26d-0c65646378d8'
+            }
+            {
+              name: 'Authentication__AzureAdB2C__SignUpSignInPolicyId'
+              value: 'B2C_1_SignUpSignIn'
             }
           ]
           probes: [

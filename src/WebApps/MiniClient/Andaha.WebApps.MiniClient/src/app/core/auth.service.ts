@@ -77,7 +77,7 @@ export class AuthService {
       loginUrl: `https://${environment.authTenant}.b2clogin.com/${environment.authTenant}.onmicrosoft.com/oauth2/v2.0/authorize?p=${environment.authPolicy}`,
       logoutUrl: `https://${environment.authTenant}.b2clogin.com/${environment.authTenant}.onmicrosoft.com/oauth2/v2.0/logout?p=${environment.authPolicy}`,
       tokenEndpoint: `https://${environment.authTenant}.b2clogin.com/${environment.authTenant}.onmicrosoft.com/oauth2/v2.0/token?p=${environment.authPolicy}`,
-      scope: environment.authScope,
+      scope: 'openid offline_access ' + environment.authScope,
       strictDiscoveryDocumentValidation: false,
       clientId: environment.authClientId,
       redirectUri: environment.authRedirectUrl,

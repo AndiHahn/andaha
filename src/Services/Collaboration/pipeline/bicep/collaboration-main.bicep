@@ -1,11 +1,15 @@
 param stage string
 param location string = resourceGroup().location
 param version string
+param authAzureAdB2CClientId string
+param authAzureAdB2CGraphApiClientId string
 param containerRegistryUsername string
 @secure()
 param containerRegistryPassword string
 @secure()
 param sqlServerAdminPassword string
+@secure()
+param authAzureAdB2CGraphApiClientSecret string
 
 module coreInfrastructure '../../../../../pipeline/bicep/main.bicep' = {
   name: 'andaha-core-infrastructure'
@@ -23,7 +27,9 @@ module containerApp 'collaboration-app-module.bicep' = {
     location: location
     imageVersion: version
     containerAppsEnvironmentId: coreInfrastructure.outputs.containerAppEnvironmentId
-    containerAppsEnvironmentDomain: coreInfrastructure.outputs.containerAppEnvironmentDomain
+    authAzureAdB2CClientId: authAzureAdB2CClientId
+    authAzureAdB2CGraphApiClientId: authAzureAdB2CGraphApiClientId
+    authAzureAdB2CGraphApiClientSecret: authAzureAdB2CGraphApiClientSecret
     containerRegistryUsername: containerRegistryUsername
     containerRegistryPassword: containerRegistryPassword
     sqlDbConnectionString: coreInfrastructure.outputs.databaseConnectionString

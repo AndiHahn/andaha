@@ -1,6 +1,7 @@
 param stage string
 param location string = resourceGroup().location
 param version string
+param authAzureAdB2CClientId string
 param containerRegistryUsername string
 @secure()
 param containerRegistryPassword string
@@ -31,7 +32,7 @@ module containerApp 'shopping-app-module.bicep' = {
     location: location
     imageVersion: version
     containerAppsEnvironmentId: coreInfrastructure.outputs.containerAppEnvironmentId
-    containerAppsEnvironmentDomain: coreInfrastructure.outputs.containerAppEnvironmentDomain
+    authAzureAdB2CClientId: authAzureAdB2CClientId
     containerRegistryUsername: containerRegistryUsername
     containerRegistryPassword: containerRegistryPassword
     sqlDbConnectionString: coreInfrastructure.outputs.databaseConnectionString
