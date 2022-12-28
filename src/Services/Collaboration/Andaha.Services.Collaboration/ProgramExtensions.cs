@@ -1,10 +1,11 @@
 ﻿using Andaha.CrossCutting.Application;
-using Andaha.Services.Collaboration.Filter;
+using Andaha.CrossCutting.Application.Swagger;
 using Andaha.Services.Collaboration.Health;
 using Andaha.Services.Collaboration.Infrastructure;
 using Andaha.Services.Collaboration.Infrastructure.Proxies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
 using Polly;
 using System.Reflection;
@@ -49,7 +50,10 @@ public static class ProgramExtensions
 
         builder.Services.Configure<DaprConfiguration>(builder.Configuration.GetSection("Dapr"));
 
-        builder.Services.AddScoped<IIdentityApiProxy, IdentityApiProxy>();
+        builder.Services.Configure<AzureAdB2CGraphApiConfiguration>(builder.Configuration.GetSection("Authentication").GetSection("AzureAdB2CGraphApi"));
+
+        builder.Services.AddScoped<IIdentityApiProxy, AzureAdB2CProxy>();
+        builder.Services.AddScoped<Microsoft.Graph.IAuthenticationProvider, MsalAuthenticationProvider>();
 
         return builder;
     }
@@ -63,13 +67,7 @@ public static class ProgramExtensions
 
         builder.Services
             .AddAuthentication("Bearer")
-            .AddJwtBearer(
-                options =>
-                {
-                    options.Audience = "collaboration-api";
-                    options.Authority = identityApiBaseUrl;
-                    options.RequireHttpsMetadata = false;
-                });
+            .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("Authentication").GetSection("AzureAdB2C"));
 
         builder.Services.AddAuthorization();
 
@@ -98,7 +96,18 @@ public static class ProgramExtensions
         {
             config.SupportNonNullableReferenceTypes();
 
-            var identityApiBaseUrl = builder.Configuration.GetSection("ExternalUrls").GetValue<string>("IdentityApi");
+            var azureAdB2CConfig = builder.Configuration.GetSection("Authentication").GetSection("AzureAdB2CSwagger");
+
+            string? tenant = azureAdB2CConfig.GetValue<string>("Tenant");
+            string? policy = azureAdB2CConfig.GetValue<string>("SignUpSignInPolicyId");
+            string? scope = azureAdB2CConfig.GetValue<string>("Scope");
+            if (tenant is null || policy is null || scope is null)
+            {
+                throw new InvalidOperationException("AzureAdB2CSwagger parameters must be provieded in appsettings.");
+            }
+
+            string authEndpoint = $"https://{tenant}.b2clogin.com/{tenant}.onmicrosoft.com/{policy}/oauth2/v2.0/authorize";
+            string tokenEndpoint = $"https://{tenant}.b2clogin.com/{tenant}.onmicrosoft.com/{policy}/oauth2/v2.0/token";
 
             config.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
             {
@@ -107,17 +116,21 @@ public static class ProgramExtensions
                 {
                     Implicit = new OpenApiOAuthFlow()
                     {
-                        AuthorizationUrl = new Uri($"{identityApiBaseUrl}/connect/authorize"),
-                        TokenUrl = new Uri($"{identityApiBaseUrl}/connect/token"),
+                        AuthorizationUrl = new Uri(authEndpoint),
+                        TokenUrl = new Uri(tokenEndpoint),
                         Scopes = new Dictionary<string, string>()
                         {
-                            { "collaboration" , "Collaboration API" }
+                            { scope, "Required scopes" },
                         }
                     }
                 }
             });
 
             config.OperationFilter<AuthorizeCheckOperationFilter>();
+
+            config.OperationFilter<SwaggerDefaultValues>();
+
+            config.SchemaFilter<SmartEnumSchemaFilter>();
         });
 
         return builder;

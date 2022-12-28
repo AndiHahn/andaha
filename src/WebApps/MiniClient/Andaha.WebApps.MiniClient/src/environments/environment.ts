@@ -9,11 +9,13 @@ export const environment = {
   useMonolithApi: true,
   monolithApiBaseUrl: "http://localhost:9900",
   gatewayBaseUrl : "http://localhost:9000",
-  authIssuerUrl: 'http://localhost:9100',
-  authRedirectUrl: window.location.origin,
-  authClientId: 'miniclient',
+  authTenant: 'andreasorganization',
+  authTenantId: '3e43c7d4-5672-4b6f-b26d-0c65646378d8',
+  authPolicy: 'B2C_1_SignUpSignIn',
+  authRedirectUrl: window.location.origin + "/",
+  authClientId: 'bfbbb429-801d-4ac2-8dcf-f9d51bb010dc',
   authResponseType: 'code',
-  authScope: 'openid profile offline_access shopping collaboration budgetplan monolith',
+  authScope: 'openid offline_access https://andreasorganization.onmicrosoft.com/3b6deee3-2974-4acf-87e8-a0013be3bc8d/access_as_user',
   authShowDebugInformation: true,
 };
 */
@@ -24,19 +26,12 @@ export const environment = {
   useMonolithApi: true,
   monolithApiBaseUrl: "https://localhost:8900",
   gatewayBaseUrl : "https://localhost:8000",
-  authIssuerUrl: 'https://localhost:8100',
-  authRedirectUrl: window.location.origin,
-  authClientId: 'miniclient',
+  authTenant: 'andreasorganization',
+  authTenantId: '3e43c7d4-5672-4b6f-b26d-0c65646378d8',
+  authPolicy: 'B2C_1_SignUpSignIn',
+  authRedirectUrl: window.location.origin + "/",
+  authClientId: 'bfbbb429-801d-4ac2-8dcf-f9d51bb010dc',
   authResponseType: 'code',
-  authScope: 'openid profile offline_access shopping collaboration budgetplan monolith',
+  authScope: 'openid offline_access https://andreasorganization.onmicrosoft.com/3b6deee3-2974-4acf-87e8-a0013be3bc8d/access_as_user',
   authShowDebugInformation: true,
 };
-
-/*
- * For easier debugging in development mode, you can import the following file
- * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
- *
- * This import should be commented out in production mode because it will have a negative impact
- * on performance if an error is thrown.
- */
-// import 'zone.js/plugins/zone-error';  // Included with Angular CLI.

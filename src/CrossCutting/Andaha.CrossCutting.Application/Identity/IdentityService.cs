@@ -29,7 +29,7 @@ internal class IdentityService : IIdentityService
     {
         var user = httpContext.HttpContext?.User;
 
-        var emailClaim = user?.FindFirst(ClaimTypes.Email)?.Value;
+        var emailClaim = user?.FindFirst("emails")?.Value;
 
         if (emailClaim is null)
         {

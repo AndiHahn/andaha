@@ -35,7 +35,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(
         options =>
         {
-            options.OAuthClientId("budgetplanswaggerui");
+            string? clientId = builder.Configuration.GetSection("Authentication").GetSection("AzureAdB2CSwagger").GetValue<string>("ClientId");
+            if (clientId is null)
+            {
+                throw new InvalidOperationException("Swagger ClientId for AzureAdB2C authentication is not set in appsettings.");
+            }
+
+            options.OAuthClientId(clientId);
 
             var descriptions = app.DescribeApiVersions();
 

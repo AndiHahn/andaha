@@ -16,8 +16,12 @@ export class AuthService {
 
   init() {
     this.oauthService.configure(this.getCodeFlowConfig());
-    this.oauthService.loadDiscoveryDocumentAndTryLogin()
-      .then(_ => {
+
+    this.oauthService.setupAutomaticSilentRefresh();
+
+    this.oauthService
+      .loadDiscoveryDocument('https://andreasorganization.b2clogin.com/andreasorganization.onmicrosoft.com/B2C_1_SignUpSignIn/v2.0/.well-known/openid-configuration').then(_ =>
+        this.oauthService.tryLogin().then(_ => {
           if (this.oauthService.hasValidAccessToken()) {
             this.isAuthenticated$.next(true);
             this.buildAndRaiseAuthInfo();
@@ -28,13 +32,15 @@ export class AuthService {
               resolve(true);
             });
           }
-      });
-
-    this.oauthService.setupAutomaticSilentRefresh();
+    }));
   }
 
   login(): void {
-    this.oauthService.initLoginFlow();
+    if (!this.oauthService.hasValidAccessToken()) {
+      this.oauthService.silentRefresh();
+    } else {
+      this.oauthService.initLoginFlow();
+    }
   }
 
   logout(): void {
@@ -54,30 +60,28 @@ export class AuthService {
   }
 
   private buildAndRaiseAuthInfo() {
-    this.oauthService.loadUserProfile().then(userProfile => {
-      const userProfileClaims = userProfile as any;
-
-      if (userProfileClaims) {
-
-        const authInfo: UserAuthInfo = {
-          userName: userProfileClaims.info.name,
-          userEmail: userProfileClaims.info.email
-        }
-        
-        this.userAuthInfo$.next(authInfo);
+    const claims = this.oauthService.getIdentityClaims() as any;
+    if (claims) {
+      const authInfo: UserAuthInfo = {
+        userName: claims.name,
+        userEmail: claims.emails[0]
       }
-    });
+      
+      this.userAuthInfo$.next(authInfo);
+    }
   }
 
   private getCodeFlowConfig(): AuthConfig {
     return {
-      issuer: environment.authIssuerUrl,
-      loginUrl: environment.authIssuerUrl + '/connect/authorize',
-      tokenEndpoint: environment.authIssuerUrl + 'connect/token',
-      redirectUri: environment.authRedirectUrl,
-      clientId: environment.authClientId,
-      responseType: environment.authResponseType,
+      issuer: `https://${environment.authTenant}.b2clogin.com/${environment.authTenantId}/v2.0/`,
+      loginUrl: `https://${environment.authTenant}.b2clogin.com/${environment.authTenant}.onmicrosoft.com/oauth2/v2.0/authorize?p=${environment.authPolicy}`,
+      logoutUrl: `https://${environment.authTenant}.b2clogin.com/${environment.authTenant}.onmicrosoft.com/oauth2/v2.0/logout?p=${environment.authPolicy}`,
+      tokenEndpoint: `https://${environment.authTenant}.b2clogin.com/${environment.authTenant}.onmicrosoft.com/oauth2/v2.0/token?p=${environment.authPolicy}`,
       scope: environment.authScope,
+      strictDiscoveryDocumentValidation: false,
+      clientId: environment.authClientId,
+      redirectUri: environment.authRedirectUrl,
+      responseType: environment.authResponseType,
       showDebugInformation: environment.authShowDebugInformation
     }
   };
