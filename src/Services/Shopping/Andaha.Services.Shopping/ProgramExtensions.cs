@@ -137,16 +137,17 @@ public static class ProgramExtensions
 
             var azureAdB2CConfig = builder.Configuration.GetSection("Authentication").GetSection("AzureAdB2CSwagger");
 
+            string? domain = azureAdB2CConfig.GetValue<string>("Domain");
             string? tenant = azureAdB2CConfig.GetValue<string>("Tenant");
             string? policy = azureAdB2CConfig.GetValue<string>("SignUpSignInPolicyId");
             string? scope = azureAdB2CConfig.GetValue<string>("Scope");
-            if (tenant is null || policy is null || scope is null)
+            if (domain is null || tenant is null || policy is null || scope is null)
             {
                 throw new InvalidOperationException("AzureAdB2CSwagger parameters must be provieded in appsettings.");
             }
 
-            string authEndpoint = $"https://{tenant}.b2clogin.com/{tenant}.onmicrosoft.com/{policy}/oauth2/v2.0/authorize";
-            string tokenEndpoint = $"https://{tenant}.b2clogin.com/{tenant}.onmicrosoft.com/{policy}/oauth2/v2.0/token";
+            string authEndpoint = $"https://{domain}/{tenant}.onmicrosoft.com/{policy}/oauth2/v2.0/authorize";
+            string tokenEndpoint = $"https://{domain}/{tenant}.onmicrosoft.com/{policy}/oauth2/v2.0/token";
 
             config.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
             {

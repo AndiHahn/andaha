@@ -19,8 +19,10 @@ export class AuthService {
 
     this.oauthService.setupAutomaticSilentRefresh();
 
+    const openidConfigurationUrl = `https://${environment.loginDomain}/${environment.authTenant}.onmicrosoft.com/${environment.authPolicy}/v2.0/.well-known/openid-configuration`;
+
     this.oauthService
-      .loadDiscoveryDocument('https://andreasorganization.b2clogin.com/andreasorganization.onmicrosoft.com/B2C_1_SignUpSignIn/v2.0/.well-known/openid-configuration').then(_ =>
+      .loadDiscoveryDocument(openidConfigurationUrl).then(_ =>
         this.oauthService.tryLogin().then(_ => {
           if (this.oauthService.hasValidAccessToken()) {
             this.isAuthenticated$.next(true);
@@ -73,10 +75,10 @@ export class AuthService {
 
   private getCodeFlowConfig(): AuthConfig {
     return {
-      issuer: `https://${environment.authTenant}.b2clogin.com/${environment.authTenantId}/v2.0/`,
-      loginUrl: `https://${environment.authTenant}.b2clogin.com/${environment.authTenant}.onmicrosoft.com/oauth2/v2.0/authorize?p=${environment.authPolicy}`,
-      logoutUrl: `https://${environment.authTenant}.b2clogin.com/${environment.authTenant}.onmicrosoft.com/oauth2/v2.0/logout?p=${environment.authPolicy}`,
-      tokenEndpoint: `https://${environment.authTenant}.b2clogin.com/${environment.authTenant}.onmicrosoft.com/oauth2/v2.0/token?p=${environment.authPolicy}`,
+      issuer: `https://${environment.loginDomain}/${environment.authTenantId}/v2.0/`,
+      loginUrl: `https://${environment.loginDomain}/${environment.authTenant}.onmicrosoft.com/oauth2/v2.0/authorize?p=${environment.authPolicy}`,
+      logoutUrl: `https://${environment.loginDomain}/${environment.authTenant}.onmicrosoft.com/oauth2/v2.0/logout?p=${environment.authPolicy}`,
+      tokenEndpoint: `https://${environment.loginDomain}/${environment.authTenant}.onmicrosoft.com/oauth2/v2.0/token?p=${environment.authPolicy}`,
       scope: 'openid offline_access ' + environment.authScope,
       strictDiscoveryDocumentValidation: false,
       clientId: environment.authClientId,
