@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormArray, FormGroup } from '@angular/forms';
+import { CategoryForm, createSubCategoryForm, SubCategoryForm } from '../functions/form-functions';
 
 @Component({
   selector: 'app-category-item',
@@ -15,16 +16,15 @@ export class CategoryItemComponent implements OnInit, OnChanges {
   isDefault: boolean = false;
 
   @Input()
-  categoryNameControl!: FormControl;
-
-  @Input()
-  categoryColorControl!: FormControl;
+  categoryForm!: FormGroup<CategoryForm>;
 
   @Output()
   deleteCategory: EventEmitter<void> = new EventEmitter();
 
   colors: string[];
   selectedColor: string = '';
+
+  subCategoryForms!: FormArray<FormGroup<SubCategoryForm>>;
 
   constructor() {
     this.colors = [
@@ -72,15 +72,13 @@ export class CategoryItemComponent implements OnInit, OnChanges {
   }
   
   ngOnInit(): void {
-    if (!this.categoryNameControl) {
-      throw new Error("Category name control is required in order to use this component");
+    if (!this.categoryForm) {
+      throw new Error("CategoryForm is required in order to use this component");
     }
 
-    if (!this.categoryColorControl) {
-      throw new Error("Category color control is required in order to use this component");
-    }
+    this.subCategoryForms = this.categoryForm.controls.subCategories;
 
-    this.selectedColor = this.categoryColorControl.value;
+    this.selectedColor = this.categoryForm.controls.color.value;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -99,6 +97,14 @@ export class CategoryItemComponent implements OnInit, OnChanges {
     }
   }
 
+  onDeleteSubCaategoryClick(index: number): void {
+    this.subCategoryForms.removeAt(index);
+  }
+
+  onAddSubCategoryClick(): void {
+    this.subCategoryForms.push(createSubCategoryForm(''));
+  }
+
   private refreshFormControls() : void {
     if (this.editing && !this.isDefault) {
       this.enableFormControls();
@@ -108,12 +114,10 @@ export class CategoryItemComponent implements OnInit, OnChanges {
   }
 
   private enableFormControls(): void {
-    this.categoryNameControl.enable();
-    this.categoryColorControl.enable();
+    this.categoryForm.enable();
   }
 
   private disableFormControls(): void {
-    this.categoryNameControl.disable();
-    this.categoryColorControl.disable();
+    this.categoryForm.disable();
   }
 }

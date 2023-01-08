@@ -23,7 +23,7 @@ internal static class BillCategoryEndpointExtensions
     {
         groupBuilder
             .MediateGet<ListBillCategories.V1.ListBillCategoriesQuery>("/")
-            .Produces<IEnumerable<Dtos.V1.BillCategoryDto>>()
+            .Produces<IEnumerable<Dtos.V1.CategoryDto>>()
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
 
         return app;
@@ -35,7 +35,7 @@ internal static class BillCategoryEndpointExtensions
     {
         groupBuilder
             .MediatePut<UpdateBillCategories.V1.UpdateBillCategoriesCommand>("/")
-            .Produces<IEnumerable<Dtos.V1.BillCategoryDto>>()
+            .Produces<IEnumerable<Dtos.V1.CategoryDto>>()
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
 
         return app;

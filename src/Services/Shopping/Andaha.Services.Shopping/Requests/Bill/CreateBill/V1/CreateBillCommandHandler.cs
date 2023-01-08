@@ -26,7 +26,16 @@ internal class CreateBillCommandHandler : IRequestHandler<CreateBillCommand, IRe
         Guid userId = identityService.GetUserId();
 
         var newBill = dbContext.Bill.Add(
-            new Core.Bill(request.Id, userId, request.CategoryId, request.ShopName, request.Price, request.Date, request.Notes));
+            new Core.Bill(
+                request.Id,
+                userId,
+                request.CategoryId,
+                request.SubCategoryId,
+                request.ShopName,
+                request.Price,
+                request.Date,
+                request.Notes));
+
         await dbContext.SaveChangesAsync(cancellationToken);
 
         if (request.Image is not null)

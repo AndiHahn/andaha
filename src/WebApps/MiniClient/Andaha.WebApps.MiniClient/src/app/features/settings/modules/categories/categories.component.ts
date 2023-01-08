@@ -1,12 +1,14 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormArray, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
-import { BillCategoryUpdateDto } from 'src/app/api/shopping/dtos/BillCategoryUpdateDto';
+import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
+import { CategoryUpdateDto } from 'src/app/api/shopping/dtos/CategoryUpdateDto';
+import { SubCategoryUpdateDto } from 'src/app/api/shopping/dtos/SubCategoryUpdateDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/ConfirmationDialogData';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
+import { CategoryForm, createCategoryFormGroup, SubCategoryForm } from './functions/form-functions';
 
 @Component({
   selector: 'app-categories',
@@ -14,13 +16,13 @@ import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
   styleUrls: ['./categories.component.scss']
 })
 export class CategoriesComponent implements OnInit {
-  categories?: BillCategoryDto[];
+  categories?: CategoryDto[];
 
   isSaving: boolean = false;
   isEditing: boolean = false;
   isLoading: boolean = false;
 
-  formGroups?: FormGroup[];
+  formGroups?: FormGroup<CategoryForm>[];
   
   get allCategoriesValid(): boolean {
     let valid = true;
@@ -59,7 +61,7 @@ export class CategoriesComponent implements OnInit {
   }
 
   onAddCategoryClick(): void {
-    this.formGroups?.push(this.createCategoryFormGroup('', ''));
+    this.formGroups?.push(createCategoryFormGroup([], '', ''));
   }
 
   onSaveClick(): void {
@@ -126,33 +128,46 @@ export class CategoriesComponent implements OnInit {
     );
   }
 
-  private initFormGroups(categories: BillCategoryDto[]): void {
-    const formGroups: FormGroup[] = [];
+  private initFormGroups(categories: CategoryDto[]): void {
+    const formGroups: FormGroup<CategoryForm>[] = [];
     
     categories.forEach(category => {
-      const formGroup = this.createCategoryFormGroup(category.name, category.color, category.id);
+      const formGroup = createCategoryFormGroup(category.subCategories, category.name, category.color, category.id);
       
       formGroups.push(formGroup);
     });
 
     this.formGroups = formGroups;
   }
-
-  private createCategoryFormGroup(name: string, color: string, id?: string): FormGroup {
-    return new FormGroup({
-      categoryId: new FormControl(id),
-      categoryName: new FormControl(name, [ Validators.required ]),
-      categoryColor: new FormControl(color, [ Validators.required ])
-    });
-  }
-
-  private createCategoryUpdateDto(formGroup: FormGroup): BillCategoryUpdateDto {
+  
+  private createCategoryUpdateDto(formGroup: FormGroup<CategoryForm>): CategoryUpdateDto {
     const controls = formGroup.controls;
 
     return {
-      id: controls['categoryId'].value,
-      name: controls['categoryName'].value,
-      color: controls['categoryColor'].value
+      id: controls.id.value ?? undefined,
+      name: controls.name.value,
+      color: controls.color.value,
+      subCategories: this.createSubCategoryUpdateDtos(controls.subCategories)
+    }
+  }
+
+  private createSubCategoryUpdateDtos(categories: FormArray<FormGroup<SubCategoryForm>>): SubCategoryUpdateDto[]  {
+    const subCategories: SubCategoryUpdateDto[] = [];
+    
+    for (let index = 0; index < categories.length; index++) {
+      const subCategoryForm = categories.at(index);
+
+      subCategories.push(this.createSubCategoryUpdateDto(subCategoryForm));
+    }
+
+    return subCategories;
+  }
+
+  private createSubCategoryUpdateDto(subCategory: FormGroup<SubCategoryForm>): SubCategoryUpdateDto {
+    
+    return {
+      id: subCategory.controls.id.value ?? undefined,
+      name: subCategory.controls.name.value
     }
   }
 }

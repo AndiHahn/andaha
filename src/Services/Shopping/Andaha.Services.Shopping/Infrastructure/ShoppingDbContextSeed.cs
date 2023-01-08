@@ -1,5 +1,4 @@
 ﻿using Andaha.Services.Shopping.Core;
-using Microsoft.EntityFrameworkCore;
 
 namespace Andaha.Services.Shopping.Infrastructure;
 
@@ -9,16 +8,16 @@ public static class ShoppingDbContextSeed
     {
         var categories = new List<BillCategory>
         {
-            new BillCategory(userId, "Keine", "white", true),
-            new BillCategory(userId, "Lebensmittel", "red"),
-            new BillCategory(userId, "Wohnen", "pink"),
-            new BillCategory(userId, "Kleidung", "purple"),
-            new BillCategory(userId, "Ausbildung", "yellow"),
-            new BillCategory(userId, "Freizeit", "indigo"),
-            new BillCategory(userId, "Auto/Motorrad", "orange"),
-            new BillCategory(userId, "Hygiene/Gesundheit", "brown"),
-            new BillCategory(userId, "Geschenke", "grey"),
-            new BillCategory(userId, "Restaurant", "magenta"),
+            new BillCategory(userId, "Keine", "white", Array.Empty<string>(), true),
+            new BillCategory(userId, "Lebensmittel", "red", Array.Empty<string>()),
+            new BillCategory(userId, "Wohnen", "pink", Array.Empty<string>()),
+            new BillCategory(userId, "Kleidung", "purple", Array.Empty<string>()),
+            new BillCategory(userId, "Ausbildung", "yellow", Array.Empty<string>()),
+            new BillCategory(userId, "Freizeit", "indigo", Array.Empty<string>()),
+            new BillCategory(userId, "Auto/Motorrad", "orange", Array.Empty<string>()),
+            new BillCategory(userId, "Hygiene/Gesundheit", "brown", Array.Empty<string>()),
+            new BillCategory(userId, "Geschenke", "grey", Array.Empty<string>()),
+            new BillCategory(userId, "Restaurant", "magenta", Array.Empty<string>()),
         };
 
         return categories;

@@ -10,6 +10,8 @@ public class BillImageModelBuilder : IEntityTypeConfiguration<BillImage>
     {
         builder.HasKey(billImage => billImage.Id);
 
+        builder.Property(billImage => billImage.Id).ValueGeneratedNever();
+
         builder
             .HasOne(billImage => billImage.Bill)
             .WithMany(bill => bill.Images)

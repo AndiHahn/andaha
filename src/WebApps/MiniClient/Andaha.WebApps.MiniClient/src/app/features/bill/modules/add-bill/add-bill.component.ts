@@ -3,12 +3,15 @@ import { FormGroup, FormGroupDirective } from '@angular/forms';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { generateGuid } from 'src/app/api/functions/api-utils';
-import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
+import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillCreateDto } from 'src/app/api/shopping/dtos/BillCreateDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { BillContextService } from 'src/app/services/bill-context.service';
 import { BillForm, getEmptyBillForm } from '../../functions/bill-form-functions';
 import { ImageSnippet } from '../add-bill-image-dialog/add-bill-image-dialog.component';
+import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
+import { BillSubCategoryDto } from 'src/app/api/shopping/dtos/BillSubCategoryDto';
+import { MatSelectChange } from '@angular/material/select';
 
 export const MY_FORMATS = {
   parse: {
@@ -44,7 +47,9 @@ export class AddBillComponent implements OnInit {
 
   form: FormGroup<BillForm>;
 
-  categories?: BillCategoryDto[];
+  allCategories?: CategoryDto[];
+  billCategories?: BillCategoryDto[];
+  billSubCategories?: BillSubCategoryDto[];
 
   image?: ImageSnippet;
   
@@ -59,12 +64,13 @@ export class AddBillComponent implements OnInit {
     this.loadBillCategories();
   }
 
-  private loadBillCategories() {
-    this.billCategoryContextService.categories().subscribe({
-      next: categories => {
-        this.categories = categories;
-      }
-    })
+  categorySelectionChanged(selection: MatSelectChange): void {
+    this.form.controls.subCategory.setValue(null);
+
+    const category = this.allCategories?.find(c => c.id == selection.value.id);
+    if (category) {
+      this.billSubCategories = category.subCategories;
+    }
   }
 
   onSubmit(formDirective: FormGroupDirective) {
@@ -74,8 +80,9 @@ export class AddBillComponent implements OnInit {
 
     const dto = this.createModelFromForm();
     const category = this.getCategoryFromForm();
+    const subCategory = this.getSubCategoryFromForm();
 
-    this.billContextService.addBill(dto, category);
+    this.billContextService.addBill(dto, category, subCategory);
     
     formDirective.resetForm();
     this.form.reset();
@@ -86,11 +93,21 @@ export class AddBillComponent implements OnInit {
     this.image = image;
   }
 
+  private loadBillCategories() {
+    this.billCategoryContextService.categories().subscribe({
+      next: categories => {
+        this.allCategories = categories;
+        this.billCategories = categories.map(c => this.categoryToBillCategory(c));
+      }
+    })
+  }
+
   private createModelFromForm(): BillCreateDto {
     const controls = this.form.controls;
     return {
       id: generateGuid(),
       categoryId: controls.category.value!.id,
+      subCategoryId: controls.subCategory.value?.id ?? undefined,
       shopName: controls.shopName.value,
       price: controls.price.value!,
       date: new Date(controls.date?.value),
@@ -105,7 +122,23 @@ export class AddBillComponent implements OnInit {
       id: controls.category.value!.id,
       name: controls.category.value!.name,
       color: controls.category.value!.color,
-      isDefault: controls.category.value!.isDefault,
+    }
+  }
+
+  private getSubCategoryFromForm(): BillSubCategoryDto {
+    const controls = this.form.controls;
+
+    return {
+      id: controls.category.value!.id,
+      name: controls.category.value!.name,
+    }
+  }
+
+  private categoryToBillCategory(category: CategoryDto): BillCategoryDto {
+    return {
+      id: category.id,
+      name: category.name,
+      color: category.color
     }
   }
 }

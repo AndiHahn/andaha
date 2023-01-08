@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { ChartOptions } from 'chart.js';
-import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
+import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { ExpenseDto } from 'src/app/api/shopping/dtos/ExpenseDto';
 import { BillContextService } from 'src/app/services/bill-context.service';
 import { TimeRange } from '../timerange-selection/TimeRange';
@@ -17,7 +17,7 @@ export class ChartComponent implements OnInit, OnChanges {
   expenses!: ExpenseDto[];
 
   @Input()
-  categories!: BillCategoryDto[];
+  categories!: CategoryDto[];
 
   @Input()
   selectedTimeRange?: TimeRange;

@@ -93,6 +93,7 @@ export class BillCacheService {
       id: bill.id,
       shopName: bill.shopName,
       categoryId: bill.categoryId,
+      subCategoryId: bill.subCategoryId,
       date: bill.date,
       price: bill.price,
       notes: bill.notes
@@ -122,6 +123,7 @@ export class BillCacheService {
       shopName: bill.shopName,
       date: bill.date,
       categoryId: bill.categoryId,
+      subCategoryId: bill.subCategoryId,
       price: bill.price,
       notes: bill.notes,
       image: file

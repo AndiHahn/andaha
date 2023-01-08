@@ -5,6 +5,7 @@ namespace Andaha.Services.Shopping.Requests.Bill.UpdateBill.V1;
 public record UpdateBillCommand(
     Guid Id,
     Guid CategoryId,
+    Guid? SubCategoryId,
     string ShopName,
     double Price,
     DateTime Date,

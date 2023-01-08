@@ -4,4 +4,4 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Andaha.Services.Shopping.Requests.BillCategory.UpdateBillCategories.V1;
 
-public record UpdateBillCategoriesCommand([property: FromBody] IReadOnlyCollection<BillCategoryUpdateDto> Categories) : IHttpRequest;
+public record UpdateBillCategoriesCommand([property: FromBody] IReadOnlyCollection<CategoryUpdateDto> Categories) : IHttpRequest;

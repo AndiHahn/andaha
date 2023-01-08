@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
+import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { ExpenseDto } from 'src/app/api/shopping/dtos/ExpenseDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { ExpenseContextService } from 'src/app/services/expense-context.service';
@@ -14,7 +14,7 @@ export class ExpensesComponent implements OnInit {
 
   availableTimeRange?: TimeRange;
   expenses: ExpenseDto[] = [];
-  categories: BillCategoryDto[] = [];
+  categories: CategoryDto[] = [];
   isLoading: boolean = false;
 
   sum: number = 0.0;

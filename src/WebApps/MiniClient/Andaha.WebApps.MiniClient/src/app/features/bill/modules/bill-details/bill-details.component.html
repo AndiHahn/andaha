@@ -32,9 +32,18 @@
       </mat-form-field>
       <mat-form-field appearance="fill">
         <mat-label>Kategorie</mat-label>
-        <mat-select formControlName="category" required>
-          <mat-option *ngFor="let category of categories" [value]="category">
+        <mat-select formControlName="category" required (selectionChange)="categorySelectionChanged($event)">
+          <mat-option *ngFor="let category of billCategories" [value]="category">
             {{category?.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="fill" *ngIf="bill.subCategory || (billSubCategories && billSubCategories.length > 0)">
+        <mat-label>Unterkategorie</mat-label>
+        <mat-select formControlName="subCategory">
+          <mat-option></mat-option>
+          <mat-option *ngFor="let subCategory of billSubCategories" [value]="subCategory">
+            {{subCategory?.name}}
           </mat-option>
         </mat-select>
       </mat-form-field>

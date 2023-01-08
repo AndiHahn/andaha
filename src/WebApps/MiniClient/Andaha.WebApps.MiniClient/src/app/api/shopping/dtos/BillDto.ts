@@ -1,5 +1,6 @@
 import { PagedResultDto } from "../../common-dtos/PagedResultDto";
 import { BillCategoryDto } from "./BillCategoryDto";
+import { BillSubCategoryDto } from "./BillSubCategoryDto";
 
 export interface BillDto extends BillDtoBase {
   date: Date;
@@ -12,6 +13,7 @@ export interface BillDtoRaw extends BillDtoBase {
 interface BillDtoBase {
   id: string;
   category: BillCategoryDto;
+  subCategory?: BillSubCategoryDto;
   shopName: string;
   price: number;
   notes?: string;

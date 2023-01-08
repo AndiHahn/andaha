@@ -12,6 +12,7 @@ public class Bill : Entity<Guid>
         Guid? id,
         Guid createdByUserId,
         Guid categoryId,
+        Guid? subCategoryId,
         string shopName,
         double price,
         DateTime? date = null,
@@ -26,6 +27,11 @@ public class Bill : Entity<Guid>
         if (categoryId == Guid.Empty)
         {
             throw new ArgumentException("Parameter must not be empty.", nameof(categoryId));
+        }
+
+        if (subCategoryId == Guid.Empty)
+        {
+            throw new ArgumentException("Parameter must not be empty.", nameof(subCategoryId));
         }
 
         if (string.IsNullOrEmpty(shopName))
@@ -45,6 +51,7 @@ public class Bill : Entity<Guid>
 
         this.UserId = createdByUserId;
         this.CategoryId = categoryId;
+        this.SubCategoryId = subCategoryId;
         this.ShopName = shopName;
         this.Price = price;
         this.Date = date ?? DateTime.UtcNow;
@@ -54,6 +61,8 @@ public class Bill : Entity<Guid>
     public Guid UserId { get; private set; }
 
     public Guid CategoryId { get; private set; }
+
+    public Guid? SubCategoryId { get; private set; }
 
     public string ShopName { get; private set; } = null!;
 
@@ -66,6 +75,8 @@ public class Bill : Entity<Guid>
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
     public BillCategory Category { get; private set; } = null!;
+
+    public BillSubCategory? SubCategory { get; private set; }
 
     public virtual ICollection<BillImage> Images { get; private set; } = null!;
 
@@ -87,14 +98,22 @@ public class Bill : Entity<Guid>
         this.Category = category;
     }
 
+    public void UpdateSubCategory(BillSubCategory subCategory)
+    {
+        this.SubCategoryId = subCategory.Id;
+        this.SubCategory = subCategory;
+    }
+
     public void Update(
         Guid? categoryId = null,
+        Guid? subCategoryId = null,
         string? shopName = null,
         double? price = null,
         DateTime? date = null,
         string? notes = null)
     {
         this.CategoryId = categoryId ?? this.CategoryId;
+        this.SubCategoryId = subCategoryId ?? this.SubCategoryId;
         this.ShopName = shopName ?? this.ShopName;
         this.Price = price ?? this.Price;
         this.Date = date ?? this.Date;

@@ -1,6 +1,5 @@
 ﻿using Andaha.CrossCutting.Application.Identity;
 using Andaha.Services.Shopping.Infrastructure;
-using Andaha.Services.Shopping.Infrastructure.Proxies;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,16 +9,13 @@ internal class UpdateBillCategoriesCommandHandler : IRequestHandler<UpdateBillCa
 {
     private readonly ShoppingDbContext dbContext;
     private readonly IIdentityService identityService;
-    private readonly ICollaborationApiProxy collaborationApiProxy;
 
     public UpdateBillCategoriesCommandHandler(
         ShoppingDbContext dbContext,
-        IIdentityService identityService,
-        ICollaborationApiProxy collaborationApiProxy)
+        IIdentityService identityService)
     {
         this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         this.identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
-        this.collaborationApiProxy = collaborationApiProxy ?? throw new ArgumentNullException(nameof(collaborationApiProxy));
     }
 
     public async Task<IResult> Handle(UpdateBillCategoriesCommand request, CancellationToken cancellationToken)
@@ -27,22 +23,48 @@ internal class UpdateBillCategoriesCommandHandler : IRequestHandler<UpdateBillCa
         Guid userId = identityService.GetUserId();
 
         var existingCategories = await dbContext.BillCategory
+            .Include(category => category.SubCategories)
             .Where(category => category.UserId == userId)
             .ToListAsync(cancellationToken);
 
-        var categoriesToCreate = request.Categories.Where(category => category.Id is null);
-        var categoriesToUpdate = request.Categories.Except(categoriesToCreate);
-        var categoriesToRemove = existingCategories.Where(category => categoriesToUpdate.All(c => c.Id != category.Id));
+        var categoriesToCreate = request.Categories.Where(category => category.Id is null).ToList();
+        var categoriesToUpdate = request.Categories.Except(categoriesToCreate).ToList();
+        var categoriesToRemove = existingCategories.Where(category => categoriesToUpdate.All(c => c.Id != category.Id)).ToList();
 
         foreach (var category in categoriesToCreate)
         {
-            dbContext.BillCategory.Add(new Core.BillCategory(userId, category.Name, category.Color));
+            dbContext.BillCategory.Add(
+                new Core.BillCategory(
+                    userId,
+                    category.Name,
+                    category.Color,
+                    category.SubCategories.Select(subCategory => subCategory.Name).ToArray()));
         }
 
         foreach (var category in categoriesToUpdate)
         {
             var existingCategory = existingCategories.Single(c => c.Id == category.Id!);
+
             existingCategory.Update(category.Name, category.Color);
+
+            var subCategoriesToCreate = category.SubCategories.Where(category => category.Id is null).ToList();
+            var subCategoriesToUpdate = category.SubCategories.Except(subCategoriesToCreate).ToList();
+            var subCategoriesToDelete = existingCategory.SubCategories.Where(category => subCategoriesToUpdate.All(c => c.Id != category.Id)).ToList();
+
+            foreach (var subCategory in subCategoriesToCreate)
+            {
+                existingCategory.AddSubCategory(subCategory.Name);
+            }
+
+            foreach (var subCategory in subCategoriesToUpdate)
+            {
+                existingCategory.UpdateSubCategory(subCategory.Id!.Value, subCategory.Name);
+            }
+
+            foreach (var subCategory in subCategoriesToDelete)
+            {
+                existingCategory.RemoveSubCategory(subCategory.Id);
+            }
         }
 
         dbContext.BillCategory.RemoveRange(categoriesToRemove);

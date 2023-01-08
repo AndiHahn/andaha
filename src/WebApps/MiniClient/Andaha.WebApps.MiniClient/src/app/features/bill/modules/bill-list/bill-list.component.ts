@@ -5,7 +5,7 @@ import { PageEvent } from '@angular/material/paginator';
 import { BillContextService } from '../../../../services/bill-context.service';
 import { BillDataSource } from './BillDataSource';
 import { Subject } from 'rxjs';
-import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
+import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillListDateFilter } from './bill-list-filter/BillListDateFilter';
 
 @Component({
@@ -87,7 +87,7 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
     this.billContextService.searchBills();
   }
 
-  onCategoryFilterChanged(selectedCategories: BillCategoryDto[]): void {
+  onCategoryFilterChanged(selectedCategories: CategoryDto[]): void {
     const categoryFilter = selectedCategories.map(category => category.name);
 
     this.initialCategoryFilters = categoryFilter;

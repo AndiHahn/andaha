@@ -6,8 +6,7 @@
   <div style="margin: 5px 0px;">
     <div *ngFor="let formGroup of formGroups; index as i">
       <app-category-item [editing]="isEditing" [isDefault]="isDefaultCategory(i)"
-        [categoryNameControl]="$any(formGroup).controls['categoryName']"
-        [categoryColorControl]="$any(formGroup).controls['categoryColor']"
+        [categoryForm]="formGroup"
         (deleteCategory)="onDeleteCategory(i)">
       </app-category-item>
     </div>
@@ -16,6 +15,7 @@
   <div class="add-button">
     <button mat-icon-button [disabled]="!isEditing" (click)="onAddCategoryClick()">
       <mat-icon style="font-size: 35px">add_circle</mat-icon>
+      Kategorie
     </button>
   </div>
 

@@ -5,7 +5,7 @@ import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/materia
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
-import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
+import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { BillUpdateDto } from 'src/app/api/shopping/dtos/BillUpdateDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
@@ -16,6 +16,9 @@ import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { getParametersFromRouteRecursive } from 'src/app/shared/utils/routing-helper';
 import { BillForm, getBillForm } from '../../functions/bill-form-functions';
 import { ImageSnippet } from '../add-bill-image-dialog/add-bill-image-dialog.component';
+import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
+import { BillSubCategoryDto } from 'src/app/api/shopping/dtos/BillSubCategoryDto';
+import { MatSelect, MatSelectChange } from '@angular/material/select';
 
 export const MY_FORMATS = {
   parse: {
@@ -50,8 +53,11 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
 
   form: FormGroup<BillForm>;
 
+  allCategories?: CategoryDto[];
+
   bill: BillDto;
-  categories?: BillCategoryDto[];
+  billCategories?: BillCategoryDto[];
+  billSubCategories?: BillSubCategoryDto[];
   image?: ImageSnippet;
   
   isSaving: boolean = false;
@@ -86,29 +92,19 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
     this.form.disable();
   }
 
-  private updateCategories(): void {
-    if (!this.categories || !this.bill) {
-      return;
-    }
-    
-    const containsCategory = this.categories.some(category => category.id == this.bill.category.id);
-    if (!containsCategory) {
-      const categoryWithSameName = this.categories.find(category => category.name == this.bill.category.name);
-      if (categoryWithSameName) {
-        categoryWithSameName.id = this.bill.category.id;
-        categoryWithSameName.color = this.bill.category.color;
-      } else {
-        this.categories.push(this.bill.category);
-      }
-    }
-  }
-  
   ngOnInit(): void {
     this.initSubscriptions();
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
+  }
+
+  categorySelectionChanged(selection: MatSelectChange): void {
+    const category = this.allCategories?.find(c => c.id == selection.value.id);
+    this.billSubCategories = category?.subCategories;
+
+    this.form.controls.subCategory.setValue(null);
   }
 
   onEditClick(): void {
@@ -134,8 +130,9 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
 
     const dto = this.createModelFromForm();
     const category = this.getCategoryFromForm();
+    const subCategory = this.getSubCategoryFromForm();
 
-    this.billContextService.updateBill(this.bill.id, dto, category, this.bill.imageAvailable).subscribe(
+    this.billContextService.updateBill(this.bill.id, dto, category, subCategory, this.bill.imageAvailable).subscribe(
       {
         next: _ => this.isSaving = false,
         error: _ => {
@@ -186,16 +183,46 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
   private updateCategory(): void {
     this.updateCategories();
 
-    const category = this.categories?.find(category => category.id == this.bill.category.id);
+    const category = this.billCategories?.find(category => category.id == this.bill.category.id);
     if (category) {
       this.form.controls.category.setValue(category);
+
+      const categoryWithSubCategories = this.allCategories?.find(c => c.id == category.id);
+      this.billSubCategories = categoryWithSubCategories?.subCategories;
+
+      const subCategory = this.billSubCategories?.find(c => c.id == this.bill.subCategory?.id);
+      if (subCategory) {
+        this.form.controls.subCategory.setValue(subCategory);
+      }
+    }
+  }
+
+  private updateCategories(): void {
+    if (!this.billCategories || !this.bill) {
+      return;
+    }
+    
+    const containsCategory = this.billCategories.some(category => category.id == this.bill.category.id);
+    if (!containsCategory) {
+      const categoryWithSameName = this.billCategories.find(category => category.name == this.bill.category.name);
+      if (categoryWithSameName) {
+        categoryWithSameName.id = this.bill.category.id;
+        categoryWithSameName.color = this.bill.category.color;
+      } else {
+        this.billCategories.push({
+          id: this.bill.category.id,
+          name: this.bill.category.name,
+          color: this.bill.category.color,
+        });
+      }
     }
   }
 
   private initSubscriptions(): void {
     this.billCategoryContextService.categories().pipe(takeUntil(this.destroy$)).subscribe({
       next: categories => {
-        this.categories = categories;
+        this.allCategories = categories;
+        this.billCategories = categories.map(c => this.categoryToBillCategory(c));
         this.updateCategory();
       }
     });
@@ -224,8 +251,23 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
     return {
       id: controls.category.value!.id,
       name: controls.category.value!.name,
-      color: controls.category.value!.color,
-      isDefault: controls.category.value!.isDefault,
+      color: controls.category.value!.color
+    }
+  }
+
+  private getSubCategoryFromForm(): BillSubCategoryDto {
+    const controls = this.form.controls;
+    return {
+      id: controls.category.value!.id,
+      name: controls.category.value!.name,
+    }
+  }
+
+  private categoryToBillCategory(category: CategoryDto): BillCategoryDto {
+    return {
+      id: category.id,
+      name: category.name,
+      color: category.color
     }
   }
 }

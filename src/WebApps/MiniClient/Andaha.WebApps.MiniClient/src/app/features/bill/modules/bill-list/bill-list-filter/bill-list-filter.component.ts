@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatChip, MatChipList } from '@angular/material/chips';
 import { distinctUntilChanged, debounceTime, tap } from 'rxjs/operators';
-import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
+import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { BillListFilterDialogService } from './bill-list-filter-dialog/bill-list-filter-dialog.service';
 import { BillListFilterDialogData } from './bill-list-filter-dialog/BillListFilterDialogData';
@@ -10,7 +10,7 @@ import { BillListDateFilter } from './BillListDateFilter';
 interface CategorySelection {
   selected: boolean;
   displayName: string;
-  category?: BillCategoryDto;
+  category?: CategoryDto;
 }
 
 @Component({
@@ -37,7 +37,7 @@ export class BillListFilterComponent implements OnInit, AfterViewInit {
   searchTextChanged = new EventEmitter<string>();
 
   @Output()
-  categoryFilterChanged = new EventEmitter<BillCategoryDto[]>();
+  categoryFilterChanged = new EventEmitter<CategoryDto[]>();
 
   @Output()
   dateFilterChanged = new EventEmitter<BillListDateFilter>();
@@ -195,7 +195,7 @@ export class BillListFilterComponent implements OnInit, AfterViewInit {
     })
   }
 
-  private getSelectedValue(category: BillCategoryDto): boolean {
+  private getSelectedValue(category: CategoryDto): boolean {
     if (!this.categories && this.initialCategoryFilters) {
       return this.initialCategoryFilters?.some(initialFilter => initialFilter == category.name);
     }

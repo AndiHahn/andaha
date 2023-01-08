@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { BillCategoryApiService } from '../api/shopping/bill-category-api.service';
-import { BillCategoryDto } from '../api/shopping/dtos/BillCategoryDto';
-import { BillCategoryUpdateDto } from '../api/shopping/dtos/BillCategoryUpdateDto';
+import { CategoryDto } from '../api/shopping/dtos/CategoryDto';
+import { CategoryUpdateDto } from '../api/shopping/dtos/CategoryUpdateDto';
 import { ContextService } from '../core/context.service';
 import { openErrorSnackbar } from '../shared/snackbar/snackbar-functions';
 import { BillContextService } from './bill-context.service';
@@ -13,7 +13,7 @@ import { BillContextService } from './bill-context.service';
 })
 export class BillCategoryContextService {
   
-  private categories$: BehaviorSubject<BillCategoryDto[]> = new BehaviorSubject<BillCategoryDto[]>([]);
+  private categories$: BehaviorSubject<CategoryDto[]> = new BehaviorSubject<CategoryDto[]>([]);
 
   constructor(
     private snackbar: MatSnackBar,
@@ -25,11 +25,11 @@ export class BillCategoryContextService {
     this.fetchBillCategories();
   }
 
-  categories(): Observable<BillCategoryDto[]> {
+  categories(): Observable<CategoryDto[]> {
     return this.categories$.asObservable();
   }
 
-  updateCategories(categories: BillCategoryUpdateDto[]): Observable<void> {
+  updateCategories(categories: CategoryUpdateDto[]): Observable<void> {
     return this.bulkUpdate(categories);
   }
   
@@ -53,7 +53,7 @@ export class BillCategoryContextService {
     );
   }
 
-  private bulkUpdate(categories: BillCategoryUpdateDto[]): Observable<void> {
+  private bulkUpdate(categories: CategoryUpdateDto[]): Observable<void> {
     const returnSubject = new Subject<void>();
 
     this.billCategoryApiService.bulkUpdate(categories).subscribe(
@@ -72,7 +72,7 @@ export class BillCategoryContextService {
     return returnSubject.asObservable();
   }
 
-  private compareCategoryDefaultFirst(left: BillCategoryDto, right: BillCategoryDto): number {
+  private compareCategoryDefaultFirst(left: CategoryDto, right: CategoryDto): number {
     return Number(right.isDefault) - Number(left.isDefault);
   }
 }

@@ -1,17 +1,23 @@
-﻿using Andaha.CrossCutting.Application.Database;
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
 
 namespace Andaha.Services.Shopping.Core;
 
 public class BillCategory : Entity<Guid>
 {
-    private readonly List<Bill> _bills = new();
+    private readonly List<Bill> bills = new();
+    private readonly List<BillSubCategory> subCategories = new();
 
     private BillCategory()
     {
     }
 
-    public BillCategory(Guid userId, string name, string color, bool isDefault = false)
+    public BillCategory(
+        Guid userId,
+        string name,
+        string color,
+        IReadOnlyCollection<string> subCategories,
+        bool isDefault = false)
+        : base(Guid.NewGuid())
     {
         if (userId == Guid.Empty)
         {
@@ -22,6 +28,11 @@ public class BillCategory : Entity<Guid>
         this.IsDefault = isDefault;
 
         this.Update(name, color);
+
+        foreach (var subCategory in subCategories)
+        {
+            this.AddSubCategory(subCategory);
+        }
     }
 
     public Guid UserId { get; private set; }
@@ -32,7 +43,9 @@ public class BillCategory : Entity<Guid>
 
     public bool IsDefault { get; private set; }
 
-    public IReadOnlyCollection<Bill> Bills => _bills;
+    public IReadOnlyCollection<Bill> Bills => bills.AsReadOnly();
+
+    public IReadOnlyCollection<BillSubCategory> SubCategories => subCategories.AsReadOnly();
 
     public void Update(string name, string color)
     {
@@ -58,5 +71,26 @@ public class BillCategory : Entity<Guid>
 
         this.Name = name;
         this.Color = color;
+    }
+
+    public void AddSubCategory(string name)
+    {
+        var subCategory = new BillSubCategory(this.Id, name);
+
+        this.subCategories.Add(subCategory);
+    }
+
+    public void UpdateSubCategory(Guid id, string name)
+    {
+        var subCategory = this.SubCategories.Single(category => category.Id == id);
+
+        subCategory.Update(name);
+    }
+
+    public void RemoveSubCategory(Guid id)
+    {
+        var subCategory = this.SubCategories.Single(category => category.Id == id);
+
+        this.subCategories.Remove(subCategory);
     }
 }

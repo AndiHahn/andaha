@@ -3,10 +3,12 @@ import { BehaviorSubject, Observable, Subject, skip } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { ContextService } from 'src/app/core/context.service';
-import { BillCategoryDto } from '../api/shopping/dtos/BillCategoryDto';
+import { CategoryDto } from '../api/shopping/dtos/CategoryDto';
 import { BillCreateDto, billCreateDtoToBillDto } from '../api/shopping/dtos/BillCreateDto';
 import { BillUpdateDto } from '../api/shopping/dtos/BillUpdateDto';
 import { BillCacheService } from './bill-cache.service';
+import { BillCategoryDto } from '../api/shopping/dtos/BillCategoryDto';
+import { BillSubCategoryDto } from '../api/shopping/dtos/BillSubCategoryDto';
 
 @Injectable({
   providedIn: 'root'
@@ -111,14 +113,19 @@ export class BillContextService {
     this.fetchBills();
   }
 
-  addBill(dto: BillCreateDto, category: BillCategoryDto): void {
-    const billDto = billCreateDtoToBillDto(dto, category);
+  addBill(dto: BillCreateDto, category: BillCategoryDto, subCategory: BillSubCategoryDto): void {
+    const billDto = billCreateDtoToBillDto(dto, category, subCategory);
     this.addNewBillToList(billDto);
 
     this.billCacheService.saveNewBillLocal(dto);
   }
 
-  updateBill(id: string, updateDto: BillUpdateDto, category: BillCategoryDto, imageAvailable: boolean): Observable<void> {
+  updateBill(
+    id: string,
+    updateDto: BillUpdateDto,
+    category: BillCategoryDto,
+    subCategory: BillSubCategoryDto,
+    imageAvailable: boolean): Observable<void> {
     const returnSubject = new Subject<void>();
 
     const bill = this.bills$.value.find(bill => bill.id == id);
@@ -128,6 +135,7 @@ export class BillContextService {
       bill.price = updateDto.price;
       bill.date = updateDto.date;
       bill.category = category;
+      bill.subCategory = subCategory;
       bill.imageAvailable = updateDto.image != undefined || imageAvailable;
     }
 

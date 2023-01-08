@@ -10,6 +10,8 @@ public class BillModelBuilder : IEntityTypeConfiguration<Bill>
     {
         builder.HasKey(b => b.Id);
 
+        builder.Property(b => b.Id).ValueGeneratedNever();
+
         builder.HasIndex(b => b.Date);
 
         builder

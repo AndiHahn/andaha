@@ -5,6 +5,7 @@ namespace Andaha.Services.Shopping.Core;
 public class BillImage : Entity<Guid>
 {
     public BillImage(Guid billId, string name, byte[] thumbnail)
+        : base(Guid.NewGuid())
     {
         BillId = billId;
         Name = name;

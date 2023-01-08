@@ -68,12 +68,20 @@ internal static class BillEndpointExtensions
                     id = parsedId;
                 }
 
-                var priceParameter = httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.Price)];
+                Guid? subCategoryId = null;
+
+                if (Guid.TryParse(httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.SubCategoryId)], out var parsedSubCategoryId))
+                {
+                    subCategoryId = parsedSubCategoryId;
+                }
+
+                var priceParameter = httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.Price)];
                 var parsedPrice = priceParameter.First()!.ToDouble();
 
                 var command = new CreateBill.V1.CreateBillCommand(
                     id,
                     Guid.Parse(httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.CategoryId)]!),
+                    subCategoryId,
                     httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.ShopName)]!,
                     parsedPrice,
                     DateTime.Parse(httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.Date)]!),
@@ -100,9 +108,17 @@ internal static class BillEndpointExtensions
                 var priceParameter = httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.Price)];
                 var parsedPrice = priceParameter.First()!.ToDouble();
 
+                Guid? subCategoryId = null;
+
+                if (Guid.TryParse(httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.SubCategoryId)], out var parsedSubCategoryId))
+                {
+                    subCategoryId = parsedSubCategoryId;
+                }
+
                 var command = new UpdateBill.V1.UpdateBillCommand(
                     id,
                     Guid.Parse(httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.CategoryId)]!),
+                    subCategoryId,
                     httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.ShopName)]!,
                     parsedPrice,
                     DateTime.Parse(httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.Date)]!),

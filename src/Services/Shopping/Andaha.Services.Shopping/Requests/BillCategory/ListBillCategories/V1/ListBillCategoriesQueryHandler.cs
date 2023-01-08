@@ -28,7 +28,7 @@ internal class ListBillCategoriesQueryHandler : IRequestHandler<ListBillCategori
             .AsNoTracking()
             .Where(category => category.UserId == userId)
             .AsExpandable()
-            .Select(category => BillCategoryDtoMapping.EntityToDto.Invoke(category))
+            .Select(category => CategoryDtoMapping.EntityToDto.Invoke(category))
             .ToListAsync(cancellationToken);
 
         if (!categoryDtos.Any())
@@ -40,7 +40,7 @@ internal class ListBillCategoriesQueryHandler : IRequestHandler<ListBillCategori
             await dbContext.SaveChangesAsync(cancellationToken);
 
             categoryDtos = initialCategories
-                .Select(category => BillCategoryDtoMapping.EntityToDto.Invoke(category))
+                .Select(category => CategoryDtoMapping.EntityToDto.Invoke(category))
                 .ToList();
         }
 

@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { constructPath, constructVersionedPath } from '../functions/functions';
-import { BillCategoryDto } from './dtos/BillCategoryDto';
-import { BillCategoryUpdateDto } from './dtos/BillCategoryUpdateDto';
+import { CategoryDto } from './dtos/CategoryDto';
+import { CategoryUpdateDto } from './dtos/CategoryUpdateDto';
 
 @Injectable({
   providedIn: 'root'
@@ -23,12 +23,12 @@ export class BillCategoryApiService {
     }
   }
 
-  getAll(): Observable<BillCategoryDto[]> {
+  getAll(): Observable<CategoryDto[]> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl);
-    return this.httpClient.get<BillCategoryDto[]>(url);
+    return this.httpClient.get<CategoryDto[]>(url);
   }
 
-  bulkUpdate(categories: BillCategoryUpdateDto[]): Observable<void> {
+  bulkUpdate(categories: CategoryUpdateDto[]): Observable<void> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl);
     return this.httpClient.put<void>(url, categories);
   }

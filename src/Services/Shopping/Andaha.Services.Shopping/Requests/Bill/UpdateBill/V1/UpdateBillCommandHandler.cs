@@ -44,7 +44,7 @@ internal class UpdateBillCommandHandler : IRequestHandler<UpdateBillCommand, IRe
             }
         }
 
-        bill.Update(request.CategoryId, request.ShopName, request.Price, request.Date, request.Notes);
+        bill.Update(request.CategoryId, request.SubCategoryId, request.ShopName, request.Price, request.Date, request.Notes);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
