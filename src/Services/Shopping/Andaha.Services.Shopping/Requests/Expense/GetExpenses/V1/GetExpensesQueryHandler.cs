@@ -35,7 +35,15 @@ internal class GetExpensesQueryHandler : IRequestHandler<GetExpensesQuery, IResu
                            bill.Date >= request.StartTimeUtc &&
                            bill.Date <= request.EndTimeUtc)
             .GroupBy(bill => bill.Category.Name)
-            .Select(group => new ExpenseDto(group.Key, group.Sum(b => b.Price)))
+            .Select(group => new ExpenseDto(
+                group.Key,
+                group.Sum(b => b.Price),
+                group
+                    .GroupBy(bill => bill.SubCategory.Name)
+                    .Select(subGroup => new ExpenseSubCategoryDto(
+                        subGroup.Key,
+                        subGroup.Sum(b => b.Price)))
+                    .ToArray()))
             .ToListAsync(cancellationToken);
 
         return Results.Ok(result.OrderByDescending(expense => expense.Costs));

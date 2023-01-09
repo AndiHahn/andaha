@@ -20,7 +20,7 @@ interface BillCreateDtoBase {
   notes?: string;
 }
 
-export function billCreateDtoToBillDto(bill: BillCreateDto, category: BillCategoryDto, subCategory: BillSubCategoryDto): BillDto {
+export function billCreateDtoToBillDto(bill: BillCreateDto, category: BillCategoryDto, subCategory?: BillSubCategoryDto): BillDto {
   return {
     id: bill.id,
     shopName: bill.shopName,

@@ -6,7 +6,7 @@ import { CategoryDto } from '../api/shopping/dtos/CategoryDto';
 import { CategoryUpdateDto } from '../api/shopping/dtos/CategoryUpdateDto';
 import { ContextService } from '../core/context.service';
 import { openErrorSnackbar } from '../shared/snackbar/snackbar-functions';
-import { BillContextService } from './bill-context.service';
+import { BillContextService } from '../features/bill/services/bill-context.service';
 
 @Injectable({
   providedIn: 'root'

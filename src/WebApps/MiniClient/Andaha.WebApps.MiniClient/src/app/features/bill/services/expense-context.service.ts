@@ -1,11 +1,11 @@
 import { DatePipe } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { ExpenseDto } from '../api/shopping/dtos/ExpenseDto';
-import { TimeRangeDto, TimeRangeDtoRaw } from '../api/shopping/dtos/TimeRangeDto';
-import { ExpenseApiService } from '../api/shopping/expense-api.service';
-import { ContextService } from '../core/context.service';
-import { TimeRange } from '../features/bill/modules/expenses/timerange-selection/TimeRange';
+import { ExpenseDto } from '../../../api/shopping/dtos/ExpenseDto';
+import { TimeRangeDto, TimeRangeDtoRaw } from '../../../api/shopping/dtos/TimeRangeDto';
+import { ExpenseApiService } from '../../../api/shopping/expense-api.service';
+import { ContextService } from '../../../core/context.service';
+import { TimeRange } from '../modules/expenses/timerange-selection/TimeRange';
 import { BillContextService } from './bill-context.service';
 
 @Injectable({

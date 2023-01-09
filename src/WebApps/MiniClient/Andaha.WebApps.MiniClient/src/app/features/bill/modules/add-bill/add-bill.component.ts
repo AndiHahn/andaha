@@ -6,7 +6,7 @@ import { generateGuid } from 'src/app/api/functions/api-utils';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillCreateDto } from 'src/app/api/shopping/dtos/BillCreateDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
-import { BillContextService } from 'src/app/services/bill-context.service';
+import { BillContextService } from 'src/app/features/bill/services/bill-context.service';
 import { BillForm, getEmptyBillForm } from '../../functions/bill-form-functions';
 import { ImageSnippet } from '../add-bill-image-dialog/add-bill-image-dialog.component';
 import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
@@ -125,12 +125,16 @@ export class AddBillComponent implements OnInit {
     }
   }
 
-  private getSubCategoryFromForm(): BillSubCategoryDto {
+  private getSubCategoryFromForm(): BillSubCategoryDto | undefined {
     const controls = this.form.controls;
 
+    if (!controls.subCategory.value) {
+      return undefined;
+    }
+
     return {
-      id: controls.category.value!.id,
-      name: controls.category.value!.name,
+      id: controls.subCategory.value.id,
+      name: controls.subCategory.value.name,
     }
   }
 

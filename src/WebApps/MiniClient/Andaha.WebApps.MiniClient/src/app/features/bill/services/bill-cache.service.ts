@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { BillCreateCacheItem, BillCreateDto } from '../api/shopping/dtos/BillCreateDto';
-import { blobToDataUrl, dataUrlToBase64, fileDataUriToBlob, imageBlobToFile } from '../shared/utils/file-utils';
+import { BillCreateCacheItem, BillCreateDto } from '../../../api/shopping/dtos/BillCreateDto';
+import { blobToDataUrl, dataUrlToBase64, fileDataUriToBlob, imageBlobToFile } from '../../../shared/utils/file-utils';
 
 @Injectable({
   providedIn: 'root'

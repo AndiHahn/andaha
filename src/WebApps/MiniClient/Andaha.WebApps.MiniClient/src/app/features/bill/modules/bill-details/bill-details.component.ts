@@ -9,7 +9,7 @@ import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { BillUpdateDto } from 'src/app/api/shopping/dtos/BillUpdateDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
-import { BillContextService } from 'src/app/services/bill-context.service';
+import { BillContextService } from 'src/app/features/bill/services/bill-context.service';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/ConfirmationDialogData';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
@@ -132,7 +132,7 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
     const category = this.getCategoryFromForm();
     const subCategory = this.getSubCategoryFromForm();
 
-    this.billContextService.updateBill(this.bill.id, dto, category, subCategory, this.bill.imageAvailable).subscribe(
+    this.billContextService.updateBill(this.bill.id, dto, this.bill.imageAvailable, category, subCategory).subscribe(
       {
         next: _ => this.isSaving = false,
         error: _ => {
@@ -255,11 +255,16 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getSubCategoryFromForm(): BillSubCategoryDto {
+  private getSubCategoryFromForm(): BillSubCategoryDto | undefined {
     const controls = this.form.controls;
+
+    if (!controls.subCategory.value) {
+      return undefined;
+    }
+
     return {
-      id: controls.category.value!.id,
-      name: controls.category.value!.name,
+      id: controls.subCategory.value.id,
+      name: controls.subCategory.value.name,
     }
   }
 

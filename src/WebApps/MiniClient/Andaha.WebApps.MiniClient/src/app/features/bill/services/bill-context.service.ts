@@ -3,12 +3,12 @@ import { BehaviorSubject, Observable, Subject, skip } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { ContextService } from 'src/app/core/context.service';
-import { CategoryDto } from '../api/shopping/dtos/CategoryDto';
-import { BillCreateDto, billCreateDtoToBillDto } from '../api/shopping/dtos/BillCreateDto';
-import { BillUpdateDto } from '../api/shopping/dtos/BillUpdateDto';
+import { CategoryDto } from '../../../api/shopping/dtos/CategoryDto';
+import { BillCreateDto, billCreateDtoToBillDto } from '../../../api/shopping/dtos/BillCreateDto';
+import { BillUpdateDto } from '../../../api/shopping/dtos/BillUpdateDto';
 import { BillCacheService } from './bill-cache.service';
-import { BillCategoryDto } from '../api/shopping/dtos/BillCategoryDto';
-import { BillSubCategoryDto } from '../api/shopping/dtos/BillSubCategoryDto';
+import { BillCategoryDto } from '../../../api/shopping/dtos/BillCategoryDto';
+import { BillSubCategoryDto } from '../../../api/shopping/dtos/BillSubCategoryDto';
 
 @Injectable({
   providedIn: 'root'
@@ -113,7 +113,7 @@ export class BillContextService {
     this.fetchBills();
   }
 
-  addBill(dto: BillCreateDto, category: BillCategoryDto, subCategory: BillSubCategoryDto): void {
+  addBill(dto: BillCreateDto, category: BillCategoryDto, subCategory?: BillSubCategoryDto): void {
     const billDto = billCreateDtoToBillDto(dto, category, subCategory);
     this.addNewBillToList(billDto);
 
@@ -123,9 +123,9 @@ export class BillContextService {
   updateBill(
     id: string,
     updateDto: BillUpdateDto,
+    imageAvailable: boolean,
     category: BillCategoryDto,
-    subCategory: BillSubCategoryDto,
-    imageAvailable: boolean): Observable<void> {
+    subCategory?: BillSubCategoryDto): Observable<void> {
     const returnSubject = new Subject<void>();
 
     const bill = this.bills$.value.find(bill => bill.id == id);
@@ -142,10 +142,12 @@ export class BillContextService {
     this.billApiService.updateBill(id, updateDto).subscribe(
       {
         next: _ => {
-          this.fetchBills();
           returnSubject.next();
         } ,
-        error: error => returnSubject.error(error)
+        error: error => {
+          this.fetchBills();
+          returnSubject.error(error);
+        } 
       }
     );
 
@@ -162,7 +164,6 @@ export class BillContextService {
     this.billApiService.deleteBill(id).subscribe(
       {
         next: _ => {
-          this.fetchBills();
           returnSubject.next();
         },
         error: error => {

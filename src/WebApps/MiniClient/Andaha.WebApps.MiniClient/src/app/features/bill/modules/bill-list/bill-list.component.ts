@@ -2,7 +2,7 @@ import { CdkScrollable, ScrollDispatcher } from '@angular/cdk/scrolling';
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { filter, takeUntil } from 'rxjs/operators';
 import { PageEvent } from '@angular/material/paginator';
-import { BillContextService } from '../../../../services/bill-context.service';
+import { BillContextService } from '../../services/bill-context.service';
 import { BillDataSource } from './BillDataSource';
 import { Subject } from 'rxjs';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';

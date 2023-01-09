@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { ExpenseDto } from 'src/app/api/shopping/dtos/ExpenseDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
-import { ExpenseContextService } from 'src/app/services/expense-context.service';
+import { ExpenseContextService } from 'src/app/features/bill/services/expense-context.service';
 import { mapTimeRangeDto, TimeRange } from './timerange-selection/TimeRange';
 
 @Component({

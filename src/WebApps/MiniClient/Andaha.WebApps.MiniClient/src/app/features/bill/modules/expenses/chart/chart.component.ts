@@ -1,9 +1,13 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ChartOptions } from 'chart.js';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { ExpenseDto } from 'src/app/api/shopping/dtos/ExpenseDto';
-import { BillContextService } from 'src/app/services/bill-context.service';
+import { BillContextService } from 'src/app/features/bill/services/bill-context.service';
+import { getDialogBaseConfig } from 'src/app/shared/dialog/dialog-functions';
+import { ChartDetailsDialogComponent } from '../chart-details-dialog/chart-details-dialog.component';
+import { ChartDetailsDialogData } from '../chart-details-dialog/ChartDetailsDialogData';
 import { TimeRange } from '../timerange-selection/TimeRange';
 
 @Component({
@@ -40,8 +44,7 @@ export class ChartComponent implements OnInit, OnChanges {
   }];
 
   constructor(
-    private router: Router,
-    private billContextService: BillContextService) {}
+    private matDialog: MatDialog) {}
 
   ngOnInit(): void {
     if (!this.expenses) {
@@ -62,12 +65,15 @@ export class ChartComponent implements OnInit, OnChanges {
   public chartClicked(event: any): void {
     if (event.active.length > 0) {
       const index = event.active[0].index;
-
-      this.billContextService.setCategoryFilter([ this.expenses[index].category]);
-      this.billContextService.setDateFilter(this.selectedTimeRange?.startDate, this.selectedTimeRange?.endDate);
-      this.billContextService.searchBills();
       
-      this.router.navigateByUrl('bill/list');
+      const data: ChartDetailsDialogData = {
+        expense: this.expenses[index]
+      }
+
+      const config = getDialogBaseConfig();
+      config.data = data;
+
+      this.matDialog.open(ChartDetailsDialogComponent, config).afterClosed().subscribe();
     }
   }
 

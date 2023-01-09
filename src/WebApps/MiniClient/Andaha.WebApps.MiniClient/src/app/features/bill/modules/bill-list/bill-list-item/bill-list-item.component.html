@@ -9,7 +9,7 @@
     <div class="flex-container">
       <mat-chip-list>
         <mat-chip [ngStyle]="{'background-color': bill.category.color, 'color': bill.category.color == 'white' ? 'black' : 'white' }" selected>
-          {{ bill.category.name }}
+          {{ bill.category.name }} <div *ngIf="bill.subCategory" style="white-space: pre"> {{ '(' + bill.subCategory.name + ')' }}</div>
         </mat-chip>
         <mat-chip *ngIf="bill.isExternal" style="background-color: limegreen" selected>EXT</mat-chip>
       </mat-chip-list>

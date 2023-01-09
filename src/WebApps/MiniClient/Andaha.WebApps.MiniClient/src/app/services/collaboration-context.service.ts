@@ -4,7 +4,7 @@ import { CollaborationApiService } from '../api/collaboration/collaboration-api.
 import { ConnectionDto } from '../api/collaboration/dtos/ConnectionDto';
 import { ConnectionRequestDto } from '../api/collaboration/dtos/ConnectionRequestDto';
 import { ContextService } from '../core/context.service';
-import { BillContextService } from './bill-context.service';
+import { BillContextService } from '../features/bill/services/bill-context.service';
 
 @Injectable({
   providedIn: 'root'
