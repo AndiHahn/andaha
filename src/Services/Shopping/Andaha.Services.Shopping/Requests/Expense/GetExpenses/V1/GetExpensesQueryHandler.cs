@@ -4,6 +4,7 @@ using Andaha.Services.Shopping.Infrastructure.Proxies;
 using Andaha.Services.Shopping.Requests.Expense.Dtos.V1;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Andaha.Services.Shopping.Requests.Expense.GetExpenses.V1;
 
@@ -39,7 +40,8 @@ internal class GetExpensesQueryHandler : IRequestHandler<GetExpensesQuery, IResu
                 group.Key,
                 group.Sum(b => b.Price),
                 group
-                    .GroupBy(bill => bill.SubCategory.Name)
+                    .Where(bill => bill.SubCategory != null)
+                    .GroupBy(bill => bill.SubCategory!.Name)
                     .Select(subGroup => new ExpenseSubCategoryDto(
                         subGroup.Key,
                         subGroup.Sum(b => b.Price)))
