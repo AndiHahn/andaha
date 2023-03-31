@@ -7,7 +7,7 @@ import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/
 
 export const MY_FORMATS = {
   parse: {
-    dateInput: 'LL',
+    dateInput: 'L',
   },
   display: {
     dateInput: 'DD.MM.YYYY',

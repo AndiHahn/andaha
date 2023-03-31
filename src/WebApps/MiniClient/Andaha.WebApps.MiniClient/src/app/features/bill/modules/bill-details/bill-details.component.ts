@@ -22,7 +22,7 @@ import { MatSelect, MatSelectChange } from '@angular/material/select';
 
 export const MY_FORMATS = {
   parse: {
-    dateInput: 'LL',
+    dateInput: 'L',
   },
   display: {
     dateInput: 'DD.MM.YYYY',

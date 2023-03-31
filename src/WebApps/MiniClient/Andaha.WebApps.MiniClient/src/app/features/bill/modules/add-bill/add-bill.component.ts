@@ -15,7 +15,7 @@ import { MatSelectChange } from '@angular/material/select';
 
 export const MY_FORMATS = {
   parse: {
-    dateInput: 'LL',
+    dateInput: 'L',
   },
   display: {
     dateInput: 'DD.MM.YYYY',
@@ -39,7 +39,12 @@ export const MY_FORMATS = {
       deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
     },
 
-    {provide: MAT_DATE_FORMATS, useValue: MY_FORMATS},
+    {
+      provide: MAT_DATE_FORMATS, useValue: MY_FORMATS
+    },
+    {
+      provide: MAT_DATE_LOCALE, useValue: 'de-DE'
+    }
   ],
 })
 export class AddBillComponent implements OnInit {
@@ -104,6 +109,7 @@ export class AddBillComponent implements OnInit {
 
   private createModelFromForm(): BillCreateDto {
     const controls = this.form.controls;
+
     return {
       id: generateGuid(),
       categoryId: controls.category.value!.id,
