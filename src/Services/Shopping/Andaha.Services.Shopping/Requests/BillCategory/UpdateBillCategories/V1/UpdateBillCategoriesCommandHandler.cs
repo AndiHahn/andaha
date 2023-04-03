@@ -38,14 +38,16 @@ internal class UpdateBillCategoriesCommandHandler : IRequestHandler<UpdateBillCa
                     userId,
                     category.Name,
                     category.Color,
-                    category.SubCategories.Select(subCategory => subCategory.Name).ToArray()));
+                    category.Order,
+                    category.SubCategories.Select(subCategory => (subCategory.Name, subCategory.Order)).ToArray(),
+                    category.IncludeToStatistics));
         }
 
         foreach (var category in categoriesToUpdate)
         {
             var existingCategory = existingCategories.Single(c => c.Id == category.Id!);
 
-            existingCategory.Update(category.Name, category.Color);
+            existingCategory.Update(category.Name, category.Color, category.Order, category.IncludeToStatistics);
 
             var subCategoriesToCreate = category.SubCategories.Where(category => category.Id is null).ToList();
             var subCategoriesToUpdate = category.SubCategories.Except(subCategoriesToCreate).ToList();
@@ -53,12 +55,12 @@ internal class UpdateBillCategoriesCommandHandler : IRequestHandler<UpdateBillCa
 
             foreach (var subCategory in subCategoriesToCreate)
             {
-                existingCategory.AddSubCategory(subCategory.Name);
+                existingCategory.AddSubCategory(subCategory.Name, subCategory.Order);
             }
 
             foreach (var subCategory in subCategoriesToUpdate)
             {
-                existingCategory.UpdateSubCategory(subCategory.Id!.Value, subCategory.Name);
+                existingCategory.UpdateSubCategory(subCategory.Id!.Value, subCategory.Name, subCategory.Order);
             }
 
             foreach (var subCategory in subCategoriesToDelete)

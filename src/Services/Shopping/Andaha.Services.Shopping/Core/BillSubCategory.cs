@@ -4,25 +4,34 @@ namespace Andaha.Services.Shopping.Core;
 
 public class BillSubCategory : Entity<Guid>
 {
-	private BillSubCategory()
-	{
-	}
+    private BillSubCategory()
+    {
+    }
 
-    public BillSubCategory(Guid categoryId, string name)
-		: base(Guid.NewGuid())
-	{
-		this.CategoryId = categoryId;
-		this.Name = name;
-	}
+    public BillSubCategory(Guid categoryId, string name, int order)
+        : base(Guid.NewGuid())
+    {
+        this.CategoryId = categoryId;
+        this.Update(name, order);
+    }
 
     public Guid CategoryId { get; private set; }
 
-	public string Name { get; private set; } = null!;
+    public string Name { get; private set; } = null!;
 
-	public BillCategory Category { get; private set; } = null!;
+    public int Order { get; private set; }
 
-	public void Update(string name)
-	{
-		this.Name = name;
-	}
+    public BillCategory Category { get; private set; } = null!;
+
+    public void Update(string name, int order)
+    {
+        this.Name = name;
+
+        this.UpdateOrder(order);
+    }
+
+    public void UpdateOrder(int order)
+    {
+        this.Order = order;
+    }
 }

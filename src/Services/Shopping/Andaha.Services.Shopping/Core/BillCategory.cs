@@ -15,7 +15,9 @@ public class BillCategory : Entity<Guid>
         Guid userId,
         string name,
         string color,
-        IReadOnlyCollection<string> subCategories,
+        int order,
+        IReadOnlyCollection<(string Name, int Order)> subCategories,
+        bool includeToStatistics = true,
         bool isDefault = false)
         : base(Guid.NewGuid())
     {
@@ -27,11 +29,11 @@ public class BillCategory : Entity<Guid>
         this.UserId = userId;
         this.IsDefault = isDefault;
 
-        this.Update(name, color);
+        this.Update(name, color, order, includeToStatistics);
 
         foreach (var subCategory in subCategories)
         {
-            this.AddSubCategory(subCategory);
+            this.AddSubCategory(subCategory.Name, subCategory.Order);
         }
     }
 
@@ -41,13 +43,17 @@ public class BillCategory : Entity<Guid>
 
     public string Color { get; private set; } = null!;
 
+    public bool IncludeToStatistics { get; private set; }
+
     public bool IsDefault { get; private set; }
+
+    public int Order { get; private set; }
 
     public IReadOnlyCollection<Bill> Bills => bills.AsReadOnly();
 
     public IReadOnlyCollection<BillSubCategory> SubCategories => subCategories.AsReadOnly();
 
-    public void Update(string name, string color)
+    public void Update(string name, string color, int order, bool includeToStatistics)
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -69,22 +75,40 @@ public class BillCategory : Entity<Guid>
             throw new ArgumentException("Length of name must not be > 20 characters.", nameof(color));
         }
 
+        if (order < 0)
+        {
+            throw new ArgumentException("Order must be >= 0.", nameof(order));
+        }
+
         this.Name = name;
         this.Color = color;
+        this.IncludeToStatistics = includeToStatistics;
+
+        this.UpdateOrder(order);
     }
 
-    public void AddSubCategory(string name)
+    public void UpdateOrder(int order)
     {
-        var subCategory = new BillSubCategory(this.Id, name);
+        if (order < 0)
+        {
+            throw new ArgumentException("Order must be >= 0.", nameof(order));
+        }
+
+        this.Order = order;
+    }
+
+    public void AddSubCategory(string name, int order)
+    {
+        var subCategory = new BillSubCategory(this.Id, name, order);
 
         this.subCategories.Add(subCategory);
     }
 
-    public void UpdateSubCategory(Guid id, string name)
+    public void UpdateSubCategory(Guid id, string name, int order)
     {
         var subCategory = this.SubCategories.Single(category => category.Id == id);
 
-        subCategory.Update(name);
+        subCategory.Update(name, order);
     }
 
     public void RemoveSubCategory(Guid id)

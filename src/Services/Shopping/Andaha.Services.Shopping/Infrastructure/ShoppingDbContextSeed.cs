@@ -8,16 +8,16 @@ public static class ShoppingDbContextSeed
     {
         var categories = new List<BillCategory>
         {
-            new BillCategory(userId, "Keine", "white", Array.Empty<string>(), true),
-            new BillCategory(userId, "Lebensmittel", "red", Array.Empty<string>()),
-            new BillCategory(userId, "Wohnen", "pink", Array.Empty<string>()),
-            new BillCategory(userId, "Kleidung", "purple", Array.Empty<string>()),
-            new BillCategory(userId, "Ausbildung", "yellow", Array.Empty<string>()),
-            new BillCategory(userId, "Freizeit", "indigo", Array.Empty<string>()),
-            new BillCategory(userId, "Auto/Motorrad", "orange", Array.Empty<string>()),
-            new BillCategory(userId, "Hygiene/Gesundheit", "brown", Array.Empty<string>()),
-            new BillCategory(userId, "Geschenke", "grey", Array.Empty<string>()),
-            new BillCategory(userId, "Restaurant", "magenta", Array.Empty<string>()),
+            new(userId, "Keine", "white", 0, Array.Empty<string>(), isDefault: true),
+            new(userId, "Lebensmittel", "red", 1, Array.Empty<string>()),
+            new(userId, "Wohnen", "pink", 2, Array.Empty<string>()),
+            new(userId, "Kleidung", "purple", 3, Array.Empty<string>()),
+            new(userId, "Ausbildung", "yellow", 4, Array.Empty<string>()),
+            new(userId, "Freizeit", "indigo", 5, Array.Empty<string>()),
+            new(userId, "Auto/Motorrad", "orange", 6, Array.Empty<string>()),
+            new(userId, "Hygiene/Gesundheit", "brown", 7, Array.Empty<string>()),
+            new(userId, "Geschenke", "grey", 8, Array.Empty<string>()),
+            new(userId, "Restaurant", "magenta", 9, Array.Empty<string>()),
         };
 
         return categories;

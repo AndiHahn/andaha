@@ -204,6 +204,8 @@ public static class ProgramExtensions
         await retryPolicy.ExecuteAsync(async () =>
         {
             await dbContext.Database.MigrateAsync();
+
+            await dbContext.MigrateCategoryOrderAsync();
         });
     }
 
