@@ -24,7 +24,7 @@ internal class CollaborationApiProxy : ICollaborationApiProxy
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<IReadOnlyCollection<Guid>> GetConnectedUsers(CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<Guid>> GetConnectedUsersAsync(CancellationToken cancellationToken)
     {
         try
         {

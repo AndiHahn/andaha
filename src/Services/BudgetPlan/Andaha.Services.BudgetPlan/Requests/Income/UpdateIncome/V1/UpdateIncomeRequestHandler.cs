@@ -1,5 +1,6 @@
 ﻿using Andaha.CrossCutting.Application.Identity;
 using Andaha.Services.BudgetPlan.Infrastructure;
+using Andaha.Services.Shopping.Infrastructure.Proxies;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,13 +10,16 @@ internal class UpdateIncomeRequestHandler : IRequestHandler<UpdateIncomeRequest,
 {
     private readonly BudgetPlanDbContext dbContext;
     private readonly IIdentityService identityService;
+    private readonly ICollaborationApiProxy collaborationApiProxy;
 
     public UpdateIncomeRequestHandler(
         BudgetPlanDbContext dbContext,
-        IIdentityService identityService)
+        IIdentityService identityService,
+        ICollaborationApiProxy collaborationApiProxy)
     {
         this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         this.identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
+        this.collaborationApiProxy = collaborationApiProxy ?? throw new ArgumentNullException(nameof(collaborationApiProxy));
     }
 
     public async Task<IResult> Handle(UpdateIncomeRequest request, CancellationToken cancellationToken)
@@ -28,7 +32,8 @@ internal class UpdateIncomeRequestHandler : IRequestHandler<UpdateIncomeRequest,
             return Results.NotFound($"Income with id '{request.Id}' not found.");
         }
 
-        if (income.UserId != userId)
+        var connectedUsers = await this.collaborationApiProxy.GetConnectedUsersAsync(cancellationToken);
+        if (income.UserId != userId && !connectedUsers.Contains(userId))
         {
             return Results.Forbid();
         }

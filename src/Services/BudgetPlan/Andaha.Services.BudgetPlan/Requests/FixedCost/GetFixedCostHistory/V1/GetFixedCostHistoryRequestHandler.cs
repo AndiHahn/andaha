@@ -27,7 +27,7 @@ internal class GetFixedCostHistoryRequestHandler : IRequestHandler<GetFixedCostH
     public async Task<IResult> Handle(GetFixedCostHistoryRequest request, CancellationToken cancellationToken)
     {
         Guid userId = this.identityService.GetUserId();
-        var connectedUsers = await this.collaborationApiProxy.GetConnectedUsers(cancellationToken);
+        var connectedUsers = await this.collaborationApiProxy.GetConnectedUsersAsync(cancellationToken);
 
         var fixedCosts = await dbContext.FixedCost
             .TemporalAll()

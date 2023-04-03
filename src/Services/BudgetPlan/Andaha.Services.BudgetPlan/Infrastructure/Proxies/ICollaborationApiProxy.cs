@@ -2,5 +2,5 @@
 
 internal interface ICollaborationApiProxy
 {
-    Task<IReadOnlyCollection<Guid>> GetConnectedUsers(CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<Guid>> GetConnectedUsersAsync(CancellationToken cancellationToken);
 }

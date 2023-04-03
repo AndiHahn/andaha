@@ -27,7 +27,7 @@ internal class GetBudgetPlanRequestHandler : IRequestHandler<GetBudgetPlanReques
     public async Task<IResult> Handle(GetBudgetPlanRequest request, CancellationToken cancellationToken)
     {
         Guid userId = this.identityService.GetUserId();
-        var connectedUsers = await this.collaborationApiProxy.GetConnectedUsers(cancellationToken);
+        var connectedUsers = await this.collaborationApiProxy.GetConnectedUsersAsync(cancellationToken);
 
         var income = (await this.dbContext.Income
                 .AsNoTracking()

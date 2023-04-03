@@ -27,7 +27,7 @@ internal class ListFixedCostsRequestHandler : IRequestHandler<ListFixedCostsRequ
     public async Task<IResult> Handle(ListFixedCostsRequest request, CancellationToken cancellationToken)
     {
         Guid userId = this.identityService.GetUserId();
-        var connectedUsers = await this.collaborationApiProxy.GetConnectedUsers(cancellationToken);
+        var connectedUsers = await this.collaborationApiProxy.GetConnectedUsersAsync(cancellationToken);
 
         var fixedCosts = await dbContext.FixedCost
             .AsNoTracking()

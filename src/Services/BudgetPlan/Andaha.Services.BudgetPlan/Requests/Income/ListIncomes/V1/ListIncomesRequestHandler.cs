@@ -27,7 +27,7 @@ internal class ListIncomesRequestHandler : IRequestHandler<ListIncomesRequest, I
     public async Task<IResult> Handle(ListIncomesRequest request, CancellationToken cancellationToken)
     {
         Guid userId = this.identityService.GetUserId();
-        var connectedUsers = await this.collaborationApiProxy.GetConnectedUsers(cancellationToken);
+        var connectedUsers = await this.collaborationApiProxy.GetConnectedUsersAsync(cancellationToken);
 
         var incomes = await dbContext.Income
             .AsNoTracking()

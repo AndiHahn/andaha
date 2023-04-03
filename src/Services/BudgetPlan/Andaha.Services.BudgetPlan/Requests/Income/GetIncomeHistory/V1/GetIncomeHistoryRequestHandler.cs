@@ -27,7 +27,7 @@ internal class GetIncomeHistoryRequestHandler : IRequestHandler<GetIncomeHistory
     public async Task<IResult> Handle(GetIncomeHistoryRequest request, CancellationToken cancellationToken)
     {
         Guid userId = this.identityService.GetUserId();
-        var connectedUsers = await this.collaborationApiProxy.GetConnectedUsers(cancellationToken);
+        var connectedUsers = await this.collaborationApiProxy.GetConnectedUsersAsync(cancellationToken);
 
         var incomes = await dbContext.Income
             .TemporalAll()
