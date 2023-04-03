@@ -206,6 +206,8 @@ public static class ProgramExtensions
             await dbContext.Database.MigrateAsync();
 
             await dbContext.MigrateCategoryOrderAsync();
+
+            await dbContext.MigrateSubCategoryOrderAsync();
         });
     }
 

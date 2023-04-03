@@ -22,5 +22,10 @@ public class BillSubCategoryModelBuilder : IEntityTypeConfiguration<BillSubCateg
             .IsRequired()
             .HasMaxLength(200)
             .IsUnicode(false);
+
+        builder
+            .Property(b => b.Order)
+            .IsRequired()
+            .HasDefaultValue(0);
     }
 }

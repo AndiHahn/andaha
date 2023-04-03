@@ -25,5 +25,15 @@ public class BillCategoryModelBuilder : IEntityTypeConfiguration<BillCategory>
             .IsRequired()
             .HasMaxLength(20)
             .IsUnicode(false);
+
+        builder
+            .Property(b => b.IncludeToStatistics)
+            .IsRequired()
+            .HasDefaultValue(true);
+        
+        builder
+            .Property(b => b.Order)
+            .IsRequired()
+            .HasDefaultValue(0);
     }
 }
