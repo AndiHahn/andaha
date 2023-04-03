@@ -87,7 +87,7 @@ export class CategoriesComponent implements OnInit {
     
     this.isSaving = true;
 
-    const dtos = this.formGroups.map(group => this.createCategoryUpdateDto(group));
+    const dtos = this.formGroups.map((group, index) => this.createCategoryUpdateDto(group, index));
 
     this.categoryContextService.updateCategories(dtos).subscribe(
       {
@@ -140,13 +140,15 @@ export class CategoriesComponent implements OnInit {
     this.formGroups = formGroups;
   }
   
-  private createCategoryUpdateDto(formGroup: FormGroup<CategoryForm>): CategoryUpdateDto {
+  private createCategoryUpdateDto(formGroup: FormGroup<CategoryForm>, order: number): CategoryUpdateDto {
     const controls = formGroup.controls;
 
     return {
       id: controls.id.value ?? undefined,
       name: controls.name.value,
       color: controls.color.value,
+      order: order,
+      includeToStatistics: true,
       subCategories: this.createSubCategoryUpdateDtos(controls.subCategories)
     }
   }
@@ -157,17 +159,18 @@ export class CategoriesComponent implements OnInit {
     for (let index = 0; index < categories.length; index++) {
       const subCategoryForm = categories.at(index);
 
-      subCategories.push(this.createSubCategoryUpdateDto(subCategoryForm));
+      subCategories.push(this.createSubCategoryUpdateDto(subCategoryForm, index));
     }
 
     return subCategories;
   }
 
-  private createSubCategoryUpdateDto(subCategory: FormGroup<SubCategoryForm>): SubCategoryUpdateDto {
+  private createSubCategoryUpdateDto(subCategory: FormGroup<SubCategoryForm>, order: number): SubCategoryUpdateDto {
     
     return {
       id: subCategory.controls.id.value ?? undefined,
-      name: subCategory.controls.name.value
+      name: subCategory.controls.name.value,
+      order: order
     }
   }
 }

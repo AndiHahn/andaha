@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { BillCategoryApiService } from '../api/shopping/bill-category-api.service';
 import { CategoryDto } from '../api/shopping/dtos/CategoryDto';
 import { CategoryUpdateDto } from '../api/shopping/dtos/CategoryUpdateDto';
 import { ContextService } from '../core/context.service';
-import { openErrorSnackbar } from '../shared/snackbar/snackbar-functions';
 import { BillContextService } from '../features/bill/services/bill-context.service';
 
 @Injectable({
@@ -16,7 +14,6 @@ export class BillCategoryContextService {
   private categories$: BehaviorSubject<CategoryDto[]> = new BehaviorSubject<CategoryDto[]>([]);
 
   constructor(
-    private snackbar: MatSnackBar,
     private contextService: ContextService,
     private billCategoryApiService: BillCategoryApiService,
     private billContextService: BillContextService
@@ -48,7 +45,7 @@ export class BillCategoryContextService {
   private fetchBillCategories(): void {
     this.billCategoryApiService.getAll().subscribe(
       {
-        next: categories => this.categories$.next(categories.sort(this.compareCategoryDefaultFirst))
+        next: categories => this.categories$.next(categories.sort(this.compareCategoryOrder))
       }
     );
   }
@@ -72,7 +69,7 @@ export class BillCategoryContextService {
     return returnSubject.asObservable();
   }
 
-  private compareCategoryDefaultFirst(left: CategoryDto, right: CategoryDto): number {
-    return Number(right.isDefault) - Number(left.isDefault);
+  private compareCategoryOrder(left: CategoryDto, right: CategoryDto): number {
+    return right.order - left.order;
   }
 }
