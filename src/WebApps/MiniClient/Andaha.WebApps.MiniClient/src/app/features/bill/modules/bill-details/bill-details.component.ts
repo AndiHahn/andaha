@@ -239,6 +239,7 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
     const controls = this.form.controls;
     return {
       categoryId: controls.category.value!.id,
+      subCategoryId: controls.subCategory?.value?.id,
       shopName: controls.shopName.value,
       price: controls.price.value!,
       date: new Date(controls.date.value),

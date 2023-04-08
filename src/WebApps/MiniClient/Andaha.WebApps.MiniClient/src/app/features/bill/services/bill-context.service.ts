@@ -3,7 +3,6 @@ import { BehaviorSubject, Observable, Subject, skip } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { ContextService } from 'src/app/core/context.service';
-import { CategoryDto } from '../../../api/shopping/dtos/CategoryDto';
 import { BillCreateDto, billCreateDtoToBillDto } from '../../../api/shopping/dtos/BillCreateDto';
 import { BillUpdateDto } from '../../../api/shopping/dtos/BillUpdateDto';
 import { BillCacheService } from './bill-cache.service';

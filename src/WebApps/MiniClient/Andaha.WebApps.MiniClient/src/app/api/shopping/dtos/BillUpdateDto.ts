@@ -1,5 +1,6 @@
 export interface BillUpdateDto {
   categoryId: string;
+  subCategoryId?: string;
   shopName: string;
   price: number;
   date: Date;
