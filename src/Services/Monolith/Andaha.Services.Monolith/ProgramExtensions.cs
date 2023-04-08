@@ -4,6 +4,7 @@ using Andaha.Services.BudgetPlan.Common;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging.ApplicationInsights;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
@@ -40,9 +41,12 @@ internal static class ProgramExtensions
 
     internal static WebApplicationBuilder AddCustomLogging(this WebApplicationBuilder builder)
     {
-        if (builder.Environment.IsProduction())
+        if (!builder.Environment.IsDevelopment())
         {
-            builder.Services.AddApplicationInsightsTelemetry();
+            builder.Services.AddApplicationInsightsTelemetry(config =>
+            {
+                config.EnableAdaptiveSampling = false;
+            });
         }
 
         return builder;

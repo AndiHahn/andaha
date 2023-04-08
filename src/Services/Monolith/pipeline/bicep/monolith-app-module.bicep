@@ -12,6 +12,8 @@ param sqlDbConnectionString string
 @secure()
 param storageConnectionString string
 @secure()
+param applicationInsightsInstrumentationKey string
+@secure()
 param applicationInsightsConnectionString string
 @secure()
 param authAzureAdB2CGraphApiClientSecret string
@@ -39,6 +41,14 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
               value: 'http://0.0.0.0:80'
             }
             {
+              name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+              secretRef: 'application-insights-instrumentation-key' 
+            }
+            {
+              name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+              secretRef: 'application-insights-connection-string'
+            }
+            {
               name: 'ConnectionStrings__ApplicationDbConnection'
               secretRef: 'db-connection-string'
             }
@@ -49,10 +59,6 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
             {
               name: 'Dapr__CollaborationAppId'
               value: 'monolith-api'
-            }
-            {
-              name: 'ApplicationInsights__ConnectionString'
-              secretRef: 'application-insights-connection-string'
             }
             {
               name: 'Authentication__AzureAdB2C__Instance'
@@ -166,6 +172,10 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
         {
           name: 'storage-connection-string'
           value: storageConnectionString
+        }
+        {
+          name: 'application-insights-instrumentation-key'
+          value: applicationInsightsInstrumentationKey
         }
         {
           name: 'application-insights-connection-string'

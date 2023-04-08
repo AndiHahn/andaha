@@ -25,6 +25,7 @@ module applicationInsights 'monolith-appinsights-module.bicep' = {
   params: {
     stage: stage
     location: location
+    logAnalyticsWorkspace: coreInfrastructure.outputs.logAnalyticsWorkspaceId
   }
 }
 
@@ -50,6 +51,7 @@ module containerApp 'monolith-app-module.bicep' = {
     containerRegistryPassword: containerRegistryPassword
     sqlDbConnectionString: coreInfrastructure.outputs.databaseConnectionString
     storageConnectionString: storage.outputs.storageConnectionString
+    applicationInsightsInstrumentationKey: applicationInsights.outputs.instrumentationKey
     applicationInsightsConnectionString: applicationInsights.outputs.connectionString
   }
 }

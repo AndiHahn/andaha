@@ -23,3 +23,4 @@ module database 'main-db-module.bicep' = {
 output containerAppEnvironmentId string = containerAppsEnvironment.outputs.id
 output containerAppEnvironmentDomain string = containerAppsEnvironment.outputs.domain
 output databaseConnectionString string = database.outputs.connectionString
+output logAnalyticsWorkspaceId string = containerAppsEnvironment.outputs.logWorkspaceId
