@@ -30,6 +30,8 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
                 type: "int",
                 nullable: false,
                 defaultValue: 0);
+
+            migrationBuilder.Sql("UPDATE BillCategory SET IncludeToStatistics = false WHERE IsDefault = true;");
         }
 
         /// <inheritdoc />

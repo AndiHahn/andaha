@@ -8,7 +8,7 @@ public static class ShoppingDbContextSeed
     {
         var categories = new List<BillCategory>
         {
-            new(userId, "Keine", "white", 0, Array.Empty<(string, int)>(), isDefault: true),
+            new(userId, "Keine", "white", 0, Array.Empty<(string, int)>(), includeToStatistics: false, isDefault: true),
             new(userId, "Lebensmittel", "red", 1, Array.Empty<(string, int)>()),
             new(userId, "Wohnen", "pink", 2, Array.Empty<(string, int)>()),
             new(userId, "Kleidung", "purple", 3, Array.Empty<(string, int)>()),
