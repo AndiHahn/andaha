@@ -18,7 +18,7 @@ import { BillForm, getBillForm } from '../../functions/bill-form-functions';
 import { ImageSnippet } from '../add-bill-image-dialog/add-bill-image-dialog.component';
 import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
 import { BillSubCategoryDto } from 'src/app/api/shopping/dtos/BillSubCategoryDto';
-import { MatSelect, MatSelectChange } from '@angular/material/select';
+import { MatSelectChange } from '@angular/material/select';
 
 export const MY_FORMATS = {
   parse: {
@@ -213,6 +213,7 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
           id: this.bill.category.id,
           name: this.bill.category.name,
           color: this.bill.category.color,
+          order: this.bill.category.order
         });
       }
     }
@@ -251,7 +252,8 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
     return {
       id: controls.category.value!.id,
       name: controls.category.value!.name,
-      color: controls.category.value!.color
+      color: controls.category.value!.color,
+      order: controls.category.value!.order
     }
   }
 
@@ -265,6 +267,7 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
     return {
       id: controls.subCategory.value.id,
       name: controls.subCategory.value.name,
+      order: controls.subCategory.value.order
     }
   }
 
@@ -272,7 +275,8 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
     return {
       id: category.id,
       name: category.name,
-      color: category.color
+      color: category.color,
+      order: category.order
     }
   }
 }

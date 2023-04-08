@@ -10,6 +10,10 @@ internal static class CategoryDtoMapping
             entity.Id,
             entity.Name,
             entity.Color,
+            entity.Order,
             entity.IsDefault,
-            entity.SubCategories.Select(subCategory => SubCategoryDtoMapping.EntityToDto.Invoke(subCategory)!.Value).ToArray());
+            entity.SubCategories
+                .OrderBy(subCategory => subCategory.Order)
+                .Select(subCategory => SubCategoryDtoMapping.EntityToDto.Invoke(subCategory)!.Value)
+                .ToArray());
 }

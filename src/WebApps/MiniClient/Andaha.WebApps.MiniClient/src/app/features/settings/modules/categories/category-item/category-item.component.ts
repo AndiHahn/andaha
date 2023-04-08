@@ -1,3 +1,4 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
 import { CategoryForm, createSubCategoryForm, SubCategoryForm } from '../functions/form-functions';
@@ -97,12 +98,26 @@ export class CategoryItemComponent implements OnInit, OnChanges {
     }
   }
 
-  onDeleteSubCaategoryClick(index: number): void {
+  onDeleteSubCategoryClick(index: number): void {
+    if (!this.editing) {
+      return;
+    }
+
     this.subCategoryForms.removeAt(index);
   }
 
   onAddSubCategoryClick(): void {
     this.subCategoryForms.push(createSubCategoryForm(''));
+  }
+
+  drop(event: CdkDragDrop<string[]>) {
+    if (!this.subCategoryForms) {
+      return;
+    }
+    
+    const movedItem = this.subCategoryForms.at(event.previousIndex);
+    this.subCategoryForms.removeAt(event.previousIndex);
+    this.subCategoryForms.insert(event.currentIndex, movedItem);
   }
 
   private refreshFormControls() : void {

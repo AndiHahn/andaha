@@ -9,6 +9,7 @@ import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/co
 import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/ConfirmationDialogData';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { CategoryForm, createCategoryFormGroup, SubCategoryForm } from './functions/form-functions';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-categories',
@@ -61,7 +62,15 @@ export class CategoriesComponent implements OnInit {
   }
 
   onAddCategoryClick(): void {
-    this.formGroups?.push(createCategoryFormGroup([], '', ''));
+    this.formGroups?.push(createCategoryFormGroup([], '', '', false));
+  }
+
+  drop(event: CdkDragDrop<string[]>) {
+    if (!this.formGroups) {
+      return;
+    }
+    
+    moveItemInArray(this.formGroups, event.previousIndex, event.currentIndex);
   }
 
   onSaveClick(): void {
@@ -104,11 +113,11 @@ export class CategoriesComponent implements OnInit {
   }
 
   isDefaultCategory(index: number): boolean {
-    if (!this.categories) {
+    if (!this.formGroups) {
       return false;
     }
 
-    return this.categories[index]?.isDefault;
+    return this.formGroups[index].value?.isDefault ?? false;
   }
 
   private initSubscriptions(): void {
@@ -132,7 +141,7 @@ export class CategoriesComponent implements OnInit {
     const formGroups: FormGroup<CategoryForm>[] = [];
     
     categories.forEach(category => {
-      const formGroup = createCategoryFormGroup(category.subCategories, category.name, category.color, category.id);
+      const formGroup = createCategoryFormGroup(category.subCategories, category.name, category.color, category.isDefault, category.id);
       
       formGroups.push(formGroup);
     });

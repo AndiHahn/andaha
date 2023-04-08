@@ -128,6 +128,7 @@ export class AddBillComponent implements OnInit {
       id: controls.category.value!.id,
       name: controls.category.value!.name,
       color: controls.category.value!.color,
+      order: controls.category.value!.order
     }
   }
 
@@ -141,6 +142,7 @@ export class AddBillComponent implements OnInit {
     return {
       id: controls.subCategory.value.id,
       name: controls.subCategory.value.name,
+      order: controls.subCategory.value.order
     }
   }
 
@@ -148,7 +150,8 @@ export class AddBillComponent implements OnInit {
     return {
       id: category.id,
       name: category.name,
-      color: category.color
+      color: category.color,
+      order: category.order
     }
   }
 }

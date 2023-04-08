@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { BillCategoryApiService } from '../api/shopping/bill-category-api.service';
 import { CategoryDto } from '../api/shopping/dtos/CategoryDto';
 import { CategoryUpdateDto } from '../api/shopping/dtos/CategoryUpdateDto';
+import { SubCategoryDto } from '../api/shopping/dtos/SubCategoryDto';
 import { ContextService } from '../core/context.service';
 import { BillContextService } from '../features/bill/services/bill-context.service';
 
@@ -45,7 +46,7 @@ export class BillCategoryContextService {
   private fetchBillCategories(): void {
     this.billCategoryApiService.getAll().subscribe(
       {
-        next: categories => this.categories$.next(categories.sort(this.compareCategoryOrder))
+        next: categories => this.categories$.next(categories)
       }
     );
   }

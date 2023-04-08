@@ -24,24 +24,31 @@
     </button>
   </mat-card>
 
-  <div *ngFor="let subCategoryForm of subCategoryForms.controls; index as i" class="indentation">
-    <mat-card  class="mat-card">
-      <div class="name-field">
-        <mat-form-field appearance="fill">
-          <input matInput required [readonly]="!editing" [formControl]="subCategoryForm.controls.name" 
-            placeholder="Unterkategorie">
-        </mat-form-field>
-      </div>
-      <button mat-icon-button class="delete-button dark-bg-color" [disabled]="!editing">
-        <mat-icon (click)="onDeleteSubCaategoryClick(i)">delete</mat-icon>
-      </button>
-    </mat-card>
-  </div>
+  <div cdkDropList (cdkDropListDropped)="drop($event)">
+    <div
+        cdkDrag
+        class="drag-item indentation"
+        *ngFor="let subCategoryForm of subCategoryForms.controls; index as i"
+        [cdkDragDisabled]="!editing">
+      <mat-card  class="mat-card">
+        <div class="name-field">
+          <mat-form-field appearance="fill">
+            <input matInput required [readonly]="!editing" [formControl]="subCategoryForm.controls.name" 
+              placeholder="Unterkategorie">
+          </mat-form-field>
+        </div>
+        <button mat-icon-button class="delete-button dark-bg-color" [disabled]="!editing">
+          <mat-icon (click)="onDeleteSubCategoryClick(i)">delete</mat-icon>
+        </button>
+      </mat-card>
+    </div>
 
-  <div class="add-button" *ngIf="!isDefault">
-    <button mat-icon-button [disabled]="!editing" (click)="onAddSubCategoryClick()">
-      <mat-icon>add_circle</mat-icon>
-      Unterkategorie
-    </button>
+    <div class="add-button" *ngIf="!isDefault">
+      <button mat-icon-button [disabled]="!editing" (click)="onAddSubCategoryClick()">
+        <mat-icon>add_circle</mat-icon>
+        Unterkategorie
+      </button>
+    </div>
   </div>
+  
 </div>

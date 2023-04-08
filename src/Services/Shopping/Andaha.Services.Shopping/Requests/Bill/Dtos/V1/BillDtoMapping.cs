@@ -18,8 +18,8 @@ internal static class BillDtoMapping
             bill.Images.Any());
 
     public static Expression<Func<Core.BillCategory, BillCategoryDto>> CategoryToDto =
-        (category) => new BillCategoryDto(category.Id, category.Name, category.Color);
+        (category) => new BillCategoryDto(category.Id, category.Name, category.Color, category.Order);
 
     public static Expression<Func<Core.BillSubCategory?, BillSubCategoryDto?>> SubCategoryToDto =
-        (category) => category == null ? null : new BillSubCategoryDto(category.Id, category.Name);
+        (category) => category == null ? null : new BillSubCategoryDto(category.Id, category.Name, category.Order);
 }

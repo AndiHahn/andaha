@@ -2,12 +2,21 @@
   <mat-spinner diameter="40"></mat-spinner>
 </div>
 
+<div class="help-text">
+  Kategorien können per drag and drop verschoben werden um die Anzeigereihenfolge zu ändern.
+</div>
+
 <div *ngIf="!isLoading">
-  <div style="margin: 5px 0px;">
-    <div *ngFor="let formGroup of formGroups; index as i">
-      <app-category-item [editing]="isEditing" [isDefault]="isDefaultCategory(i)"
-        [categoryForm]="formGroup"
-        (deleteCategory)="onDeleteCategory(i)">
+  <div style="margin: 5px 0px;" cdkDropList (cdkDropListDropped)="drop($event)">
+    <div
+        cdkDrag class="drag-item"
+        *ngFor="let formGroup of formGroups; index as i"
+        [cdkDragDisabled]="!isEditing">
+      <app-category-item
+          [editing]="isEditing"
+          [isDefault]="isDefaultCategory(i)"
+          [categoryForm]="formGroup"
+          (deleteCategory)="onDeleteCategory(i)">
       </app-category-item>
     </div>
   </div>
