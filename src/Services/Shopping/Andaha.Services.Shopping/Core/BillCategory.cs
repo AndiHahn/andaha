@@ -29,7 +29,8 @@ public class BillCategory : Entity<Guid>
         this.UserId = userId;
         this.IsDefault = isDefault;
 
-        this.Update(name, color, order, includeToStatistics);
+        this.Update(name, color, includeToStatistics);
+        this.UpdateOrder(order);
 
         foreach (var subCategory in subCategories)
         {
@@ -53,7 +54,7 @@ public class BillCategory : Entity<Guid>
 
     public IReadOnlyCollection<BillSubCategory> SubCategories => subCategories.AsReadOnly();
 
-    public void Update(string name, string color, int order, bool includeToStatistics)
+    public void Update(string name, string color, bool includeToStatistics)
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -75,16 +76,9 @@ public class BillCategory : Entity<Guid>
             throw new ArgumentException("Length of name must not be > 20 characters.", nameof(color));
         }
 
-        if (order < 0)
-        {
-            throw new ArgumentException("Order must be >= 0.", nameof(order));
-        }
-
         this.Name = name;
         this.Color = color;
         this.IncludeToStatistics = includeToStatistics;
-
-        this.UpdateOrder(order);
     }
 
     public void UpdateOrder(int order)

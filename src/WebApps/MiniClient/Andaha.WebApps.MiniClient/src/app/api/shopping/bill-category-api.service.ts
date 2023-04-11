@@ -28,8 +28,19 @@ export class BillCategoryApiService {
     return this.httpClient.get<CategoryDto[]>(url);
   }
 
+  update(id: string, category: CategoryUpdateDto): Observable<void> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
+    return this.httpClient.put<void>(url, category);
+  }
+
   bulkUpdate(categories: CategoryUpdateDto[]): Observable<void> {
-    const url = constructVersionedPath(this.apiVersion, this.endpointUrl);
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, "bulk");
     return this.httpClient.put<void>(url, categories);
+  }
+
+  delete(id: string): Observable<void> {
+    let url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
+    
+    return this.httpClient.delete<void>(url);
   }
 }

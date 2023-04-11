@@ -2,52 +2,65 @@
   <mat-spinner diameter="40"></mat-spinner>
 </div>
 
+<!--
 <div class="help-text">
   Kategorien können per drag and drop verschoben werden um die Anzeigereihenfolge zu ändern.
 </div>
+-->
 
 <div *ngIf="!isLoading">
   <div style="margin: 5px 0px;" cdkDropList (cdkDropListDropped)="drop($event)">
     <div
         cdkDrag class="drag-item"
-        *ngFor="let formGroup of formGroups; index as i"
+        *ngFor="let category of categories; index as i"
         [cdkDragDisabled]="!isEditing">
-      <app-category-item
-          [editing]="isEditing"
-          [isDefault]="isDefaultCategory(i)"
-          [categoryForm]="formGroup"
-          (deleteCategory)="onDeleteCategory(i)">
-      </app-category-item>
+
+      <div class="list-item">
+        <mat-card class="mat-card" routerLink="{{category.id}}">
+          <span class="truncate-text">{{ category.name }}</span>
+          <div style="display: flex; flex-direction: column; align-items: flex-end;">
+            <span class="color-item" [ngStyle]="{ 'background-color': category.color }"></span>
+          </div>
+        </mat-card>
+      </div>
     </div>
   </div>
-  
-  <div class="add-button">
-    <button mat-icon-button [disabled]="!isEditing" (click)="onAddCategoryClick()">
-      <mat-icon style="font-size: 35px">add_circle</mat-icon>
-      Kategorie
+</div>
+
+<!--
+BUTTONS
+-->
+<div class="progressbar-placeholder"></div>
+
+<mat-progress-bar *ngIf="isSaving" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
+
+<div class="button-placeholder"></div>
+
+<div class="floating-button edit-buttons">
+  <div *ngIf="!isEditing" class="edit-button" style="flex: 1">
+    <button mat-raised-button color="primary" class="button-style" (click)="onEditClick()">
+      <mat-icon>edit</mat-icon><span>Reihenfolge anpassen</span>
     </button>
   </div>
 
-  <div class="progressbar-placeholder"></div>
+  <div *ngIf="isEditing" style="display: flex; flex-direction: row; width: 100%">
+    <button mat-raised-button color="secondary" class="button-style" (click)="onCancelClick()">
+      <mat-icon>close</mat-icon><span>Abbrechen</span>
+    </button>
 
-  <mat-progress-bar *ngIf="isSaving" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
-  
-  <div class="button-placeholder"></div>
-  
-  <div class="bottom-button">
-    <div *ngIf="!isEditing" style="flex: 1">
-      <button mat-raised-button color="primary" class="button-style" (click)="onEditClick()">
-        <mat-icon>edit</mat-icon><span>Bearbeiten</span>
-      </button>
-    </div>
-    <div *ngIf="isEditing" style="display: flex; flex-direction: row; width: 100%">
-      <button mat-raised-button color="secondary" class="button-style" (click)="onCancelClick()">
-        <mat-icon>close</mat-icon><span>Abbrechen</span>
-      </button>
-      <button mat-raised-button color="primary" class="button-style" 
-          [disabled]="!allCategoriesValid || isSaving" (click)="onSaveClick()">
-        <mat-icon>save</mat-icon><span>Speichern</span>
-      </button>
-    </div>
+    <button mat-raised-button color="primary" class="button-style" 
+        [disabled]="isSaving" (click)="onSaveClick()">
+      <mat-icon>save</mat-icon><span>Speichern</span>
+    </button>
+  </div>
+</div>
+
+<div class="button-placeholder"></div>
+
+<div class="floating-button add-button">
+  <div style="flex: 1">
+    <button mat-raised-button color="primary" class="button-style" (click)="onAddCategoryClick()">
+      <mat-icon>add_circle</mat-icon><span>Hinzufügen</span>
+    </button>
   </div>
 </div>

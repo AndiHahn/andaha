@@ -6,4 +6,5 @@ public readonly record struct CategoryDto(
     string Color,
     int Order,
     bool IsDefault,
+    bool IncludeToStatistics,
     IReadOnlyCollection<SubCategoryDto> SubCategories);

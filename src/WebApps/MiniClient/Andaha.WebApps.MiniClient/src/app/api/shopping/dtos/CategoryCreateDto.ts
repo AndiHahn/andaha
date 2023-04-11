@@ -1,6 +1,6 @@
 import { SubCategoryUpdateDto } from "./SubCategoryUpdateDto";
 
-export interface CategoryUpdateDto {
+export interface CategoryCreateDto {
   name: string;
   color: string;
   includeToStatistics: boolean;

@@ -12,6 +12,7 @@ internal static class CategoryDtoMapping
             entity.Color,
             entity.Order,
             entity.IsDefault,
+            entity.IncludeToStatistics,
             entity.SubCategories
                 .OrderBy(subCategory => subCategory.Order)
                 .Select(subCategory => SubCategoryDtoMapping.EntityToDto.Invoke(subCategory)!.Value)

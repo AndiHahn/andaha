@@ -1,14 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
-import { CategoryUpdateDto } from 'src/app/api/shopping/dtos/CategoryUpdateDto';
-import { SubCategoryUpdateDto } from 'src/app/api/shopping/dtos/SubCategoryUpdateDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/ConfirmationDialogData';
-import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
-import { CategoryForm, createCategoryFormGroup, SubCategoryForm } from './functions/form-functions';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
@@ -17,25 +12,13 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
   styleUrls: ['./categories.component.scss']
 })
 export class CategoriesComponent implements OnInit {
+
   categories?: CategoryDto[];
+  tmpCategories?: CategoryDto[];
 
   isSaving: boolean = false;
   isEditing: boolean = false;
   isLoading: boolean = false;
-
-  formGroups?: FormGroup<CategoryForm>[];
-  
-  get allCategoriesValid(): boolean {
-    let valid = true;
-
-    this.formGroups?.forEach(group => {
-      if (group.invalid)  {
-        valid = false;
-      }
-    });
-
-    return valid;
-  }
 
   constructor(
     private snackbar: MatSnackBar,
@@ -46,31 +29,30 @@ export class CategoriesComponent implements OnInit {
     this.initSubscriptions();
   }
 
-  onDeleteCategory(index: number): void {
-    if (this.isEditing && this.formGroups) {
-      this.formGroups.splice(index, 1);
-    }
-  }
-
   onEditClick(): void {
+    this.tmpCategories = this.categories?.slice();
+
     this.isEditing = true;
   }
 
   onCancelClick(): void {
-    this.initFormGroups(this.categories ?? []);
+    if (this.tmpCategories) {
+      this.categories = this.tmpCategories.slice();
+    }
+
     this.isEditing = false;
   }
 
   onAddCategoryClick(): void {
-    this.formGroups?.push(createCategoryFormGroup([], '', '', false));
+    
   }
 
   drop(event: CdkDragDrop<string[]>) {
-    if (!this.formGroups) {
+    if (!this.categories) {
       return;
     }
     
-    moveItemInArray(this.formGroups, event.previousIndex, event.currentIndex);
+    moveItemInArray(this.categories, event.previousIndex, event.currentIndex);
   }
 
   onSaveClick(): void {
@@ -90,6 +72,7 @@ export class CategoriesComponent implements OnInit {
   }
 
   save(): void {
+    /*
     if (!this.formGroups) {
       return;
     }
@@ -110,16 +93,9 @@ export class CategoriesComponent implements OnInit {
         } 
       }
     );
+    */
   }
-
-  isDefaultCategory(index: number): boolean {
-    if (!this.formGroups) {
-      return false;
-    }
-
-    return this.formGroups[index].value?.isDefault ?? false;
-  }
-
+  
   private initSubscriptions(): void {
     this.isLoading = true;
     
@@ -128,58 +104,11 @@ export class CategoriesComponent implements OnInit {
         next: categories => {
           if (categories) {
             this.categories = categories;
-            this.initFormGroups(categories);
             this.isLoading = false;
           }
         },
         error: _ => this.isLoading = false
       }
     );
-  }
-
-  private initFormGroups(categories: CategoryDto[]): void {
-    const formGroups: FormGroup<CategoryForm>[] = [];
-    
-    categories.forEach(category => {
-      const formGroup = createCategoryFormGroup(category.subCategories, category.name, category.color, category.isDefault, category.id);
-      
-      formGroups.push(formGroup);
-    });
-
-    this.formGroups = formGroups;
-  }
-  
-  private createCategoryUpdateDto(formGroup: FormGroup<CategoryForm>, order: number): CategoryUpdateDto {
-    const controls = formGroup.controls;
-
-    return {
-      id: controls.id.value ?? undefined,
-      name: controls.name.value,
-      color: controls.color.value,
-      order: order,
-      includeToStatistics: true,
-      subCategories: this.createSubCategoryUpdateDtos(controls.subCategories)
-    }
-  }
-
-  private createSubCategoryUpdateDtos(categories: FormArray<FormGroup<SubCategoryForm>>): SubCategoryUpdateDto[]  {
-    const subCategories: SubCategoryUpdateDto[] = [];
-    
-    for (let index = 0; index < categories.length; index++) {
-      const subCategoryForm = categories.at(index);
-
-      subCategories.push(this.createSubCategoryUpdateDto(subCategoryForm, index));
-    }
-
-    return subCategories;
-  }
-
-  private createSubCategoryUpdateDto(subCategory: FormGroup<SubCategoryForm>, order: number): SubCategoryUpdateDto {
-    
-    return {
-      id: subCategory.controls.id.value ?? undefined,
-      name: subCategory.controls.name.value,
-      order: order
-    }
   }
 }

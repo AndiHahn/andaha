@@ -11,7 +11,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'settings/connections',
+    redirectTo: 'connections',
     pathMatch: 'full'
   },
   {
@@ -19,11 +19,11 @@ const routes: Routes = [
     component: SettingsComponent,
     children: [
       {
-        path: 'settings/connections',
+        path: 'connections',
         loadChildren: () => import('./modules/connection/connection.module').then(m => m.ConnectionModule)
       },
       {
-        path: 'settings/categories',
+        path: 'categories',
         loadChildren: () => import('./modules/categories/categories.module').then(m => m.CategoriesModule)
       }
     ]

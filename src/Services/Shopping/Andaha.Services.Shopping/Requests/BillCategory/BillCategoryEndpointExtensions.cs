@@ -11,33 +11,60 @@ internal static class BillCategoryEndpointExtensions
 
         var groupBuilder = income.MapGroup("/api/billcategory").ApplyApiVersions();
 
-        app.MapListCategories(groupBuilder);
-        app.MapUpdateCategories(groupBuilder);
+        groupBuilder
+            .MapListCategories()
+            .MapCreateCategory()
+            .MapUpdateCategory()
+            .MapDeleteCategory();
 
         return app;
     }
 
-    private static WebApplication MapListCategories(
-        this WebApplication app,
-        RouteGroupBuilder groupBuilder)
+    private static RouteGroupBuilder MapListCategories(
+        this RouteGroupBuilder groupBuilder)
     {
         groupBuilder
             .MediateGet<ListBillCategories.V1.ListBillCategoriesQuery>("/")
             .Produces<IEnumerable<Dtos.V1.CategoryDto>>()
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
 
-        return app;
+        return groupBuilder;
     }
 
-    private static WebApplication MapUpdateCategories(
-        this WebApplication app,
-        RouteGroupBuilder groupBuilder)
+    private static RouteGroupBuilder MapCreateCategory(
+        this RouteGroupBuilder groupBuilder)
     {
         groupBuilder
-            .MediatePut<UpdateBillCategories.V1.UpdateBillCategoriesCommand>("/")
-            .Produces<IEnumerable<Dtos.V1.CategoryDto>>()
-            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
+            .MediatePost<CreateBillCategory.V1.CreateBillCategoryCommand>("/")
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest);
 
-        return app;
+        return groupBuilder;
+    }
+
+    private static RouteGroupBuilder MapUpdateCategory(
+        this RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediatePut<UpdateBillCategory.V1.UpdateBillCategoryCommand>("{id}")
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest)
+            .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        return groupBuilder;
+    }
+
+    private static RouteGroupBuilder MapDeleteCategory(
+        this RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediateDelete<DeleteBillCategory.V1.DeleteBillCategoryCommand>("{id}")
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        return groupBuilder;
     }
 }

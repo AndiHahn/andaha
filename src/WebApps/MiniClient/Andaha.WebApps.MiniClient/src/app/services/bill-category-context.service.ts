@@ -3,7 +3,6 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { BillCategoryApiService } from '../api/shopping/bill-category-api.service';
 import { CategoryDto } from '../api/shopping/dtos/CategoryDto';
 import { CategoryUpdateDto } from '../api/shopping/dtos/CategoryUpdateDto';
-import { SubCategoryDto } from '../api/shopping/dtos/SubCategoryDto';
 import { ContextService } from '../core/context.service';
 import { BillContextService } from '../features/bill/services/bill-context.service';
 
@@ -27,8 +26,38 @@ export class BillCategoryContextService {
     return this.categories$.asObservable();
   }
 
+  updateCategory(id: string, category: CategoryUpdateDto): Observable<void> {
+    return this.update(id, category);
+  }
+
   updateCategories(categories: CategoryUpdateDto[]): Observable<void> {
     return this.bulkUpdate(categories);
+  }
+
+  getCategoryById(id: string): CategoryDto | undefined {
+    return this.categories$.value.find(category => category.id == id);
+  }
+
+  deleteCategory(id: string): Observable<void> {
+    const returnSubject = new Subject<void>();
+
+    const categoriesWithoutDeleted = this.categories$.value.filter(category => category.id != id);
+    this.categories$.next(categoriesWithoutDeleted);
+
+    this.billCategoryApiService.delete(id).subscribe(
+      {
+        next: _ => {
+          returnSubject.next();
+        },
+        error: error => {
+          this.fetchBillCategories();
+          this.billContextService.refreshBills();
+          returnSubject.error(error);
+        } 
+      }
+    );
+
+    return returnSubject.asObservable();
   }
   
   private initSubscriptions(): void {
@@ -51,6 +80,25 @@ export class BillCategoryContextService {
     );
   }
 
+  private update(id: string, category: CategoryUpdateDto): Observable<void> {
+    const returnSubject = new Subject<void>();
+
+    this.billCategoryApiService.update(id, category).subscribe(
+      {
+        next: _ => {
+          this.fetchBillCategories();
+          this.billContextService.refreshBills();
+          returnSubject.next();
+        },
+        error: error => {
+          returnSubject.error(error);
+        }
+      }
+    );
+
+    return returnSubject.asObservable();
+  }
+
   private bulkUpdate(categories: CategoryUpdateDto[]): Observable<void> {
     const returnSubject = new Subject<void>();
 
@@ -68,9 +116,5 @@ export class BillCategoryContextService {
     );
 
     return returnSubject.asObservable();
-  }
-
-  private compareCategoryOrder(left: CategoryDto, right: CategoryDto): number {
-    return right.order - left.order;
   }
 }
