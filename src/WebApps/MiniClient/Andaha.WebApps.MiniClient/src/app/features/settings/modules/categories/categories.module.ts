@@ -22,6 +22,10 @@ const routes: Routes = [
     component: CategoriesComponent,
   },
   {
+    path: 'create',
+    loadChildren: () => import('./create-category/create-category.module').then(m => m.CreateCategoryModule)
+  },
+  {
     path: ':id',
     loadChildren: () => import('./category-item-details/category-item-details.module').then(m => m.CategoryItemDetailsModule)
   }

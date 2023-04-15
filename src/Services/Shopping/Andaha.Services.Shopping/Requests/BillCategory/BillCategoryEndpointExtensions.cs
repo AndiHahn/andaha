@@ -1,4 +1,5 @@
 ﻿using Andaha.CrossCutting.Application.Requests;
+using Andaha.Services.Shopping.Requests.Bill.Dtos.V1;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Andaha.Services.Shopping.Requests.BillCategory;
@@ -36,7 +37,7 @@ internal static class BillCategoryEndpointExtensions
     {
         groupBuilder
             .MediatePost<CreateBillCategory.V1.CreateBillCategoryCommand>("/")
-            .Produces(StatusCodes.Status204NoContent)
+            .Produces<BillCategoryDto>()
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest);
 

@@ -16,7 +16,19 @@ export interface CategoryForm {
   subCategories: FormArray<FormGroup<SubCategoryForm>>;
 }
 
-export function getCategoryForm(category: CategoryDto): FormGroup<CategoryForm> {
+export function createEmptyForm(): FormGroup<CategoryForm> {
+  return new FormGroup<CategoryForm>({
+    id: new FormControl(null),
+    name: new FormControl('', { nonNullable: true, validators: [ Validators.required ] }),
+    color: new FormControl('', { nonNullable: true, validators: [ Validators.required ]}),
+    order: new FormControl(0, { nonNullable: true }),
+    isDefault: new FormControl(false, { nonNullable: true }),
+    includeToStatistics: new FormControl(true, { nonNullable: true }),
+    subCategories: new FormArray<FormGroup<SubCategoryForm>>([])
+  });
+}
+
+export function createCategoryForm(category: CategoryDto): FormGroup<CategoryForm> {
   return new FormGroup<CategoryForm>({
     id: new FormControl(category.id),
     name: new FormControl(category.name, { nonNullable: true, validators: [ Validators.required ] }),

@@ -13,7 +13,7 @@ import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/Confi
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { getParametersFromRouteRecursive } from 'src/app/shared/utils/routing-helper';
 import { getAllColors } from '../functions/category-functions';
-import { CategoryForm, createSubCategoryForm, getCategoryForm, SubCategoryForm } from '../functions/form-functions';
+import { CategoryForm, createSubCategoryForm, createCategoryForm, SubCategoryForm } from '../functions/form-functions';
 
 @Component({
   selector: 'app-category-item-details',
@@ -61,7 +61,7 @@ export class CategoryItemDetailsComponent implements OnInit {
     this.category = category;
     this.selectedColor = category.color;
     this.includeToStatisticsCheckbox = category.includeToStatistics;
-    this.form = getCategoryForm(category);
+    this.form = createCategoryForm(category);
     this.form.disable();
 
     this.colors = getAllColors();
@@ -104,7 +104,7 @@ export class CategoryItemDetailsComponent implements OnInit {
 
   onCancelClick(): void {
     this.isEditing = false;
-    this.form = getCategoryForm(this.category);
+    this.form = createCategoryForm(this.category);
     this.form.disable();
     this.subCategoryForms.disable();
     this.includeToStatisticsCheckbox = this.category.includeToStatistics;

@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import { constructPath, constructVersionedPath } from '../functions/functions';
 import { CategoryDto } from './dtos/CategoryDto';
 import { CategoryUpdateDto } from './dtos/CategoryUpdateDto';
+import { CategoryCreateDto } from './dtos/CategoryCreateDto';
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +27,12 @@ export class BillCategoryApiService {
   getAll(): Observable<CategoryDto[]> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl);
     return this.httpClient.get<CategoryDto[]>(url);
+  }
+
+  create(category: CategoryCreateDto): Observable<CategoryDto> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl);
+    
+    return this.httpClient.post<CategoryDto>(url, category);
   }
 
   update(id: string, category: CategoryUpdateDto): Observable<void> {

@@ -5,6 +5,7 @@ import { CategoryDto } from '../api/shopping/dtos/CategoryDto';
 import { CategoryUpdateDto } from '../api/shopping/dtos/CategoryUpdateDto';
 import { ContextService } from '../core/context.service';
 import { BillContextService } from '../features/bill/services/bill-context.service';
+import { CategoryCreateDto } from '../api/shopping/dtos/CategoryCreateDto';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,22 @@ export class BillCategoryContextService {
 
   categories(): Observable<CategoryDto[]> {
     return this.categories$.asObservable();
+  }
+
+  createCategory(category: CategoryCreateDto): Observable<CategoryDto> {
+    const returnSubject = new Subject<CategoryDto>();
+
+    this.billCategoryApiService.create(category).subscribe(
+      {
+        next: createdCategory => {
+          this.categories$.next(this.categories$.value.concat(createdCategory));
+          returnSubject.next(createdCategory);
+        },
+        error: error => returnSubject.error(error)
+      }
+    );
+
+    return returnSubject.asObservable();
   }
 
   updateCategory(id: string, category: CategoryUpdateDto): Observable<void> {

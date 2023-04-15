@@ -1,30 +1,28 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CategoryItemDetailsComponent } from './category-item-details.component';
+import { CreateCategoryComponent } from './create-category.component';
+import { RouterModule, Routes } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
-import { ColorItemComponent } from '../color-item/color-item.component';
-import { RouterModule, Routes } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ColorItemModule } from '../color-item/color-item.module';
+import { MatOptionModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
 
 const routes: Routes = [
   {
     path: '',
-    component: CategoryItemDetailsComponent
+    component: CreateCategoryComponent
   }
 ];
 
 @NgModule({
   declarations: [
-    CategoryItemDetailsComponent
+    CreateCategoryComponent
   ],
   imports: [
     CommonModule,
@@ -35,12 +33,11 @@ const routes: Routes = [
     FormsModule,
     ReactiveFormsModule,
     MatInputModule,
-    MatProgressBarModule,
     MatSelectModule,
+    MatOptionModule,
+    MatProgressBarModule,
     MatCheckboxModule,
-    MatCardModule,
-    DragDropModule,
     ColorItemModule
-  ],
+  ]
 })
-export class CategoryItemDetailsModule { }
+export class CreateCategoryModule { }

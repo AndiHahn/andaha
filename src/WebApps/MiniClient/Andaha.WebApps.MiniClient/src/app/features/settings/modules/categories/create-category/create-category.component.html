@@ -1,0 +1,60 @@
+<!--
+  BACK BUTTON
+-->
+
+<button mat-icon-button routerLink="/settings/categories" class="back-button">
+  <mat-icon>arrow_back</mat-icon>
+</button>
+
+<!--
+  FORM
+-->
+<div>
+  <form [formGroup]="form">
+    <div class="form-container">
+      <mat-form-field appearance="fill">
+        <mat-label>Name der Kategorie</mat-label>
+        <input matInput formControlName="name" required>
+      </mat-form-field>
+    </div>
+
+    <div class="form-container">
+      <mat-form-field appearance="fill">
+        <mat-label>Farbe</mat-label>
+        <mat-select-trigger *ngIf="selectedColor">
+          <app-color-item [color]="selectedColor"></app-color-item>
+        </mat-select-trigger>
+        <mat-select [(ngModel)]="selectedColor" name="color" [formControl]="form.controls.color">
+          <mat-option *ngFor="let color of colors" [value]="color">
+            <app-color-item [color]="color"></app-color-item>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="form-container">
+      <mat-checkbox
+          [checked]="includeToStatisticsCheckbox"
+          (change)="updateIncludeToStatistics()">Aufnehmen in Statistik</mat-checkbox>
+    </div>
+  </form>
+</div>
+
+<!--
+BOTTOM BUTTONS
+-->
+
+<div class="progressbar-placeholder"></div>
+
+<mat-progress-bar *ngIf="isSaving" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
+
+<div class="button-placeholder"></div>
+
+<div class="floating-button add-button">
+  <div style="flex: 1">
+    <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onSaveClick()"
+        [disabled]="isSaving" [disabled]="!form.valid">
+      <mat-icon>save</mat-icon><span>Speichern</span>
+    </button>
+  </div>
+</div>

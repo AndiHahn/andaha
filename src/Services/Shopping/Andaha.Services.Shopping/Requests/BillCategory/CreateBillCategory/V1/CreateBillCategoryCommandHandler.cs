@@ -1,5 +1,7 @@
 ﻿using Andaha.CrossCutting.Application.Identity;
 using Andaha.Services.Shopping.Infrastructure;
+using Andaha.Services.Shopping.Requests.BillCategory.Dtos.V1;
+using LinqKit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,6 +41,6 @@ internal class CreateBillCategoryCommandHandler : IRequestHandler<CreateBillCate
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return Results.NoContent();
+        return Results.Ok(CategoryDtoMapping.EntityToDto.Invoke(category));
     }
 }
