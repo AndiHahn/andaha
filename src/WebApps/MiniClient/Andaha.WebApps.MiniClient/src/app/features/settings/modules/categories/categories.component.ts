@@ -2,6 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { openErrorSnackbar, openInformationSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
+import { CategoryOrderDto } from 'src/app/api/shopping/dtos/CategoryOrderDto';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-categories',
@@ -18,6 +22,7 @@ export class CategoriesComponent implements OnInit {
   isLoading: boolean = false;
 
   constructor(
+    private snackbar: MatSnackBar,
     private categoryContextService: BillCategoryContextService) { }
 
   ngOnInit(): void {
@@ -28,6 +33,8 @@ export class CategoriesComponent implements OnInit {
     this.tmpCategories = this.categories?.slice();
 
     this.isEditing = true;
+
+    openInformationSnackbar('Kategorien können jetzt per "drag and drop" verschoben werden', this.snackbar);
   }
 
   onCancelClick(): void {
@@ -39,7 +46,22 @@ export class CategoriesComponent implements OnInit {
   }
 
   onSaveClick(): void {
-    
+    this.isSaving = true;
+
+    const dtos = this.createCategoryOrderDtos();
+
+    this.categoryContextService.updateCategoryOrders(dtos).subscribe(
+      {
+        next: _ => {
+          this.isSaving = false;
+          this.isEditing = false;
+        },
+        error: (err: HttpErrorResponse) => {
+          this.isSaving = false;
+          openErrorSnackbar("Reihenfolge der Kategorien konnte nicht gespeichert werden. (" + err.error + ")", this.snackbar);
+        }
+      }
+    );
   }
 
   drop(event: CdkDragDrop<string[]>) {
@@ -64,5 +86,20 @@ export class CategoriesComponent implements OnInit {
         error: _ => this.isLoading = false
       }
     );
+  }
+
+  private createCategoryOrderDtos(): CategoryOrderDto[] {
+    if (!this.categories) {
+      return [];
+    }
+
+    return this.categories?.map((category, index) => this.createCategoryOrderDto(category.id, index));
+  }
+
+  private createCategoryOrderDto(id: string, order: number): CategoryOrderDto {
+    return {
+      categoryId: id,
+      order: order
+    }
   }
 }

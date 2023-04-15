@@ -34,7 +34,8 @@ internal class GetExpensesQueryHandler : IRequestHandler<GetExpensesQuery, IResu
             .Where(bill => (bill.UserId == userId ||
                            connectedUsers.Contains(bill.UserId)) &&
                            bill.Date >= request.StartTimeUtc &&
-                           bill.Date <= request.EndTimeUtc)
+                           bill.Date <= request.EndTimeUtc &&
+                           bill.Category.IncludeToStatistics)
             .GroupBy(bill => bill.Category.Name)
             .Select(group => new ExpenseDto(
                 group.Key,

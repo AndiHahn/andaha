@@ -59,6 +59,7 @@ export class CreateCategoryComponent implements OnInit {
           this.router.navigateByUrl('/settings/categories/' + createdCategory.id);
         },
         error: (err: HttpErrorResponse) => {
+          this.isSaving = false;
           openErrorSnackbar("Kategorie konnte nicht erstellt werden. (" + err.error + ")", this.snackbar);
         } 
       }

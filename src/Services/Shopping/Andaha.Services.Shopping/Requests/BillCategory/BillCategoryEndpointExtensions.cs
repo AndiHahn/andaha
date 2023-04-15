@@ -16,7 +16,8 @@ internal static class BillCategoryEndpointExtensions
             .MapListCategories()
             .MapCreateCategory()
             .MapUpdateCategory()
-            .MapDeleteCategory();
+            .MapDeleteCategory()
+            .MapUpdateCategoryOrders();
 
         return app;
     }
@@ -64,6 +65,19 @@ internal static class BillCategoryEndpointExtensions
             .MediateDelete<DeleteBillCategory.V1.DeleteBillCategoryCommand>("{id}")
             .Produces(StatusCodes.Status204NoContent)
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        return groupBuilder;
+    }
+
+    private static RouteGroupBuilder MapUpdateCategoryOrders(
+        this RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediatePut<UpdateOrder.V1.UpdateOrderCommand>("orders")
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest)
             .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
         return groupBuilder;

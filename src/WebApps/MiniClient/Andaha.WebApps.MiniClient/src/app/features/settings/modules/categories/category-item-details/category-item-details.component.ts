@@ -125,6 +125,7 @@ export class CategoryItemDetailsComponent implements OnInit {
       {
         next: _ => this.isSaving = false,
         error: (err: HttpErrorResponse) => {
+          this.isSaving = false;
           openErrorSnackbar("Kategorie konnte nicht gespeichert werden. (" + err.error + ")", this.snackbar);
         } 
       }

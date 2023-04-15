@@ -6,6 +6,7 @@ import { CategoryUpdateDto } from '../api/shopping/dtos/CategoryUpdateDto';
 import { ContextService } from '../core/context.service';
 import { BillContextService } from '../features/bill/services/bill-context.service';
 import { CategoryCreateDto } from '../api/shopping/dtos/CategoryCreateDto';
+import { CategoryOrderDto } from '../api/shopping/dtos/CategoryOrderDto';
 
 @Injectable({
   providedIn: 'root'
@@ -47,8 +48,23 @@ export class BillCategoryContextService {
     return this.update(id, category);
   }
 
-  updateCategories(categories: CategoryUpdateDto[]): Observable<void> {
-    return this.bulkUpdate(categories);
+  updateCategoryOrders(categoryOrders: CategoryOrderDto[]): Observable<void> {
+    const returnSubject = new Subject<void>();
+
+    this.billCategoryApiService.updateOrders(categoryOrders).subscribe(
+      {
+        next: _ => {
+          this.billContextService.refreshBills();
+          returnSubject.next();
+        },
+        error: error => {
+          this.fetchBillCategories();
+          returnSubject.error(error);
+        }
+      }
+    );
+
+    return returnSubject.asObservable();
   }
 
   getCategoryById(id: string): CategoryDto | undefined {
@@ -101,25 +117,6 @@ export class BillCategoryContextService {
     const returnSubject = new Subject<void>();
 
     this.billCategoryApiService.update(id, category).subscribe(
-      {
-        next: _ => {
-          this.fetchBillCategories();
-          this.billContextService.refreshBills();
-          returnSubject.next();
-        },
-        error: error => {
-          returnSubject.error(error);
-        }
-      }
-    );
-
-    return returnSubject.asObservable();
-  }
-
-  private bulkUpdate(categories: CategoryUpdateDto[]): Observable<void> {
-    const returnSubject = new Subject<void>();
-
-    this.billCategoryApiService.bulkUpdate(categories).subscribe(
       {
         next: _ => {
           this.fetchBillCategories();

@@ -6,6 +6,7 @@ import { constructPath, constructVersionedPath } from '../functions/functions';
 import { CategoryDto } from './dtos/CategoryDto';
 import { CategoryUpdateDto } from './dtos/CategoryUpdateDto';
 import { CategoryCreateDto } from './dtos/CategoryCreateDto';
+import { CategoryOrderDto } from './dtos/CategoryOrderDto';
 
 @Injectable({
   providedIn: 'root'
@@ -40,9 +41,9 @@ export class BillCategoryApiService {
     return this.httpClient.put<void>(url, category);
   }
 
-  bulkUpdate(categories: CategoryUpdateDto[]): Observable<void> {
-    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, "bulk");
-    return this.httpClient.put<void>(url, categories);
+  updateOrders(categoryOrders: CategoryOrderDto[]): Observable<void> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'orders');
+    return this.httpClient.put<void>(url, categoryOrders);
   }
 
   delete(id: string): Observable<void> {
