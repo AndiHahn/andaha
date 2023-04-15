@@ -3,7 +3,7 @@
     <div class="margin-top-20">
       <section>
         <div class="label">Ausgaben für {{ categoryName }}:</div>
-        <div class="label-row text-big">{{ sum }} €</div>
+        <div class="label-row text-big">{{ truncate(2, sum) }} €</div>
       </section>
       <mat-divider></mat-divider>
       <div *ngIf="subCategoryExpenses.length == 0" class="margin-top-20">
