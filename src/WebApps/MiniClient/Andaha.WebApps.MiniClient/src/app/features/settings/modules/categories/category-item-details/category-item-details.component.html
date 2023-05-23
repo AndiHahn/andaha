@@ -41,9 +41,9 @@
   </form>
 </div>
 
-<h3 style="margin-left: 15px; margin-top: 20px;">Unterkategorien:</h3>
+<h3 style="margin-left: 15px; margin-top: 20px;" *ngIf="!form.controls.isDefault.value">Unterkategorien:</h3>
 
-<div style="margin-left: 15px; margin-right: 15px;" *ngIf="subCategoryForms.length <= 0">
+<div style="margin-left: 15px; margin-right: 15px;" *ngIf="subCategoryForms.length <= 0 && !form.controls.isDefault.value">
   Es sind noch keine Unterkategorien vorhanden. Diese können im Editiermodus mit "Unterkategorie hinzufügen" erstellt werden.
 </div>
 

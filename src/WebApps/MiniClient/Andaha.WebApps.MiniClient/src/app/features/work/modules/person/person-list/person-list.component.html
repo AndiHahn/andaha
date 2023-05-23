@@ -1,0 +1,9 @@
+<div class="items">
+  <div *ngFor="let person of persons">
+    <div class="list-item">
+      <mat-card class="mat-card" routerLink="{{person.id}}">
+        <span class="truncate-text">{{ person.name }}</span>
+      </mat-card>
+    </div>
+  </div>
+</div>

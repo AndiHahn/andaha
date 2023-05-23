@@ -1,0 +1,32 @@
+.label {
+  margin-left: 5px;
+  margin-top: 5px;
+  font-size: medium;
+  font-weight: 500;
+}
+
+.items {
+  margin-bottom: 10px;
+}
+
+.list-item {
+  padding: 5px 8px 0px 8px;
+}
+
+.mat-card {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: calc(100% - 20px);
+  padding: 10px;
+  height: 36px;
+}
+
+.truncate-text {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+  overflow: hidden
+}

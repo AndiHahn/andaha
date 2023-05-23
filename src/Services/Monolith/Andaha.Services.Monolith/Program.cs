@@ -2,6 +2,7 @@ using Andaha.Services.BudgetPlan;
 using Andaha.Services.Collaboration;
 using Andaha.Services.Monolith;
 using Andaha.Services.Shopping;
+using Andaha.Services.Work;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,8 @@ builder
 builder
     .AddCollaborationServices()
     .AddBudgetPlanServices()
-    .AddShoppingServices();
+    .AddShoppingServices()
+    .AddWorkServices();
 
 var app = builder.Build();
 
@@ -67,5 +69,6 @@ app.MapControllers();
 await app.MigrateBudgetPlanDatabaseAsync(app.Logger);
 await app.MigrateCollaborationDatabaseAsync(app.Logger);
 await app.MigrateShoppingDatabaseAsync(app.Logger);
+await app.MigrateWorkDatabaseAsync(app.Logger);
 
 app.Run();

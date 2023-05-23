@@ -1,0 +1,32 @@
+.action-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.button-placeholder {
+  height: 50px;
+}
+
+.floating-button {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: row;
+}
+
+.add-working-entries-button {
+  bottom: 107px;
+}
+
+.add-person-button {
+  bottom: 56px;
+}
+
+button {
+  mat-icon {
+    margin-right: 10px;
+  }
+}

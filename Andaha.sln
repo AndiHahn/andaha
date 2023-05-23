@@ -45,6 +45,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Monolith", "Monolith", "{C6
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Andaha.Services.Monolith", "src\Services\Monolith\Andaha.Services.Monolith\Andaha.Services.Monolith.csproj", "{D93FDCBF-AEA7-46A7-8839-5B3D0AA021A7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Work", "Work", "{6E8724E4-E319-4960-B344-D37FA0C5FAAE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Andaha.Services.Work", "src\Services\Work\Andaha.Services.Work\Andaha.Services.Work.csproj", "{F77F4C45-2226-4248-A1A8-130508660FA2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +91,10 @@ Global
 		{D93FDCBF-AEA7-46A7-8839-5B3D0AA021A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D93FDCBF-AEA7-46A7-8839-5B3D0AA021A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D93FDCBF-AEA7-46A7-8839-5B3D0AA021A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F77F4C45-2226-4248-A1A8-130508660FA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F77F4C45-2226-4248-A1A8-130508660FA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F77F4C45-2226-4248-A1A8-130508660FA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F77F4C45-2226-4248-A1A8-130508660FA2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -111,6 +119,8 @@ Global
 		{538D8A03-49E1-4EA4-A6AB-FC1922884648} = {422B7095-B406-4E41-97C1-C24A33ACD73D}
 		{C60AAC87-E69B-4CB7-96BF-4B2DD67E9745} = {62E1C896-5270-4CBA-9E5E-3390D39C5EFC}
 		{D93FDCBF-AEA7-46A7-8839-5B3D0AA021A7} = {C60AAC87-E69B-4CB7-96BF-4B2DD67E9745}
+		{6E8724E4-E319-4960-B344-D37FA0C5FAAE} = {62E1C896-5270-4CBA-9E5E-3390D39C5EFC}
+		{F77F4C45-2226-4248-A1A8-130508660FA2} = {6E8724E4-E319-4960-B344-D37FA0C5FAAE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {567A126D-B3A9-4A9F-BD29-25679B16C0C5}

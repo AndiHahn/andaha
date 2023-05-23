@@ -1,6 +1,7 @@
 ﻿using Andaha.Services.BudgetPlan;
 using Andaha.Services.Collaboration;
 using Andaha.Services.Shopping;
+using Andaha.Services.Work;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
@@ -15,6 +16,8 @@ internal static class ProgramEndpointExtensions
         app.MapCollaborationEndpoints();
 
         app.MapShoppingEndpoints();
+
+        app.MapWorkEndpoints();
 
         return app;
     }

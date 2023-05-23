@@ -4,7 +4,6 @@ using Andaha.Services.Shopping.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Globalization;
 
 namespace Andaha.Services.Shopping.Requests.Bill;
 

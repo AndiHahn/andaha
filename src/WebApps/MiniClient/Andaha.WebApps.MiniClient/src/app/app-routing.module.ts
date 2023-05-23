@@ -11,6 +11,10 @@ const routes: Routes = [
     loadChildren: () => import('./features/budgetplan/budgetplan.module').then(m => m.BudgetplanModule)
   },
   {
+    path: 'work',
+    loadChildren: () => import('./features/work/work.module').then(m => m.WorkModule)
+  },
+  {
     path: 'settings',
     loadChildren: () => import('./features/settings/settings.module').then(m => m.SettingsModule)
   },

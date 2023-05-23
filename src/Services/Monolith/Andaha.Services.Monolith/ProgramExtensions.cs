@@ -2,9 +2,7 @@
 using Andaha.CrossCutton.Application.Healthcheck;
 using Andaha.Services.BudgetPlan.Common;
 using Asp.Versioning;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Logging.ApplicationInsights;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;

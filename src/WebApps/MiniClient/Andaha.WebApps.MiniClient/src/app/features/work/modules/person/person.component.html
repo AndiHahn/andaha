@@ -1,0 +1,35 @@
+<div *ngIf="!persons" class="action-container">
+  <mat-spinner diameter="40"></mat-spinner>
+</div>
+
+<div *ngIf="persons?.length == 0" class="action-container">
+  <div >
+    Keine Personen vorhanden.
+  </div>
+</div>
+
+<div *ngIf="persons">
+  <app-person-list [persons]="persons"></app-person-list>
+</div>
+
+<div>
+  <div class="button-placeholder"></div>
+  
+  <div class="floating-button add-working-entries-button">
+    <div style="flex: 1">
+      <button mat-raised-button color="primary" class="button-style" (click)="onAddWorkingEntriesClick()">
+        <mat-icon>add_circle</mat-icon><span>Arbeitszeiten hinzufügen</span>
+      </button>
+    </div>
+  </div>
+  
+  <div class="button-placeholder"></div>
+  
+  <div class="floating-button add-person-button">
+    <div style="flex: 1">
+      <button mat-raised-button color="primary" class="button-style" routerLink="create">
+        <mat-icon>add_circle</mat-icon><span>Person hinzufügen</span>
+      </button>
+    </div>
+  </div>
+</div>
