@@ -8,6 +8,8 @@ pool:
   vmImage: "ubuntu-latest"
 
 variables:
+  azureDevServiceConnection: azure-andreas-paug-andaha-dev-connection
+  azureProdServiceConnection: azure-andreas-paug-andaha-prod-connection
   containerRegistryConnection: "andaha-container-reg-connection"
   imageTag: "$(Build.SourceBranchName)"
   bicepTemplateFile: "src/Services/Monolith/pipeline/bicep/monolith-main.bicep"
