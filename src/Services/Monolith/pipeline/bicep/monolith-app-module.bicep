@@ -62,7 +62,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
             }
             {
               name: 'Authentication__AzureAdB2C__Instance'
-              value: 'https://login.andaha.work'
+              value: 'https://andreasorganization.b2clogin.com'
             }
             {
               name: 'Authentication__AzureAdB2C__ClientId'
@@ -70,7 +70,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
             }
             {
               name: 'Authentication__AzureAdB2C__Domain'
-              value: 'login.andaha.work'
+              value: 'andreasorganization.onmicrosoft.com'
             }
             {
               name: 'Authentication__AzureAdB2C__TenantId'

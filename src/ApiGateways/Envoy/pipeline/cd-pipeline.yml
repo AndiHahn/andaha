@@ -8,7 +8,6 @@ pool:
   vmImage: "ubuntu-latest"
 
 variables:
-  azureServiceConnection: "azure-rm-andaha-dev-connection"
   containerRegistryConnection: "andaha-container-reg-connection"
   imageTag: "$(Build.SourceBranchName)"
   bicepTemplateFile: "src/ApiGateways/Envoy/pipeline/bicep/envoy-main.bicep"
@@ -39,7 +38,7 @@ stages:
     - task: AzureCLI@2
       displayName: 'Deploy to dev'
       inputs:
-        azureSubscription: $(azureServiceConnection)
+        azureSubscription: $(azureDevServiceConnection)
         scriptType: bash
         scriptLocation: inlineScript
         inlineScript: |

@@ -8,8 +8,6 @@ pool:
   vmImage: "ubuntu-latest"
 
 variables:
-  azureDevServiceConnection: "azure-rm-andaha-dev-connection"
-  azureProdServiceConnection: "azure-rm-andaha-prod-connection"
   containerRegistryConnection: "andaha-container-reg-connection"
   imageTag: "$(Build.SourceBranchName)"
   bicepTemplateFile: "src/WebApps/ServiceStatus/pipeline/bicep/servicestatus-main.bicep"
