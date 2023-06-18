@@ -44,15 +44,21 @@ public class Person : Entity<Guid>
 
     public double PayedHous { get; private set; } = 0;
 
+    public double PayedMoney { get; set; }
+
+    public double PayedTip { get; set; }
+
     public DateTime? LastPayed { get; private set; } = null!;
 
     public string? Notes { get; private set; }
     
     public virtual ICollection<WorkingEntry> WorkingEntries { get; private set; } = new List<WorkingEntry>();
 
-    public void PayHours(double payedHours)
+    public void PayHours(double payedHours, double payedMoney, double payedTip)
     {
         this.PayedHous += payedHours;
+        this.PayedMoney += payedMoney;
+        this.PayedTip += payedTip;
 
         this.LastPayed = DateTime.UtcNow;
     }

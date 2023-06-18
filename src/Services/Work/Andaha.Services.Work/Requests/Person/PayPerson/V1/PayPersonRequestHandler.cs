@@ -37,7 +37,7 @@ internal class PayPersonRequestHandler : IRequestHandler<PayPersonRequest, IResu
             return Results.Forbid();
         }
 
-        person.PayHours(request.PayedHours);
+        person.PayHours(request.PayPerson.PayedHours, request.PayPerson.PayedMoney, request.PayPerson.PayedTip);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

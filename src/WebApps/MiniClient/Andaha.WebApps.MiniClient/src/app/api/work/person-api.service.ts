@@ -6,6 +6,7 @@ import { PersonDto, PersonDtoRaw, mapPersonDtoRaw, mapPersonDtoRawList } from '.
 import { Observable, map } from 'rxjs';
 import { CreatePersonDto } from './dtos/CreatePersonDto';
 import { UpdatePersonDto } from './dtos/PersonUpdateDto';
+import { PayPersonDto } from './dtos/PayPersonDto';
 
 @Injectable({
   providedIn: 'root'
@@ -42,9 +43,9 @@ export class PersonApiService {
     return this.httpClient.put<PersonDtoRaw>(url, dto).pipe(map(mapPersonDtoRaw));
   }
 
-  payPerson(personId: string, payedHours: number): Observable<void> {
+  payPerson(personId: string, dto: PayPersonDto): Observable<void> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, personId, 'pay');
 
-    return this.httpClient.post<void>(url, payedHours);
+    return this.httpClient.post<void>(url, dto);
   }
 }
