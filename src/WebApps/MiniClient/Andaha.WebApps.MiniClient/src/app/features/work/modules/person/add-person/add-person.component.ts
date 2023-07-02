@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { PersonForm, getEmptyForm } from '../../../functions/person-form-functions';
+import { PersonForm, getEmptyPersonForm } from '../../../functions/person-form-functions';
 import { FormGroup, FormGroupDirective } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PersonContextService } from '../../../services/person-context.service';
@@ -23,7 +23,7 @@ export class AddPersonComponent implements OnInit {
     private router: Router,
     private personContextService: PersonContextService
   ) {
-    this.form = getEmptyForm();
+    this.form = getEmptyPersonForm();
   }
 
   ngOnInit(): void {

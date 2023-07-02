@@ -70,6 +70,33 @@ export class PersonContextService {
     return returnSubject.asObservable();
   }
 
+  deletePerson(id: string): Observable<void> {
+    const returnSubject = new Subject<void>();
+
+    if (!this.persons$.value) {
+      returnSubject.error('No persons available.')
+
+      return returnSubject.asObservable();
+    }
+
+    const personsWithoutDeleted = this.persons$.value.filter(person => person.id != id);
+    this.persons$.next(personsWithoutDeleted);
+
+    this.personApiService.deletePerson(id).subscribe(
+      {
+        next: _ => {
+          returnSubject.next();
+        },
+        error: error => {
+          this.fetchPersons();
+          returnSubject.error(error);
+        } 
+      }
+    );
+
+    return returnSubject.asObservable();
+  }
+
   private fetchPersons() {
     this.loading$.next(true);
 

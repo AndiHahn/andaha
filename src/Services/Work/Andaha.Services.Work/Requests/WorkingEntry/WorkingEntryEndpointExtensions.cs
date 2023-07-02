@@ -15,7 +15,8 @@ public static class WorkingEntryEndpointExtensions
             .MapCreateWorkingEntryRequest()
             .MapCreateWorkingEntriesRequest()
             .MapUpdatePersonRequest()
-            .MapListWorkingEntriesRequest();
+            .MapListWorkingEntriesRequest()
+            .MapDeleteWorkingEntryRequest();
 
         return app;
     }
@@ -62,10 +63,22 @@ public static class WorkingEntryEndpointExtensions
         this RouteGroupBuilder groupBuilder)
     {
         groupBuilder
-            .MediateGet<ListWorkingEntries.V1.ListWorkingEntriesRequest>("/")
+            .MediateGet<ListWorkingEntries.V1.ListWorkingEntriesRequest>("/{personId}")
             .Produces<IEnumerable<Dtos.V1.WorkingEntryDto>>()
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<ProblemDetails>(StatusCodes.Status403Forbidden);
+
+        return groupBuilder;
+    }
+
+    private static RouteGroupBuilder MapDeleteWorkingEntryRequest(
+       this RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediateDelete<DeleteWorkingEntry.V1.DeleteWorkingEntryRequest>("{id}")
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
         return groupBuilder;
     }

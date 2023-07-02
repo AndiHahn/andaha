@@ -15,7 +15,8 @@ internal static class PersonEndpointExtensions
             .MapCreatePersonRequest()
             .MapListPersonsRequest()
             .MapPayPersonRequest()
-            .MapUpdatePersonRequest();
+            .MapUpdatePersonRequest()
+            .MapDeletePersonRequest();
 
         return app;
     }
@@ -63,6 +64,18 @@ internal static class PersonEndpointExtensions
             .MediatePut<UpdatePerson.V1.UpdatePersonRequest>("{id}")
             .Produces<Dtos.V1.PersonDto>()
             .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest)
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        return groupBuilder;
+    }
+
+    private static RouteGroupBuilder MapDeletePersonRequest(
+       this RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediateDelete<DeletePerson.V1.DeletePersonRequest>("{id}")
+            .Produces(StatusCodes.Status204NoContent)
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 

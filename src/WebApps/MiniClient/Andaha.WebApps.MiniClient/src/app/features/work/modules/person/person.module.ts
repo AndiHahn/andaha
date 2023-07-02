@@ -17,12 +17,10 @@ const routes: Routes = [
     path: 'create',
     loadChildren: () => import('./add-person/add-person.module').then(m => m.AddPersonModule)
   },
-  /*
   {
     path: ':id',
-    loadChildren: () => import('./fixed-cost-details/fixed-cost-details.module').then(m => m.FixedCostDetailsModule)
+    loadChildren: () => import('./person-details/person-details.module').then(m => m.PersonDetailsModule)
   }
-  */
 ];
 
 @NgModule({

@@ -11,6 +11,7 @@ export interface WorkingEntryDtoRaw extends WorkingEntryDtoBase {
 }
 
 interface WorkingEntryDtoBase {
+  id: string,
   notes?: string
 }
 

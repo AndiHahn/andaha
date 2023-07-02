@@ -25,8 +25,8 @@ export class WorkingEntryApiService {
     }
   }
 
-  listPersons(): Observable<WorkingEntryDto[]> {
-    const url = constructVersionedPath(this.apiVersion, this.endpointUrl);
+  listWorkingEntries(personId: string): Observable<WorkingEntryDto[]> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, personId);
 
     return this.httpClient.get<WorkingEntryDtoRaw[]>(url).pipe(map(mapWorkingEntryDtoRawList));
   }
@@ -47,5 +47,11 @@ export class WorkingEntryApiService {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
 
     return this.httpClient.put<void>(url, dto);
+  }
+
+  deleteWorkingEntry(id: string): Observable<void> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
+    
+    return this.httpClient.delete<void>(url);
   }
 }

@@ -48,4 +48,10 @@ export class PersonApiService {
 
     return this.httpClient.post<void>(url, dto);
   }
+
+  deletePerson(id: string): Observable<void> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
+    
+    return this.httpClient.delete<void>(url);
+  }
 }
