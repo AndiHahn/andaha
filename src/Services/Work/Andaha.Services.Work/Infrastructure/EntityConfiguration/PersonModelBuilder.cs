@@ -26,7 +26,7 @@ public class PersonModelBuilder : IEntityTypeConfiguration<Person>
             .IsRequired();
 
         builder
-            .Property(p => p.PayedHous)
+            .Property(p => p.PayedHoursTicks)
             .IsRequired();
 
         builder

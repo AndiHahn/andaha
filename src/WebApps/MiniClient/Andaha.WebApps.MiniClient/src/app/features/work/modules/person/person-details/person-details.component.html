@@ -26,6 +26,25 @@
       </mat-form-field>
     </div>
 
+    <div class="info-box">
+      <div class="label">Gesamtstunden: </div>
+      <div class="value">{{ person.totalHours }} h</div>
+    </div>
+
+    <div class="info-box">
+      <div class="label">Bezahlte Stunden: </div>
+      <div class="value">{{ person.payedHours }} h</div>
+    </div>
+
+    <div class="info-box">
+      <div class="label">Offene Stunden: </div>
+      <div class="value">{{ calculateDateDifference(person.totalHours, person.payedHours) }} h</div>
+    </div>
+
+    <div *ngIf="workingEntries">
+      <app-work-entry-list [workEntries]="workingEntries!"></app-work-entry-list>
+    </div>
+
     <!--
     BOTTOM BUTTONS
     -->

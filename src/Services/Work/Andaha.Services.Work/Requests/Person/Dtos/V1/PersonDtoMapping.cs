@@ -1,6 +1,4 @@
-﻿using Andaha.Services.Work.Requests.WorkingEntry.Dtos.V1;
-using LinqKit;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace Andaha.Services.Work.Requests.Person.Dtos.V1;
 
@@ -11,8 +9,8 @@ internal static class PersonDtoMapping
             person.Id,
             person.Name,
             person.HourlyRate,
-            person.PayedHous,
-            person.LastPayed,
             person.Notes,
-            person.WorkingEntries.Select(workingEntry => WorkingEntryDtoMapping.EntityToDto.Invoke(workingEntry)).ToArray());
+            new TimeSpan(person.WorkingEntries.Sum(entry => entry.WorkDurationTicks)),
+            new TimeSpan(person.PayedHoursTicks),
+            person.LastPayed);
 }

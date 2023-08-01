@@ -114,6 +114,15 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
     ));
   }
 
+  calculateDateDifference(left: string, right: string) : string {
+    const first = new Date(left);
+    const second = new Date(right);
+
+    const difference = second.getDate() - first.getDate();
+
+    return new Date(difference).toString();
+  }
+
   private delete(): void {
     this.isDeleting = true;
 

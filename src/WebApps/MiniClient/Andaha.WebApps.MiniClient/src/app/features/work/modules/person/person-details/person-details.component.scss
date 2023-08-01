@@ -9,6 +9,21 @@
   margin: 5px 15px 0px 15px;
 }
 
+.info-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0px 20px 10px 20px;
+
+  .label {
+
+  }
+
+  .value {
+
+  }
+}
+
 .progressbar-placeholder {
   height: 4px;
 }

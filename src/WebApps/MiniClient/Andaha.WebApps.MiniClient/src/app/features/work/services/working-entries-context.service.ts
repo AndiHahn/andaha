@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { CreateWorkingEntriesDto } from 'src/app/api/work/dtos/CreateWorkingEntriesDto';
 import { WorkingEntryDto } from 'src/app/api/work/dtos/WorkingEntryDto';
 import { WorkingEntryApiService } from 'src/app/api/work/working-entry-api.service';
 import { getParametersFromRouteRecursive } from 'src/app/shared/utils/routing-helper';
+import { PersonDetailsModule } from '../modules/person/person-details/person-details.module';
 
 @Injectable({
   providedIn: 'root'
@@ -35,28 +37,18 @@ export class WorkingEntriesContextService {
     return this.loading$.asObservable();
   }
 
-  /*
-  createPerson(dto: CreatePersonDto): Observable<void> {
+  createEntries(dto: CreateWorkingEntriesDto): Observable<void> {
     const returnSubject = new Subject<void>();
 
-    this.personApiService.createPerson(dto).subscribe(
+    this.apiService.createWorkingEntries(dto).subscribe(
       {
-        next: person => {
-          if (this.persons$.value) {
-            const newPersons = this.persons$.value.concat(person);
-            newPersons.sort(this.sortByNameAscending);
-            this.persons$.next(newPersons)
-          }
-
-          returnSubject.next();
-        },
+        next: _ => returnSubject.next(),
         error: error => returnSubject.error(error)
       }
     );
 
     return returnSubject.asObservable();
   }
-  */
 
   deleteEntry(id: string): Observable<void> {
     const returnSubject = new Subject<void>();

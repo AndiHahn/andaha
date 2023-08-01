@@ -18,6 +18,10 @@ const routes: Routes = [
     loadChildren: () => import('./add-person/add-person.module').then(m => m.AddPersonModule)
   },
   {
+    path: 'create-working-entry',
+    loadChildren: () => import('./add-working-entry/add-working-entry.module').then(m => m.AddWorkingEntryModule)
+  },
+  {
     path: ':id',
     loadChildren: () => import('./person-details/person-details.module').then(m => m.PersonDetailsModule)
   }

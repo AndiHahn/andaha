@@ -8,7 +8,7 @@ public class PayPersonRequestValidator : AbstractValidator<PayPersonRequest>
     {
         this.RuleFor(command => command.Id).NotNull().NotEmpty();
 
-        this.RuleFor(command => command.PayPerson.PayedHours).NotNull().NotEmpty().GreaterThan(0);
+        this.RuleFor(command => command.PayPerson.PayedHours).NotNull().GreaterThan(TimeSpan.FromTicks(1));
 
         this.RuleFor(command => command.PayPerson.PayedMoney).NotNull().NotEmpty();
 

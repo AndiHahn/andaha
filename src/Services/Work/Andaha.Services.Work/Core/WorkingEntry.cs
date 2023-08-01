@@ -33,6 +33,8 @@ public class WorkingEntry : Entity<Guid>
         this.Break = @break;
         this.Notes = notes;
         this.Person = person;
+
+        CalculateWorkDuration();
     }
 
     public Guid PersonId { get; private set; }
@@ -40,6 +42,8 @@ public class WorkingEntry : Entity<Guid>
     public DateTime From { get; private set; }
 
     public DateTime Until { get; private set; }
+
+    public long WorkDurationTicks { get; private set; }
 
     public TimeSpan Break { get; private set; }
 
@@ -57,5 +61,12 @@ public class WorkingEntry : Entity<Guid>
         this.Until = until ?? this.Until;
         this.Break = @break ?? this.Break;
         this.Notes = notes ?? this.Notes;
+
+        CalculateWorkDuration();
+    }
+
+    private void CalculateWorkDuration()
+    {
+        this.WorkDurationTicks = this.Until.Ticks - this.From.Ticks - this.Break.Ticks;
     }
 }

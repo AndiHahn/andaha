@@ -1,26 +1,28 @@
-import { WorkingEntryDto } from "./WorkingEntryDto";
-
 export interface PersonDto extends PersonDtoBase {
-  lastPayed: Date;
+  lastPayed: Date,
+  totalHours: string,
+  payedHours: string
 }
 
 export interface PersonDtoRaw extends PersonDtoBase {
-  lastPayed: string;
+  lastPayed: string,
+  totalHours: string,
+  payedHours: string
 }
 
 interface PersonDtoBase {
   id: string,
   name: string,
   hourlyRate: number,
-  payedHours: number,
   notes?: string,
-  workingEntries: WorkingEntryDto[]
 }
 
 export function mapPersonDtoRaw(raw: PersonDtoRaw): PersonDto {
   return {
     ...raw,
-    lastPayed: new Date(raw.lastPayed)
+    lastPayed: new Date(raw.lastPayed),
+    //totalHours: new Date(raw.totalHours),
+    //payedHours: new Date(raw.payedHours)
   }
 }
 

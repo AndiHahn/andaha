@@ -42,7 +42,7 @@ public class Person : Entity<Guid>
 
     public double HourlyRate { get; private set; }
 
-    public double PayedHous { get; private set; } = 0;
+    public long PayedHoursTicks { get; private set; } = 0;
 
     public double PayedMoney { get; set; }
 
@@ -54,9 +54,9 @@ public class Person : Entity<Guid>
     
     public virtual ICollection<WorkingEntry> WorkingEntries { get; private set; } = new List<WorkingEntry>();
 
-    public void PayHours(double payedHours, double payedMoney, double payedTip)
+    public void PayHours(TimeSpan payedTime, double payedMoney, double payedTip)
     {
-        this.PayedHous += payedHours;
+        this.PayedHoursTicks += payedTime.Ticks;
         this.PayedMoney += payedMoney;
         this.PayedTip += payedTip;
 
@@ -68,13 +68,13 @@ public class Person : Entity<Guid>
     public void Update(
         string? name = null,
         double? hourlyRate = null,
-        double? payedHours = null,
+        TimeSpan? payedTime = null,
         string? notes = null)
     {
         this.Name = name ?? this.Name;
         this.HourlyRate = hourlyRate ?? this.HourlyRate;
         this.Notes = notes ?? this.Notes;
-        this.PayedHous = payedHours ?? this.PayedHous;
+        this.PayedHoursTicks = payedTime?.Ticks ?? this.PayedHoursTicks;
     }
 
     public void AddWorkingEntry(

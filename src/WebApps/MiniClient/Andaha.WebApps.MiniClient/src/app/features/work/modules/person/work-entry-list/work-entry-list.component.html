@@ -1,0 +1,35 @@
+<div class="items">
+  <div *ngFor="let workEntry of workEntries">
+    <!--
+    <app-work-entry-list-item [workEntry]="workEntry"></app-work-entry-list-item>
+    -->
+    <div class="list-item">
+      <mat-card class="mat-card">
+        <span class="truncate-text">{{ workEntry.from }}</span>
+        <span class="truncate-text">{{ workEntry.until }}</span>
+        <!--
+        <div style="display: flex; flex-direction: column; align-items: flex-end;">
+          <span>{{ durationLabel.get(income.duration) }}</span>
+          <span>{{ income.value }} €</span>
+        </div>
+        -->
+      </mat-card>
+    </div>
+  </div>
+</div>
+
+<!--
+<div class="items">
+  <div *ngFor="let income of incomes">
+    <div class="list-item">
+      <mat-card class="mat-card" routerLink="{{income.id}}">
+        <span class="truncate-text">{{ income.name }}</span>
+        <div style="display: flex; flex-direction: column; align-items: flex-end;">
+          <span>{{ durationLabel.get(income.duration) }}</span>
+          <span>{{ income.value }} €</span>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</div>
+-->

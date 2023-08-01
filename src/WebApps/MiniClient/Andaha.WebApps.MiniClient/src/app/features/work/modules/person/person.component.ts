@@ -16,10 +16,6 @@ export class PersonComponent implements OnInit {
   ngOnInit(): void {
     this.initSubscriptions();
   }
-
-  onAddWorkingEntriesClick(): void {
-
-  }
   
   private initSubscriptions(): void {
     this.personContextService.persons().subscribe(

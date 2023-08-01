@@ -9,6 +9,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { WorkEntryListComponent } from '../work-entry-list/work-entry-list.component';
+import { MatCardModule } from '@angular/material/card';
 
 const routes: Routes = [
   {
@@ -19,7 +21,8 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
-    PersonDetailsComponent
+    PersonDetailsComponent,
+    WorkEntryListComponent,
   ],
   imports: [
     CommonModule,
@@ -32,6 +35,7 @@ const routes: Routes = [
     MatInputModule,
     MatNativeDateModule,
     MatProgressBarModule,
+    MatCardModule
   ]
 })
 export class PersonDetailsModule { }

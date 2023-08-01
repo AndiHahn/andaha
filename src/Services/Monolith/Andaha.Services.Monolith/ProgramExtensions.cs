@@ -116,7 +116,7 @@ internal static class ProgramExtensions
             string? scope = azureAdB2CConfig.GetValue<string>("Scope");
             if (domain is null || tenant is null || policy is null || scope is null)
             {
-                throw new InvalidOperationException("AzureAdB2CSwagger parameters must be provieded in appsettings.");
+                throw new InvalidOperationException("AzureAdB2CSwagger parameters must be provided in appsettings.");
             }
 
             string authEndpoint = $"https://{domain}/{tenant}.onmicrosoft.com/{policy}/oauth2/v2.0/authorize";
