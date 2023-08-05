@@ -6,6 +6,24 @@
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="form-container">
 
+      <mat-form-field appearance="fill">
+        <mat-label>Personen</mat-label>
+        <mat-select multiple [formControl]="form.controls.selectedPersons" (openedChange)="onOpenChange(multiUserSearch)">
+          <mat-select-trigger>
+            {{ getPersonDisplayText() }}
+          </mat-select-trigger>
+          <input
+            class="person-search-input"
+            #multiUserSearch
+            type="text"
+            autocomplete="off"
+            matInput
+            placeholder="Suche nach Personen..."
+            (input)="onInputChange($event)"/>
+          <mat-option *ngFor="let person of filteredPersons" [value]="person">{{ person.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
       <app-date-picker-form-field
         [control]="form.controls.date"
         label="Datum">

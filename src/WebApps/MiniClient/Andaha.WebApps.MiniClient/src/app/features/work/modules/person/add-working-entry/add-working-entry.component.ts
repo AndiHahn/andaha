@@ -7,6 +7,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { WorkingEntriesContextGlobalService } from '../../../services/working-entries-context-global.service';
 import * as moment from "moment";
 import { Time } from "@angular/common";
+import { PersonContextService } from '../../../services/person-context.service';
+import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
 
 @Component({
   selector: 'app-add-working-entry',
@@ -17,16 +19,48 @@ export class AddWorkingEntryComponent implements OnInit {
 
   form: FormGroup<WorkingEntryForm>;
 
+  persons?: PersonDto[];
+  filteredPersons?: PersonDto[];
+
   isSaving: boolean = false;
 
   constructor(
     private snackbar: MatSnackBar,
+    private personContextService: PersonContextService,
     private contextService: WorkingEntriesContextGlobalService
   ) {
     this.form = getEmptyWorkingEntryForm();
   }
 
   ngOnInit(): void {
+    this.personContextService.persons().subscribe(
+      {
+        next: persons => {
+          if (!this.persons) {
+            this.persons = persons;
+            this.filteredPersons = persons;
+          }
+        }
+      }
+    );
+  }
+
+  onInputChange(event: any) {
+    if (!this.persons) {
+      return;
+    }
+
+    const searchInput = event.target.value.toLowerCase();
+
+    this.filteredPersons = this.persons.filter(({ name }) => {
+      const personName = name.toLowerCase();
+      return personName.includes(searchInput);
+    });
+  }
+
+  onOpenChange(searchInput: any) {
+    searchInput.value = "";
+    this.filteredPersons = this.persons;
   }
 
   getNgxTime(control: FormControl) : string {
@@ -50,6 +84,12 @@ export class AddWorkingEntryComponent implements OnInit {
     }
   }
 
+  getPersonDisplayText(): string {
+    const personNames = this.form.controls.selectedPersons.value.map(person => person.name);
+
+    return personNames.join(", ");
+  }
+
   onSubmit(): void {
     if (!this.form.valid) {
       return;
@@ -63,7 +103,7 @@ export class AddWorkingEntryComponent implements OnInit {
       {
         next: _ => {
           this.isSaving = false;
-          //this.router.navigateByUrl('work/person')
+          this.form.controls.selectedPersons.setValue([]);
         },
         error: _ => {
           this.isSaving = false;
@@ -76,11 +116,35 @@ export class AddWorkingEntryComponent implements OnInit {
   private createDtoFromForm(): CreateWorkingEntriesDto {
     const controls = this.form.controls;
 
+    const date = moment(controls.date.value).toDate();
+    const year = date.getUTCFullYear();
+    const month = date.getUTCMonth();
+    const day = date.getUTCDay();
+    const fromTime = controls.fromTime.value;
+    const untilTime = controls.untilTime.value;
+    const fromDate = new Date(year, month, day, fromTime.getUTCHours(), fromTime.getUTCMinutes(), fromTime.getUTCSeconds());
+    const untilDate = new Date(year, month, day, untilTime.getUTCHours(), untilTime.getUTCMinutes(), untilTime.getUTCSeconds());
+
+    var breakTime = "";
+    if (controls.break.value.hours < 10) {
+      breakTime = "0";
+    }
+
+    breakTime += controls.break.value.hours;
+    breakTime += ":";
+
+    if (controls.break.value.minutes < 10) {
+      breakTime += "0";
+    }
+
+    breakTime += controls.break.value.minutes;
+    breakTime += ":00";
+
     return {
-      from: controls.date.value,
-      until: controls.untilTime.value,
-      break: controls.break.value,
-      personIds: [ '' ],
+      from: fromDate,
+      until: untilDate,
+      break: breakTime,
+      personIds: controls.selectedPersons.value.map(person => person.id),
       notes: controls.notes?.value ?? undefined
     }
   }

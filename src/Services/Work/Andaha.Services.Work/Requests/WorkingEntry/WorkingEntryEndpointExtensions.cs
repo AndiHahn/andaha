@@ -37,7 +37,7 @@ public static class WorkingEntryEndpointExtensions
         this RouteGroupBuilder groupBuilder)
     {
         groupBuilder
-            .MediatePost<CreateWorkingEntry.V1.CreateWorkingEntryRequest>("/bulk")
+            .MediatePost<CreateWorkingEntries.V1.CreateWorkingEntriesRequest>("/bulk")
             .Produces(StatusCodes.Status204NoContent)
             .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest)
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);

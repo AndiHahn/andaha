@@ -41,6 +41,16 @@
       <div class="value">{{ calculateDateDifference(person.totalHours, person.payedHours) }} h</div>
     </div>
 
+    <h3 style="margin-left: 15px; margin-top: 20px;">Arbeitszeiten:</h3>
+
+    <div style="margin-left: 15px; margin-right: 15px;" *ngIf="workingEntries && workingEntries.length <= 0">
+      Es sind noch keine Arbeitszeiten vorhanden.
+    </div>
+
+    <div *ngIf="!workingEntries" class="action-container">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
     <div *ngIf="workingEntries">
       <app-work-entry-list [workEntries]="workingEntries!"></app-work-entry-list>
     </div>

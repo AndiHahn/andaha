@@ -5,8 +5,8 @@
     -->
     <div class="list-item">
       <mat-card class="mat-card">
-        <span class="truncate-text">{{ workEntry.from }}</span>
-        <span class="truncate-text">{{ workEntry.until }}</span>
+        <span class="truncate-text">{{ workEntry.from | date:'dd.MM.YYYY hh:mm' }}</span>
+        <span class="truncate-text">{{ workEntry.until | date:'dd.MM.YYYY hh:mm' }}</span>
         <!--
         <div style="display: flex; flex-direction: column; align-items: flex-end;">
           <span>{{ durationLabel.get(income.duration) }}</span>
