@@ -13,11 +13,14 @@ import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/co
 import { Subject, takeUntil } from 'rxjs';
 import { WorkingEntriesContextService } from '../../../services/working-entries-context.service';
 import { WorkingEntryDto } from 'src/app/api/work/dtos/WorkingEntryDto';
+import { Time } from '@angular/common';
+import { createTimeDisplayName } from '../../../functions/working-time-functions';
 
 @Component({
   selector: 'app-person-details',
   templateUrl: './person-details.component.html',
-  styleUrls: ['./person-details.component.scss']
+  styleUrls: ['./person-details.component.scss'],
+  providers: [WorkingEntriesContextService]
 })
 export class PersonDetailsComponent implements OnInit, OnDestroy {
 
@@ -114,13 +117,22 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
     ));
   }
 
-  calculateDateDifference(left: string, right: string) : string {
-    const first = new Date(left);
-    const second = new Date(right);
+  getTimeDisplayName(time: Time): string {
+    return createTimeDisplayName(time);
+  }
 
-    const difference = second.getDate() - first.getDate();
+  calculateTimeDifference(left: Time, right: Time) : Time {
+    var time: Time = { hours: 0, minutes: 0};
 
-    return new Date(difference).toString();
+    if (left.minutes - right.minutes >= 0) {
+      time.minutes = left.minutes - right.minutes;
+      time.hours = left.hours - right.hours;
+    } else {
+      time.minutes = 60 - (right.minutes - left.minutes);
+      time.hours = left.hours - (right.hours + 1);
+    }
+
+    return time;
   }
 
   private delete(): void {

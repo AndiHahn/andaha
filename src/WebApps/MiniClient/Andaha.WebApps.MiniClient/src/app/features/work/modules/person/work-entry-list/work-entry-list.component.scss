@@ -7,14 +7,22 @@
 }
 
 .mat-card {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
   align-items: center;
   width: 100%;
   max-width: calc(100% - 20px);
   padding: 10px;
   height: 36px;
+}
+
+.row-layout {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.column-layout {
+  display: flex;
+  flex-direction: column;
 }
 
 .truncate-text {

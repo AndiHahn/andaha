@@ -28,17 +28,17 @@
 
     <div class="info-box">
       <div class="label">Gesamtstunden: </div>
-      <div class="value">{{ person.totalHours }} h</div>
+      <div class="value">{{ getTimeDisplayName(person.totalHours) }}</div>
     </div>
 
     <div class="info-box">
       <div class="label">Bezahlte Stunden: </div>
-      <div class="value">{{ person.payedHours }} h</div>
+      <div class="value">{{ getTimeDisplayName(person.payedHours) }}</div>
     </div>
 
     <div class="info-box">
       <div class="label">Offene Stunden: </div>
-      <div class="value">{{ calculateDateDifference(person.totalHours, person.payedHours) }} h</div>
+      <div class="value">{{ getTimeDisplayName(calculateTimeDifference(person.totalHours, person.payedHours)) }}</div>
     </div>
 
     <h3 style="margin-left: 15px; margin-top: 20px;">Arbeitszeiten:</h3>
@@ -63,7 +63,9 @@
 
     <mat-progress-bar *ngIf="isSaving || isDeleting || isLoading" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
 
+    <!--
     <div class="button-placeholder"></div>
+    -->
 
     <div class="button-placeholder"></div>
 

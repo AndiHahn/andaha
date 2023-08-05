@@ -9,6 +9,8 @@ import * as moment from "moment";
 import { Time } from "@angular/common";
 import { PersonContextService } from '../../../services/person-context.service';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
+import { createTimeDisplayName, getTotalWorkingTimeString } from '../../../functions/working-time-functions';
+import { formatTime } from 'src/app/api/functions/api-utils';
 
 @Component({
   selector: 'app-add-working-entry',
@@ -90,6 +92,14 @@ export class AddWorkingEntryComponent implements OnInit {
     return personNames.join(", ");
   }
 
+  getWorkingTime(): string {
+    return getTotalWorkingTimeString({
+      from: this.form.controls.fromTime.value,
+      until: this.form.controls.untilTime.value,
+      break: this.form.controls.break.value
+    });
+  }
+
   onSubmit(): void {
     if (!this.form.valid) {
       return;
@@ -119,31 +129,16 @@ export class AddWorkingEntryComponent implements OnInit {
     const date = moment(controls.date.value).toDate();
     const year = date.getUTCFullYear();
     const month = date.getUTCMonth();
-    const day = date.getUTCDay();
+    const day = date.getUTCDate() + 1;
     const fromTime = controls.fromTime.value;
     const untilTime = controls.untilTime.value;
-    const fromDate = new Date(year, month, day, fromTime.getUTCHours(), fromTime.getUTCMinutes(), fromTime.getUTCSeconds());
-    const untilDate = new Date(year, month, day, untilTime.getUTCHours(), untilTime.getUTCMinutes(), untilTime.getUTCSeconds());
-
-    var breakTime = "";
-    if (controls.break.value.hours < 10) {
-      breakTime = "0";
-    }
-
-    breakTime += controls.break.value.hours;
-    breakTime += ":";
-
-    if (controls.break.value.minutes < 10) {
-      breakTime += "0";
-    }
-
-    breakTime += controls.break.value.minutes;
-    breakTime += ":00";
+    const fromDate = new Date(year, month, day, fromTime.getHours(), fromTime.getMinutes(), fromTime.getSeconds());
+    const untilDate = new Date(year, month, day, untilTime.getHours(), untilTime.getMinutes(), untilTime.getSeconds());
 
     return {
       from: fromDate,
       until: untilDate,
-      break: breakTime,
+      break: formatTime(controls.break.value),
       personIds: controls.selectedPersons.value.map(person => person.id),
       notes: controls.notes?.value ?? undefined
     }

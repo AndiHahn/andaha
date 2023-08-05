@@ -47,6 +47,10 @@
         (timeChanged)="setFormTime(form.controls.break, $event)">
       </app-time-picker-form-field>
 
+      <div class="working-time-info">
+        <mat-label>Arbeitszeit netto: {{ getWorkingTime() }}</mat-label>
+      </div>
+
       <mat-form-field appearance="fill">
         <mat-label>Notizen</mat-label>
         <textarea matInput formControlName="notes"></textarea>

@@ -3,6 +3,8 @@
     <div class="list-item">
       <mat-card class="mat-card" routerLink="{{person.id}}">
         <span class="truncate-text">{{ person.name }}</span>
+        <span *ngIf="isPaymentRequired(person)"><mat-icon style="color: orange">warning</mat-icon></span>
+        <span class="truncate-text">{{ getTimeDisplayName(person.totalHours) }}</span>
       </mat-card>
     </div>
   </div>

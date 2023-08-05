@@ -1,35 +1,22 @@
 <div class="items">
   <div *ngFor="let workEntry of workEntries">
-    <!--
-    <app-work-entry-list-item [workEntry]="workEntry"></app-work-entry-list-item>
-    -->
     <div class="list-item">
       <mat-card class="mat-card">
-        <span class="truncate-text">{{ workEntry.from | date:'dd.MM.YYYY hh:mm' }}</span>
-        <span class="truncate-text">{{ workEntry.until | date:'dd.MM.YYYY hh:mm' }}</span>
-        <!--
-        <div style="display: flex; flex-direction: column; align-items: flex-end;">
-          <span>{{ durationLabel.get(income.duration) }}</span>
-          <span>{{ income.value }} €</span>
-        </div>
-        -->
-      </mat-card>
-    </div>
-  </div>
-</div>
-
-<!--
-<div class="items">
-  <div *ngFor="let income of incomes">
-    <div class="list-item">
-      <mat-card class="mat-card" routerLink="{{income.id}}">
-        <span class="truncate-text">{{ income.name }}</span>
-        <div style="display: flex; flex-direction: column; align-items: flex-end;">
-          <span>{{ durationLabel.get(income.duration) }}</span>
-          <span>{{ income.value }} €</span>
+        <div class="column-layout">
+          <div class="row-layout">
+            <span class="truncate-text">{{ workEntry.from | date:'dd.MM.YYYY' }}</span>
+            <div style="display: flex;">
+              <span class="truncate-text">{{ workEntry.from | date:'HH:mm' }}</span>
+              <span style="padding-left: 4px; padding-right: 4px">-</span>
+              <span class="truncate-text">{{ workEntry.until | date:'HH:mm' }}</span>
+            </div>
+            <span class="truncate-text">{{ getTotalWorkingTime(workEntry) }}</span>
+          </div>
+          <div>
+            <span class="truncate-text">{{ workEntry.notes }}</span>
+          </div>
         </div>
       </mat-card>
     </div>
   </div>
 </div>
--->

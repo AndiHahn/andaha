@@ -1,7 +1,10 @@
+import { Time } from "@angular/common";
+import { getHoursFromTimeString, getMinutesFromTimeString } from "../../functions/api-utils";
+
 export interface PersonDto extends PersonDtoBase {
   lastPayed: Date,
-  totalHours: string,
-  payedHours: string
+  totalHours: Time,
+  payedHours: Time
 }
 
 export interface PersonDtoRaw extends PersonDtoBase {
@@ -21,8 +24,14 @@ export function mapPersonDtoRaw(raw: PersonDtoRaw): PersonDto {
   return {
     ...raw,
     lastPayed: new Date(raw.lastPayed),
-    //totalHours: new Date(raw.totalHours),
-    //payedHours: new Date(raw.payedHours)
+    totalHours: {
+      hours: getHoursFromTimeString(raw.totalHours),
+      minutes: getMinutesFromTimeString(raw.totalHours)
+    },
+    payedHours: {
+      hours: getHoursFromTimeString(raw.payedHours),
+      minutes: getMinutesFromTimeString(raw.payedHours)
+    }
   }
 }
 

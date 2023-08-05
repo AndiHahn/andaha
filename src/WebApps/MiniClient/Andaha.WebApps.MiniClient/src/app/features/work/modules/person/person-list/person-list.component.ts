@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
-import { PersonContextService } from '../../../services/person-context.service';
+import { createTimeDisplayName } from '../../../functions/working-time-functions';
+import { Time } from '@angular/common';
 
 @Component({
   selector: 'app-person-list',
@@ -18,5 +19,15 @@ export class PersonListComponent implements OnInit {
     if (!this.persons) {
       throw new Error('Persons are required in order to use this component.');
     }
+  }
+
+  getTimeDisplayName(time: Time): string {
+    return createTimeDisplayName(time);
+  }
+
+  isPaymentRequired(person: PersonDto): boolean {
+    return person.hourlyRate > 0 &&
+      person.totalHours.hours != person.payedHours.hours &&
+      person.totalHours.minutes != person.payedHours.minutes;
   }
 }

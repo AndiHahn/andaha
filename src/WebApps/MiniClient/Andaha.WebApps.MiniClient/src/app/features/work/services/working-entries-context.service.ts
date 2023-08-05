@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { CreateWorkingEntriesDto } from 'src/app/api/work/dtos/CreateWorkingEntriesDto';
 import { WorkingEntryDto } from 'src/app/api/work/dtos/WorkingEntryDto';
 import { WorkingEntryApiService } from 'src/app/api/work/working-entry-api.service';
 import { getParametersFromRouteRecursive } from 'src/app/shared/utils/routing-helper';
-import { PersonDetailsModule } from '../modules/person/person-details/person-details.module';
+import { PersonModule } from '../modules/person/person.module';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: PersonModule
 })
 export class WorkingEntriesContextService {
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -35,19 +34,6 @@ export class WorkingEntriesContextService {
 
   loading(): Observable<boolean> {
     return this.loading$.asObservable();
-  }
-
-  createEntries(dto: CreateWorkingEntriesDto): Observable<void> {
-    const returnSubject = new Subject<void>();
-
-    this.apiService.createWorkingEntries(dto).subscribe(
-      {
-        next: _ => returnSubject.next(),
-        error: error => returnSubject.error(error)
-      }
-    );
-
-    return returnSubject.asObservable();
   }
 
   deleteEntry(id: string): Observable<void> {

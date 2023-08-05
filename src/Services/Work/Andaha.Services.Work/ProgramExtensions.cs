@@ -5,7 +5,9 @@ using Andaha.Services.Work.Common;
 using Andaha.Services.Work.Healthcheck;
 using Andaha.Services.Work.Infrastructure;
 using Andaha.Services.Work.Infrastructure.Proxies;
+using Andaha.Services.Work.JsonConverter;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
@@ -20,6 +22,11 @@ public static class ProgramExtensions
 {
     public static WebApplicationBuilder AddWorkServices(this WebApplicationBuilder builder)
     {
+        builder.Services.Configure<JsonOptions>(options =>
+        {
+            options.SerializerOptions.Converters.Add(new TimeSpanConverter());
+        });
+
         return builder
             .AddCustomDatabase()
             .AddCustomApplicationServices();

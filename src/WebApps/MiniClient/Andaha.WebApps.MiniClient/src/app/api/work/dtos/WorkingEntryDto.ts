@@ -1,7 +1,10 @@
+import { Time } from "@angular/common";
+import { getHoursFromTimeString, getMinutesFromTimeString } from "../../functions/api-utils";
+
 export interface WorkingEntryDto extends WorkingEntryDtoBase {
   from: Date,
   until: Date,
-  break: Date,
+  break: Time,
 }
 
 export interface WorkingEntryDtoRaw extends WorkingEntryDtoBase {
@@ -20,7 +23,10 @@ export function mapWorkingEntryDtoRaw(raw: WorkingEntryDtoRaw): WorkingEntryDto 
     ...raw,
     from: new Date(raw.from),
     until: new Date(raw.until),
-    break: new Date(raw.break)
+    break: {
+      hours: getHoursFromTimeString(raw.break),
+      minutes: getMinutesFromTimeString(raw.break)
+    }
   }
 }
 
