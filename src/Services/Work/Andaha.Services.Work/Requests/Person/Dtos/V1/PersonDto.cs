@@ -6,5 +6,4 @@ public record PersonDto(
     double HourlyRate,
     string? Notes,
     TimeSpan TotalHours,
-    TimeSpan PayedHours,
-    DateTime? LastPayed);
+    TimeSpan PayedHours);

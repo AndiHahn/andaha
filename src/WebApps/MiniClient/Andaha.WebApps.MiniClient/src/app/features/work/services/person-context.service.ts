@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { CreatePersonDto } from 'src/app/api/work/dtos/CreatePersonDto';
+import { PayPersonDto } from 'src/app/api/work/dtos/PayPersonDto';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
 import { UpdatePersonDto } from 'src/app/api/work/dtos/PersonUpdateDto';
 import { PersonApiService } from 'src/app/api/work/person-api.service';
 import { ContextService } from 'src/app/core/context.service';
+import { addTimes } from '../functions/date-time-functions';
+import { getHoursFromTimeString, getMinutesFromTimeString } from 'src/app/api/functions/api-utils';
+import { Time } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +33,10 @@ export class PersonContextService {
     return this.loading$.asObservable();
   }
 
+  refetch(): void {
+    this.fetchPersons();
+  }
+
   getById(id: string): PersonDto | undefined {
     return this.persons$.value?.find(person => person.id == id);
   }
@@ -41,7 +49,6 @@ export class PersonContextService {
         next: person => {
           if (this.persons$.value) {
             const newPersons = this.persons$.value.concat(person);
-            newPersons.sort(this.sortByNameAscending);
             this.persons$.next(newPersons)
           }
 
@@ -97,6 +104,32 @@ export class PersonContextService {
     return returnSubject.asObservable();
   }
 
+  addPayment(personId: string, dto: PayPersonDto): Observable<void> {
+    const returnSubject = new Subject<void>();
+
+    this.personApiService.payPerson(personId, dto).subscribe(
+      {
+        next: _ => {
+          const person = this.getById(personId);
+          
+          const payedHoursTime: Time = {
+            hours: getHoursFromTimeString(dto.payedHours),
+            minutes: getMinutesFromTimeString(dto.payedHours)
+          }
+
+          if (person) {
+            person.payedHours = addTimes(person.payedHours, payedHoursTime);
+          }
+
+          returnSubject.next();
+        },
+        error: error => returnSubject.error(error)
+      }
+    );
+
+    return returnSubject.asObservable();
+  }
+
   private fetchPersons() {
     this.loading$.next(true);
 
@@ -106,7 +139,6 @@ export class PersonContextService {
         {
           next: result => {
             this.loading$.next(false);
-            result.sort(this.sortByNameAscending);
             this.persons$.next(result);
           },
           error: _ => this.loading$.next(false)
@@ -124,9 +156,5 @@ export class PersonContextService {
         } 
       }
     );
-  }
-
-  private sortByNameAscending(left: PersonDto, right: PersonDto): number {
-    return left.name > right.name ? 1 : -1;
   }
 }

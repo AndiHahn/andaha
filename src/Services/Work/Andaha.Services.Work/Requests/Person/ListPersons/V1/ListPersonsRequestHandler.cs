@@ -34,7 +34,7 @@ internal class ListPersonsRequestHandler : IRequestHandler<ListPersonsRequest, I
             .AsExpandable()
             .Where(person => person.UserId == userId ||
                              connectedUsers.Contains(person.UserId))
-            .OrderBy(person => person.Name)
+            .OrderByDescending(person => person.WorkingEntries.Sum(workingEntry => workingEntry.WorkDurationTicks))
             .Select(person => PersonDtoMapping.EntityToDto.Invoke(person, userId))
             .ToListAsync(cancellationToken);
 

@@ -1,0 +1,51 @@
+<app-dialog>
+  <mat-dialog-content>
+    <h3>Zahlung hinzufügen:</h3>
+
+    <div>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="form-container">
+    
+          <mat-form-field appearance="fill">
+            <mat-label>Bezahlte Stunden</mat-label>
+            <input matInput formControlName="payedHours" required autocomplete="off">
+            <span matSuffix>h</span>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Bezahlter Betrag</mat-label>
+            <input matInput formControlName="payedMoney" type="number" required autocomplete="off">
+            <span matSuffix>€</span>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Trinkgeld</mat-label>
+            <input matInput formControlName="payedTip" type="number" required autocomplete="off">
+            <span matSuffix>€</span>
+          </mat-form-field>
+        
+          <mat-form-field appearance="fill">
+            <mat-label>Notizen</mat-label>
+            <textarea matInput formControlName="notes"></textarea>
+          </mat-form-field>
+    
+        </div>
+    
+        <div *ngIf="!isSaving" class="progressbar-placeholder"></div>
+    
+        <mat-progress-bar *ngIf="isSaving" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
+    
+        <div class="button-placeholder"></div>
+    
+        <div class="bottom-button">
+          <div style="flex: 1">
+            <button mat-raised-button color="primary" class="button-style" [disabled]="!form.valid">
+              <mat-icon>save</mat-icon><span>Speichern</span>
+            </button>
+          </div>
+        </div>
+    
+      </form>
+    </div>
+  </mat-dialog-content>
+</app-dialog>

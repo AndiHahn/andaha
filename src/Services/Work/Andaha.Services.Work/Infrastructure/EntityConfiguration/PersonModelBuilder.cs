@@ -26,17 +26,15 @@ public class PersonModelBuilder : IEntityTypeConfiguration<Person>
             .IsRequired();
 
         builder
-            .Property(p => p.PayedHoursTicks)
-            .IsRequired();
-
-        builder
-            .Property(p => p.LastPayed)
-            .HasColumnType("date");
-
-        builder
             .Property(p => p.Notes)
             .IsRequired(false)
             .HasMaxLength(1000);
+
+        builder
+            .HasMany(p => p.Payments)
+            .WithOne(p => p.Person)
+            .HasForeignKey(p => p.PersonId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder
             .HasMany(p => p.WorkingEntries)

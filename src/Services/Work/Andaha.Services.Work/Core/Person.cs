@@ -41,26 +41,18 @@ public class Person : Entity<Guid>
     public string Name { get; private set; } = null!;
 
     public double HourlyRate { get; private set; }
-
-    public long PayedHoursTicks { get; private set; } = 0;
-
-    public double PayedMoney { get; set; }
-
-    public double PayedTip { get; set; }
-
-    public DateTime? LastPayed { get; private set; } = null!;
-
+        
     public string? Notes { get; private set; }
-    
+
+    public virtual ICollection<Payment> Payments { get; private set; } = new List<Payment>();
+
     public virtual ICollection<WorkingEntry> WorkingEntries { get; private set; } = new List<WorkingEntry>();
 
-    public void PayHours(TimeSpan payedTime, double payedMoney, double payedTip)
+    public void AddPayment(TimeSpan payedTime, double payedMoney, double payedTip, string? notes)
     {
-        this.PayedHoursTicks += payedTime.Ticks;
-        this.PayedMoney += payedMoney;
-        this.PayedTip += payedTip;
+        var payment = new Payment(this, payedTime, payedMoney, payedTip, notes);
 
-        this.LastPayed = DateTime.UtcNow;
+        this.Payments.Add(payment);
     }
 
     public bool HasCreated(Guid userId) => this.UserId == userId;
@@ -68,13 +60,11 @@ public class Person : Entity<Guid>
     public void Update(
         string? name = null,
         double? hourlyRate = null,
-        TimeSpan? payedTime = null,
         string? notes = null)
     {
         this.Name = name ?? this.Name;
         this.HourlyRate = hourlyRate ?? this.HourlyRate;
         this.Notes = notes ?? this.Notes;
-        this.PayedHoursTicks = payedTime?.Ticks ?? this.PayedHoursTicks;
     }
 
     public void AddWorkingEntry(

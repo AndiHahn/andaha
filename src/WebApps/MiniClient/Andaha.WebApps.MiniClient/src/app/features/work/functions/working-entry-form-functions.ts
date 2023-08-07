@@ -24,20 +24,8 @@ export function getEmptyWorkingEntryForm(): FormGroup<WorkingEntryForm> {
   );
 }
 
-/*
-export function getPersonForm(person: PersonDto): FormGroup<PersonForm> {
-  return new FormGroup<PersonForm>(
-    {
-      name: new FormControl(person.name, { nonNullable: true, validators: [ Validators.required ]}),
-      hourlyRate: new FormControl(person.hourlyRate, { nonNullable: true, validators: [ Validators.required, Validators.min(0) ]}),
-      notes: new FormControl(person.notes ?? '', { nonNullable: false }),
-    }
-  );
-}
-*/
-
 function getTimeForToday(hour: number): Date {
   const now = new Date();
 
-  return new Date(now.getFullYear(), now.getMonth(), now.getDay(), hour, 0, 0);
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour, 0, 0);
 }

@@ -14,7 +14,9 @@ import { Subject, takeUntil } from 'rxjs';
 import { WorkingEntriesContextService } from '../../../services/working-entries-context.service';
 import { WorkingEntryDto } from 'src/app/api/work/dtos/WorkingEntryDto';
 import { Time } from '@angular/common';
-import { createTimeDisplayName } from '../../../functions/working-time-functions';
+import { addTimes, calculateTimeDifference, createTimeDisplayName } from '../../../functions/date-time-functions';
+import { PersonPaymentDialogService } from '../person-payment-dialog/person-payment-dialog.service';
+import { getHoursFromTimeString, getMinutesFromTimeString } from 'src/app/api/functions/api-utils';
 
 @Component({
   selector: 'app-person-details',
@@ -40,8 +42,9 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private snackbar: MatSnackBar,
+    private contextService: PersonContextService, 
     private confirmationDialog: ConfirmationDialogService,
-    private contextService: PersonContextService,
+    private personPaymentDialogService: PersonPaymentDialogService,
     private workingEntryContextService: WorkingEntriesContextService
   ) {
     const params = getParametersFromRouteRecursive(this.route.snapshot);
@@ -77,6 +80,24 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
     this.isEditing = false;
     this.form = getPersonForm(this.person);
     this.form.disable();
+  }
+
+  onAddPaymentClick(): void {
+    this.personPaymentDialogService
+      .openDialog({
+        personId: this.person.id,
+        openHours: calculateTimeDifference(this.person.totalHours, this.person.payedHours)
+      })
+      .then(dialogRef => dialogRef.afterClosed().subscribe({
+        next: payedHours => {
+          const payedNow = {
+            hours: getHoursFromTimeString(payedHours!),
+            minutes: getMinutesFromTimeString(payedHours!)
+          }
+
+          this.person.payedHours = addTimes(this.person.payedHours, payedNow);
+        }
+      }));
   }
 
   onSaveClick(): void {
@@ -121,20 +142,10 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
     return createTimeDisplayName(time);
   }
 
-  calculateTimeDifference(left: Time, right: Time) : Time {
-    var time: Time = { hours: 0, minutes: 0};
-
-    if (left.minutes - right.minutes >= 0) {
-      time.minutes = left.minutes - right.minutes;
-      time.hours = left.hours - right.hours;
-    } else {
-      time.minutes = 60 - (right.minutes - left.minutes);
-      time.hours = left.hours - (right.hours + 1);
-    }
-
-    return time;
+  calculateTimeDifference(left: Time, right: Time): Time {
+    return calculateTimeDifference(left, right);
   }
-
+  
   private delete(): void {
     this.isDeleting = true;
 

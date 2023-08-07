@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
-import { createTimeDisplayName } from '../../../functions/working-time-functions';
+import { createTimeDisplayName } from '../../../functions/date-time-functions';
 import { Time } from '@angular/common';
 
 @Component({

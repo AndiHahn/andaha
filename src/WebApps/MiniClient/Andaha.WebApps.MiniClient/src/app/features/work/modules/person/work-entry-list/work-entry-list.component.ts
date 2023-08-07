@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { WorkingEntryDto } from 'src/app/api/work/dtos/WorkingEntryDto';
-import { getTotalWorkingTimeString } from '../../../functions/working-time-functions';
+import { getTotalWorkingTimeString } from '../../../functions/date-time-functions';
 
 @Component({
   selector: 'app-work-entry-list',

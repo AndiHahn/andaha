@@ -27,7 +27,7 @@ export function createTimeDisplayName(time: Time): string {
 }
 
 export function getTotalWorkingTimeString(workingTime: WorkingTime): string {
-  const dateDiff = getDateDifference(workingTime.from, workingTime.until);
+  const dateDiff = calculateDateDifference(workingTime.from, workingTime.until);
   
   var calculatedWorkingTime: Time = {
     hours: dateDiff.hours,
@@ -45,7 +45,7 @@ export function getTotalWorkingTimeString(workingTime: WorkingTime): string {
   return createTimeDisplayName(calculatedWorkingTime);
 }
 
-export function getDateDifference(startDate: Date, endDate: Date) {
+export function calculateDateDifference(startDate: Date, endDate: Date) {
   var diff = endDate.getTime() - startDate.getTime();
   var days = Math.floor(diff / (60 * 60 * 24 * 1000));
   var hours = Math.floor(diff / (60 * 60 * 1000)) - (days * 24);
@@ -58,4 +58,32 @@ export function getDateDifference(startDate: Date, endDate: Date) {
     minutes: minutes,
     seconds: seconds
   };
+}
+
+export function calculateTimeDifference(left: Time, right: Time) : Time {
+  var time: Time = { hours: 0, minutes: 0};
+
+  if (left.minutes - right.minutes >= 0) {
+    time.minutes = left.minutes - right.minutes;
+    time.hours = left.hours - right.hours;
+  } else {
+    time.minutes = 60 - (right.minutes - left.minutes);
+    time.hours = left.hours - (right.hours + 1);
+  }
+
+  return time;
+}
+
+export function addTimes(left: Time, right: Time) : Time {
+  var time: Time = { hours: 0, minutes: 0};
+
+  if (left.minutes + right.minutes < 60) {
+    time.minutes = left.minutes + right.minutes;
+    time.hours = left.hours + right.hours;
+  } else {
+    time.minutes = 60 - (right.minutes + left.minutes);
+    time.hours = left.hours + right.hours + 1;
+  }
+
+  return time;
 }

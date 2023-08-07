@@ -1,5 +1,6 @@
 export interface PayPersonDto {
-  payedHours: number;
+  payedHours: string;
   payedMoney: number;
   payedTip: number;
+  notes?: string;
 }

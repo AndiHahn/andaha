@@ -20,6 +20,14 @@ export function generateGuid() : string {
 
 export function formatTime(time: Time): string {
 
+  var timeString = formatTimeWithoutSeconds(time);
+  timeString += ":00";
+
+  return timeString;
+}
+
+export function formatTimeWithoutSeconds(time: Time): string {
+
   var timeString = "";
   if (time.hours < 10) {
     timeString = "0";
@@ -33,7 +41,6 @@ export function formatTime(time: Time): string {
   }
 
   timeString += time.minutes;
-  timeString += ":00";
 
   return timeString;
 }

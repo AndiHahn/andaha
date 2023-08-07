@@ -3,4 +3,5 @@
 public record PayPersonDto(
     TimeSpan PayedHours,
     double PayedMoney,
-    double PayedTip = 0.0);
+    double PayedTip,
+    string? Notes);

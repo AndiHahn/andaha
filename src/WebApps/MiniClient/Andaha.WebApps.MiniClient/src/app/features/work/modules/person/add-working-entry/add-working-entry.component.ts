@@ -9,7 +9,7 @@ import * as moment from "moment";
 import { Time } from "@angular/common";
 import { PersonContextService } from '../../../services/person-context.service';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
-import { createTimeDisplayName, getTotalWorkingTimeString } from '../../../functions/working-time-functions';
+import { getTotalWorkingTimeString } from '../../../functions/date-time-functions';
 import { formatTime } from 'src/app/api/functions/api-utils';
 
 @Component({
@@ -114,6 +114,7 @@ export class AddWorkingEntryComponent implements OnInit {
         next: _ => {
           this.isSaving = false;
           this.form.controls.selectedPersons.setValue([]);
+          this.personContextService.refetch();
         },
         error: _ => {
           this.isSaving = false;

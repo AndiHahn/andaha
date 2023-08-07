@@ -4,6 +4,7 @@ using Andaha.Services.Work.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Andaha.Services.Work.Infrastructure.Migrations
 {
     [DbContext(typeof(WorkDbContext))]
-    partial class WorkDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230807201005_AddPaymentEntity")]
+    partial class AddPaymentEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

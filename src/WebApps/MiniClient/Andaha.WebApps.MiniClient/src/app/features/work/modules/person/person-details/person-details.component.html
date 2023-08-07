@@ -31,15 +31,19 @@
       <div class="value">{{ getTimeDisplayName(person.totalHours) }}</div>
     </div>
 
-    <div class="info-box">
-      <div class="label">Bezahlte Stunden: </div>
-      <div class="value">{{ getTimeDisplayName(person.payedHours) }}</div>
+    <div *ngIf="form.controls.hourlyRate.value > 0">
+      <div class="info-box">
+        <div class="label">Bezahlte Stunden: </div>
+        <div class="value">{{ getTimeDisplayName(person.payedHours) }}</div>
+      </div>
+  
+      <div class="info-box">
+        <div class="label">Offene Stunden: </div>
+        <div class="value">{{ getTimeDisplayName(calculateTimeDifference(person.totalHours, person.payedHours)) }}</div>
+      </div>
     </div>
 
-    <div class="info-box">
-      <div class="label">Offene Stunden: </div>
-      <div class="value">{{ getTimeDisplayName(calculateTimeDifference(person.totalHours, person.payedHours)) }}</div>
-    </div>
+    <mat-divider></mat-divider>
 
     <h3 style="margin-left: 15px; margin-top: 20px;">Arbeitszeiten:</h3>
 
@@ -63,9 +67,16 @@
 
     <mat-progress-bar *ngIf="isSaving || isDeleting || isLoading" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
 
-    <!--
     <div class="button-placeholder"></div>
-    -->
+
+    <div class="floating-button payment-button">
+      <div *ngIf="!isEditing && form.controls.hourlyRate.value > 0" style="flex: 1">
+        <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onAddPaymentClick()"
+            [disabled]="isDeleting || isLoading || isSaving">
+          <mat-icon>paid</mat-icon><span>Zahlung</span>
+        </button>
+      </div>
+    </div>
 
     <div class="button-placeholder"></div>
 
