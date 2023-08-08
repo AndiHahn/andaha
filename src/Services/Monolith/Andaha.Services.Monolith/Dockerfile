@@ -9,6 +9,7 @@ COPY ["src/Services/Monolith/Andaha.Services.Monolith/", "Monolith/Andaha.Servic
 COPY ["src/Services/BudgetPlan/Andaha.Services.BudgetPlan/", "BudgetPlan/Andaha.Services.BudgetPlan/"]
 COPY ["src/Services/Collaboration/Andaha.Services.Collaboration/", "Collaboration/Andaha.Services.Collaboration/"]
 COPY ["src/Services/Shopping/Andaha.Services.Shopping/", "Shopping/Andaha.Services.Shopping/"]
+COPY ["src/Services/Work/Andaha.Services.Work/", "Work/Andaha.Services.Work/"]
 
 ARG PatPlaceholder
 RUN dotnet restore "Monolith/Andaha.Services.Monolith/Andaha.Services.Monolith.csproj" --configfile "Monolith/Andaha.Services.Monolith/nuget.config"
