@@ -68,7 +68,7 @@ export class PersonPaymentDialogComponent implements OnInit {
     return {
       payedHours: formatTime(payedHoursTime),
       payedMoney: controls.payedMoney.value!,
-      payedTip: controls.payedTip.value,
+      payedTip: controls.payedTip.value!,
       notes: controls.notes?.value ?? undefined
     }
   }

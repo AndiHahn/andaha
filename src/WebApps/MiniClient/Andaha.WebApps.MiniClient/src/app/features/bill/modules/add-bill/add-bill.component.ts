@@ -91,7 +91,7 @@ export class AddBillComponent implements OnInit {
     
     formDirective.resetForm();
     this.form.reset();
-    this.form.controls['date'].setValue(new Date());
+    this.form.controls.date.setValue(new Date());
   }
 
   onImageSelected(image: ImageSnippet): void {

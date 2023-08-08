@@ -1,3 +1,9 @@
+.form-container {
+  display: flex;
+  flex-direction: column;
+  margin: 15px 15px 0px 15px;
+}
+
 .progressbar-placeholder {
   height: 4px;
 }
