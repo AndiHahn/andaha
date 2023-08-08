@@ -1,0 +1,113 @@
+trigger:
+  branches:
+    include:
+      - release/work/v*
+      - refs/release/work/v*
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  azureDevServiceConnection: "azure-rm-andaha-dev-connection"
+  azureProdServiceConnection: "azure-rm-andaha-prod-connection"
+  containerRegistryConnection: "andaha-container-reg-connection"
+  imageTag: "$(Build.SourceBranchName)"
+  bicepTemplateFile: "src/Services/Work/pipeline/bicep/work-main.bicep"
+
+name: "$(Build.SourceBranchName)"
+
+stages:
+- stage: build
+  displayName: Build
+  variables:
+  - group: Development
+  jobs:
+    - job: build_and_push_image
+      steps:
+      - task: Docker@2
+        displayName: build image
+        inputs:
+          command: build
+          arguments: '--build-arg PatPlaceholder=$(nugetFeedAccessToken)'
+          dockerfile: src/Services/Work/Andaha.Services.Work/Dockerfile
+          repository: andaha/services/work
+          containerRegistry: $(containerRegistryConnection)
+          tags: |
+            $(imageTag)
+            latest
+          
+      - task: Docker@2
+        displayName: push image
+        inputs:
+          command: push
+          dockerfile: src/Services/Work/Andaha.Services.Work/Dockerfile
+          repository: andaha/services/work
+          containerRegistry: $(containerRegistryConnection)
+          tags: |
+            $(imageTag)
+            latest
+
+- stage: deploy_dev
+  displayName: Deploy to dev
+  dependsOn: build
+  variables:
+  - group: Development
+  jobs:
+  - job: deployment
+    steps:
+    - task: AzureCLI@2
+      displayName: 'Infrastructure provisioning'
+      inputs:
+        azureSubscription: $(azureDevServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          acrUser=$(az acr credential show --name andaha --resource-group andaha --query username -o tsv)
+          acrPassword=$(az acr credential show --name andaha --resource-group andaha --query "passwords[0].value" -o tsv)
+          az deployment group create --resource-group andaha-dev --template-file $(bicepTemplateFile) --parameters stage="dev" containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)" sqlServerAdminPassword=$(sqlServerAdminPassword) authAzureAdB2CClientId=$(authServerB2CClientId)
+
+- stage: deploy_prod
+  displayName: Deploy to prod
+  dependsOn: deploy_dev
+  condition: succeeded()
+  variables:
+  - group: Production
+  jobs:
+  - deployment: deploy_prod
+    displayName: Approval for prod
+    environment: Production
+  - job: deployment
+    steps:
+    - task: Docker@2
+      displayName: build image
+      inputs:
+        command: build
+        arguments: '--build-arg PatPlaceholder=$(nugetFeedAccessToken)'
+        dockerfile: src/Services/Work/Andaha.Services.Work/Dockerfile
+        repository: prod/andaha/services/work
+        containerRegistry: $(containerRegistryConnection)
+        tags: |
+          $(imageTag)
+          latest
+        
+    - task: Docker@2
+      displayName: push image
+      inputs:
+        command: push
+        dockerfile: src/Services/Work/Andaha.Services.Work/Dockerfile
+        repository: prod/andaha/services/work
+        containerRegistry: $(containerRegistryConnection)
+        tags: |
+          $(imageTag)
+          latest
+
+    - task: AzureCLI@2
+      displayName: 'Infrastructure provisioning'
+      inputs:
+        azureSubscription: $(azureProdServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          acrUser=$(az acr credential show --name andaha --resource-group andaha --query username -o tsv)
+          acrPassword=$(az acr credential show --name andaha --resource-group andaha --query "passwords[0].value" -o tsv)
+          az deployment group create --resource-group andaha-prod --template-file $(bicepTemplateFile) --parameters stage="prod" containerRegistryUsername="$acrUser" containerRegistryPassword="$acrPassword" version="$(Build.SourceBranchName)" sqlServerAdminPassword=$(sqlServerAdminPassword) authAzureAdB2CClientId=$(authServerB2CClientId)
