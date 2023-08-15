@@ -27,7 +27,7 @@ export class PersonListComponent implements OnInit {
 
   isPaymentRequired(person: PersonDto): boolean {
     return person.hourlyRate > 0 &&
-      person.totalHours.hours != person.payedHours.hours &&
-      person.totalHours.minutes != person.payedHours.minutes;
+      (person.totalHours.hours != person.payedHours.hours ||
+      person.totalHours.minutes != person.payedHours.minutes);
   }
 }

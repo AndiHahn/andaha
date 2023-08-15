@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CreateWorkingEntriesDto } from 'src/app/api/work/dtos/CreateWorkingEntriesDto';
 import { WorkingEntryForm, getEmptyWorkingEntryForm } from '../../../functions/working-entry-form-functions';
 import { FormControl, FormGroup, FormGroupDirective } from '@angular/forms';
-import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
+import { openErrorSnackbar, openInformationSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { WorkingEntriesContextGlobalService } from '../../../services/working-entries-context-global.service';
 import * as moment from "moment";
@@ -69,15 +69,15 @@ export class AddWorkingEntryComponent implements OnInit {
     return moment(control.value).format('HH:mm');
   }
 
-  setFormTime(control: FormControl, time: string): void {
+  setFormTime(control: FormControl, newTime: string): void {
     const currentDate = control.value;
-    if (currentDate instanceof Date ) {
+    if (currentDate instanceof Date) {
       const dateString = this.formatDateAsString(currentDate);
-      const dateTimeString = dateString + " " + time;
+      const dateTimeString = dateString + " " + newTime;
       control.setValue(moment(dateTimeString).toDate());
     } else {
       const currentDateString = this.formatDateAsString(new Date());
-      const currentDateTimeString = currentDateString + " " + time;
+      const currentDateTimeString = currentDateString + " " + newTime;
       const timeTyped = moment(currentDateTimeString).toDate();
       const currentTime = currentDate as Time;
       currentTime.hours = timeTyped.getHours();
@@ -115,6 +115,7 @@ export class AddWorkingEntryComponent implements OnInit {
           this.isSaving = false;
           this.form.controls.selectedPersons.reset();
           this.personContextService.refetch();
+          openInformationSnackbar('Arbeitszeit wurde gespeichert', this.snackbar);
         },
         error: _ => {
           this.isSaving = false;
@@ -146,6 +147,6 @@ export class AddWorkingEntryComponent implements OnInit {
   }
 
   private formatDateAsString(date: Date): string {
-    return date.getFullYear() + "." + date.getMonth() + "." + date.getDate();
+    return date.getUTCFullYear() + "." + (date.getUTCMonth() + 1) + "." + date.getUTCDate();
   }
 }
