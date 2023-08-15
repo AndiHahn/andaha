@@ -1,7 +1,7 @@
 <div class="items">
   <div *ngFor="let workEntry of workEntries">
     <div class="list-item">
-      <mat-card class="mat-card">
+      <mat-card class="mat-card" (click)="onOpenWorkEntryDetails(workEntry)">
         <div class="column-layout">
           <div class="row-layout">
             <span class="truncate-text">{{ workEntry.from | date:'dd.MM.YYYY' }}</span>

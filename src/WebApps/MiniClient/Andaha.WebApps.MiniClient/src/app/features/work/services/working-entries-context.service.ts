@@ -36,6 +36,14 @@ export class WorkingEntriesContextService {
     return this.loading$.asObservable();
   }
 
+  refetch(): void {
+    this.fetchWorkingEntries();
+  }
+
+  getById(id: string): WorkingEntryDto | undefined {
+    return this.workingEntries$.value?.find(entry => entry.id == id);
+  }
+
   deleteEntry(id: string): Observable<void> {
     const returnSubject = new Subject<void>();
 

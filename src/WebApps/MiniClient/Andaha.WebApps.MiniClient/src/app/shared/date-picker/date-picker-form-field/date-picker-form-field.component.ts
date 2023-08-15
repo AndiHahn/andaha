@@ -44,9 +44,6 @@ export class DatePickerFormFieldComponent implements OnInit {
 
   @Input()
   label!: string;
-
-  
-  disabled: boolean = false;
   
   constructor(
   ) { }

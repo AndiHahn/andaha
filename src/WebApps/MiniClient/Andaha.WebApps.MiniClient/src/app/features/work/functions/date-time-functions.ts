@@ -81,7 +81,7 @@ export function addTimes(left: Time, right: Time) : Time {
     time.minutes = left.minutes + right.minutes;
     time.hours = left.hours + right.hours;
   } else {
-    time.minutes = 60 - (right.minutes + left.minutes);
+    time.minutes = (right.minutes + left.minutes) - 60;
     time.hours = left.hours + right.hours + 1;
   }
 

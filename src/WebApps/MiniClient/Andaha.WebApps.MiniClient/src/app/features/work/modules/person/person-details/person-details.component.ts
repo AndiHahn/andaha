@@ -169,6 +169,10 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
         this.workingEntries = entries;
       }
     });
+
+    this.workingEntryContextService.loading().pipe(takeUntil(this.destroy$)).subscribe({
+      next: loading => this.isLoading = loading
+    })
   }
 
   private createUpdateDtoFromForm(): UpdatePersonDto {

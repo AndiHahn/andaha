@@ -51,11 +51,11 @@
       Es sind noch keine Arbeitszeiten vorhanden.
     </div>
 
-    <div *ngIf="!workingEntries" class="action-container">
+    <div *ngIf="!workingEntries || isLoading" class="action-container">
       <mat-spinner diameter="40"></mat-spinner>
     </div>
 
-    <div *ngIf="workingEntries">
+    <div *ngIf="workingEntries && !isLoading">
       <app-work-entry-list [workEntries]="workingEntries!"></app-work-entry-list>
     </div>
 
@@ -65,7 +65,7 @@
 
     <div class="progressbar-placeholder"></div>
 
-    <mat-progress-bar *ngIf="isSaving || isDeleting || isLoading" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
+    <mat-progress-bar *ngIf="isSaving || isDeleting" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
 
     <div class="button-placeholder"></div>
 

@@ -1,6 +1,6 @@
 export interface UpdateWorkingEntryDto {
   from: Date,
   until: Date,
-  break: Date,
+  break: string,
   notes?: string
 }

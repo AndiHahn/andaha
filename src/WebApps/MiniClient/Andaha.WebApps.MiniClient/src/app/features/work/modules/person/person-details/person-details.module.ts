@@ -13,18 +13,23 @@ import { WorkEntryListComponent } from '../work-entry-list/work-entry-list.compo
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatDialogModule } from '@angular/material/dialog';
 
 const routes: Routes = [
   {
     path: '',
     component: PersonDetailsComponent
+  },
+  {
+    path: 'working-entry/:entry-id',
+    loadChildren: () => import('../work-entry-details/work-entry-details-dialog.module').then(m => m.WorkEntryDetailsDialogModule)
   }
 ];
 
 @NgModule({
   declarations: [
     PersonDetailsComponent,
-    WorkEntryListComponent,
+    WorkEntryListComponent
   ],
   imports: [
     CommonModule,
@@ -39,7 +44,8 @@ const routes: Routes = [
     MatProgressBarModule,
     MatCardModule,
     MatProgressSpinnerModule,
-    MatDividerModule
+    MatDividerModule,
+    MatDialogModule
   ]
 })
 export class PersonDetailsModule { }

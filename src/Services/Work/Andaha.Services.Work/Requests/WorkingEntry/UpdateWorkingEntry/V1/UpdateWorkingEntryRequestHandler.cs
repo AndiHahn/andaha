@@ -27,7 +27,7 @@ public class UpdateWorkingEntryRequestHandler : IRequestHandler<UpdateWorkingEnt
         var connectedUsers = await collaborationApiProxy.GetConnectedUsers(cancellationToken);
 
         var entry = await this.dbContext.WorkingEntry
-            .Include(entry => entry.PersonId)
+            .Include(entry => entry.Person)
             .FirstOrDefaultAsync(entry => entry.Id == request.Id, cancellationToken);
 
         if (entry is null)

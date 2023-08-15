@@ -1,0 +1,88 @@
+<app-dialog>
+  <mat-dialog-content>
+    <h3>Eintrag bearbeiten:</h3>
+
+    <div>
+      <form [formGroup]="form">
+        <div class="form-container">
+    
+          <app-date-picker-form-field
+            [control]="form.controls.date"
+            label="Datum">
+          </app-date-picker-form-field>
+    
+          <app-time-picker-form-field
+            label="Startzeit"
+            [defaultTime]="getNgxTime(form.controls.fromTime)"
+            (timeChanged)="setFormTime(form.controls.fromTime, $event)"
+            [disabled]="!isEditing">
+          </app-time-picker-form-field>
+    
+          <app-time-picker-form-field
+            label="Endzeit"
+            [defaultTime]="getNgxTime(form.controls.untilTime)"
+            (timeChanged)="setFormTime(form.controls.untilTime, $event)"
+            [disabled]="!isEditing">
+          </app-time-picker-form-field>
+    
+          <app-time-picker-form-field
+            label="Pause"
+            [defaultTime]="getNgxTime(form.controls.break)"
+            (timeChanged)="setFormTime(form.controls.break, $event)"
+            [disabled]="!isEditing">
+          </app-time-picker-form-field>
+    
+          <div class="working-time-info">
+            <mat-label>Arbeitszeit netto: {{ getWorkingTime() }}</mat-label>
+          </div>
+    
+          <mat-form-field appearance="fill">
+            <mat-label>Notizen</mat-label>
+            <textarea matInput formControlName="notes"></textarea>
+          </mat-form-field>
+    
+        </div>
+        
+        <!--
+        BOTTOM BUTTONS
+        -->
+    
+        <div class="progressbar-placeholder"></div>
+    
+        <mat-progress-bar *ngIf="isSaving || isDeleting || isLoading" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
+    
+        <div class="button-placeholder"></div>
+    
+        <div class="floating-button edit-buttons">
+          <div *ngIf="!isEditing" style="flex: 1">
+            <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onEditClick()"
+                [disabled]="isDeleting || isLoading || isSaving">
+              <mat-icon>edit</mat-icon><span>Bearbeiten</span>
+            </button>
+          </div>
+          <div *ngIf="isEditing" style="display: flex; flex-direction: row; width: 100%">
+            <button mat-raised-button color="secondary" class="button-style button-with-icon" (click)="onCancelClick()">
+              <mat-icon>close</mat-icon><span>Abbrechen</span>
+            </button>
+            <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onSaveClick()"
+                [disabled]="isSaving">
+              <mat-icon>save</mat-icon><span>Speichern</span>
+            </button>
+          </div>
+        </div>
+    
+        <div class="button-placeholder"></div>
+    
+        <div class="floating-button delete-button">
+          <div style="flex: 1">
+            <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onDeleteClick()"
+                [disabled]="isEditing || isDeleting || isLoading || isSaving">
+              <mat-icon>delete</mat-icon><span>Löschen</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </mat-dialog-content>
+</app-dialog>
+

@@ -19,5 +19,6 @@
     "src/app/features/budgetplan/modules/fixed-cost/fixed-cost-history-dialog/fixed-cost-history-dialog.module.ts",
     "src/app/features/settings/modules/connection/add-connection-dialog/add-connection-dialog.module.ts",
     "src/app/features/work/modules/person/person-payment-dialog/person-payment-dialog.module.ts",
+    "src/app/features/work/modules/person/work-entry-details-dialog/work-entry-details-dialog.module.ts",
   ]
 }

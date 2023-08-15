@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CreateWorkingEntriesDto } from 'src/app/api/work/dtos/CreateWorkingEntriesDto';
 import { WorkingEntryForm, getEmptyWorkingEntryForm } from '../../../functions/working-entry-form-functions';
-import { FormControl, FormGroup, FormGroupDirective } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { openErrorSnackbar, openInformationSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { WorkingEntriesContextGlobalService } from '../../../services/working-entries-context-global.service';
