@@ -4,41 +4,25 @@
   margin: 5px 15px 0px 15px;
 }
 
-.progressbar-placeholder {
-  height: 4px;
-}
-
-.progressbar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 101px;
-  z-index: 1000;
-}
-
-.floating-button {
-  position: fixed;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  display: flex;
-  flex-direction: row;
-}
-
-.edit-buttons {
-  bottom: 51px;
-}
-
-.delete-button {
-  bottom: 0px;
-}
-
-.button-placeholder {
-  height: 50px;
-}
-
 .button-with-icon {
   mat-icon {
     margin-right: 10px;
   }
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+mat-dialog-actions {
+  height: 105px;
+}
+
+mat-dialog-actions {
+  margin-left: 0px !important;
 }

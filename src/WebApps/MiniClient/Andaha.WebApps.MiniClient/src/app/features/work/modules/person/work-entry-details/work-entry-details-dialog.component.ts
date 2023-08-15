@@ -29,7 +29,6 @@ export class WorkEntryDetailsDialogComponent implements OnInit {
   isSaving: boolean = false;
   isDeleting: boolean = false;
   isEditing: boolean = false;
-  isLoading: boolean = false;
 
   constructor(
     private snackbar: MatSnackBar,

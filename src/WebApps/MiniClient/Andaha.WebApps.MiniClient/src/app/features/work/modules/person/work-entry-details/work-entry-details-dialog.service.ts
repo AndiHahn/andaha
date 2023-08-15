@@ -12,7 +12,7 @@ export class WorkEntryDetailsDialogService {
 
   constructor(private dialog: MatDialog) { }
 
-  async openDialog(data: WorkEntryDetailsDialogData): Promise<MatDialogRef<WorkEntryDetailsDialogComponent, string>> {
+  async openDialog(data: WorkEntryDetailsDialogData): Promise<MatDialogRef<WorkEntryDetailsDialogComponent, boolean>> {
     const chunk = await import(`./work-entry-details-dialog.component`);
 
     const dialogComponent = Object.values(chunk)[0] as ComponentType<WorkEntryDetailsDialogComponent>;
