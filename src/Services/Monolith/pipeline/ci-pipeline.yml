@@ -9,6 +9,7 @@ trigger:
     - src/Services/BudgetPlan/*
     - src/Services/Collaboration/*
     - src/Services/Shopping/*
+    - src/Services/Work/*
     - src/Services/Monolith/*
 
 pool:
