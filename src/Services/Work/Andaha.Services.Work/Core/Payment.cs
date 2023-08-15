@@ -21,9 +21,9 @@ public class Payment : Entity<Guid>
             throw new ArgumentException("Parameter must be > 0.", nameof(payedMoney));
         }
 
-        if (payedTip <= 0)
+        if (payedTip < 0)
         {
-            throw new ArgumentException("Parameter must be > 0.", nameof(payedTip));
+            throw new ArgumentException("Parameter must be >= 0.", nameof(payedTip));
         }
 
         this.PersonId = person.Id;
