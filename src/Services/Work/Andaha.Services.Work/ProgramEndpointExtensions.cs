@@ -1,4 +1,5 @@
 ﻿using Andaha.Services.Work.Requests.Person;
+using Andaha.Services.Work.Requests.Statistics;
 using Andaha.Services.Work.Requests.WorkingEntry;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -12,6 +13,8 @@ public static class ProgramEndpointExtensions
         app.MapPersonEndpoint();
 
         app.MapWorkingEntryEndpoint();
+
+        app.MapStatisticsEndpoint();
 
         return app;
     }

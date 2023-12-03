@@ -37,7 +37,7 @@ public class TimeSpanConverter : JsonConverter<TimeSpan>
         writer.WriteStringValue($"{totalHours}:{minutes}:{seconds}");
     }
 
-    private (int Hours, int Minutes, int Seconds) SplitTimeString(string time)
+    private static (int Hours, int Minutes, int Seconds) SplitTimeString(string time)
     {
         var splittedTime = time.Split(":");
 
