@@ -1,0 +1,46 @@
+<div class="top-placeholder"></div>
+
+<div>
+
+  <!-- Time filter -->
+  <div class="timerange-container" *ngIf="availableTimeRange">
+    <app-timerange-selection [availableTimeRange]="availableTimeRange"
+      (selectionChanged)="timeSelectionChanged($event)">
+    </app-timerange-selection>
+  </div>
+  
+  <div class="action-container" *ngIf="availableTimeRange && !statistics && !isLoading">
+    Keine Daten vorhanden.
+  </div>
+  
+  <div *ngIf="isLoading" class="action-container">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <!-- Person filter -->
+  
+  <!-- filtered Workingtime total -->
+  <div *ngIf="statistics">
+    <h3 class="title">Arbeitszeit gesamt:</h3>
+
+    <div>{{ getTimeDisplayString(statistics.totalWorkingTime) }}</div>
+  
+    <div class="spacer"></div>
+  
+    <mat-divider></mat-divider>
+
+  </div>
+  
+
+  <!-- payed money -->
+  <div *ngIf="statistics">
+    <h3 class="title">Bezahlt:</h3>
+
+    <div >{{ statistics.payedMoney }}</div>
+  
+    <div class="spacer"></div>
+  
+    <mat-divider></mat-divider>
+
+  </div>
+</div>

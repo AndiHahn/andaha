@@ -1,4 +1,4 @@
-import { TimeRangeDto } from "src/app/api/shopping/dtos/TimeRangeDto";
+import { TimeRangeDto } from "src/app/api/common-dtos/TimeRangeDto";
 
 export interface TimeRange {
   startDate: Date;

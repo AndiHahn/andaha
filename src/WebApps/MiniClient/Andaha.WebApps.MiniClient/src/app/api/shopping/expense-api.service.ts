@@ -5,7 +5,7 @@ import { environment } from 'src/environments/environment';
 import { createHttpParameters } from '../functions/api-utils';
 import { constructPath, constructVersionedPath } from '../functions/functions';
 import { ExpenseDto } from './dtos/ExpenseDto';
-import { mapTimeRangeDtoRaw, TimeRangeDto, TimeRangeDtoRaw } from './dtos/TimeRangeDto';
+import { mapTimeRangeDtoRaw, TimeRangeDto, TimeRangeDtoRaw } from '../common-dtos/TimeRangeDto';
 
 @Injectable({
   providedIn: 'root'

@@ -8,7 +8,7 @@ import { BillContextService } from 'src/app/features/bill/services/bill-context.
 import { getDialogBaseConfig } from 'src/app/shared/dialog/dialog-functions';
 import { ChartDetailsDialogComponent } from '../chart-details-dialog/chart-details-dialog.component';
 import { ChartDetailsDialogData } from '../chart-details-dialog/ChartDetailsDialogData';
-import { TimeRange } from '../timerange-selection/TimeRange';
+import { TimeRange } from '../../../../../shared/models/TimeRange';
 
 @Component({
   selector: 'app-chart',

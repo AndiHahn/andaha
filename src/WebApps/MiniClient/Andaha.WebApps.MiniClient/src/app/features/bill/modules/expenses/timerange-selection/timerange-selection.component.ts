@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { TimeRange } from './TimeRange';
+import { TimeRange } from '../../../../../shared/models/TimeRange';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { DateType, DateTypeLabelMapping } from './DateType';
 import * as moment from 'moment';
@@ -125,6 +125,10 @@ export class TimerangeSelectionComponent implements OnInit, OnChanges {
       const startOfYear = moment(this.currentYear).startOf('year').format('YYYY-MM-DD');
       const endOfYear   = moment(this.currentYear).endOf('year').format('YYYY-MM-DD');
       this.selectionChanged.emit(this.createTimeRange(startOfYear, endOfYear));
+    } else if (this.selectedDateType == DateType.Total) {
+      const start = moment(this.availableTimeRange.startDate).format('YYYY-MM-DD');
+      const end = moment(this.availableTimeRange.endDate).format('YYYY-MM-DD');
+      this.selectionChanged.emit(this.createTimeRange(start, end));
     } else if (this.selectedDateType == DateType.Custom && this.customFromDate && this.customToDate) {
       this.selectionChanged.emit(this.createTimeRangeWithDate(this.customFromDate, this.customToDate));
     } else {
