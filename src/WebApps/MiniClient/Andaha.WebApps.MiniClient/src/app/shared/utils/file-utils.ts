@@ -37,3 +37,22 @@ export function dataUrlToBase64(dataUrl: string): string {
 
   return dataUrl;
 }
+
+export function downloadFile(blob: Blob, fileName: string, mimeType: string) {
+  const file = new File([blob], fileName, { type: mimeType });
+  const navigator: any = window.navigator;
+
+  if (navigator && navigator.msSaveOrOpenBlob) {
+    navigator.msSaveOrOpenBlob(file, fileName);
+    return;
+  }
+  const fileURL = URL.createObjectURL(file);
+  const anchorElement = window.document.createElement('a');
+  anchorElement.href = fileURL;
+  anchorElement.download = fileName;
+  anchorElement.click();
+  setTimeout(function () {
+    // For Firefox it is necessary to delay revoking the ObjectURL
+    window.URL.revokeObjectURL(fileURL);
+  }, 100);
+}

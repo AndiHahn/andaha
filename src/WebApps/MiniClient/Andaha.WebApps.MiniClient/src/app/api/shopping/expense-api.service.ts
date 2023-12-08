@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -40,5 +40,17 @@ export class ExpenseApiService {
 
     return this.httpClient.get<TimeRangeDtoRaw>(url)
       .pipe(map(mapTimeRangeDtoRaw));
+  }
+
+  exportExpenses(timeRange: TimeRangeDtoRaw): Observable<HttpResponse<Blob>> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'export');
+
+    const httpParameters = createHttpParameters([
+      { key: 'startTimeUtc', value: timeRange.startTimeUtc.toString() },
+      { key: 'endTimeUtc', value: timeRange.endTimeUtc.toString() }
+    ]);
+
+    return this.httpClient
+      .get(url, { params: httpParameters, responseType: 'blob' as 'blob', observe: 'response'});
   }
 }

@@ -187,7 +187,8 @@ public static class ProgramExtensions
                         policyBuilder
                             .AllowAnyOrigin()
                             .AllowAnyHeader()
-                            .AllowAnyMethod();
+                            .AllowAnyMethod()
+                            .WithExposedHeaders("Content-Disposition");
                     });
             });
 

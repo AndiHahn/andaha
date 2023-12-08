@@ -55,9 +55,9 @@ internal class ExportExpensesRequestHandler : IRequestHandler<ExportExpensesRequ
                 Date = bill.Date,
                 ShopName = bill.ShopName,
                 Category = bill.Category.Name,
-                SubCategory = bill.SubCategory.Name,
+                SubCategory = bill.SubCategory != null ? bill.SubCategory.Name : string.Empty,
                 Price = bill.Price,
-                ImageAvailable = bill.Images.Any(),
+                ImageAvailable = bill.Images.Any() ? "Ja" : "Nein",
                 Notes = bill.Notes
             })
             .ToListAsync(cancellationToken);
@@ -74,36 +74,71 @@ internal class ExportExpensesRequestHandler : IRequestHandler<ExportExpensesRequ
         ExportExpensesRequest request,
         IList<ExportRow> rows)
     {
-        using var workbook = new XLWorkbook();
-        var worksheet = workbook.Worksheets.Add();
+        using var workBook = new XLWorkbook();
 
-        worksheet.Cell("A1").Value = $"Ausgaben im Zeitraum von {request.StartTimeUtc.ToString("dd.MM.yyyy")} bis {request.EndTimeUtc.ToString("dd.MM.yyyy")}";
-        worksheet.Cell("A2").Value = $"{rows.Count} Ausgaben";
+        WriteWorksheet(
+            workBook,
+            "Gesamt",
+            $"Ausgaben im Zeitraum von {request.StartTimeUtc.ToString("dd.MM.yyyy")} bis {request.EndTimeUtc.ToString("dd.MM.yyyy")}",
+            rows);
 
-        worksheet.Cell("A4").Value = "Datum";
-        worksheet.Cell("B4").Value = "Shop";
-        worksheet.Cell("C4").Value = "Kategorie";
-        worksheet.Cell("D4").Value = "Unterkategorie";
-        worksheet.Cell("E4").Value = "Preis";
-        worksheet.Cell("F4").Value = "Bild Rechnung vorhanden";
-        worksheet.Cell("G4").Value = "Notizen";
-        worksheet.Cell("A5").InsertData(rows);
+        var rowsGroupedByCategory = rows.GroupBy(row => row.Category);
 
-        worksheet.Cell("A1").Style.Font.FontSize = 20;
-        worksheet.Cell("A2").Style.Font.FontSize = 10;
-        worksheet.Row(4).Style.Font.Bold = true;
-        worksheet.Row(4).Style.Fill.SetBackgroundColor(XLColor.LightGray);
-        worksheet.Row(4).Style.Border.SetBottomBorder(XLBorderStyleValues.Double);
-        worksheet.Row(4).Style.Border.BottomBorderColor = XLColor.Black;
-        worksheet.Columns().AdjustToContents(startRow: 4);
+        foreach (var rowsByCategory in rowsGroupedByCategory)
+        {
+            WriteWorksheet(
+                workBook,
+                rowsByCategory.Key,
+                $"Ausgaben für Kategorie {rowsByCategory.Key} im Zeitraum von {request.StartTimeUtc.ToString("dd.MM.yyyy")} bis {request.EndTimeUtc.ToString("dd.MM.yyyy")}",
+                rowsByCategory.ToArray());
+        }
 
         byte[] workbookBytes;
         using (var memoryStream = new MemoryStream())
         {
-            workbook.SaveAs(memoryStream);
+            workBook.SaveAs(memoryStream);
             workbookBytes = memoryStream.ToArray();
         }
 
         return new MemoryStream(workbookBytes);
+    }
+
+    private static void WriteWorksheet(
+        XLWorkbook workBook,
+        string sheetName,
+        string headLine,
+        IList<ExportRow> rows)
+    {
+        var worksheet = workBook.Worksheets.Add(sheetName);
+
+        // Write headline
+        worksheet.Cell("A1").Value = headLine;
+        worksheet.Cell("A2").Value = $"{rows.Count} Ausgaben";
+
+        worksheet.Cell("A1").Style.Font.FontSize = 20;
+        worksheet.Cell("A2").Style.Font.FontSize = 10;
+
+        // Write content
+        WriteHeader(worksheet, 4);
+
+        worksheet.Cell("A5").InsertData(rows);
+
+        worksheet.Columns().AdjustToContents(startRow: 4);
+    }
+
+    private static void WriteHeader(IXLWorksheet worksheet, int row)
+    {
+        worksheet.Cell($"A{row}").Value = "Datum";
+        worksheet.Cell($"B{row}").Value = "Shop";
+        worksheet.Cell($"C{row}").Value = "Kategorie";
+        worksheet.Cell($"D{row}").Value = "Unterkategorie";
+        worksheet.Cell($"E{row}").Value = "Preis";
+        worksheet.Cell($"F{row}").Value = "Bild Rechnung vorhanden";
+        worksheet.Cell($"G{row}").Value = "Notizen";
+
+        worksheet.Row(row).Style.Font.Bold = true;
+        worksheet.Row(row).Style.Fill.SetBackgroundColor(XLColor.LightGray);
+        worksheet.Row(row).Style.Border.SetBottomBorder(XLBorderStyleValues.Double);
+        worksheet.Row(row).Style.Border.BottomBorderColor = XLColor.Black;
     }
 }
