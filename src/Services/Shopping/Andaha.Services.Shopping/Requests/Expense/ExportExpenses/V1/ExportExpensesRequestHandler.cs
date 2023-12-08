@@ -109,7 +109,17 @@ internal class ExportExpensesRequestHandler : IRequestHandler<ExportExpensesRequ
         string headLine,
         IList<ExportRow> rows)
     {
-        var worksheet = workBook.Worksheets.Add(sheetName);
+        var worksheet = workBook.Worksheets.Add(
+            sheetName
+                .Replace("/", "-")
+                .Replace("\\", "-")
+                .Replace("?", "-")
+                .Replace("*", "-")
+                .Replace(":", "-")
+                .Replace("[", "-")
+                .Replace("]", "-")
+                .Take(31)
+                .ToString());
 
         // Write headline
         worksheet.Cell("A1").Value = headLine;
