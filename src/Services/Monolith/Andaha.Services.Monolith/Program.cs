@@ -66,6 +66,13 @@ app.MapMonolithEndpoints();
 
 app.MapControllers();
 
+app.Use(async (ctx, next) =>
+{
+    ctx.Response.Headers.Add("Access-Control-Expose-Headers", "*");
+
+    await next();
+});
+
 await app.MigrateBudgetPlanDatabaseAsync(app.Logger);
 await app.MigrateCollaborationDatabaseAsync(app.Logger);
 await app.MigrateShoppingDatabaseAsync(app.Logger);

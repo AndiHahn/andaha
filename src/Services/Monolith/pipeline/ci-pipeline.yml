@@ -4,6 +4,10 @@ trigger:
     include:
       - master
       - feature/monolith/*
+      - feature/budgetplan/*
+      - feature/collaboration/*
+      - feature/shopping/*
+      - feature/work/*
   paths:
     include:
     - src/Services/BudgetPlan/*

@@ -9,6 +9,7 @@ public class WorkDbContext : DbContext
 {
     public DbSet<Person> Person { get; set; } = null!;
     public DbSet<WorkingEntry> WorkingEntry { get; set; } = null!;
+    public DbSet<Payment> Payment { get; set; } = null!;
 
     public WorkDbContext(
         DbContextOptions<WorkDbContext> options)

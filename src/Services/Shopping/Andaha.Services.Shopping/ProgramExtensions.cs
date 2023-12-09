@@ -187,7 +187,8 @@ public static class ProgramExtensions
                         policyBuilder
                             .AllowAnyOrigin()
                             .AllowAnyHeader()
-                            .AllowAnyMethod();
+                            .AllowAnyMethod()
+                            .WithExposedHeaders("Content-Disposition");
                     });
             });
 
@@ -204,10 +205,6 @@ public static class ProgramExtensions
         await retryPolicy.ExecuteAsync(async () =>
         {
             await dbContext.Database.MigrateAsync();
-
-            await dbContext.MigrateCategoryOrderAsync();
-
-            await dbContext.MigrateSubCategoryOrderAsync();
         });
     }
 

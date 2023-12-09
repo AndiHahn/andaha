@@ -16,7 +16,8 @@ internal static class PersonEndpointExtensions
             .MapListPersonsRequest()
             .MapPayPersonRequest()
             .MapUpdatePersonRequest()
-            .MapDeletePersonRequest();
+            .MapDeletePersonRequest()
+            .MapExportExpenses();
 
         return app;
     }
@@ -78,6 +79,17 @@ internal static class PersonEndpointExtensions
             .Produces(StatusCodes.Status204NoContent)
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        return groupBuilder;
+    }
+
+    private static RouteGroupBuilder MapExportExpenses(
+        this RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediateGet<ExportPerson.V1.ExportPersonRequest>("export")
+            .Produces<FileStreamResult>()
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
 
         return groupBuilder;
     }

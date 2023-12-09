@@ -1,12 +1,13 @@
 import { DatePipe } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { ExpenseDto } from '../../../api/shopping/dtos/ExpenseDto';
 import { TimeRangeDto, TimeRangeDtoRaw } from '../../../api/common-dtos/TimeRangeDto';
 import { ExpenseApiService } from '../../../api/shopping/expense-api.service';
 import { ContextService } from '../../../core/context.service';
 import { TimeRange } from '../../../shared/models/TimeRange';
 import { BillContextService } from './bill-context.service';
+import { downloadFile, getFileName } from 'src/app/shared/utils/file-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +32,52 @@ export class ExpenseContextService {
 
   expenses(): Observable<ExpenseDto[] | undefined> {
     return this.expenses$.asObservable();
+  }
+
+  downloadExpenses(): Observable<void> {
+    const returnSubject = new Subject<void>();
+
+    this.availableTimeRange().subscribe(
+      {
+        next: timeRange => {
+          if (!timeRange) {
+            returnSubject.next();
+
+            return;
+          }
+
+          this.apiService
+            .exportExpenses(
+              {
+                startTimeUtc: this.datePipe.transform(timeRange.startTimeUtc, 'MM/dd/yyyy')!,
+                endTimeUtc: this.datePipe.transform(timeRange.endTimeUtc, 'MM/dd/yyyy')!
+              }
+            )
+            .subscribe(
+              {
+                next: response => {
+                  if (!response || !response.body) {
+                    returnSubject.next();
+
+                    return;
+                  }
+
+                  downloadFile(
+                    response.body,
+                    getFileName(response.headers),
+                    response.body.type);
+
+                  returnSubject.next();
+                },
+                error: error => returnSubject.error(error)
+              }
+            );
+        },
+        error: error => returnSubject.error(error)
+      }
+    );
+
+    return returnSubject;
   }
 
   loadExpenses(timeRange: TimeRange): void {

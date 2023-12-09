@@ -19,6 +19,10 @@ const routes: Routes = [
     loadChildren: () => import('./features/settings/settings.module').then(m => m.SettingsModule)
   },
   {
+    path: 'export',
+    loadChildren: () => import('./features/export/export.module').then(m => m.ExportModule)
+  },
+  {
     path: 'data-protection',
     loadChildren: () => import('./features/data-protection/data-protection/data-protection.module').then(m => m.DataProtectionModule)
   },

@@ -1,0 +1,17 @@
+<div class="top-placeholder"></div>
+
+<h3 class="title">Exportieren:</h3>
+
+<button mat-raised-button color="primary" class="button-style"
+  (click)="onExportExpensesClick()" [disabled]="isExporting">
+  Ausgaben exportieren
+</button>
+
+<button mat-raised-button color="primary" class="button-style"
+  (click)="onExportWorkInformationClick()" [disabled]="isExporting">
+  Personen/Arbeitszeiten exportieren
+</button>
+
+<div *ngIf="isExporting" class="action-container">
+  <mat-spinner diameter="40"></mat-spinner>
+</div>

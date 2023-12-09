@@ -9,6 +9,7 @@ import { ContextService } from 'src/app/core/context.service';
 import { addTimes } from '../functions/date-time-functions';
 import { getHoursFromTimeString, getMinutesFromTimeString } from 'src/app/api/functions/api-utils';
 import { Time } from '@angular/common';
+import { downloadFile, getFileName } from 'src/app/shared/utils/file-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -128,6 +129,34 @@ export class PersonContextService {
     );
 
     return returnSubject.asObservable();
+  }
+
+  downloadPersonInformations(): Observable<void> {
+    const returnSubject = new Subject<void>();
+
+    this.personApiService
+      .export()
+      .subscribe(
+        {
+          next: response => {
+            if (!response || !response.body) {
+              returnSubject.next();
+
+              return;
+            }
+
+            downloadFile(
+              response.body,
+              getFileName(response.headers),
+              response.body.type);
+
+            returnSubject.next();
+          },
+          error: error => returnSubject.error(error)
+        }
+      );
+
+    return returnSubject;
   }
 
   private fetchPersons() {

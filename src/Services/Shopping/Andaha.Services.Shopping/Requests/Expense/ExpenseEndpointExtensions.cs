@@ -11,33 +11,43 @@ internal static class ExpenseEndpointExtensions
 
         var groupBuilder = income.MapGroup("/api/expense").ApplyApiVersions();
 
-        app.MapGetExpenses(groupBuilder);
-        app.MapGetAvailableTimeRange(groupBuilder);
+        groupBuilder.MapGetExpenses();
+        groupBuilder.MapGetAvailableTimeRange();
+        groupBuilder.MapExportExpenses();
 
         return app;
     }
 
-    private static WebApplication MapGetExpenses(
-        this WebApplication app,
-        RouteGroupBuilder groupBuilder)
+    private static RouteGroupBuilder MapGetExpenses(
+        this RouteGroupBuilder groupBuilder)
     {
         groupBuilder
             .MediateGet<GetExpenses.V1.GetExpensesQuery>("/")
             .Produces<IEnumerable<Dtos.V1.ExpenseDto>>()
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
 
-        return app;
+        return groupBuilder;
     }
 
-    private static WebApplication MapGetAvailableTimeRange(
-        this WebApplication app,
-        RouteGroupBuilder groupBuilder)
+    private static RouteGroupBuilder MapGetAvailableTimeRange(
+        this RouteGroupBuilder groupBuilder)
     {
         groupBuilder
             .MediateGet<GetAvailableTimeRange.V1.GetAvailableTimeRangeQuery>("time-range")
             .Produces<Dtos.V1.TimeRangeDto>()
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
 
-        return app;
+        return groupBuilder;
+    }
+
+    private static RouteGroupBuilder MapExportExpenses(
+        this RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediateGet<ExportExpenses.V1.ExportExpensesRequest>("export")
+            .Produces<FileStreamResult>()
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
+
+        return groupBuilder;
     }
 }
