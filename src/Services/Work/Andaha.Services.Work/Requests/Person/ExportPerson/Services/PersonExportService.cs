@@ -64,10 +64,10 @@ internal class PersonExportService : IExportService
 
         var persons = await dbContext.Person
             .AsNoTracking()
-        .Where(person =>
-                (person.UserId == userId ||
-                connectedUsers.Contains(person.UserId)))
-            .OrderBy(person => person.Name)
+            .Where(person =>
+                person.UserId == userId ||
+                connectedUsers.Contains(person.UserId))
+            .OrderByDescending(person => person.WorkingEntries.Sum(entry => entry.WorkDurationTicks))
             .Select(person => new PersonExportRow
             {
                 Name = person.Name,
@@ -75,7 +75,7 @@ internal class PersonExportService : IExportService
                 TotalWorkingTime = new TimeSpan(person.WorkingEntries.Sum(entry => entry.WorkDurationTicks)).ToFormattedString(),
                 TotalPayed = person.Payments.Sum(payment => payment.PayedMoney),
                 PayedTip = person.Payments.Sum(payment => payment.PayedTip),
-                OpenPayment = (new TimeSpan(person.WorkingEntries.Sum(entry => entry.WorkDurationTicks)) - new TimeSpan(person.Payments.Sum(payment => payment.PayedHoursTicks))).TotalHours * person.HourlyRate
+                OpenPayment = Math.Round((new TimeSpan(person.WorkingEntries.Sum(entry => entry.WorkDurationTicks)) - new TimeSpan(person.Payments.Sum(payment => payment.PayedHoursTicks))).TotalHours * person.HourlyRate, 2, MidpointRounding.AwayFromZero)
             })
             .ToListAsync(cancellationToken);
 
