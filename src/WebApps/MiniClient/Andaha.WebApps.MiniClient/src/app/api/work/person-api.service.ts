@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { constructPath, constructVersionedPath } from '../functions/functions';
@@ -53,5 +53,11 @@ export class PersonApiService {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
     
     return this.httpClient.delete<void>(url);
+  }
+
+  export(): Observable<HttpResponse<Blob>> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'export');
+
+    return this.httpClient.get(url, { responseType: 'blob' as 'blob', observe: 'response'});
   }
 }

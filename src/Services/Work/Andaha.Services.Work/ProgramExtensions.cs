@@ -6,6 +6,8 @@ using Andaha.Services.Work.Healthcheck;
 using Andaha.Services.Work.Infrastructure;
 using Andaha.Services.Work.Infrastructure.Proxies;
 using Andaha.Services.Work.JsonConverter;
+using Andaha.Services.Work.Requests.Person.ExportPerson.Definitions;
+using Andaha.Services.Work.Requests.Person.ExportPerson.Services;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
@@ -62,6 +64,10 @@ public static class ProgramExtensions
         builder.Services.Configure<DaprConfiguration>(builder.Configuration.GetSection("Dapr"));
 
         builder.Services.AddScoped<ICollaborationApiProxy, CollaborationApiProxy>();
+
+        builder.Services.AddScoped<IExportService, PersonExportService>();
+        builder.Services.AddScoped<IExportService, WorkingTimeExportService>();
+        builder.Services.AddScoped<IExportService, PaymentExportService>();
 
         return builder;
     }

@@ -7,7 +7,7 @@ import { ExpenseApiService } from '../../../api/shopping/expense-api.service';
 import { ContextService } from '../../../core/context.service';
 import { TimeRange } from '../modules/expenses/timerange-selection/TimeRange';
 import { BillContextService } from './bill-context.service';
-import { downloadFile } from 'src/app/shared/utils/file-utils';
+import { downloadFile, getFileName } from 'src/app/shared/utils/file-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -62,20 +62,9 @@ export class ExpenseContextService {
                     return;
                   }
 
-                  var fileName = "download.xlsx";
-
-                  const contentDispositionHeader = response.headers.get('content-disposition');
-                  if (contentDispositionHeader != null) {
-                    fileName = contentDispositionHeader
-                      .split(";")
-                      .find(n => n.includes("filename="))!
-                      .replace("filename=", "")
-                      .trim();
-                  }
-
                   downloadFile(
                     response.body,
-                    fileName,
+                    getFileName(response.headers),
                     response.body.type);
 
                   returnSubject.next();

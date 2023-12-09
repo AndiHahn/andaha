@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ExpenseContextService } from '../bill/services/expense-context.service';
+import { PersonContextService } from '../work/services/person-context.service';
 
 @Component({
   selector: 'app-export',
@@ -10,7 +11,9 @@ export class ExportComponent implements OnInit {
 
   isExporting: boolean = false;
 
-  constructor(private expenseContextService: ExpenseContextService) { }
+  constructor(
+    private expenseContextService: ExpenseContextService,
+    private personContextService: PersonContextService) { }
 
   ngOnInit(): void {
   }
@@ -26,4 +29,14 @@ export class ExportComponent implements OnInit {
     );
   }
   
+  onExportWorkInformationClick() {
+    this.isExporting = true;
+
+    this.personContextService.downloadPersonInformations().subscribe(
+      {
+        next: _ => this.isExporting = false,
+        error: _ => this.isExporting = false
+      }
+    );
+  }
 }

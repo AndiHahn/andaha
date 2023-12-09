@@ -1,3 +1,5 @@
+import { HttpHeaders } from "@angular/common/http";
+
 export function fileDataUriToBlob(base64DataUri: string): Blob {
   const byteString = window.atob(base64DataUri);
   const arrayBuffer = new ArrayBuffer(byteString.length);
@@ -55,4 +57,17 @@ export function downloadFile(blob: Blob, fileName: string, mimeType: string) {
     // For Firefox it is necessary to delay revoking the ObjectURL
     window.URL.revokeObjectURL(fileURL);
   }, 100);
+}
+
+export function getFileName(headers: HttpHeaders): string {
+  const contentDispositionHeader = headers.get('content-disposition');
+  if (!contentDispositionHeader) {
+    return "download.xlsx";
+  }
+
+  return contentDispositionHeader
+    .split(";")
+    .find(n => n.includes("filename="))!
+    .replace("filename=", "")
+    .trim();
 }
