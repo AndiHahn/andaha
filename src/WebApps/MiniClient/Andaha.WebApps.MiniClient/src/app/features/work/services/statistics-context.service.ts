@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { TimeRangeDto } from 'src/app/api/common-dtos/TimeRangeDto';
+import { FullStatisticsDto } from 'src/app/api/work/dtos/FullStatisticsDto';
 import { StatisticsDto } from 'src/app/api/work/dtos/StatisticsDto';
 import { StatisticsApiService } from 'src/app/api/work/statistics-api.service';
 import { ContextService } from 'src/app/core/context.service';
@@ -13,7 +14,8 @@ export class StatisticsContextService {
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private availableTimeRange$: BehaviorSubject<TimeRangeDto | undefined> = new BehaviorSubject<TimeRangeDto | undefined>(undefined);
   private statistics$: BehaviorSubject<StatisticsDto | undefined> = new BehaviorSubject<StatisticsDto | undefined>(undefined);
-  
+  private fullStatistics$: BehaviorSubject<FullStatisticsDto | undefined> = new BehaviorSubject<FullStatisticsDto | undefined>(undefined);
+
   constructor(
     private contextService: ContextService,
     private apiService: StatisticsApiService
@@ -30,17 +32,23 @@ export class StatisticsContextService {
     return this.statistics$.asObservable();
   }
 
+  fullStatistics(): Observable<FullStatisticsDto | undefined> {
+    return this.fullStatistics$.asObservable();
+  }
+
   loading(): Observable<boolean> {
     return this.loading$.asObservable();
   }
 
   loadStatistics(timeRange: TimeRange): void {
     this.fetchStatistics(
-      //this.datePipe.transform(timeRange.startDate, 'MM/dd/yyyy')!,
-      //this.datePipe.transform(timeRange.endDate, 'MM/dd/yyyy')!
       timeRange.startDate,
       timeRange.endDate
     );
+  }
+
+  loadFullStatistics(): void {
+    this.fetchFullStatistics();
   }
 
   private fetchTimeRange(): void {
@@ -68,6 +76,22 @@ export class StatisticsContextService {
           next: result => {
             this.loading$.next(false);
             this.statistics$.next(result);
+          },
+          error: _ => this.loading$.next(false)
+        }
+    );
+  }
+
+  private fetchFullStatistics() {
+    this.loading$.next(true);
+
+    this.apiService
+      .getFullStatistics(undefined)
+      .subscribe(
+        {
+          next: result => {
+            this.loading$.next(false);
+            this.fullStatistics$.next(result);
           },
           error: _ => this.loading$.next(false)
         }

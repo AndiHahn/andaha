@@ -7,6 +7,7 @@ import { Observable, map } from 'rxjs';
 import { GetStatisticsParameters } from './dtos/GetStatisticsParameters';
 import { TimeRangeDto, TimeRangeDtoRaw, mapTimeRangeDtoRaw } from '../common-dtos/TimeRangeDto';
 import { DatePipe } from '@angular/common';
+import { FullStatisticsDto, FullStatisticsDtoRaw, mapFullStatisticsDtoRaw } from './dtos/FullStatisticsDto';
 
 @Injectable({
   providedIn: 'root'
@@ -45,12 +46,20 @@ export class StatisticsApiService {
     const parameters: GetStatisticsParameters = {
       startTimeUtc:  this.datePipe.transform(startTimeUtc, 'yyyy-MM-ddTHH:mm:ssZZZZZ')!,
       endTimeUtc: this.datePipe.transform(endTimeUtc, 'yyyy-MM-ddTHH:mm:ssZZZZZ')!,
-      test: 25,
-      personFilter: personFilter
     }
 
     return this.httpClient
       .post<StatisticsDtoRaw>(url, parameters)
       .pipe(map(mapStatisticsDtoRaw));
+  }
+
+  getFullStatistics(
+    personFilter?: string[]
+  ): Observable<FullStatisticsDto> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'full');
+
+    return this.httpClient
+      .get<FullStatisticsDtoRaw>(url)
+      .pipe(map(mapFullStatisticsDtoRaw));
   }
 }

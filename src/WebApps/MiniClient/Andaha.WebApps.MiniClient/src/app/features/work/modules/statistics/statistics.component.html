@@ -19,28 +19,91 @@
 
   <!-- Person filter -->
   
-  <!-- filtered Workingtime total -->
-  <div *ngIf="statistics">
-    <h3 class="title">Arbeitszeit gesamt:</h3>
+  <!-- ----------------------------------- -->
+  <!-- Statistics non total -->
+  <!-- ----------------------------------- -->
+  <div *ngIf="selectedTimeRange?.dateType != dateType.Total">
 
-    <div>{{ getTimeDisplayString(statistics.totalWorkingTime) }}</div>
-  
-    <div class="spacer"></div>
-  
-    <mat-divider></mat-divider>
+    <!-- workingtime total -->
+    <div *ngIf="statistics">
+      <h3 class="title">Arbeitszeit gesamt:</h3>
+
+      <div class="value">{{ getTimeDisplayString(statistics.totalWorkingTime) }}</div>
+
+      <div class="spacer"></div>
+
+      <mat-divider></mat-divider>
+
+    </div>
+
+
+    <!-- payed money -->
+    <div *ngIf="statistics">
+      <h3 class="title">Personalkosten hochgerechnet:</h3>
+
+      <div class="value">{{ statistics.extrapolatedMoneyToPay }} €</div>
+
+      <div class="spacer"></div>
+
+      <mat-divider></mat-divider>
+
+    </div>
+  </div>
+
+  <!-- ----------------------------------- -->
+  <!-- Statistics total -->
+  <!-- ----------------------------------- -->
+  <div *ngIf="selectedTimeRange?.dateType == dateType.Total">
+
+    <!-- workingtime total -->
+    <div *ngIf="fullStatistics">
+      <h3 class="title">Arbeitszeit gesamt:</h3>
+
+      <div class="value">{{ getTimeDisplayString(fullStatistics.totalWorkingTime) }}</div>
+
+      <div class="spacer"></div>
+
+      <mat-divider></mat-divider>
+
+    </div>
+
+
+    <!-- payed money -->
+    <div *ngIf="fullStatistics">
+      <h3 class="title">Personalkosten bezahlt:</h3>
+
+      <div class="value">{{ fullStatistics.payedMoney }} €</div>
+
+      <div class="spacer"></div>
+
+      <mat-divider></mat-divider>
+
+    </div>
+
+    <!-- not payed hours -->
+    <div *ngIf="fullStatistics">
+      <h3 class="title">Stunden noch nicht bezahlt:</h3>
+
+      <div class="value">{{ getTimeDisplayString(fullStatistics.notPayedHours) }}</div>
+
+      <div class="spacer"></div>
+
+      <mat-divider></mat-divider>
+
+    </div>
+
+    <!-- payed money -->
+    <div *ngIf="fullStatistics">
+      <h3 class="title">Personalkosten noch nicht bezahlt:</h3>
+
+      <div class="value">{{ fullStatistics.notPayedMoney }} €</div>
+
+      <div class="spacer"></div>
+
+      <mat-divider></mat-divider>
+
+    </div>
 
   </div>
-  
 
-  <!-- payed money -->
-  <div *ngIf="statistics">
-    <h3 class="title">Bezahlt:</h3>
-
-    <div >{{ statistics.payedMoney }}</div>
-  
-    <div class="spacer"></div>
-  
-    <mat-divider></mat-divider>
-
-  </div>
 </div>

@@ -165,7 +165,7 @@ export class WorkEntryDetailsDialogComponent implements OnInit {
     const date = moment(controls.date.value).toDate();
     const year = date.getUTCFullYear();
     const month = date.getUTCMonth();
-    const day = date.getUTCDate() + 1;
+    const day = date.getDate();
     const fromTime = controls.fromTime.value;
     const untilTime = controls.untilTime.value;
     const fromDate = new Date(year, month, day, fromTime.getHours(), fromTime.getMinutes(), fromTime.getSeconds());

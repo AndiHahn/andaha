@@ -4,7 +4,6 @@ using Andaha.Services.Work.Infrastructure.Proxies;
 using Andaha.Services.Work.Requests.Statistics.Dtos.V1;
 using Andaha.Services.Work.Requests.Statistics.Extensions;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Andaha.Services.Work.Requests.Statistics.GetStatistics.V1;
 
@@ -36,7 +35,7 @@ internal class GetStatisticsRequestHandler : IRequestHandler<GetStatisticsReques
             request.Parameters.EndTimeUtc,
             cancellationToken);
         
-        double payedMoney = await this.dbContext.GetPayedMoneyAsync(
+        double payedMoney = await this.dbContext.GetExtrapolatedPayedMoneyAsync(
             userId,
             connectedUsers,
             request.Parameters.StartTimeUtc,
@@ -47,7 +46,7 @@ internal class GetStatisticsRequestHandler : IRequestHandler<GetStatisticsReques
 
         var result = new StatisticsDto(
             TotalWorkingTime: totalWorkingTime,
-            PayedMoney: payedMoney);
+            ExtrapolatedMoneyToPay: payedMoney);
 
         return Results.Ok(result);
     }

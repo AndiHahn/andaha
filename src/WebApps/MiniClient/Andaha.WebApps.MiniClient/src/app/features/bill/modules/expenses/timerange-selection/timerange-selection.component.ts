@@ -120,33 +120,35 @@ export class TimerangeSelectionComponent implements OnInit, OnChanges {
     if (this.selectedDateType == DateType.Month) {
       const startOfMonth = moment(this.currentMonth).startOf('month').format('YYYY-MM-DD');
       const endOfMonth   = moment(this.currentMonth).endOf('month').format('YYYY-MM-DD');
-      this.selectionChanged.emit(this.createTimeRange(startOfMonth, endOfMonth));
+      this.selectionChanged.emit(this.createTimeRange(startOfMonth, endOfMonth, this.selectedDateType));
     } else if (this.selectedDateType == DateType.Year) {
       const startOfYear = moment(this.currentYear).startOf('year').format('YYYY-MM-DD');
       const endOfYear   = moment(this.currentYear).endOf('year').format('YYYY-MM-DD');
-      this.selectionChanged.emit(this.createTimeRange(startOfYear, endOfYear));
+      this.selectionChanged.emit(this.createTimeRange(startOfYear, endOfYear, this.selectedDateType));
     } else if (this.selectedDateType == DateType.Total) {
       const start = moment(this.availableTimeRange.startDate).format('YYYY-MM-DD');
       const end = moment(this.availableTimeRange.endDate).format('YYYY-MM-DD');
-      this.selectionChanged.emit(this.createTimeRange(start, end));
+      this.selectionChanged.emit(this.createTimeRange(start, end, this.selectedDateType));
     } else if (this.selectedDateType == DateType.Custom && this.customFromDate && this.customToDate) {
-      this.selectionChanged.emit(this.createTimeRangeWithDate(this.customFromDate, this.customToDate));
+      this.selectionChanged.emit(this.createTimeRangeWithDate(this.customFromDate, this.customToDate, this.selectedDateType));
     } else {
       throw new Error('Date Type ' + this.selectedDateType + ' is not available');
     }
   }
 
-  createTimeRange(from: string, to: string): TimeRange {
+  createTimeRange(from: string, to: string, dateType: DateType): TimeRange {
     return {
       startDate: new Date(from),
-      endDate: new Date(to)
+      endDate: new Date(to),
+      dateType: dateType
     };
   }
 
-  createTimeRangeWithDate(from: Date, to: Date): TimeRange {
+  createTimeRangeWithDate(from: Date, to: Date, dateType: DateType): TimeRange {
     return {
       startDate: new Date(from),
-      endDate: new Date(to)
+      endDate: new Date(to),
+      dateType: dateType
     };
   }
 

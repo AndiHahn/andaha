@@ -2,4 +2,4 @@
 
 public record StatisticsDto(
     TimeSpan TotalWorkingTime,
-    double PayedMoney);
+    double ExtrapolatedMoneyToPay);
