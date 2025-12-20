@@ -8,9 +8,18 @@ namespace Andaha.Services.Shopping.Infrastructure;
 public class ShoppingDbContext : DbContext
 {
     public DbSet<Bill> Bill { get; set; } = null!;
+
+    public DbSet<BillLineItem> BillLineItem { get; set; } = null!;
+
     public DbSet<BillImage> BillImage { get; set; } = null!;
+
     public DbSet<BillCategory> BillCategory { get; set; } = null!;
+
     public DbSet<BillSubCategory> BillSubCategory { get; set; } = null!;
+
+    public DbSet<AnalyzedBill> AnalyzedBill { get; set; } = null!;
+
+    public DbSet<AnalyzedBillLineItem> AnalyzedBillLineItem { get; set; } = null!;
 
     public ShoppingDbContext(
         DbContextOptions<ShoppingDbContext> options)

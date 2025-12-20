@@ -80,6 +80,8 @@ public class Bill : Entity<Guid>
 
     public virtual ICollection<BillImage> Images { get; private set; } = null!;
 
+    public virtual ICollection<BillLineItem> LineItems { get; private set; } = null!;
+
     public void AddImage(string imageName, byte[] thumbnail)
     {
         this.Images.Add(new BillImage(this.Id, imageName, thumbnail));
@@ -88,6 +90,16 @@ public class Bill : Entity<Guid>
     public void RemoveImage(BillImage image)
     {
         this.Images.Remove(image);
+    }
+
+    public void AddLineItem(string description, double unitPrice, double totalPrice, int quantity)
+    {
+        this.LineItems.Add(new BillLineItem(Id, description, unitPrice, totalPrice, quantity));
+    }
+
+    public void RemoveLineItem(BillLineItem lineItem)
+    {
+        this.LineItems.Remove(lineItem);
     }
 
     public bool HasCreated(Guid userId) => this.UserId == userId;
