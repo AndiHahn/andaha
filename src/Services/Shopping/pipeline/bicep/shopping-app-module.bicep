@@ -10,6 +10,9 @@ param containerRegistryPassword string
 param sqlDbConnectionString string
 @secure()
 param storageConnectionString string
+param documentIntelligenceEndpoint string
+@secure()
+param documentIntelligenceApiKey string
 
 var imageName = stage == 'dev' ? 'andaha.azurecr.io/andaha/services/shopping:${imageVersion}' : 'andaha.azurecr.io/prod/andaha/services/shopping:${imageVersion}'
 
@@ -63,6 +66,14 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
             {
               name: 'Authentication__AzureAdB2C__SignUpSignInPolicyId'
               value: 'B2C_1_SignUpSignIn'
+            }
+            {
+              name: 'DocumentIntelligence__Endpoint'
+              value: documentIntelligenceEndpoint
+            }
+            {
+              name: 'DocumentIntelligence__ApiKey'
+              secretRef: 'document-intelligence-api-key'
             }
           ]
           probes: [
@@ -139,6 +150,10 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
         {
           name: 'storage-connection-string'
           value: storageConnectionString
+        }
+        {
+          name: 'document-intelligence-api-key'
+          value: documentIntelligenceApiKey
         }
       ]
     }

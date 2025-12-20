@@ -3,6 +3,7 @@ using Andaha.CrossCutting.Application.Swagger;
 using Andaha.Services.Shopping.Common;
 using Andaha.Services.Shopping.Healthcheck;
 using Andaha.Services.Shopping.Infrastructure;
+using Andaha.Services.Shopping.Infrastructure.InvoiceAnalysis;
 using Andaha.Services.Shopping.Infrastructure.ImageRepository;
 using Andaha.Services.Shopping.Infrastructure.Proxies;
 using Asp.Versioning;
@@ -73,6 +74,11 @@ public static class ProgramExtensions
 
             clientBuilder.AddBlobServiceClient(storageConnectionString);
         });
+
+        builder.Services.Configure<DocumentIntelligenceOptions>(
+            builder.Configuration.GetSection("DocumentIntelligence"));
+
+        builder.Services.AddSingleton<IInvoiceAnalysisService, InvoiceAnalysisService>();
 
         return builder;
     }

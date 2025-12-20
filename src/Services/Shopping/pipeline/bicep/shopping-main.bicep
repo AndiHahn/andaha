@@ -25,6 +25,14 @@ module storage 'shopping-storage-module.bicep' = {
   }
 }
 
+module documentIntelligence 'shopping-document-intelligence-module.bicep' = {
+  name: 'andaha-shopping-document-intelligence'
+  params: {
+    stage: stage
+    location: location
+  }
+}
+
 module containerApp 'shopping-app-module.bicep' = {
   name: 'andaha-shopping-service'
   params: {
@@ -37,5 +45,7 @@ module containerApp 'shopping-app-module.bicep' = {
     containerRegistryPassword: containerRegistryPassword
     sqlDbConnectionString: coreInfrastructure.outputs.databaseConnectionString
     storageConnectionString: storage.outputs.storageConnectionString
+    documentIntelligenceEndpoint: documentIntelligence.outputs.endpoint
+    documentIntelligenceApiKey: documentIntelligence.outputs.key
   }
 }

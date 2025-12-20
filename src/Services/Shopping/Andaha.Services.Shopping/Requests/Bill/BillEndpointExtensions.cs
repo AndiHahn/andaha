@@ -17,6 +17,7 @@ internal static class BillEndpointExtensions
 
         app.MapSearchBills(groupBuilder);
         app.MapGetById(groupBuilder);
+        app.MapAnalyzeBill(groupBuilder);
         app.MapCreateBill(groupBuilder);
         app.MapUpdateBill(groupBuilder);
         app.MapDeleteBill(groupBuilder);
@@ -47,6 +48,29 @@ internal static class BillEndpointExtensions
         groupBuilder
             .MediateGet<GetBillById.V1.GetBillByIdQuery>("{id}")
             .Produces<Dtos.V1.BillDto>()
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        return app;
+    }
+
+    private static WebApplication MapAnalyzeBill(
+        this WebApplication app,
+        RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MapPost("/analyze", [Authorize] async (IMediator mediator, [FromForm] IFormFile file, CancellationToken cancellationToken) =>
+            {
+                //var file = httpContext.Request.Form.Files.FirstOrDefault();
+
+                await using var stream = file.OpenReadStream();
+
+                var command = new AnalyzeBill.V1.AnalyzeBillCommand(stream);
+
+                return await mediator.Send(command, cancellationToken);
+            })
+            .Accepts<IFormFile>("multipart/form-data")
+            //.Produces<>()
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
