@@ -1,6 +1,7 @@
 ﻿using Andaha.CrossCutting.Application.Requests;
 using Andaha.CrossCutting.Application.Result;
 using Andaha.Services.Shopping.Common;
+using Dapr;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +12,9 @@ internal static class BillEndpointExtensions
 {
     internal static WebApplication MapBillEndpoint(this WebApplication app)
     {
-        var income = app.MapApiGroup("Bill");
+        var bill = app.NewVersionedApi("Bill");
 
-        var groupBuilder = income.MapGroup("/api/bill").ApplyApiVersions();
+        var groupBuilder = bill.MapGroup("/api/bill").ApplyApiVersions();
 
         app.MapSearchBills(groupBuilder);
         app.MapGetById(groupBuilder);
@@ -24,6 +25,9 @@ internal static class BillEndpointExtensions
         app.MapUploadImage(groupBuilder);
         app.MapDownloadImage(groupBuilder);
         app.MapDeleteImage(groupBuilder);
+        app.MapUploadForAnalysis(groupBuilder);
+        app.MapGetAnalyzedBills(groupBuilder);
+        app.MapAnalyzeBillSubscription(groupBuilder);
 
         return app;
     }
@@ -206,6 +210,52 @@ internal static class BillEndpointExtensions
             .Produces<FileStreamResult>()
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        return app;
+    }
+
+    private static WebApplication MapUploadForAnalysis(
+    this WebApplication app,
+    RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediatePost<UploadForAnalysis.V1.UploadBillForAnalysisCommand>("$upload-for-analysis")
+            .Accepts<IFormFile>("multipart/form-data")
+            .Produces(StatusCodes.Status202Accepted)
+            .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+            .WithDescription("Upload an invoice image for asynchronous analysis.");
+
+        return app;
+    }
+
+    private static WebApplication MapGetAnalyzedBills(
+        this WebApplication app,
+        RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediateGet<GetAnalyzedBills.V1.GetAnalyzedBillsQuery>("analyzed")
+            .Produces<IEnumerable<Dtos.V1.AnalyzedBillDto>>()
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+            .WithDescription("Returns analyzed bills for the current user.");
+
+        return app;
+    }
+
+    private static WebApplication MapAnalyzeBillSubscription(
+        this WebApplication app,
+        RouteGroupBuilder groupBuilder)
+    {
+        app.MapPost(
+            "$analyze-bill",
+            [Topic("pubsub", "AnalyzeBillMessageV1")]
+            async (IMediator mediator, Contracts.AnalyzeBillMessageV1 message) =>
+            {
+                await mediator.Send(message);
+
+                return Results.Ok();
+            })
+            .Produces(StatusCodes.Status200OK);
 
         return app;
     }

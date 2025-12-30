@@ -47,7 +47,7 @@ public class AnalyzedBillLineItem : Entity<Guid>
 
     public string? Description { get; set; }
 
-    public decimal? Quantity { get; set; }
+    public int? Quantity { get; set; }
 
     public double? UnitPrice { get; set; }
 

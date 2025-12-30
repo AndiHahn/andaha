@@ -16,8 +16,11 @@ services:
       "--app-id", "ocelot-gateway",
       "--app-port", "80",
       "-log-level", "debug",
-      "-placement-host-address", "dapr.placement:50000"
+      "-placement-host-address", "dapr.placement:50000",
+      "-components-path", "/dapr/components"
     ]
+    volumes:
+      - ./dapr/components:/dapr/components:ro
 
   andaha.services.identity:
     environment:
@@ -44,7 +47,10 @@ services:
       "-app-port", "80",
       "-log-level", "debug",
       "-placement-host-address", "dapr.placement:50000",
+      "-components-path", "/dapr/components"
     ]
+    volumes:
+      - ./dapr/components:/dapr/components:ro
 
   andaha.services.identity.db:
     user: root
@@ -63,6 +69,11 @@ services:
       ConnectionStrings__ApplicationDbConnection: Server=andaha.services.shopping.db;Database=andaha-shopping-db;User Id=sa;Password=Pass@word;Encrypt=false
       ExternalUrls__IdentityApi: http://andaha.services.identity:80
       Dapr__CollaborationAppId: collaboration-api
+      DocumentIntelligence__Endpoint": ${DOCUMENT_INTELLIGENCE_ENDPOINT}
+      DocumentIntelligence__ApiKey": ${DOCUMENT_INTELLIGENCE_APIKEY}
+      AzureOpenAi__Endpoint": ${AZURE_OPENAI_ENDPOINT}
+      AzureOpenAi__ApiKey": ${AZURE_OPENAI_APIKEY}
+      AzureOpenAi__DeploymentName": ${AZURE_OPENAI_DEPLOYMENTNAME}
       Authentication__AzureAdB2C__Instance: ${AUTH_B2C_INSTANCE}
       Authentication__AzureAdB2C__ClientId: ${AUTH_B2C_CLIENTID}
       Authentication__AzureAdB2C__Domain: ${AUTH_B2C_DOMAIN}
@@ -82,7 +93,10 @@ services:
       "-app-port", "80",
       "-log-level", "debug",
       "-placement-host-address", "dapr.placement:50000",
+      "-components-path", "/dapr/components"
     ]
+    volumes:
+      - ./dapr/components:/dapr/components:ro
 
   andaha.services.shopping.db:
     user: root
@@ -121,7 +135,10 @@ services:
       "-app-port", "80",
       "-log-level", "debug",
       "-placement-host-address", "dapr.placement:50000",
+      "-components-path", "/dapr/components"
     ]
+    volumes:
+      - ./dapr/components:/dapr/components:ro
 
   andaha.services.collaboration.db: 
     user: root
@@ -158,7 +175,10 @@ services:
       "-app-port", "80",
       "-log-level", "debug",
       "-placement-host-address", "dapr.placement:50000",
+      "-components-path", "/dapr/components"
     ]
+    volumes:
+      - ./dapr/components:/dapr/components:ro
 
   andaha.services.budgetplan.db:
     user: root
@@ -176,6 +196,11 @@ services:
       ASPNETCORE_URLS: http://+:80
       ConnectionStrings__ApplicationDbConnection: Server=andaha.services.monolith.db;Database=andaha-monolith-db;User Id=sa;Password=Pass@word;Encrypt=false
       Dapr__CollaborationAppId: monolith-api
+      DocumentIntelligence__Endpoint": ${DOCUMENT_INTELLIGENCE_ENDPOINT}
+      DocumentIntelligence__ApiKey": ${DOCUMENT_INTELLIGENCE_APIKEY}
+      AzureOpenAi__Endpoint": ${AZURE_OPENAI_ENDPOINT}
+      AzureOpenAi__ApiKey": ${AZURE_OPENAI_APIKEY}
+      AzureOpenAi__DeploymentName": ${AZURE_OPENAI_DEPLOYMENTNAME}
       Authentication__AzureAdB2C__Instance: ${AUTH_B2C_INSTANCE}
       Authentication__AzureAdB2C__ClientId: ${AUTH_B2C_CLIENTID}
       Authentication__AzureAdB2C__Domain: ${AUTH_B2C_DOMAIN}
@@ -198,7 +223,10 @@ services:
       "-app-port", "80",
       "-log-level", "debug",
       "-placement-host-address", "dapr.placement:50000",
+      "-components-path", "/dapr/components"
     ]
+    volumes:
+      - ./dapr/components:/dapr/components:ro
 
   andaha.services.monolith.db:
     user: root
@@ -214,6 +242,10 @@ services:
     command: ["./placement", "--port", "50000", "-log-level", "debug"]
     ports:
       - "50000:50000"
+
+  andaha.dapr.pubsub:
+    ports: 
+      - "6379:6379"
 
   andaha.webapps.servicestatus:
     environment:

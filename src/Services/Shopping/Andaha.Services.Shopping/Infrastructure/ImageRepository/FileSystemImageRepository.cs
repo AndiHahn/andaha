@@ -1,36 +1,70 @@
-﻿namespace Andaha.Services.Shopping.Infrastructure.ImageRepository;
+﻿using System.Text.Json;
+
+namespace Andaha.Services.Shopping.Infrastructure.ImageRepository;
 
 internal class FileSystemImageRepository : IImageRepository
 {
-    private readonly string filePath = "images";
+    private readonly string imagesFilePath = "images";
+    private readonly string analyzeFilePath = "analyze";
 
     public FileSystemImageRepository()
     {
-        if (!Directory.Exists(this.filePath))
+        if (!Directory.Exists(this.imagesFilePath))
         {
-            Directory.CreateDirectory(this.filePath);
+            Directory.CreateDirectory(this.imagesFilePath);
+        }
+
+        if (!Directory.Exists(this.analyzeFilePath))
+        {
+            Directory.CreateDirectory(this.analyzeFilePath);
         }
     }
 
-    public async Task<Stream> GetImageStreamAsync(string name, CancellationToken cancellationToken)
+    public async Task<Stream> GetImageStreamAsync(string name, CancellationToken ct = default)
     {
         string filePath = this.GetImagePath(name);
 
-        var imageBytes = await File.ReadAllBytesAsync(filePath, cancellationToken);
+        var imageBytes = await File.ReadAllBytesAsync(filePath, ct);
 
         return new MemoryStream(imageBytes);
     }
 
-    public Task UploadImageAsync(string name, Stream imageStream, CancellationToken cancellationToken)
+    public async Task<(Stream Image, Guid UserId)> GetAnalysisImageAsync(string name, CancellationToken ct = default)
+    {
+        string filePath = this.GetAnalyzeFilePath(name);
+        string metadataFilePath = this.GetMetadataFilePath(name);
+
+        var imageBytes = await File.ReadAllBytesAsync(filePath, ct);
+        var userId = await ReadMetadataAsync(metadataFilePath, ct);
+
+        return (new MemoryStream(imageBytes), userId);
+    }
+
+    public Task UploadImageAsync(string name, Stream imageStream, CancellationToken ct = default)
     {
         string filePath = this.GetImagePath(name);
 
         var imageBytes = ReadStreamToBytes(imageStream);
 
-        return File.WriteAllBytesAsync(filePath, imageBytes, cancellationToken);
+        return File.WriteAllBytesAsync(filePath, imageBytes, ct);
     }
 
-    public Task DeleteImageAsync(string name, CancellationToken cancellationToken)
+    public async Task UploadImageForAnalysisAsync(string name, Stream imageStream, Guid userId, CancellationToken ct = default)
+    {
+        string filePath = this.GetAnalyzeFilePath(name);
+        string metadataFilePath = this.GetMetadataFilePath(name);
+
+        var imageBytes = ReadStreamToBytes(imageStream);
+
+        await File.WriteAllBytesAsync(filePath, imageBytes, ct);
+
+        var metadata = new { userId = userId.ToString() };
+        var metadataJson = JsonSerializer.Serialize(metadata);
+
+        await File.WriteAllTextAsync(metadataFilePath, metadataJson, ct);
+    }
+
+    public Task DeleteImageAsync(string name, CancellationToken ct = default)
     {
         string filePath = this.GetImagePath(name);
 
@@ -39,10 +73,38 @@ internal class FileSystemImageRepository : IImageRepository
         return Task.CompletedTask;
     }
 
-    private string GetImagePath(string name)
+    private async static Task<Guid> ReadMetadataAsync(string metadataPath, CancellationToken ct)
     {
-        return Path.Combine(this.filePath, name);
+        if (!File.Exists(metadataPath))
+        {
+            return Guid.Empty;
+        }
+
+        try
+        {
+            var json = await File.ReadAllTextAsync(metadataPath, ct);
+            using var jsonDoc = JsonDocument.Parse(json);
+            var root = jsonDoc.RootElement;
+
+            if (root.TryGetProperty("userId", out var userIdElement) &&
+                Guid.TryParse(userIdElement.GetString(), out var userId))
+            {
+                return userId;
+            }
+
+            return Guid.Empty;
+        }
+        catch
+        {
+            return Guid.Empty;
+        }
     }
+
+    private string GetImagePath(string name) => Path.Combine(this.imagesFilePath, name);
+
+    private string GetAnalyzeFilePath(string name) => Path.Combine(this.analyzeFilePath, name);
+
+    private string GetMetadataFilePath(string name) => Path.Combine(this.imagesFilePath, $"{name}.metadata.json");
 
     private static byte[] ReadStreamToBytes(Stream input)
     {

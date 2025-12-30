@@ -31,6 +31,9 @@ app.MapHealthChecks();
 
 app.MapShoppingEndpoints();
 
+app.UseCloudEvents();
+app.MapSubscribeHandler();
+
 await Task.Delay(10);
 
 if (app.Environment.IsDevelopment())

@@ -1,8 +1,10 @@
-﻿namespace Andaha.Services.Shopping.Infrastructure.AzureBlobStorage;
+﻿using Azure.Storage.Blobs.Models;
+
+namespace Andaha.Services.Shopping.Infrastructure.AzureBlobStorage;
 
 internal interface IBlobStorageService
 {
-    Task DeleteDocumentAsync(string blobName, CancellationToken cancellationToken);
-    Task<Stream> GetBlobContentAsync(string blobName, CancellationToken cancellationToken);
-    Task UpdateBlobContentAsync(string blobName, Stream content, CancellationToken cancellationToken);
+    Task DeleteDocumentAsync(string blobName, CancellationToken ct = default);
+    Task<Stream> GetBlobContentAsync(string blobName, CancellationToken ct = default);
+    Task UpdateBlobContentAsync(string blobName, Stream content, BlobUploadOptions? options = null, CancellationToken ct = default);
 }

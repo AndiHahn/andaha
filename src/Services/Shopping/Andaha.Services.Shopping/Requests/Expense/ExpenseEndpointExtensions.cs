@@ -7,7 +7,7 @@ internal static class ExpenseEndpointExtensions
 {
     internal static WebApplication MapExpenseEndpoint(this WebApplication app)
     {
-        var income = app.MapApiGroup("Expense");
+        var income = app.NewVersionedApi("Expense");
 
         var groupBuilder = income.MapGroup("/api/expense").ApplyApiVersions();
 

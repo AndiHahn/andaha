@@ -3,8 +3,10 @@ using Andaha.CrossCutting.Application.Swagger;
 using Andaha.Services.Shopping.Common;
 using Andaha.Services.Shopping.Healthcheck;
 using Andaha.Services.Shopping.Infrastructure;
-using Andaha.Services.Shopping.Infrastructure.InvoiceAnalysis;
+using Andaha.Services.Shopping.Infrastructure.CategoryClassification;
 using Andaha.Services.Shopping.Infrastructure.ImageRepository;
+using Andaha.Services.Shopping.Infrastructure.InvoiceAnalysis;
+using Andaha.Services.Shopping.Infrastructure.Messaging;
 using Andaha.Services.Shopping.Infrastructure.Proxies;
 using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +14,7 @@ using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Polly;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
@@ -65,20 +67,24 @@ public static class ProgramExtensions
         }
         else
         {
+            builder.Services.AddAzureClients(clientBuilder =>
+            {
+                string storageConnectionString = builder.Configuration.GetConnectionString("BlobStorageConnectionString");
+
+                clientBuilder.AddBlobServiceClient(storageConnectionString);
+            });
+
             builder.Services.AddSingleton<IImageRepository, AzureStorageImageRepository>();
         }
 
-        builder.Services.AddAzureClients(clientBuilder =>
-        {
-            string storageConnectionString = builder.Configuration.GetConnectionString("BlobStorageConnectionString");
-
-            clientBuilder.AddBlobServiceClient(storageConnectionString);
-        });
-
         builder.Services.Configure<DocumentIntelligenceOptions>(
             builder.Configuration.GetSection("DocumentIntelligence"));
-
         builder.Services.AddSingleton<IInvoiceAnalysisService, InvoiceAnalysisService>();
+
+        builder.Services.Configure<AzureOpenAiConfiguration>(builder.Configuration.GetSection("AzureOpenAi"));
+        builder.Services.AddSingleton<ICategoryClassificationService, AzureOpenAIClassificationService>();
+
+        builder.Services.AddSingleton<IMessageBroker, DaprMessageBroker>();
 
         return builder;
     }

@@ -1,5 +1,3 @@
-using Andaha.Services.Shopping.Requests.BillCategory.Dtos.V1;
-
 namespace Andaha.Services.Shopping.Requests.Bill.Dtos.V1;
 
 public record BillDto(
@@ -11,4 +9,5 @@ public record BillDto(
     DateTime Date,
     string? Notes,
     bool IsExternal,
-    bool ImageAvailable);
+    bool ImageAvailable,
+    IReadOnlyCollection<BillLineItemDto> LineItems);

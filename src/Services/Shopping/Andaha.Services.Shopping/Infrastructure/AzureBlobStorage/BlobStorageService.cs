@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 
 namespace Andaha.Services.Shopping.Infrastructure.AzureBlobStorage;
 
@@ -16,31 +17,43 @@ internal class BlobStorageService : IBlobStorageService
         containerClient.CreateIfNotExists(Azure.Storage.Blobs.Models.PublicAccessType.None);
     }
 
-    public async Task DeleteDocumentAsync(string blobName, CancellationToken cancellationToken)
+    public async Task DeleteDocumentAsync(string blobName, CancellationToken ct = default)
     {
         var containerClient = GetContainerClient();
 
         var blobClient = containerClient.GetBlobClient(blobName);
 
-        await blobClient.DeleteAsync(cancellationToken: cancellationToken);
+        await blobClient.DeleteAsync(cancellationToken: ct);
     }
 
-    public async Task<Stream> GetBlobContentAsync(string blobName, CancellationToken cancellationToken)
+    public async Task<Stream> GetBlobContentAsync(string blobName, CancellationToken ct = default)
     {
         var containerClient = GetContainerClient();
 
         var blobClient = containerClient.GetBlobClient(blobName);
 
-        return await blobClient.OpenReadAsync(cancellationToken: cancellationToken);
+        return await blobClient.OpenReadAsync(cancellationToken: ct);
     }
 
-    public async Task UpdateBlobContentAsync(string blobName, Stream content, CancellationToken cancellationToken)
+    public async Task UpdateBlobContentAsync(
+        string blobName,
+        Stream content,
+        BlobUploadOptions? options = null,
+        CancellationToken ct = default)
     {
         var containerClient = GetContainerClient();
 
         var blobClient = containerClient.GetBlobClient(blobName);
 
-        await blobClient.UploadAsync(content, true, cancellationToken);
+        options ??= new BlobUploadOptions();
+
+        // Set overwrite to true if no condition is set
+        options.Conditions ??= new BlobRequestConditions();
+        
+        await blobClient.UploadAsync(
+            content: content,
+            options: options,
+            ct);
     }
 
     private BlobContainerClient GetContainerClient() => blobServiceClient.GetBlobContainerClient(containerName);

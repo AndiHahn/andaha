@@ -8,7 +8,7 @@ internal static class BillCategoryEndpointExtensions
 {
     internal static WebApplication MapBillCategoryEndpoint(this WebApplication app)
     {
-        var income = app.MapApiGroup("BillCategory");
+        var income = app.NewVersionedApi("BillCategory");
 
         var groupBuilder = income.MapGroup("/api/billcategory").ApplyApiVersions();
 

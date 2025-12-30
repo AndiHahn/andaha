@@ -39,6 +39,7 @@ services:
         PatPlaceholder: ${NUGET_FEED_ACCESS_TOKEN}
     depends_on: 
       - "andaha.services.shopping.db"
+      - "andaha.dapr.pubsub"
 
   andaha.services.shopping.dapr:
     image: "daprio/daprd:edge"
@@ -89,6 +90,10 @@ services:
 
   dapr.placement:
     image: "daprio/dapr"
+
+  andaha.dapr.pubsub:
+    image: redis:7-alpine
+    restart: unless-stopped
 
   andaha.services.monolith:
     image: andaha-services-monolith:${TAG}

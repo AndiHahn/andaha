@@ -10,4 +10,12 @@ public class InvoiceAnalysisResult
     public string? Currency { get; set; }
 
     public List<InvoiceLineItem> LineItems { get; set; } = new List<InvoiceLineItem>();
+
+    public bool IsReasonableResult()
+    {
+        return !string.IsNullOrWhiteSpace(VendorName)
+            && InvoiceDate.HasValue
+            && TotalAmount.HasValue
+            && TotalAmount.Value > 0;
+    }
 }

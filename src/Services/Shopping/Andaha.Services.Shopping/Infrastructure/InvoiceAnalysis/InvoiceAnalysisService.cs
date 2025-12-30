@@ -21,7 +21,7 @@ public class InvoiceAnalysisService : IInvoiceAnalysisService
         CancellationToken ct = default)
     {
         BinaryData binaryData = await BinaryData.FromStreamAsync(invoiceStream, ct);
-
+       
         var operation = await client.AnalyzeDocumentAsync(
             WaitUntil.Completed,
             "prebuilt-invoice",
