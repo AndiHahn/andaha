@@ -15,10 +15,10 @@ name: "$(Build.SourceBranchName)"
 
 steps:
   - task: UseDotNet@2
-    displayName: 'Use .NET Core 7'
+    displayName: 'Use .NET 10'
     inputs:
       packageType: sdk
-      version: 7.x
+      version: 10.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - task: PowerShell@2
