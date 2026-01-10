@@ -2,7 +2,6 @@ using Andaha.CrossCutting.Application.Identity;
 using Andaha.Services.Shopping.Contracts;
 using Andaha.Services.Shopping.Infrastructure.ImageRepository;
 using Andaha.Services.Shopping.Infrastructure.Messaging;
-using Azure.Storage.Blobs;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,7 +28,11 @@ internal class UploadBillForAnalysisCommandHandler(
 
         await UploadImageAsync(id, request.File, cancellationToken);
 
-        var message = new AnalyzeBillMessageV1 { Id = id };
+        var message = new AnalyzeBillMessageV1
+        {
+            ImageName = id.ToString(),
+            LastModifiedUtc = DateTimeOffset.UtcNow
+        };
 
         await messageBroker.PublishMessageAsync(message, cancellationToken);
 

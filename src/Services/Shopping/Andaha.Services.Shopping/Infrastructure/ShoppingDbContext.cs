@@ -21,6 +21,9 @@ public class ShoppingDbContext : DbContext
 
     public DbSet<AnalyzedBillLineItem> AnalyzedBillLineItem { get; set; } = null!;
 
+    public DbSet<AnalyzeBillProcessingState> AnalyzeBillProcessingState { get; set; } = null!;
+
+
     public ShoppingDbContext(
         DbContextOptions<ShoppingDbContext> options)
         : base(options)

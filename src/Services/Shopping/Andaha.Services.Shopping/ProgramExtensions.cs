@@ -1,5 +1,6 @@
 ﻿using Andaha.CrossCutting.Application;
 using Andaha.CrossCutting.Application.Swagger;
+using Andaha.Services.Shopping.BackgroundJobs;
 using Andaha.Services.Shopping.Common;
 using Andaha.Services.Shopping.Healthcheck;
 using Andaha.Services.Shopping.Infrastructure;
@@ -85,6 +86,8 @@ public static class ProgramExtensions
         builder.Services.AddSingleton<ICategoryClassificationService, AzureOpenAIClassificationService>();
 
         builder.Services.AddSingleton<IMessageBroker, DaprMessageBroker>();
+
+        builder.Services.AddHostedService<AnalyzeBillWorker>();
 
         return builder;
     }

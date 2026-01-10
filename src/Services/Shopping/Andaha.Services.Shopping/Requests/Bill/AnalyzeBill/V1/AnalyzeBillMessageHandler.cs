@@ -17,7 +17,7 @@ internal class AnalyzeBillMessageHandler(
 {
     public async Task<IResult> Handle(AnalyzeBillMessageV1 request, CancellationToken cancellationToken)
     {
-        var file = await imageRepository.GetAnalysisImageAsync(request.Id.ToString(), cancellationToken);
+        var file = await imageRepository.GetAnalysisImageAsync(request.ImageName.ToString(), cancellationToken);
 
         if (file.Image is null)
         {

@@ -56,5 +56,21 @@ internal class BlobStorageService : IBlobStorageService
             ct);
     }
 
+    public async Task<IEnumerable<BlobItem>> ListBlobsAsync(string? prefix = null, CancellationToken ct = default)
+    {
+        var containerClient = GetContainerClient();
+        var results = new List<BlobItem>();
+
+        await foreach (var blobItem in containerClient.GetBlobsAsync(
+            traits: BlobTraits.Metadata,
+            prefix: prefix,
+            cancellationToken: ct))
+        {
+            results.Add(blobItem);
+        }
+
+        return results;
+    }
+
     private BlobContainerClient GetContainerClient() => blobServiceClient.GetBlobContainerClient(containerName);
 }

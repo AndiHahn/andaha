@@ -11,4 +11,6 @@ internal interface IImageRepository
     Task UploadImageForAnalysisAsync(string name, Stream imageStream, Guid userId, CancellationToken ct = default);
 
     Task DeleteImageAsync(string name, CancellationToken ct = default);
+
+    Task<IReadOnlyCollection<ImageMetadata>> ListIAnalyzeImagesAsync(CancellationToken ct = default);
 }

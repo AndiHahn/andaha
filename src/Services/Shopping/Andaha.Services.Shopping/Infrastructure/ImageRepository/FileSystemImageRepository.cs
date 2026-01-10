@@ -73,6 +73,42 @@ internal class FileSystemImageRepository : IImageRepository
         return Task.CompletedTask;
     }
 
+    public async Task<IReadOnlyCollection<ImageMetadata>> ListIAnalyzeImagesAsync(CancellationToken ct = default)
+    {
+        if (!Directory.Exists(analyzeFilePath))
+        {
+            return [];
+        }
+
+        var result = new List<ImageMetadata>();
+
+        foreach (var filePath in Directory.EnumerateFiles(analyzeFilePath))
+        {
+            ct.ThrowIfCancellationRequested();
+
+            var fileName = Path.GetFileName(filePath);
+
+            var fileInfo = new FileInfo(filePath);
+            DateTimeOffset lastModified;
+            if (fileInfo.LastWriteTimeUtc != DateTime.MinValue)
+            {
+                lastModified = new DateTimeOffset(fileInfo.LastWriteTimeUtc, TimeSpan.Zero);
+            }
+            else
+            {
+                lastModified = new DateTimeOffset(fileInfo.CreationTimeUtc, TimeSpan.Zero);
+            }
+
+            result.Add(new ImageMetadata
+            {
+                ImageName = fileName,
+                LastModified = lastModified
+            });
+        }
+
+        return result;
+    }
+
     private async static Task<Guid> ReadMetadataAsync(string metadataPath, CancellationToken ct)
     {
         if (!File.Exists(metadataPath))
