@@ -13,12 +13,17 @@ public static class ServiceRegistrationExtensions
 {
     public static IServiceCollection AddCqrs(this IServiceCollection services, Assembly assembly)
     {
-        services.AddMediatR(assembly);
+        services.AddMediatR(config =>
+        {
+            config.RegisterServicesFromAssembly(assembly);
+            config.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+            config.AddBehavior(typeof(IRequestPreProcessor<>), typeof(RequestLogger<>));
+        });
 
-        services.TryAddEnumerable(ServiceDescriptor.Transient(typeof(IRequestPreProcessor<>), typeof(RequestLogger<>)));
-        services.TryAddEnumerable(ServiceDescriptor.Transient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>)));
-
-        services.AddFluentValidation(config => config.RegisterValidatorsFromAssembly(assembly));
+        services
+            .AddFluentValidationAutoValidation()
+            .AddFluentValidationClientsideAdapters()
+            .AddValidatorsFromAssembly(assembly);
 
         ValidatorOptions.Global.LanguageManager.Enabled = true;
 

@@ -1,14 +1,15 @@
 ﻿using Ardalis.SmartEnum;
-using Microsoft.OpenApi.Any;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections;
 using System.Reflection;
+using System.Text.Json.Nodes;
 
 namespace Andaha.CrossCutting.Application.Swagger;
+
 public sealed class SmartEnumSchemaFilter : ISchemaFilter
 {
-    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+    public void Apply(IOpenApiSchema schema, SchemaFilterContext context)
     {
         var type = context.Type;
 
@@ -19,16 +20,20 @@ public sealed class SmartEnumSchemaFilter : ISchemaFilter
 
         var listProperty = type.GetProperty("List", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
         var enumValues = (IEnumerable)listProperty.GetValue(null);
-        var openApiValues = new OpenApiArray();
+
+        var stringValues = enumValues
+            .Cast<object>()
+            .Select(v => (object)v.ToString())
+            .ToList();
+
+        // Clear existing properties and set enum values
+        schema?.Properties?.Clear();
+        schema?.Enum?.Clear();
+
         foreach (var value in enumValues)
         {
-            openApiValues.Add(new OpenApiString(value.ToString()));
+            schema?.Enum?.Add(JsonValue.Create(value.ToString()));
         }
-
-        // See https://swagger.io/docs/specification/data-models/enums/
-        schema.Type = "string";
-        schema.Enum = openApiValues;
-        schema.Properties = null;
     }
 
     private static bool IsTypeDerivedFromGenericType(Type typeToCheck, Type genericType)
@@ -48,6 +53,6 @@ public sealed class SmartEnumSchemaFilter : ISchemaFilter
             return true;
         }
 
-        return IsTypeDerivedFromGenericType(typeToCheck.BaseType, genericType);
+        return IsTypeDerivedFromGenericType(typeToCheck.BaseType!, genericType);
     }
 }
