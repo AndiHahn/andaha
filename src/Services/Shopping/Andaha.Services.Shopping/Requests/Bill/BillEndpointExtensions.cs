@@ -63,7 +63,7 @@ internal static class BillEndpointExtensions
         RouteGroupBuilder groupBuilder)
     {
         groupBuilder
-            .MapPost("/analyze", [Authorize] async (IMediator mediator, [FromForm] IFormFile file, CancellationToken cancellationToken) =>
+            .MapPost("/analyze", [Authorize] async (IMediator mediator, IFormFile file, CancellationToken cancellationToken) =>
             {
                 //var file = httpContext.Request.Form.Files.FirstOrDefault();
 
@@ -74,7 +74,6 @@ internal static class BillEndpointExtensions
                 return await mediator.Send(command, cancellationToken);
             })
             .Accepts<IFormFile>("multipart/form-data")
-            //.Produces<>()
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
