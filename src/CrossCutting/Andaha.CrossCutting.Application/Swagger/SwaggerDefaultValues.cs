@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Andaha.CrossCutting.Application.Swagger;
+
 public class SwaggerDefaultValues : IOperationFilter
 {
     /// <inheritdoc />
@@ -53,10 +55,23 @@ public class SwaggerDefaultValues : IOperationFilter
             {
                 // REF: https://github.com/Microsoft/aspnet-api-versioning/issues/429#issuecomment-605402330
                 var json = JsonSerializer.Serialize(description.DefaultValue, modelMetadata.ModelType);
-                parameter.Schema.Default = OpenApiAnyFactory.CreateFromJson(json);
-            }
 
-            parameter.Required |= description.IsRequired;
+                var defaultNode = JsonNode.Parse(json);
+
+                SetSchemaDefault(parameter.Schema, defaultNode);
+            }
+        }
+    }
+
+    private static void SetSchemaDefault(IOpenApiSchema schema, JsonNode? defaultValue)
+    {
+        var property = typeof(OpenApiSchema).GetProperty("Default",
+            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance |
+            System.Reflection.BindingFlags.IgnoreCase);
+
+        if (property?.CanWrite == true)
+        {
+            property.SetValue(schema, defaultValue);
         }
     }
 }
