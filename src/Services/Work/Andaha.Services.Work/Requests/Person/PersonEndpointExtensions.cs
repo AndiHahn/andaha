@@ -7,7 +7,7 @@ internal static class PersonEndpointExtensions
 {
     internal static WebApplication MapPersonEndpoint(this WebApplication app)
     {
-        var income = app.MapApiGroup("Person");
+        var income = app.NewVersionedApi("Person");
 
         var groupBuilder = income.MapGroup("/api/person").ApplyApiVersions();
 

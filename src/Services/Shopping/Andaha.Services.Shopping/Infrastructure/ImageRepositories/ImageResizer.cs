@@ -2,7 +2,7 @@
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
 
-namespace Andaha.Services.Shopping.Infrastructure.ImageRepository;
+namespace Andaha.Services.Shopping.Infrastructure.ImageRepositories;
 
 public static class ImageResizer
 {
@@ -11,7 +11,7 @@ public static class ImageResizer
         int width;
         int height;
 
-        using Image originalImage = Image.Load(fileStream);
+        using SixLabors.ImageSharp.Image originalImage = SixLabors.ImageSharp.Image.Load(fileStream);
 
         // Not necessary to resize if the image is already smaller than the requested size
         if (size > originalImage.Width && size > originalImage.Height)

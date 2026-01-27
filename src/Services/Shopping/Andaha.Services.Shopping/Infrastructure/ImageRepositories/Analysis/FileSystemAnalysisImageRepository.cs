@@ -1,37 +1,22 @@
 ﻿using System.Text.Json;
 
-namespace Andaha.Services.Shopping.Infrastructure.ImageRepository;
+namespace Andaha.Services.Shopping.Infrastructure.ImageRepositories.Analysis;
 
-internal class FileSystemImageRepository : IImageRepository
+public class FileSystemAnalysisImageRepository : IAnalysisImageRepository
 {
-    private readonly string imagesFilePath = "images";
     private readonly string analyzeFilePath = "analyze";
 
-    public FileSystemImageRepository()
+    public FileSystemAnalysisImageRepository()
     {
-        if (!Directory.Exists(this.imagesFilePath))
-        {
-            Directory.CreateDirectory(this.imagesFilePath);
-        }
-
         if (!Directory.Exists(this.analyzeFilePath))
         {
             Directory.CreateDirectory(this.analyzeFilePath);
         }
     }
 
-    public async Task<Stream> GetImageStreamAsync(string name, CancellationToken ct = default)
+    public async Task<(Stream Image, Guid UserId)> GetImageAsync(string name, CancellationToken ct = default)
     {
-        string filePath = this.GetImagePath(name);
-
-        var imageBytes = await File.ReadAllBytesAsync(filePath, ct);
-
-        return new MemoryStream(imageBytes);
-    }
-
-    public async Task<(Stream Image, Guid UserId)> GetAnalysisImageAsync(string name, CancellationToken ct = default)
-    {
-        string filePath = this.GetAnalyzeFilePath(name);
+        string filePath = this.GetFilePath(name);
         string metadataFilePath = this.GetMetadataFilePath(name);
 
         var imageBytes = await File.ReadAllBytesAsync(filePath, ct);
@@ -40,18 +25,9 @@ internal class FileSystemImageRepository : IImageRepository
         return (new MemoryStream(imageBytes), userId);
     }
 
-    public Task UploadImageAsync(string name, Stream imageStream, CancellationToken ct = default)
+    public async Task UploadImageAsync(string name, Stream imageStream, Guid userId, CancellationToken ct = default)
     {
-        string filePath = this.GetImagePath(name);
-
-        var imageBytes = ReadStreamToBytes(imageStream);
-
-        return File.WriteAllBytesAsync(filePath, imageBytes, ct);
-    }
-
-    public async Task UploadImageForAnalysisAsync(string name, Stream imageStream, Guid userId, CancellationToken ct = default)
-    {
-        string filePath = this.GetAnalyzeFilePath(name);
+        string filePath = this.GetFilePath(name);
         string metadataFilePath = this.GetMetadataFilePath(name);
 
         var imageBytes = ReadStreamToBytes(imageStream);
@@ -66,14 +42,16 @@ internal class FileSystemImageRepository : IImageRepository
 
     public Task DeleteImageAsync(string name, CancellationToken ct = default)
     {
-        string filePath = this.GetImagePath(name);
+        string filePath = this.GetFilePath(name);
+        string metadataFilePath = this.GetMetadataFilePath(name);
 
         File.Delete(filePath);
+        File.Delete(metadataFilePath);
 
         return Task.CompletedTask;
     }
 
-    public async Task<IReadOnlyCollection<ImageMetadata>> ListIAnalyzeImagesAsync(CancellationToken ct = default)
+    public async Task<IReadOnlyCollection<ImageMetadata>> ListImagesAsync(CancellationToken ct = default)
     {
         if (!Directory.Exists(analyzeFilePath))
         {
@@ -84,9 +62,12 @@ internal class FileSystemImageRepository : IImageRepository
 
         foreach (var filePath in Directory.EnumerateFiles(analyzeFilePath))
         {
-            ct.ThrowIfCancellationRequested();
-
             var fileName = Path.GetFileName(filePath);
+
+            if (fileName.EndsWith("metadata.json", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
 
             var fileInfo = new FileInfo(filePath);
             DateTimeOffset lastModified;
@@ -136,11 +117,9 @@ internal class FileSystemImageRepository : IImageRepository
         }
     }
 
-    private string GetImagePath(string name) => Path.Combine(this.imagesFilePath, name);
+    private string GetFilePath(string name) => Path.Combine(this.analyzeFilePath, name);
 
-    private string GetAnalyzeFilePath(string name) => Path.Combine(this.analyzeFilePath, name);
-
-    private string GetMetadataFilePath(string name) => Path.Combine(this.imagesFilePath, $"{name}.metadata.json");
+    private string GetMetadataFilePath(string name) => Path.Combine(this.analyzeFilePath, $"{name}.metadata.json");
 
     private static byte[] ReadStreamToBytes(Stream input)
     {

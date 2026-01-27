@@ -1,6 +1,6 @@
 ﻿using Andaha.CrossCutting.Application.Identity;
 using Andaha.Services.Shopping.Infrastructure;
-using Andaha.Services.Shopping.Infrastructure.ImageRepository;
+using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Image;
 using Andaha.Services.Shopping.Infrastructure.Proxies;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

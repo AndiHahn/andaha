@@ -2,8 +2,14 @@
 using Andaha.Services.Shopping.Core;
 using Andaha.Services.Shopping.Infrastructure;
 using Andaha.Services.Shopping.Infrastructure.CategoryClassification;
-using Andaha.Services.Shopping.Infrastructure.ImageRepository;
+using Andaha.Services.Shopping.Infrastructure.CategoryClassification.Models;
+using Andaha.Services.Shopping.Infrastructure.ImageRepositories;
+using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Analysis;
+using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Image;
 using Andaha.Services.Shopping.Infrastructure.InvoiceAnalysis;
+using Andaha.Services.Shopping.Infrastructure.InvoiceAnalysis.Models;
+using Andaha.Services.Shopping.Requests.Bill.UploadBillImage.V1;
+using DocumentFormat.OpenXml.Spreadsheet;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,13 +17,17 @@ namespace Andaha.Services.Shopping.Requests.Bill.AnalyzeBill.V1;
 
 internal class AnalyzeBillMessageHandler(
     IImageRepository imageRepository,
+    IAnalysisImageRepository analysisImageRepository,
     IInvoiceAnalysisService invoiceAnalysisService,
     ICategoryClassificationService categoryClassificationService,
-    ShoppingDbContext dbContext) : IRequestHandler<AnalyzeBillMessageV1, IResult>
+    ShoppingDbContext dbContext,
+    ILogger<AnalyzeBillMessageHandler> logger) : IRequestHandler<AnalyzeBillMessageV1, IResult>
 {
+    private const int thumbnailPixelSize = 60;
+
     public async Task<IResult> Handle(AnalyzeBillMessageV1 request, CancellationToken cancellationToken)
     {
-        var file = await imageRepository.GetAnalysisImageAsync(request.ImageName.ToString(), cancellationToken);
+        var file = await analysisImageRepository.GetImageAsync(request.ImageName.ToString(), cancellationToken);
 
         if (file.Image is null)
         {
@@ -26,13 +36,67 @@ internal class AnalyzeBillMessageHandler(
 
         var analysisResult = await invoiceAnalysisService.AnalyzeAsync(file.Image, cancellationToken);
 
-        if (!analysisResult.IsReasonableResult())
-        {
-            // TODO logging
+        var classificationResult = await GetCategoryClassification(file, analysisResult, cancellationToken);
 
-            return Results.BadRequest();
+        if (analysisResult.IsReasonableResult() && classificationResult is not null)
+        {
+            var bill = new Core.Bill(
+                Guid.NewGuid(),
+                file.UserId,
+                categoryId: classificationResult.CategoryId,
+                subCategoryId: classificationResult.SubCategoryId,
+                shopName: analysisResult.VendorName!,
+                price: analysisResult.TotalAmount!.Value,
+                date: analysisResult.InvoiceDate!.Value.Date,
+                notes: null,
+                fromAutoAnalysis: true);
+
+            foreach (var lineItem in analysisResult.LineItems)
+            {
+                bill.AddLineItem(lineItem.Description, lineItem.UnitPrice, lineItem.TotalPrice!.Value, lineItem.Quantity);
+            }
+
+            dbContext.Bill.Add(bill);
+
+            await dbContext.SaveChangesAsync(cancellationToken);
+
+            await CreateAndUploadBillImageAsync(bill, file.Image, cancellationToken);           
+
+            await analysisImageRepository.DeleteImageAsync(request.ImageName, cancellationToken);
+
+            return Results.Ok();
         }
 
+        var analyzedBill = CreateAnalyzedBill(file, analysisResult, classificationResult);
+
+        dbContext.AnalyzedBill.Add(analyzedBill);
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return Results.Ok();
+    }
+
+    private async Task CreateAndUploadBillImageAsync(Core.Bill bill, Stream imageStream, CancellationToken ct)
+    {
+        string imageName = GetImageName(bill.Id);
+
+        using Stream thumbnailStream = ImageResizer.ShrinkProportional(imageStream, thumbnailPixelSize);
+
+        thumbnailStream.Position = 0;
+        var thumbnail = ReadStreamToBytes(thumbnailStream);
+
+        bill.AddImage(imageName, thumbnail);
+
+        imageStream.Position = 0;
+
+        await imageRepository.UploadImageAsync(imageName, imageStream, ct);
+    }
+
+    private async Task<CategoryClassificationResult?> GetCategoryClassification(
+        (Stream Image, Guid UserId) file,
+        InvoiceAnalysisResult analysisResult,
+        CancellationToken cancellationToken)
+    {
         var billCategories = await GetBillCategoriesAsync(file.UserId, cancellationToken);
 
         var classificationResult = await categoryClassificationService.ClassifyAsync(
@@ -41,20 +105,67 @@ internal class AnalyzeBillMessageHandler(
             [.. billCategories],
             cancellationToken);
 
-        var analyzedBill = new AnalyzedBill(
-            createdByUserId: file.UserId,
-            categoryId: classificationResult.CategoryId,
-            subCategoryId: null,
-            shopName: analysisResult.VendorName!,
-            price: analysisResult.TotalAmount!.Value,
-            date: analysisResult.InvoiceDate!.Value.Date);
+        if (!billCategories.Any(category => category.Id == classificationResult.CategoryId))
+        {
+            logger.LogWarning("the classified category is not valid. Classification result: {Result}", classificationResult);
 
-        return Results.Ok();
+            return null;
+        }
+
+        var classifiedCategory = billCategories.First(category => category.Id == classificationResult.CategoryId);
+
+        if (classificationResult.SubCategoryId is not null &&
+            !classifiedCategory.SubCategories.Any(subCategory => subCategory.Id == classificationResult.SubCategoryId))
+        {
+            logger.LogWarning(
+                "The classified subCategory is not valid. Classification result: {Result}. Available subCategories: {SubCategories}",
+                classificationResult,
+                string.Join(", ", classifiedCategory.SubCategories.Select(subCateg => subCateg.Id)));
+
+            return null;
+        }
+
+        return classificationResult;
+    }
+
+    private AnalyzedBill CreateAnalyzedBill(
+        (Stream Image, Guid UserId) file,
+        InvoiceAnalysisResult analysisResult,
+        CategoryClassificationResult? classificationResult)
+    {
+        var analyzedBill = new AnalyzedBill(
+                    createdByUserId: file.UserId,
+                    categoryId: classificationResult?.CategoryId,
+                    subCategoryId: null,
+                    shopName: analysisResult.VendorName!,
+                    price: analysisResult.TotalAmount!.Value,
+                    date: analysisResult.InvoiceDate!.Value.Date);
+
+        foreach (var lineItem in analysisResult.LineItems)
+        {
+            analyzedBill.AddLineItem(
+                lineItem.Description,
+                lineItem.UnitPrice,
+                lineItem.TotalPrice,
+                lineItem.Quantity);
+        }
+
+        return analyzedBill;
     }
 
     private async Task<ICollection<Core.BillCategory>> GetBillCategoriesAsync(Guid userId, CancellationToken cancellationToken)
         => await dbContext.BillCategory
             .AsNoTracking()
+            .Include(category => category.SubCategories)
             .Where(category => category.UserId == userId)
             .ToListAsync(cancellationToken);
+
+    private static string GetImageName(Guid billId) => $"{billId}-1";
+
+    private static byte[] ReadStreamToBytes(Stream input)
+    {
+        using MemoryStream ms = new();
+        input.CopyTo(ms);
+        return ms.ToArray();
+    }
 }

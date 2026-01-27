@@ -10,10 +10,10 @@ public class BillLineItem : Entity<Guid>
 
     public BillLineItem(
         Guid billId,
-        string description,
-        double unitPrice,
+        string? description,
+        double? unitPrice,
         double totalPrice,
-        int quantity)
+        int? quantity)
         : base(Guid.NewGuid())
     {
         if (string.IsNullOrEmpty(description))

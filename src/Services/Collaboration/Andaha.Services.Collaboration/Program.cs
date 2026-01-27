@@ -1,6 +1,4 @@
 using Andaha.Services.Collaboration;
-using Google.Protobuf.WellKnownTypes;
-using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +7,7 @@ builder
     .AddCustomApplicationServices()
     .AddCustomAuthentication()
     .AddCustomHealthChecks()
+    .AddCustomApiVersioning()
     .AddCustomSwagger()
     .AddCustomCors()
     .AddCustomDapr()

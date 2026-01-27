@@ -6,7 +6,7 @@ public static class FixedCostEndpointExtensions
 {
     internal static WebApplication MapFixedCostEndpoint(this WebApplication app)
     {
-        var FixedCost = app.MapApiGroup("FixedCost");
+        var FixedCost = app.NewVersionedApi("FixedCost");
 
         var groupBuilder = FixedCost.MapGroup("/api/fixedCost").ApplyApiVersions();
 

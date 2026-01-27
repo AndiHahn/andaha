@@ -6,7 +6,7 @@ public static class BudgetPlanEndpointExtensions
 {
     internal static WebApplication MapBudgetPlanEndpoint(this WebApplication app)
     {
-        var budgetPlan = app.MapApiGroup("BudgetPlan");
+        var budgetPlan = app.NewVersionedApi("BudgetPlan");
 
         var groupBuilder = budgetPlan.MapGroup("/api/budgetplan").ApplyApiVersions();
 

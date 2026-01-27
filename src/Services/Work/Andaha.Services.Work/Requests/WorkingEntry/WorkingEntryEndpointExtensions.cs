@@ -7,7 +7,7 @@ public static class WorkingEntryEndpointExtensions
 {
     internal static WebApplication MapWorkingEntryEndpoint(this WebApplication app)
     {
-        var income = app.MapApiGroup("WorkingEntry");
+        var income = app.NewVersionedApi("WorkingEntry");
 
         var groupBuilder = income.MapGroup("/api/working-entry").ApplyApiVersions();
 

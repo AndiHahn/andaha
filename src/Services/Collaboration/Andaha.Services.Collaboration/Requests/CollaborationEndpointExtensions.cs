@@ -7,7 +7,7 @@ public static class ConnectionEndpointExtensions
 {
     internal static WebApplication MapConnectionEndpoint(this WebApplication app)
     {
-        var income = app.MapApiGroup("Collaboration");
+        var income = app.NewVersionedApi("Collaboration");
 
         var groupBuilder = income.MapGroup("/api/connection").ApplyApiVersions();
 

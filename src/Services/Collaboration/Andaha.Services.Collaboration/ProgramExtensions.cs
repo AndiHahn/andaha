@@ -1,13 +1,17 @@
 ﻿using Andaha.CrossCutting.Application;
 using Andaha.CrossCutting.Application.Swagger;
+using Andaha.Services.Collaboration.Common;
 using Andaha.Services.Collaboration.Health;
 using Andaha.Services.Collaboration.Infrastructure;
 using Andaha.Services.Collaboration.Infrastructure.Proxies;
+using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Polly;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 
 namespace Andaha.Services.Collaboration;
@@ -88,9 +92,31 @@ public static class ProgramExtensions
         return builder;
     }
 
+    internal static WebApplicationBuilder AddCustomApiVersioning(this WebApplicationBuilder builder)
+    {
+        builder.Services
+            .AddEndpointsApiExplorer()
+            .AddApiVersioning(
+                options =>
+                {
+                    options.ReportApiVersions = true;
+                    options.ApiVersionReader = new QueryStringApiVersionReader("api-version");
+                })
+            .AddApiExplorer(
+                options =>
+                {
+                    options.GroupNameFormat = "'v'VVV";
+                })
+            .EnableApiVersionBinding();
+
+        return builder;
+    }
+
     internal static WebApplicationBuilder AddCustomSwagger(this WebApplicationBuilder builder)
     {
-        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+
+        //builder.Services.AddEndpointsApiExplorer();
 
         builder.Services.AddSwaggerGen(config =>
         {

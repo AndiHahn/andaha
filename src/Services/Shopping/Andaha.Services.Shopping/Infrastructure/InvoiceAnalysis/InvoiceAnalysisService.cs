@@ -66,9 +66,9 @@ public class InvoiceAnalysisService : IInvoiceAnalysisService
                 output.LineItems.Add(new InvoiceLineItem
                 {
                     Description = itemFields.GetString("Description"),
-                    Quantity = itemFields.GetDecimal("Quantity"),
+                    Quantity = (int?)itemFields.GetDecimal("Quantity"),
                     UnitPrice = itemFields.GetCurrency("UnitPrice")?.Amount,
-                    Amount = itemFields.GetCurrency("Amount")?.Amount
+                    TotalPrice = itemFields.GetCurrency("Amount")?.Amount
                 });
             }
         }

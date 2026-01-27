@@ -5,7 +5,9 @@ using Andaha.Services.Shopping.Common;
 using Andaha.Services.Shopping.Healthcheck;
 using Andaha.Services.Shopping.Infrastructure;
 using Andaha.Services.Shopping.Infrastructure.CategoryClassification;
-using Andaha.Services.Shopping.Infrastructure.ImageRepository;
+using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Analysis;
+using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Image;
+using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Nas;
 using Andaha.Services.Shopping.Infrastructure.InvoiceAnalysis;
 using Andaha.Services.Shopping.Infrastructure.Messaging;
 using Andaha.Services.Shopping.Infrastructure.Proxies;
@@ -65,6 +67,8 @@ public static class ProgramExtensions
         if (builder.Environment.IsDevelopment())
         {
             builder.Services.AddSingleton<IImageRepository, FileSystemImageRepository>();
+            builder.Services.AddSingleton<IAnalysisImageRepository, FileSystemAnalysisImageRepository>();
+            builder.Services.AddSingleton<INasImageRepository, FileSystemNasImageRepository>();
         }
         else
         {
@@ -76,6 +80,8 @@ public static class ProgramExtensions
             });
 
             builder.Services.AddSingleton<IImageRepository, AzureStorageImageRepository>();
+            builder.Services.AddSingleton<IAnalysisImageRepository, AzureStorageAnalysisImageRepository>();
+            builder.Services.AddSingleton<INasImageRepository, AzureStorageNasImageRepository>();
         }
 
         builder.Services.Configure<DocumentIntelligenceOptions>(
@@ -88,6 +94,7 @@ public static class ProgramExtensions
         builder.Services.AddSingleton<IMessageBroker, DaprMessageBroker>();
 
         builder.Services.AddHostedService<AnalyzeBillWorker>();
+        builder.Services.AddHostedService<NasBillWorker>();
 
         return builder;
     }

@@ -1,7 +1,5 @@
 ﻿using Andaha.Services.Shopping.Contracts;
-using Andaha.Services.Shopping.Core;
-using Andaha.Services.Shopping.Infrastructure;
-using Andaha.Services.Shopping.Infrastructure.ImageRepository;
+using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Analysis;
 using Andaha.Services.Shopping.Infrastructure.Messaging;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,16 +7,14 @@ namespace Andaha.Services.Shopping.BackgroundJobs;
 
 internal class AnalyzeBillWorker(
     ILogger<AnalyzeBillWorker> logger,
-    IImageRepository imageRepository,
-    IServiceScopeFactory scopeFactory,
+    IAnalysisImageRepository imageRepository,
     IMessageBroker messageBroker) : BackgroundService
 {
-    private readonly string containerName = "analyze";
     private readonly TimeSpan pollingInterval = TimeSpan.FromMinutes(1);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        logger.LogInformation("AnalyzeBillWorker started. Polling container '{ContainerName}'", containerName);
+        logger.LogInformation("AnalyzeBillWorker started");
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -43,33 +39,14 @@ internal class AnalyzeBillWorker(
 
     private async Task PollAndProcessAsync(CancellationToken ct)
     {
-        using var scope = scopeFactory.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ShoppingDbContext>();
+        var allBlobs = await imageRepository.ListImagesAsync(ct);
 
-        var state = await dbContext.AnalyzeBillProcessingState.FirstOrDefaultAsync(ct);
-        if (state is null)
-        {
-            state = new AnalyzeBillProcessingState { LastProcessedUtc = null };
-
-            dbContext.AnalyzeBillProcessingState.Add(state);
-
-            await dbContext.SaveChangesAsync(ct);
-        }
-
-        var lastProcessed = state.LastProcessedUtc ?? DateTimeOffset.MinValue;
-
-        var allBlobs = await imageRepository.ListIAnalyzeImagesAsync(ct);
-
-        var newBlobs = allBlobs
-            .Where(blob => blob.LastModified > lastProcessed)
-            .ToArray();
-
-        if (!newBlobs.Any())
+        if (!allBlobs.Any())
         {
             return;
         }
 
-        var ordered = newBlobs
+        var ordered = allBlobs
             .OrderBy(blob => blob.LastModified)
             .ToList();
 
@@ -86,10 +63,6 @@ internal class AnalyzeBillWorker(
                 logger.LogInformation("Publishing analyze message for blob '{BlobName}' (lastModified={LastModified})", blob.ImageName, blob.LastModified);
                 
                 await messageBroker.PublishMessageAsync(message, ct);
-
-                state.LastProcessedUtc = message.LastModifiedUtc;
-
-                await dbContext.SaveChangesAsync(ct);
             }
             catch (Exception ex)
             {

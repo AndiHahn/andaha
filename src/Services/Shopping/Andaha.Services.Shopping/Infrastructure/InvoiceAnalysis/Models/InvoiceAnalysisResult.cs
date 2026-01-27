@@ -16,6 +16,17 @@ public class InvoiceAnalysisResult
         return !string.IsNullOrWhiteSpace(VendorName)
             && InvoiceDate.HasValue
             && TotalAmount.HasValue
-            && TotalAmount.Value > 0;
+            && TotalAmount.Value > 0
+            && LineItemSumEqualsTotalAmount();
+    }
+
+    public bool LineItemSumEqualsTotalAmount()
+    {
+        if (!TotalAmount.HasValue)
+        {
+            return false;
+        }
+
+        return TotalAmount == LineItems.Sum(lineItem => lineItem.TotalPrice);
     }
 }

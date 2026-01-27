@@ -218,7 +218,7 @@ internal static class BillEndpointExtensions
     RouteGroupBuilder groupBuilder)
     {
         groupBuilder
-            .MediatePost<UploadForAnalysis.V1.UploadBillForAnalysisCommand>("$upload-for-analysis")
+            .MediatePost<UploadForAnalysis.V1.UploadBillForAnalysisCommand>("upload-for-analysis")
             .Accepts<IFormFile>("multipart/form-data")
             .Produces(StatusCodes.Status202Accepted)
             .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)

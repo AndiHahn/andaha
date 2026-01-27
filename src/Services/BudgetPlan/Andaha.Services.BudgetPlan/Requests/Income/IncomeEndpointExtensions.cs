@@ -6,7 +6,7 @@ public static class IncomeEndpointExtensions
 {
     internal static WebApplication MapIncomeEndpoint(this WebApplication app)
     {
-        var income = app.MapApiGroup("Income");
+        var income = app.NewVersionedApi("Income");
 
         var groupBuilder = income.MapGroup("/api/income").ApplyApiVersions();
 

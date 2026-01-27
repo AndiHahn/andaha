@@ -10,7 +10,7 @@ public class AnalyzedBill : Entity<Guid>
 
     public AnalyzedBill(
         Guid createdByUserId,
-        Guid categoryId,
+        Guid? categoryId,
         Guid? subCategoryId,
         string shopName,
         double price,
@@ -44,16 +44,16 @@ public class AnalyzedBill : Entity<Guid>
 
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
-    public virtual ICollection<BillImage> Images { get; private set; } = null!;
+    public virtual ICollection<BillImage> Images { get; private set; } = [];
 
-    public virtual ICollection<AnalyzedBillLineItem> LineItems { get; private set; } = null!;
+    public virtual ICollection<AnalyzedBillLineItem> LineItems { get; private set; } = [];
 
     public void AddImage(string imageName, byte[] thumbnail)
     {
         this.Images.Add(new BillImage(this.Id, imageName, thumbnail));
     }
 
-    public void AddLineItem(string description, double unitPrice, double totalPrice, int quantity)
+    public void AddLineItem(string? description, double? unitPrice, double? totalPrice, int? quantity)
     {
         this.LineItems.Add(new AnalyzedBillLineItem(Id, description, unitPrice, totalPrice, quantity));
     }

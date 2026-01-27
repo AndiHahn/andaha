@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Andaha.Services.BudgetPlan.Common;
+namespace Andaha.Services.Collaboration.Common;
 
 public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 {
@@ -27,10 +27,10 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     }
 
     private static OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description)
-    {        
+    {
         return new OpenApiInfo()
         {
-            Title = "Budgetplan API",
+            Title = "Collaboration API",
             Version = description.ApiVersion.ToString(),
         };
     }

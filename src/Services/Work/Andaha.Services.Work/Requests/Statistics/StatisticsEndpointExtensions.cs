@@ -7,7 +7,7 @@ internal static class StatisticsEndpointExtensions
 {
     internal static WebApplication MapStatisticsEndpoint(this WebApplication app)
     {
-        var income = app.MapApiGroup("Work-Statistics");
+        var income = app.NewVersionedApi("Work-Statistics");
 
         var groupBuilder = income.MapGroup("/api/work-statistics").ApplyApiVersions();
 

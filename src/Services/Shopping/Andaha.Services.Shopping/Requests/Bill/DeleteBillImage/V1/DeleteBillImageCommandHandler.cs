@@ -1,9 +1,9 @@
-﻿using Andaha.Services.Shopping.Infrastructure.ImageRepository;
-using Andaha.Services.Shopping.Infrastructure.Proxies;
+﻿using Andaha.Services.Shopping.Infrastructure.Proxies;
 using Andaha.Services.Shopping.Infrastructure;
 using MediatR;
 using Andaha.CrossCutting.Application.Identity;
 using Microsoft.EntityFrameworkCore;
+using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Image;
 
 namespace Andaha.Services.Shopping.Requests.Bill.DeleteBillImage.V1;
 

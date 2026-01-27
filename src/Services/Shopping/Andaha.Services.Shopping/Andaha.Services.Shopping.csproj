@@ -45,6 +45,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="analyze\" />
+    <Folder Include="images\" />
+    <Folder Include="nas\" />
     <Folder Include="Infrastructure\Migrations\" />
   </ItemGroup>
 

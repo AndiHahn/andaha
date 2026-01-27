@@ -10,10 +10,10 @@ public class AnalyzedBillLineItem : Entity<Guid>
 
     public AnalyzedBillLineItem(
         Guid billId,
-        string description,
-        double unitPrice,
-        double totalPrice,
-        int quantity)
+        string? description,
+        double? unitPrice,
+        double? totalPrice,
+        int? quantity)
         : base(Guid.NewGuid())
     {
         if (string.IsNullOrEmpty(description))

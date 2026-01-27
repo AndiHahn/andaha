@@ -4,17 +4,8 @@
     <ProjectVersion>2.1</ProjectVersion>
     <DockerTargetOS>Linux</DockerTargetOS>
     <ProjectGuid>c4271c4f-9e30-44fa-be7c-a96c8bda5ab8</ProjectGuid>
-    <!-- Podman-Konfiguration -->
     <DockerDefaultDockerDaemonUrl>npipe:////./pipe/podman</DockerDefaultDockerDaemonUrl>
-    <DockerComposeBuildEnabled>true</DockerComposeBuildEnabled>
   </PropertyGroup>
-
-  <PropertyGroup>
-    <!-- Deaktiviere die Docker-Desktop-Prüfung -->
-    <DockerComposeBuildEnabled>false</DockerComposeBuildEnabled>
-    <SkipDockerDesktopCheck>true</SkipDockerDesktopCheck>
-  </PropertyGroup>
-
   <ItemGroup>
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
@@ -22,24 +13,4 @@
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
   </ItemGroup>
-
-  <!-- Überschreibe die GetServiceReferences Task um Docker Desktop Check zu umgehen -->
-  <Target Name="DockerGetServiceReferences"
-          Condition=" Exists('$(SolutionPath)') AND
-                      '$(DockerComposeBuildEnabled)' != 'false' "
-          BeforeTargets="AssignProjectConfiguration">
-    <PropertyGroup>
-      <DockerComposeProjectName Condition="'$(DockerComposeProjectName)' == ''">$([System.IO.Path]::GetFileNameWithoutExtension('$(DockerComposeBaseFilePath)'))</DockerComposeProjectName>
-      <DockerComposeProjectName Condition="'$(DockerComposeProjectName)' == ''">docker-compose</DockerComposeProjectName>
-    </PropertyGroup>
-    
-    <!-- Vereinfachte Logik ohne Docker Desktop Prüfung -->
-    <ItemGroup>
-      <DockerServiceReferences Remove="*" />
-    </ItemGroup>
-
-    <!-- Lese die docker-compose.yml und extrahiere Service-Referenzen -->
-    <Message Text="Docker Compose Project: $(DockerComposeProjectName)" Importance="high" />
-  </Target>
-
 </Project>

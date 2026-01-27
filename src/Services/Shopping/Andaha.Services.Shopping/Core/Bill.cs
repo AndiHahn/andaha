@@ -16,7 +16,8 @@ public class Bill : Entity<Guid>
         string shopName,
         double price,
         DateTime? date = null,
-        string? notes = null)
+        string? notes = null,
+        bool? fromAutoAnalysis = false)
         : base(id ?? Guid.NewGuid())
     {
         if (createdByUserId == Guid.Empty)
@@ -56,6 +57,7 @@ public class Bill : Entity<Guid>
         this.Price = price;
         this.Date = date ?? DateTime.UtcNow;
         this.Notes = notes;
+        this.FromAutoAnalysis = fromAutoAnalysis ?? false;
     }
 
     public Guid UserId { get; private set; }
@@ -71,6 +73,8 @@ public class Bill : Entity<Guid>
     public DateTime Date { get; private set; }
 
     public string? Notes { get; private set; }
+
+    public bool FromAutoAnalysis { get; set; } = false;
 
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
@@ -92,7 +96,7 @@ public class Bill : Entity<Guid>
         this.Images.Remove(image);
     }
 
-    public void AddLineItem(string description, double unitPrice, double totalPrice, int quantity)
+    public void AddLineItem(string? description, double? unitPrice, double totalPrice, int? quantity)
     {
         this.LineItems.Add(new BillLineItem(Id, description, unitPrice, totalPrice, quantity));
     }

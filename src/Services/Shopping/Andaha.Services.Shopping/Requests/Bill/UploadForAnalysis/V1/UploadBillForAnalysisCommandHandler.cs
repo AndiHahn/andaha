@@ -1,6 +1,6 @@
 using Andaha.CrossCutting.Application.Identity;
 using Andaha.Services.Shopping.Contracts;
-using Andaha.Services.Shopping.Infrastructure.ImageRepository;
+using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Image;
 using Andaha.Services.Shopping.Infrastructure.Messaging;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -47,7 +47,7 @@ internal class UploadBillForAnalysisCommandHandler(
 
         using Stream imageStream = file.OpenReadStream();
 
-        await imageRepository.UploadImageForAnalysisAsync(imageName, imageStream, userId, ct);
+        await imageRepository.UploadImageAsync(imageName, imageStream, ct);
     }
 
     private static string GetImageName(Guid id) => id.ToString();
