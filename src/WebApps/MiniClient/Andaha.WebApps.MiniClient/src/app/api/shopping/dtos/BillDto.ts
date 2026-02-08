@@ -18,6 +18,7 @@ interface BillDtoBase {
   price: number;
   notes?: string;
   isExternal: boolean;
+  fromAnalysis: boolean;
   imageAvailable: boolean;
 }
 

@@ -28,4 +28,8 @@
     <ProjectReference Include="..\..\Work\Andaha.Services.Work\Andaha.Services.Work.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="nas\**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

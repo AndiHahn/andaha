@@ -11,7 +11,8 @@
         <mat-chip [ngStyle]="{'background-color': bill.category.color, 'color': bill.category.color == 'white' ? 'black' : 'white' }" selected>
           {{ bill.category.name }} <div *ngIf="bill.subCategory" style="white-space: pre"> {{ '(' + bill.subCategory.name + ')' }}</div>
         </mat-chip>
-        <mat-chip *ngIf="bill.isExternal" style="background-color: limegreen" selected>EXT</mat-chip>
+          <mat-icon *ngIf="bill.isExternal" style="color: limegreen">link</mat-icon>
+          <mat-icon *ngIf="bill.fromAnalysis" style="color: limegreen">receipt_long</mat-icon>
       </mat-chip-list>
       <div class="vertical-center">  
         <span class="date-text"> {{ bill.date | date:'dd.MM.YYYY' }} </span>

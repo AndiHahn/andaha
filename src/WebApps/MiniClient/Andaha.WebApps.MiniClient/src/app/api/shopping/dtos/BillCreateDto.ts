@@ -30,6 +30,7 @@ export function billCreateDtoToBillDto(bill: BillCreateDto, category: BillCatego
     price: bill.price,
     notes: bill.notes,
     isExternal: false,
+    fromAnalysis: false,
     imageAvailable: bill.image != undefined
   }
 }

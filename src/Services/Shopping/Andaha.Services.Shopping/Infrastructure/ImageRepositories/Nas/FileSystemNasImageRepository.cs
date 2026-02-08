@@ -1,33 +1,29 @@
-﻿using System.Text.Json;
-
-namespace Andaha.Services.Shopping.Infrastructure.ImageRepositories.Nas;
+﻿namespace Andaha.Services.Shopping.Infrastructure.ImageRepositories.Nas;
 
 public class FileSystemNasImageRepository : INasImageRepository
 {
-    private readonly string filePath = "nas";
+    private readonly string nasFolderPath = "nas";
 
     public FileSystemNasImageRepository()
     {
-        if (!Directory.Exists(this.filePath))
+        if (!Directory.Exists(this.nasFolderPath))
         {
-            Directory.CreateDirectory(this.filePath);
+            Directory.CreateDirectory(this.nasFolderPath);
         }
     }
 
-    public async Task<(Stream Image, Guid UserId)> GetImageAsync(string name, CancellationToken ct = default)
+    public async Task<(Stream Image, Guid UserId)> GetImageAsync(string filePath, CancellationToken ct = default)
     {
-        string filePath = this.GetFilePath(name);
-        string metadataFilePath = this.GetMetadataFilePath(name);
-
         var imageBytes = await File.ReadAllBytesAsync(filePath, ct);
-        var userId = await ReadMetadataAsync(metadataFilePath, ct);
+
+        var userId = GetUserIdFromPath(filePath);
 
         return (new MemoryStream(imageBytes), userId);
     }
 
     public async Task<IReadOnlyCollection<ImageMetadata>> ListImagesAsync(CancellationToken ct = default)
     {
-        if (!Directory.Exists(filePath))
+        if (!Directory.Exists(nasFolderPath))
         {
             return [];
         }
@@ -36,15 +32,8 @@ public class FileSystemNasImageRepository : INasImageRepository
 
         var result = new List<ImageMetadata>();
 
-        foreach (var filePath in Directory.EnumerateFiles(filePath, "", enumerationOptions: enumerationOptions))
+        foreach (var filePath in Directory.EnumerateFiles(nasFolderPath, "*", enumerationOptions: enumerationOptions))
         {
-            var fileName = Path.GetFileName(filePath);
-
-            if (fileName.EndsWith("metadata.json", StringComparison.OrdinalIgnoreCase))
-            {
-                continue;
-            }
-
             var fileInfo = new FileInfo(filePath);
             DateTimeOffset lastModified;
             if (fileInfo.LastWriteTimeUtc != DateTime.MinValue)
@@ -58,7 +47,7 @@ public class FileSystemNasImageRepository : INasImageRepository
 
             result.Add(new ImageMetadata
             {
-                ImageName = fileName, //TODO full file name incl. path or only name?
+                ImageName = filePath,
                 LastModified = lastModified
             });
         }
@@ -66,36 +55,29 @@ public class FileSystemNasImageRepository : INasImageRepository
         return result;
     }
 
-    private async static Task<Guid> ReadMetadataAsync(string metadataPath, CancellationToken ct)
+    private string GetFilePath(string name) => Path.Combine(this.nasFolderPath, name);
+
+    private static Guid GetUserIdFromPath(string path)
     {
-        if (!File.Exists(metadataPath))
-        {
+        if (string.IsNullOrWhiteSpace(path))
             return Guid.Empty;
-        }
 
-        try
+        // Normalize separators and split path
+        var normalized = path.Replace('\\', '/').Trim('/');
+        var segments = normalized.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        // Find first segment that is a valid GUID
+        foreach (var segment in segments)
         {
-            var json = await File.ReadAllTextAsync(metadataPath, ct);
-            using var jsonDoc = JsonDocument.Parse(json);
-            var root = jsonDoc.RootElement;
-
-            if (root.TryGetProperty("userId", out var userIdElement) &&
-                Guid.TryParse(userIdElement.GetString(), out var userId))
+            if (Guid.TryParse(segment, out var guid))
             {
-                return userId;
+                return guid;
             }
+        }
 
-            return Guid.Empty;
-        }
-        catch
-        {
-            return Guid.Empty;
-        }
+        // If no GUID found, return Guid.Empty
+        return Guid.Empty;
     }
-
-    private string GetFilePath(string name) => Path.Combine(this.filePath, name);
-
-    private string GetMetadataFilePath(string name) => Path.Combine(this.filePath, $"{name}.metadata.json");
 
     private static byte[] ReadStreamToBytes(Stream input)
     {

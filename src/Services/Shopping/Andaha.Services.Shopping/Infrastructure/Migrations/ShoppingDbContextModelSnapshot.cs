@@ -22,6 +22,20 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Andaha.Services.Shopping.Core.AnalyzeBillProcessingState", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastProcessedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AnalyzeBillProcessingState");
+                });
+
             modelBuilder.Entity("Andaha.Services.Shopping.Core.AnalyzedBill", b =>
                 {
                     b.Property<Guid>("Id")
@@ -105,6 +119,9 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("date");
+
+                    b.Property<bool>("FromAutoAnalysis")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(1000)

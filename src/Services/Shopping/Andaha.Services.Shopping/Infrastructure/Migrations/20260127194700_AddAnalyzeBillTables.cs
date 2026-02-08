@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Andaha.Services.Shopping.Infrastructure.Migrations
+namespace Andaha.Services.Shopping.infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class AddAnalyzeBillTables : Migration
@@ -16,6 +16,25 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
                 table: "BillImage",
                 type: "uniqueidentifier",
                 nullable: true);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "FromAutoAnalysis",
+                table: "Bill",
+                type: "bit",
+                nullable: false,
+                defaultValue: false);
+
+            migrationBuilder.CreateTable(
+                name: "AnalyzeBillProcessingState",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LastProcessedUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AnalyzeBillProcessingState", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "AnalyzedBill",
@@ -115,6 +134,9 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
                 table: "BillImage");
 
             migrationBuilder.DropTable(
+                name: "AnalyzeBillProcessingState");
+
+            migrationBuilder.DropTable(
                 name: "AnalyzedBillLineItem");
 
             migrationBuilder.DropTable(
@@ -130,6 +152,10 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
             migrationBuilder.DropColumn(
                 name: "AnalyzedBillId",
                 table: "BillImage");
+
+            migrationBuilder.DropColumn(
+                name: "FromAutoAnalysis",
+                table: "Bill");
         }
     }
 }

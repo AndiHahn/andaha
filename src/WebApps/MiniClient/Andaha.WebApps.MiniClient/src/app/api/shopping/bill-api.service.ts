@@ -9,6 +9,7 @@ import { constructPath, constructVersionedPath } from '../functions/functions';
 import { BillCreateDto } from './dtos/BillCreateDto';
 import { BillDto, BillDtoRaw, mapBillDtoRaw, mapPagedBillDtoResultRaw } from './dtos/BillDto';
 import { BillUpdateDto } from './dtos/BillUpdateDto';
+import { BillAnalyzedDto, BillAnalyzedDtoRaw, mapBillAnalyzedDtoRaw, mapPagedBillAnalyzedDtoResultRaw, BillAnalyzedResponseDto, BillAnalyzedResponseDtoRaw, mapBillAnalyzedResponseDtoRaw } from './dtos/BillAnalyzedDto';
 import { getSearchBillsHttpParams, SearchBillsParameters } from './dtos/SearchBillsParameters';
 
 @Injectable({
@@ -88,5 +89,24 @@ export class BillApiService {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, billId, 'image');
 
     return this.httpClient.delete<void>(url);
+  }
+
+  uploadForAnalysis(file: File): Observable<BillAnalyzedResponseDto> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'analyze');
+
+    const formData = new FormData();
+    formData.set('file', file);
+
+    return this.httpClient.post<BillAnalyzedResponseDtoRaw>(url, formData)
+      .pipe(map(mapBillAnalyzedResponseDtoRaw));
+  }
+
+  getAnalyzedBills(parameters?: SearchBillsParameters): Observable<PagedResultDto<BillAnalyzedDto>> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'analyzed');
+
+    const httpParameters = parameters ? createHttpParameters(getSearchBillsHttpParams(parameters)) : undefined;
+
+    return this.httpClient.get<PagedResultDto<BillAnalyzedDtoRaw>>(url, { params: httpParameters })
+      .pipe(map(mapPagedBillAnalyzedDtoResultRaw));
   }
 }

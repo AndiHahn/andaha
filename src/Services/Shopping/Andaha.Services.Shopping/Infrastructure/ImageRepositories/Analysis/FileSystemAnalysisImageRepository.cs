@@ -27,8 +27,9 @@ public class FileSystemAnalysisImageRepository : IAnalysisImageRepository
 
     public async Task UploadImageAsync(string name, Stream imageStream, Guid userId, CancellationToken ct = default)
     {
-        string filePath = this.GetFilePath(name);
-        string metadataFilePath = this.GetMetadataFilePath(name);
+        string fileName = Path.GetFileName(name);
+        string filePath = this.GetFilePath(fileName);
+        string metadataFilePath = this.GetMetadataFilePath(fileName);
 
         var imageBytes = ReadStreamToBytes(imageStream);
 
