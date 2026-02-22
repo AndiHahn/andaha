@@ -75,15 +75,19 @@ internal class NasBillWorker(
         {
             try
             {
-                logger.LogInformation("Publishing analyze message for blob '{BlobName}' (lastModified={LastModified})", blob.ImageName, blob.LastModified);
+                logger.LogInformation("Download image '{ImageName}' from nas foler.", blob.ImageName);
 
                 var file = await nasImageRepository.GetImageAsync(blob.ImageName, stoppingToken);
+
+                logger.LogInformation("Upload image to analysis repository '{ImageName}'", blob.ImageName);
 
                 await analysisImageRepository.UploadImageAsync(blob.ImageName, file.Image, file.UserId, stoppingToken);
 
                 state.LastProcessedUtc = blob.LastModified;
 
                 await dbContext.SaveChangesAsync(stoppingToken);
+
+                logger.LogInformation("Successfully processed nas image '{ImageName}'", blob.ImageName);
             }
             catch (Exception ex)
             {

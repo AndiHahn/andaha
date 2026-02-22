@@ -55,7 +55,27 @@ public class FileSystemNasImageRepository : INasImageRepository
         return result;
     }
 
-    private string GetFilePath(string name) => Path.Combine(this.nasFolderPath, name);
+    public async Task UploadImageAsync(string name, Guid userId, Stream imageStream, CancellationToken ct = default)
+    {
+        string filePath = this.GetFilePath(name, userId);
+
+        var directory = Path.GetDirectoryName(filePath);
+        if (string.IsNullOrWhiteSpace(directory))
+        {
+            throw new InvalidOperationException($"Could not determine directory for file path '{filePath}'");
+        }
+
+        if (!Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        var imageBytes = await ReadStreamToBytesAsync(imageStream, ct);
+
+        await File.WriteAllBytesAsync(filePath, imageBytes, ct);
+    }
+
+    private string GetFilePath(string name, Guid userId) => Path.Combine(this.nasFolderPath, userId.ToString(), name);
 
     private static Guid GetUserIdFromPath(string path)
     {
@@ -75,14 +95,13 @@ public class FileSystemNasImageRepository : INasImageRepository
             }
         }
 
-        // If no GUID found, return Guid.Empty
-        return Guid.Empty;
+        throw new InvalidOperationException("Did not find a valid userId in path: " + path);
     }
 
-    private static byte[] ReadStreamToBytes(Stream input)
+    private static async Task<byte[]> ReadStreamToBytesAsync(Stream input, CancellationToken ct = default)
     {
         using MemoryStream ms = new();
-        input.CopyTo(ms);
+        await input.CopyToAsync(ms, ct);
         return ms.ToArray();
     }
 }

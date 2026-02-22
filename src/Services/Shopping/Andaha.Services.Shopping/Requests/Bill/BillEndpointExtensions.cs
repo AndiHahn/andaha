@@ -26,6 +26,7 @@ internal static class BillEndpointExtensions
         app.MapDownloadImage(groupBuilder);
         app.MapDeleteImage(groupBuilder);
         app.MapUploadForAnalysis(groupBuilder);
+        app.MapAnalyzeNasImage(groupBuilder);
         app.MapGetAnalyzedBills(groupBuilder);
         app.MapAnalyzeBillSubscription(groupBuilder);
 
@@ -73,6 +74,7 @@ internal static class BillEndpointExtensions
 
                 return await mediator.Send(command, cancellationToken);
             })
+            .DisableAntiforgery()
             .Accepts<IFormFile>("multipart/form-data")
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
@@ -116,6 +118,7 @@ internal static class BillEndpointExtensions
 
                 return await mediator.Send(command, cancellationToken);
             })
+            .DisableAntiforgery()
             .Accepts<CreateBill.V1.CreateBillCommand>("multipart/form-data")
             .Produces<Dtos.V1.BillDto>()
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
@@ -180,6 +183,7 @@ internal static class BillEndpointExtensions
     {
         groupBuilder
             .MediatePost<UploadBillImage.V1.UploadBillImageCommand>("{id}/image")
+            .DisableAntiforgery()
             .Produces(StatusCodes.Status204NoContent)
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
@@ -219,6 +223,23 @@ internal static class BillEndpointExtensions
     {
         groupBuilder
             .MediatePost<UploadForAnalysis.V1.UploadBillForAnalysisCommand>("upload-for-analysis")
+            .DisableAntiforgery()
+            .Accepts<IFormFile>("multipart/form-data")
+            .Produces(StatusCodes.Status202Accepted)
+            .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+            .WithDescription("Upload an invoice image for asynchronous analysis.");
+
+        return app;
+    }
+
+    private static WebApplication MapAnalyzeNasImage(
+        this WebApplication app,
+        RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediatePost<AnalyzeBill.V2.AnalyzeNasImage>("analyze-nas")
+            .DisableAntiforgery()
             .Accepts<IFormFile>("multipart/form-data")
             .Produces(StatusCodes.Status202Accepted)
             .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)

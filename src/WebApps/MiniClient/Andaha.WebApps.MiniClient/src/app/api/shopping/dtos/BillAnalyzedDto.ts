@@ -12,10 +12,10 @@ export interface BillAnalyzedDtoRaw extends BillAnalyzedDtoBase {
 
 interface BillAnalyzedDtoBase {
   id: string;
-  category: BillCategoryDto;
+  category?: BillCategoryDto;
   subCategory?: BillSubCategoryDto;
-  shopName: string;
-  price: number;
+  shopName?: string;
+  price?: number;
   notes?: string;
   analysisConfidence: number;
   imageAvailable: boolean;

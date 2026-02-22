@@ -8,8 +8,6 @@ using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Analysis;
 using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Image;
 using Andaha.Services.Shopping.Infrastructure.InvoiceAnalysis;
 using Andaha.Services.Shopping.Infrastructure.InvoiceAnalysis.Models;
-using Andaha.Services.Shopping.Requests.Bill.UploadBillImage.V1;
-using DocumentFormat.OpenXml.Spreadsheet;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,45 +36,113 @@ internal class AnalyzeBillMessageHandler(
 
         var classificationResult = await GetCategoryClassification(file, analysisResult, cancellationToken);
 
+        var totalAmount = analysisResult.TotalAmount;
+        var lineItemsAmount = analysisResult.LineItems.Sum(lineItem => lineItem.TotalPrice);
+        var isTotalAmountReasonable = totalAmount is not null && lineItemsAmount == totalAmount;
+
+        logger.LogInformation("Total amount: {TotalAmount}, line items total amount: {LineItemsAmount}, is total amount reasonable: {IsTotalAmountReasonable}, confidence: {C}, totalAmountConfidence: {tAC}",
+            totalAmount, lineItemsAmount, isTotalAmountReasonable, analysisResult.Confidence, analysisResult.TotalAmountConfidence);
+
         if (analysisResult.IsReasonableResult() && classificationResult is not null)
         {
-            var bill = new Core.Bill(
-                Guid.NewGuid(),
-                file.UserId,
-                categoryId: classificationResult.CategoryId,
-                subCategoryId: classificationResult.SubCategoryId,
-                shopName: analysisResult.VendorName!,
-                price: analysisResult.TotalAmount!.Value,
-                date: analysisResult.InvoiceDate!.Value.Date,
-                notes: null,
-                fromAutoAnalysis: true);
-
-            foreach (var lineItem in analysisResult.LineItems)
-            {
-                bill.AddLineItem(lineItem.Description, lineItem.UnitPrice, lineItem.TotalPrice!.Value, lineItem.Quantity);
-            }
-
-            dbContext.Bill.Add(bill);
-
-            await dbContext.SaveChangesAsync(cancellationToken);
-
-            await CreateAndUploadBillImageAsync(bill, file.Image, cancellationToken);           
-
-            await analysisImageRepository.DeleteImageAsync(request.ImageName, cancellationToken);
+            logger.LogInformation("Analysis Result is reasonable. Create bill.");
+            await HandleCreateBillAsync(
+                request,
+                file,
+                analysisResult,
+                classificationResult,
+                cancellationToken);
 
             return Results.Ok();
         }
 
-        var analyzedBill = CreateAnalyzedBill(file, analysisResult, classificationResult);
-
-        dbContext.AnalyzedBill.Add(analyzedBill);
-
-        await dbContext.SaveChangesAsync(cancellationToken);
+        logger.LogInformation("Analysis Result is not reasonable. Create analyzed bill for manual review.");
+        await HandleCreateAnalyzedBillAsync(
+            request,
+            file,
+            analysisResult,
+            classificationResult,
+            cancellationToken);
 
         return Results.Ok();
     }
 
+    private async Task HandleCreateAnalyzedBillAsync(
+        AnalyzeBillMessageV1 request,
+        (Stream Image, Guid UserId) file,
+        InvoiceAnalysisResult analysisResult,
+        CategoryClassificationResult? classificationResult,
+        CancellationToken cancellationToken)
+    {
+        var analyzedBill = CreateAnalyzedBill(file, analysisResult, classificationResult);
+
+        dbContext.AnalyzedBill.Add(analyzedBill);
+
+        await CreateAndUploadAnalyzedBillImageAsync(analyzedBill, file.Image, cancellationToken);
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        await analysisImageRepository.DeleteImageAsync(request.ImageName, cancellationToken);
+
+        logger.LogInformation("Successfully created analyzed bill.");
+    }
+
+    private async Task HandleCreateBillAsync(
+        AnalyzeBillMessageV1 request,
+        (Stream Image, Guid UserId) file, 
+        InvoiceAnalysisResult analysisResult, 
+        CategoryClassificationResult? classificationResult,
+        CancellationToken cancellationToken)
+    {
+        var bill = new Core.Bill(
+                        Guid.NewGuid(),
+                        file.UserId,
+                        categoryId: classificationResult.CategoryId,
+                        subCategoryId: classificationResult.SubCategoryId,
+                        shopName: analysisResult.VendorName!,
+                        price: analysisResult.TotalAmount!.Value,
+                        date: analysisResult.InvoiceDate!.Value.Date,
+                        notes: null,
+                        fromAutoAnalysis: true,
+                        confidence: analysisResult.Confidence,
+                        totalAmountConfidence: analysisResult.TotalAmountConfidence);
+
+        foreach (var lineItem in analysisResult.LineItems)
+        {
+            bill.AddLineItem(lineItem.Description, lineItem.UnitPrice, lineItem.TotalPrice!.Value, lineItem.Quantity);
+        }
+
+        dbContext.Bill.Add(bill);
+
+        await CreateAndUploadBillImageAsync(bill, file.Image, cancellationToken);
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        await analysisImageRepository.DeleteImageAsync(request.ImageName, cancellationToken);
+
+        logger.LogInformation("Successfully created bill from analyzed image.");
+    }
+
     private async Task CreateAndUploadBillImageAsync(Core.Bill bill, Stream imageStream, CancellationToken ct)
+    {
+        string imageName = GetImageName(bill.Id);
+
+        using Stream thumbnailStream = ImageResizer.ShrinkProportional(imageStream, thumbnailPixelSize);
+
+        thumbnailStream.Position = 0;
+        var thumbnail = ReadStreamToBytes(thumbnailStream);
+
+        bill.AddImage(imageName, thumbnail);
+
+        imageStream.Position = 0;
+
+        await imageRepository.UploadImageAsync(imageName, imageStream, ct);
+    }
+
+    private async Task CreateAndUploadAnalyzedBillImageAsync(
+        Core.AnalyzedBill bill,
+        Stream imageStream, 
+       CancellationToken ct)
     {
         string imageName = GetImageName(bill.Id);
 
@@ -128,7 +194,7 @@ internal class AnalyzeBillMessageHandler(
         return classificationResult;
     }
 
-    private AnalyzedBill CreateAnalyzedBill(
+    private static AnalyzedBill CreateAnalyzedBill(
         (Stream Image, Guid UserId) file,
         InvoiceAnalysisResult analysisResult,
         CategoryClassificationResult? classificationResult)
@@ -139,7 +205,9 @@ internal class AnalyzeBillMessageHandler(
                     subCategoryId: null,
                     shopName: analysisResult.VendorName!,
                     price: analysisResult.TotalAmount!.Value,
-                    date: analysisResult.InvoiceDate!.Value.Date);
+                    date: analysisResult.InvoiceDate!.Value.Date,
+                    confidence: analysisResult.Confidence,
+                    totalAmountConfidence: analysisResult.TotalAmountConfidence);
 
         foreach (var lineItem in analysisResult.LineItems)
         {

@@ -43,6 +43,7 @@ public class InvoiceAnalysisService : IInvoiceAnalysisService
     {
         var output = new InvoiceAnalysisResult();
 
+        output.Confidence = document.Confidence;
         output.InvoiceId = document.Fields.GetString("InvoiceId");
         output.VendorName = document.Fields.GetString("VendorName");
         output.CustomerName = document.Fields.GetString("CustomerName");
@@ -54,6 +55,12 @@ public class InvoiceAnalysisService : IInvoiceAnalysisService
         {
             output.TotalAmount = total.Amount;
             output.Currency = total.CurrencyCode;
+        }
+
+        // Read raw field to get confidence score (0..1)
+        if (document.Fields.TryGetValue("InvoiceTotal", out var totalField))
+        {
+            output.TotalAmountConfidence = totalField.Confidence;
         }
 
         if (document.Fields.TryGetValue("Items", out var itemsField) &&

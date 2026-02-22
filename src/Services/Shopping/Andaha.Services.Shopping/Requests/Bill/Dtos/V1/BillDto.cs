@@ -10,4 +10,5 @@ public record BillDto(
     string? Notes,
     bool IsExternal,
     bool ImageAvailable,
+    bool FromAnalysis,
     IReadOnlyCollection<BillLineItemDto> LineItems);

@@ -123,7 +123,9 @@ Beachte folgende Regeln:
         {
             var entry = content.FirstOrDefault();
 
-            return JsonSerializer.Deserialize<CategoryClassificationResult>(entry!.Text)!;
+            logger.LogInformation("Classification Result: {Entry}", entry?.Text);
+
+            //return JsonSerializer.Deserialize<CategoryClassificationResult>(entry!.Text)!;
 
             using var jsonDoc = JsonDocument.Parse(entry.Text);
             var root = jsonDoc.RootElement;

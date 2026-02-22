@@ -22,7 +22,7 @@ public class AzureStorageNasImageRepository(BlobServiceClient blobServiceClient)
 
     public async Task<IReadOnlyCollection<ImageMetadata>> ListImagesAsync(CancellationToken ct = default)
     {
-        var allBlobs = await blobStorageService.ListBlobsAsync(ct: ct);
+        var allBlobs = await blobStorageService.ListBlobsAsync(prefix: null, ct: ct);
 
         return allBlobs
             .Select(blob => new ImageMetadata
@@ -32,6 +32,15 @@ public class AzureStorageNasImageRepository(BlobServiceClient blobServiceClient)
             })
             .ToArray();
     }
+
+    public Task UploadImageAsync(string name, Guid userId, Stream imageStream, CancellationToken ct = default)
+    {
+        string blobPath = GetBlobPath(name, userId);
+
+        return this.blobStorageService.UpdateBlobContentAsync(blobPath, imageStream, ct: ct);
+    }
+
+    private string GetBlobPath(string name, Guid userId) => $"{userId}/{name}";
 
     private static Guid GetUserIdFromPath(string path)
     {

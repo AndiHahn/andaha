@@ -1,5 +1,3 @@
-version: '3.4'
-
 services:
   andaha.gateways.ocelot:
     environment:
@@ -17,10 +15,10 @@ services:
       "--app-port", "80",
       "-log-level", "debug",
       "-placement-host-address", "dapr.placement:50000",
-      "-components-path", "/dapr/components"
+      "-components-path", "/dapr/components-local"
     ]
     volumes:
-      - ./dapr/components:/dapr/components:ro
+      - ./dapr/components-local:/dapr/components-local:ro
 
   andaha.services.identity:
     environment:
@@ -47,10 +45,10 @@ services:
       "-app-port", "80",
       "-log-level", "debug",
       "-placement-host-address", "dapr.placement:50000",
-      "-components-path", "/dapr/components"
+      "-components-path", "/dapr/components-local"
     ]
     volumes:
-      - ./dapr/components:/dapr/components:ro
+      - ./dapr/components-local:/dapr/components-local:ro
 
   andaha.services.identity.db:
     user: root
@@ -93,10 +91,10 @@ services:
       "-app-port", "80",
       "-log-level", "debug",
       "-placement-host-address", "dapr.placement:50000",
-      "-components-path", "/dapr/components"
+      "-components-path", "/dapr/components-local"
     ]
     volumes:
-      - ./dapr/components:/dapr/components:ro
+      - ./dapr/components-local:/dapr/components-local:ro
 
   andaha.services.shopping.db:
     user: root
@@ -135,10 +133,10 @@ services:
       "-app-port", "80",
       "-log-level", "debug",
       "-placement-host-address", "dapr.placement:50000",
-      "-components-path", "/dapr/components"
+      "-components-path", "/dapr/components-local"
     ]
     volumes:
-      - ./dapr/components:/dapr/components:ro
+      - ./dapr/components-local:/dapr/components-local:ro
 
   andaha.services.collaboration.db: 
     user: root
@@ -175,10 +173,10 @@ services:
       "-app-port", "80",
       "-log-level", "debug",
       "-placement-host-address", "dapr.placement:50000",
-      "-components-path", "/dapr/components"
+      "-components-path", "/dapr/components-local"
     ]
     volumes:
-      - ./dapr/components:/dapr/components:ro
+      - ./dapr/components-local:/dapr/components-local:ro
 
   andaha.services.budgetplan.db:
     user: root
@@ -223,10 +221,10 @@ services:
       "-app-port", "80",
       "-log-level", "debug",
       "-placement-host-address", "dapr.placement:50000",
-      "-components-path", "/dapr/components"
+      "-components-path", "/dapr/components-local"
     ]
     volumes:
-      - ./dapr/components:/dapr/components:ro
+      - ./dapr/components-local:/dapr/components-local:ro
 
   andaha.services.monolith.db:
     user: root

@@ -17,7 +17,9 @@ public class Bill : Entity<Guid>
         double price,
         DateTime? date = null,
         string? notes = null,
-        bool? fromAutoAnalysis = false)
+        bool? fromAutoAnalysis = false,
+        double? confidence = null,
+        double? totalAmountConfidence = null)
         : base(id ?? Guid.NewGuid())
     {
         if (createdByUserId == Guid.Empty)
@@ -58,6 +60,8 @@ public class Bill : Entity<Guid>
         this.Date = date ?? DateTime.UtcNow;
         this.Notes = notes;
         this.FromAutoAnalysis = fromAutoAnalysis ?? false;
+        this.Confidence = confidence;
+        this.TotalAmountConfidence = totalAmountConfidence;
     }
 
     public Guid UserId { get; private set; }
@@ -74,7 +78,11 @@ public class Bill : Entity<Guid>
 
     public string? Notes { get; private set; }
 
-    public bool FromAutoAnalysis { get; set; } = false;
+    public bool FromAutoAnalysis { get; private set; } = false;
+
+    public double? Confidence { get; private set; }
+
+    public double? TotalAmountConfidence { get; private set; }
 
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
@@ -82,9 +90,9 @@ public class Bill : Entity<Guid>
 
     public BillSubCategory? SubCategory { get; private set; }
 
-    public virtual ICollection<BillImage> Images { get; private set; } = null!;
+    public virtual ICollection<BillImage> Images { get; private set; } = [];
 
-    public virtual ICollection<BillLineItem> LineItems { get; private set; } = null!;
+    public virtual ICollection<BillLineItem> LineItems { get; private set; } = [];
 
     public void AddImage(string imageName, byte[] thumbnail)
     {

@@ -1,7 +1,6 @@
 ﻿using Andaha.Services.Shopping.Contracts;
 using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Analysis;
 using Andaha.Services.Shopping.Infrastructure.Messaging;
-using Microsoft.EntityFrameworkCore;
 
 namespace Andaha.Services.Shopping.BackgroundJobs;
 
@@ -63,6 +62,8 @@ internal class AnalyzeBillWorker(
                 logger.LogInformation("Publishing analyze message for blob '{BlobName}' (lastModified={LastModified})", blob.ImageName, blob.LastModified);
                 
                 await messageBroker.PublishMessageAsync(message, ct);
+
+                logger.LogInformation("Successfully processed blob '{ImageName}'", blob.ImageName);
             }
             catch (Exception ex)
             {

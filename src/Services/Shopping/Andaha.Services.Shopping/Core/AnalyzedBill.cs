@@ -12,8 +12,10 @@ public class AnalyzedBill : Entity<Guid>
         Guid createdByUserId,
         Guid? categoryId,
         Guid? subCategoryId,
-        string shopName,
-        double price,
+        string? shopName,
+        double? price,
+        double? confidence,
+        double? totalAmountConfidence,
         DateTime? date = null)
         : base(Guid.NewGuid())
     {
@@ -27,6 +29,8 @@ public class AnalyzedBill : Entity<Guid>
         this.SubCategoryId = subCategoryId;
         this.ShopName = shopName;
         this.Price = price;
+        this.Confidence = confidence;
+        this.TotalAmountConfidence = totalAmountConfidence;
         this.Date = date ?? DateTime.UtcNow;
     }
 
@@ -43,6 +47,10 @@ public class AnalyzedBill : Entity<Guid>
     public DateTime? Date { get; private set; }
 
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+
+    public double? Confidence { get; private set; }
+
+    public double? TotalAmountConfidence { get; private set; }
 
     public virtual ICollection<BillImage> Images { get; private set; } = [];
 
