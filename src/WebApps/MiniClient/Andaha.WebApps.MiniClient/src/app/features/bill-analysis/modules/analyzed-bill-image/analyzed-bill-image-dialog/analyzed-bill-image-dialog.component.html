@@ -1,0 +1,12 @@
+<div mat-dialog-content>
+  <div *ngIf="isLoading">
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+  </div>
+  <div *ngIf="!isLoading && imageSrc">
+    <img [src]="imageSrc" style="max-width:100%; height:auto" />
+  </div>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close>Schließen</button>
+</div>

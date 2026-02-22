@@ -1,0 +1,24 @@
+<mat-progress-bar *ngIf="loading" mode="indeterminate" color="accent"></mat-progress-bar>
+
+<div class="action-container" *ngIf="!loading && totalCount === 0">
+  Keine Rechnungen verfügbar.
+</div>
+
+<cdk-virtual-scroll-viewport [itemSize]="pixelHeightPerItem">
+  <div *cdkVirtualFor="let bill of billDataSource">
+    <div class="cdk-item" [routerLink]="['/analyzed','analyzed', bill.id]">
+      <app-analyzed-bill-list-item [bill]="bill"></app-analyzed-bill-list-item>
+    </div>
+  </div>
+</cdk-virtual-scroll-viewport>
+
+<div style="display: none;">
+  <mat-paginator
+    class="paginator"
+    [length]="totalResults"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[20, 50, 100]"
+    aria-label="Select page"
+    (page)="onPageChange($event)">
+  </mat-paginator>
+</div>

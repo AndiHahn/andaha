@@ -1,0 +1,18 @@
+<div class="details-container">
+  <div class="header">
+    <h2>{{ bill.shopName }}</h2>
+    <div class="meta">{{ bill.date | date:'dd.MM.yyyy' }} — {{ bill.price | currency:'EUR' }}</div>
+  </div>
+
+  <div class="content">
+    <div class="left">
+      <div><strong>Kategorie:</strong> {{ bill.category?.name }}</div>
+      <div *ngIf="bill.subCategory"><strong>Unterkategorie:</strong> {{ bill.subCategory.name }}</div>
+      <div *ngIf="bill.notes"><strong>Notizen:</strong><div class="notes">{{ bill.notes }}</div></div>
+      <div><strong>Analyse-Konfidenz:</strong> {{ bill.analysisConfidence | percent:'1.0-0' }}</div>
+    </div>
+    <div class="right">
+      <app-analyzed-bill-image [billId]="bill.id"></app-analyzed-bill-image>
+    </div>
+  </div>
+</div>

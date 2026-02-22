@@ -18,6 +18,10 @@ cert
 .vscode
 .env
 *.env*
+**/nas/**/**.jpg
+**/nas/**/**.json
+**/analyze/**.jpg
+**/analyze/**.json
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

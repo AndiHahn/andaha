@@ -1,0 +1,12 @@
+<div class="upload-container">
+  <input type="file" accept="image/*" capture="environment" (change)="onFileSelected($event)" />
+  <div style="margin-top:12px">
+    <button mat-raised-button color="primary" (click)="upload()" [disabled]="!selectedFile || uploading">
+      <mat-icon>cloud_upload</mat-icon>
+      Hochladen
+    </button>
+  </div>
+  <div *ngIf="uploading" style="margin-top:8px">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+</div>

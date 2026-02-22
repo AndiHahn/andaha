@@ -1,0 +1,7 @@
+.bottom-navigation-placeholder { height: 64px }
+.bottom-navigation { position: fixed; left: 0; right: 0; bottom: 0 }
+.toolbar { justify-content: space-around }
+.menu-item { display:flex; flex-direction:column; align-items:center }
+.menu-title { font-size: 12px }
+.small-icon-button { width: 48px; height: 48px }
+.primary-fg-color { color: var(--primary) }

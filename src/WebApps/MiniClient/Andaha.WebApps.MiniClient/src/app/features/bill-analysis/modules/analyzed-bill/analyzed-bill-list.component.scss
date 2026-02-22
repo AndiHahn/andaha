@@ -1,0 +1,22 @@
+.bill-list-container {
+    padding-bottom: 80px
+}
+
+.viewport {
+    height: calc(100vh - 140px)
+}
+
+.bill-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px;
+    border-bottom: 1px solid #eee
+}
+
+.bill-title {
+    font-weight: 600
+}
+
+.bill-sub {
+    color: rgba(0, 0, 0, 0.6)
+}

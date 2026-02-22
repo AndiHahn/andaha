@@ -1,0 +1,16 @@
+<div class="master-container">
+  <div matLine>
+    <div class="flex-container">
+      <span class="margin-left-small">{{ bill.shopName }}</span>
+      <span class="price-text">{{ bill.price }} €</span>
+    </div>
+  </div>
+  <div matLine>
+    <div class="flex-container">
+      <div class="vertical-center">  
+        <span class="date-text"> {{ bill.date | date:'dd.MM.YYYY' }} </span>
+      </div>
+    </div>
+  </div>
+</div>
+<mat-divider></mat-divider>

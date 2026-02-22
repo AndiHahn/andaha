@@ -9,7 +9,7 @@ import { constructPath, constructVersionedPath } from '../functions/functions';
 import { BillCreateDto } from './dtos/BillCreateDto';
 import { BillDto, BillDtoRaw, mapBillDtoRaw, mapPagedBillDtoResultRaw } from './dtos/BillDto';
 import { BillUpdateDto } from './dtos/BillUpdateDto';
-import { BillAnalyzedDto, BillAnalyzedDtoRaw, mapBillAnalyzedDtoRaw, mapPagedBillAnalyzedDtoResultRaw, BillAnalyzedResponseDto, BillAnalyzedResponseDtoRaw, mapBillAnalyzedResponseDtoRaw } from './dtos/BillAnalyzedDto';
+import { BillAnalyzedDto, BillAnalyzedDtoRaw, mapBillAnalyzedDtoRaw, BillAnalyzedResponseDto, BillAnalyzedResponseDtoRaw, mapBillAnalyzedResponseDtoRaw } from './dtos/BillAnalyzedDto';
 import { getSearchBillsHttpParams, SearchBillsParameters } from './dtos/SearchBillsParameters';
 
 @Injectable({
@@ -101,12 +101,12 @@ export class BillApiService {
       .pipe(map(mapBillAnalyzedResponseDtoRaw));
   }
 
-  getAnalyzedBills(parameters?: SearchBillsParameters): Observable<PagedResultDto<BillAnalyzedDto>> {
+  getAnalyzedBills(parameters?: SearchBillsParameters): Observable<BillAnalyzedDto[]> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'analyzed');
 
     const httpParameters = parameters ? createHttpParameters(getSearchBillsHttpParams(parameters)) : undefined;
 
-    return this.httpClient.get<PagedResultDto<BillAnalyzedDtoRaw>>(url, { params: httpParameters })
-      .pipe(map(mapPagedBillAnalyzedDtoResultRaw));
+    return this.httpClient.get<BillAnalyzedDtoRaw[]>(url, { params: httpParameters })
+      .pipe(map(raw => raw.map(mapBillAnalyzedDtoRaw)));
   }
 }
