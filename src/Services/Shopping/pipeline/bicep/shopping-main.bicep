@@ -33,6 +33,14 @@ module documentIntelligence 'shopping-document-intelligence-module.bicep' = {
   }
 }
 
+module openAi 'shopping-openai-module.bicep' = {
+  name: 'andaha-shopping-openai'
+  params: {
+    stage: stage
+    location: location
+  }
+}
+
 module containerApp 'shopping-app-module.bicep' = {
   name: 'andaha-shopping-service'
   params: {
@@ -47,5 +55,7 @@ module containerApp 'shopping-app-module.bicep' = {
     storageConnectionString: storage.outputs.storageConnectionString
     documentIntelligenceEndpoint: documentIntelligence.outputs.endpoint
     documentIntelligenceApiKey: documentIntelligence.outputs.key
+    openAiEndpoint: openAi.outputs.endpoint
+    openAiApiKey: openAi.outputs.key
   }
 }

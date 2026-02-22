@@ -31,7 +31,6 @@ module serviceBus 'servicebus-module.bicep' = {
 module daprComponent 'dapr-component-module.bicep' = {
   name: 'andaha-infrastructure-dapr-component'
   params: {
-    stage: stage
     containerAppEnvironmentId: containerAppsEnvironment.outputs.id
     serviceBusConnectionString: serviceBus.outputs.connectionString
   }

@@ -25,6 +25,6 @@ resource openAi 'Microsoft.CognitiveServices/accounts@2025-10-01-preview' = {
   }
 }
 
-output endpoint string = docIntelligence.properties.endpoint
+output endpoint string = openAi.properties.endpoint
 @secure()
-output key string = docIntelligence.listKeys().key1
+output key string = openAi.listKeys().key1
