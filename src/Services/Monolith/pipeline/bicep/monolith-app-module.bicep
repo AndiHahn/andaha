@@ -17,6 +17,12 @@ param applicationInsightsInstrumentationKey string
 param applicationInsightsConnectionString string
 @secure()
 param authAzureAdB2CGraphApiClientSecret string
+param documentIntelligenceEndpoint string
+@secure()
+param documentIntelligenceApiKey string
+param openAiEndpoint string
+@secure()
+param openAiApiKey string
 
 var imageName = stage == 'dev' ? 'andaha.azurecr.io/andaha/services/monolith:${imageVersion}' : 'andaha.azurecr.io/prod/andaha/services/monolith:${imageVersion}'
 var minReplicas = stage == 'dev' ? 0 : 1
@@ -91,6 +97,26 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
             {
               name: 'Authentication__AzureAdB2CGraphApi__ClientSecret'
               secretRef: 'authentication-graphapi-clientsecret'
+            }
+            {
+              name: 'DocumentIntelligence__Endpoint'
+              value: documentIntelligenceEndpoint
+            }
+            {
+              name: 'DocumentIntelligence__ApiKey'
+              secretRef: 'document-intelligence-api-key'
+            }
+            {
+              name: 'AzureOpenAi__Endpoint'
+              value: openAiEndpoint
+            }
+            {
+              name: 'AzureOpenAi__ApiKey'
+              secretRef: 'openai-api-key'
+            }
+            {
+              name: 'AzureOpenAi__DeploymentName'
+              value: 'gpt-5'
             }
           ]
           probes: [
@@ -184,6 +210,14 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
         {
           name: 'authentication-graphapi-clientsecret'
           value: authAzureAdB2CGraphApiClientSecret
+        }
+        {
+          name: 'document-intelligence-api-key'
+          value: documentIntelligenceApiKey
+        }
+        {
+          name: 'openai-api-key'
+          value: openAiApiKey
         }
       ]
     }

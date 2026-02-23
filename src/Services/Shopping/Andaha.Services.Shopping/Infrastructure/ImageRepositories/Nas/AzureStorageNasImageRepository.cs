@@ -15,7 +15,7 @@ public class AzureStorageNasImageRepository(BlobServiceClient blobServiceClient)
 
         var userId = GetUserIdFromPath(blobPath);
 
-        using var stream = await blobClient.OpenReadAsync(cancellationToken: ct);
+        var stream = await blobClient.OpenReadAsync(cancellationToken: ct);
 
         return (stream, userId);
     }
@@ -27,7 +27,7 @@ public class AzureStorageNasImageRepository(BlobServiceClient blobServiceClient)
         return allBlobs
             .Select(blob => new ImageMetadata
             {
-                ImageName = Path.GetFileName(blob.Name),
+                ImageName = blob.Name,
                 LastModified = blob.Properties.LastModified ?? blob.Properties.CreatedOn ?? DateTimeOffset.MinValue,
             })
             .ToArray();

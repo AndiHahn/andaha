@@ -21,12 +21,12 @@ resource daprComponent 'Microsoft.App/managedEnvironments/daprComponents@2023-05
       }
     ]
     scopes: [
-      'andaha-gateways-ocelot'
-      'andaha-services-identity'
-      'andaha-services-shopping'
-      'andaha-services-collaboration'
-      'andaha-services-budgetplan'
-      'andaha-services-monolith'
+      'ocelot-gateway'
+      'identity-api'
+      'shopping-api'
+      'collaboration-api'
+      'budgetplan-api'
+      'monolith-api'
     ]
   }
 }

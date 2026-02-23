@@ -78,10 +78,11 @@ internal class NasBillWorker(
                 logger.LogInformation("Download image '{ImageName}' from nas foler.", blob.ImageName);
 
                 var file = await nasImageRepository.GetImageAsync(blob.ImageName, stoppingToken);
+                using var fileStream = file.Image;
 
                 logger.LogInformation("Upload image to analysis repository '{ImageName}'", blob.ImageName);
 
-                await analysisImageRepository.UploadImageAsync(blob.ImageName, file.Image, file.UserId, stoppingToken);
+                await analysisImageRepository.UploadImageAsync(blob.ImageName, fileStream, file.UserId, stoppingToken);
 
                 state.LastProcessedUtc = blob.LastModified;
 

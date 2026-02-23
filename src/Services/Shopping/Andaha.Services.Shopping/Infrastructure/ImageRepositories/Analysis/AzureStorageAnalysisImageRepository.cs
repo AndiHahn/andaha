@@ -6,15 +6,11 @@ namespace Andaha.Services.Shopping.Infrastructure.ImageRepositories.Analysis;
 
 public class AzureStorageAnalysisImageRepository(BlobServiceClient blobServiceClient) : IAnalysisImageRepository
 {
-    private readonly string analysisFolderName = "analysis";
-
     private readonly IBlobStorageService analysisBlobStorageService = new BlobStorageService(blobServiceClient, "analysis");
 
     public async Task<(Stream Image, Guid UserId)> GetImageAsync(string name, CancellationToken ct = default)
     {
-        string blobPath = GetBlobPath(name);
-
-        var blobClient = blobServiceClient.GetBlobContainerClient("analysis").GetBlobClient(blobPath);
+        var blobClient = blobServiceClient.GetBlobContainerClient("analysis").GetBlobClient(name);
 
         var properties = await blobClient.GetPropertiesAsync(cancellationToken: ct);
         using var stream = await blobClient.OpenReadAsync(cancellationToken: ct);
@@ -29,7 +25,7 @@ public class AzureStorageAnalysisImageRepository(BlobServiceClient blobServiceCl
 
     public Task UploadImageAsync(string name, Stream imageStream, Guid userId, CancellationToken ct = default)
     {
-        string blobPath = GetBlobPath(name);
+        string fileName = Path.GetFileName(name);
 
         var metadata = new Dictionary<string, string>
         {
@@ -41,7 +37,7 @@ public class AzureStorageAnalysisImageRepository(BlobServiceClient blobServiceCl
             Metadata = metadata,
         };
 
-        return this.analysisBlobStorageService.UpdateBlobContentAsync(blobPath, imageStream, options, ct: ct);
+        return this.analysisBlobStorageService.UpdateBlobContentAsync(fileName, imageStream, options, ct: ct);
     }
 
     public async Task<IReadOnlyCollection<ImageMetadata>> ListImagesAsync(CancellationToken ct = default)
@@ -59,10 +55,6 @@ public class AzureStorageAnalysisImageRepository(BlobServiceClient blobServiceCl
 
     public async Task DeleteImageAsync(string name, CancellationToken ct = default)
     {
-        string blobPath = GetBlobPath(name);
-
-        await this.analysisBlobStorageService.DeleteDocumentAsync(blobPath, ct);
+        await this.analysisBlobStorageService.DeleteDocumentAsync(name, ct);
     }
-
-    private string GetBlobPath(string name) => Path.Combine(this.analysisFolderName, name);
 }

@@ -37,6 +37,22 @@ module storage '../../../Shopping/pipeline/bicep/shopping-storage-module.bicep' 
   }
 }
 
+module documentIntelligence '../../../Shopping/pipeline/bicep/shopping-document-intelligence-module.bicep' = {
+  name: 'andaha-monolith-document-intelligence'
+  params: {
+    stage: stage
+    location: location
+  }
+}
+
+module openAi '../../../Shopping/pipeline/bicep/shopping-openai-module.bicep' = {
+  name: 'andaha-monolith-openai'
+  params: {
+    stage: stage
+    location: location
+  }
+}
+
 module containerApp 'monolith-app-module.bicep' = {
   name: 'andaha-monolith-service'
   params: {
@@ -53,5 +69,9 @@ module containerApp 'monolith-app-module.bicep' = {
     storageConnectionString: storage.outputs.storageConnectionString
     applicationInsightsInstrumentationKey: applicationInsights.outputs.instrumentationKey
     applicationInsightsConnectionString: applicationInsights.outputs.connectionString
+    documentIntelligenceEndpoint: documentIntelligence.outputs.endpoint
+    documentIntelligenceApiKey: documentIntelligence.outputs.key
+    openAiEndpoint: openAi.outputs.endpoint
+    openAiApiKey: openAi.outputs.key
   }
 }
