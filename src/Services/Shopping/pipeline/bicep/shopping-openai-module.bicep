@@ -7,7 +7,7 @@ resource openAi 'Microsoft.CognitiveServices/accounts@2025-10-01-preview' = {
   name: name
   location: location
   sku: {
-    name: 'F0'
+    name: 'S0'
   }
   kind: 'OpenAI'
   identity: {
