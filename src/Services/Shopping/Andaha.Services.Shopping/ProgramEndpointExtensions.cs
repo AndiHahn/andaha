@@ -16,6 +16,9 @@ public static class ProgramEndpointExtensions
 
         app.MapExpenseEndpoint();
 
+        app.UseCloudEvents();
+        app.MapSubscribeHandler();
+
         return app;
     }
 
