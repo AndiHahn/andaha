@@ -26,15 +26,16 @@ internal class AnalyzeBillMessageHandler(
     public async Task<IResult> Handle(AnalyzeBillMessageV1 request, CancellationToken cancellationToken)
     {
         var file = await analysisImageRepository.GetImageAsync(request.ImageName.ToString(), cancellationToken);
+        using var fileStream = file.Image;
 
         if (file.Image is null)
         {
             return Results.NotFound();
         }
 
-        var analysisResult = await invoiceAnalysisService.AnalyzeAsync(file.Image, cancellationToken);
+        var analysisResult = await invoiceAnalysisService.AnalyzeAsync(fileStream, cancellationToken);
 
-        var classificationResult = await GetCategoryClassification(file, analysisResult, cancellationToken);
+        var classificationResult = await GetCategoryClassification(file.UserId, analysisResult, cancellationToken);
 
         var totalAmount = analysisResult.TotalAmount;
         var lineItemsAmount = analysisResult.LineItems.Sum(lineItem => lineItem.TotalPrice);
@@ -159,11 +160,11 @@ internal class AnalyzeBillMessageHandler(
     }
 
     private async Task<CategoryClassificationResult?> GetCategoryClassification(
-        (Stream Image, Guid UserId) file,
+        Guid userId,
         InvoiceAnalysisResult analysisResult,
         CancellationToken cancellationToken)
     {
-        var billCategories = await GetBillCategoriesAsync(file.UserId, cancellationToken);
+        var billCategories = await GetBillCategoriesAsync(userId, cancellationToken);
 
         var classificationResult = await categoryClassificationService.ClassifyAsync(
             analysisResult.VendorName!,

@@ -13,7 +13,7 @@ public class AzureStorageAnalysisImageRepository(BlobServiceClient blobServiceCl
         var blobClient = blobServiceClient.GetBlobContainerClient("analysis").GetBlobClient(name);
 
         var properties = await blobClient.GetPropertiesAsync(cancellationToken: ct);
-        using var stream = await blobClient.OpenReadAsync(cancellationToken: ct);
+        var stream = await blobClient.OpenReadAsync(cancellationToken: ct);
 
         if (!properties.Value.Metadata.TryGetValue("userId", out var userId))
         {
