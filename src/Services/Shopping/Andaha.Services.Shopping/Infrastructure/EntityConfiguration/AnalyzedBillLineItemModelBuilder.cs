@@ -20,7 +20,6 @@ public class AnalyzedBillLineItemModelBuilder : IEntityTypeConfiguration<Analyze
 
         builder
             .Property(b => b.Description)
-            .IsRequired()
             .HasMaxLength(200)
             .IsUnicode(false);
     }

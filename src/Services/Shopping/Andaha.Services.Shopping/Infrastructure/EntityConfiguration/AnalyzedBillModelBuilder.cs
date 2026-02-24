@@ -16,13 +16,8 @@ public class AnalyzedBillModelBuilder : IEntityTypeConfiguration<AnalyzedBill>
 
         builder
             .Property(b => b.ShopName)
-            .IsRequired()
             .HasMaxLength(200)
             .IsUnicode(false);
-
-        builder
-            .Property(b => b.Price)
-            .IsRequired();
 
         builder
             .Property(b => b.Date)

@@ -104,7 +104,7 @@ public class Bill : Entity<Guid>
         this.Images.Remove(image);
     }
 
-    public void AddLineItem(string? description, double? unitPrice, double totalPrice, int? quantity)
+    public void AddLineItem(string? description, double? unitPrice, double? totalPrice, int? quantity)
     {
         this.LineItems.Add(new BillLineItem(Id, description, unitPrice, totalPrice, quantity));
     }

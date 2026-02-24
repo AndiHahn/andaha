@@ -12,15 +12,10 @@ public class BillLineItem : Entity<Guid>
         Guid billId,
         string? description,
         double? unitPrice,
-        double totalPrice,
+        double? totalPrice,
         int? quantity)
         : base(Guid.NewGuid())
     {
-        if (quantity < 0)
-        {
-            throw new ArgumentException("Quantity must be greater than zero.", nameof(quantity));
-        }
-
         this.BillId = billId;
         this.Description = description;
         this.UnitPrice = unitPrice;
