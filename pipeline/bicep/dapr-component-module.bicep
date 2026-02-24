@@ -12,10 +12,6 @@ resource daprComponent 'Microsoft.App/managedEnvironments/daprComponents@2023-05
         value: serviceBusConnectionString
       }
       {
-        name: 'consumerID'
-        value: '{appId}'
-      }
-      {
         name: 'maxConcurrentHandlers'
         value: '1'
       }
