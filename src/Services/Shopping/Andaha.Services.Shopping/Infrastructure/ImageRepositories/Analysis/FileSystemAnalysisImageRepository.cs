@@ -122,6 +122,12 @@ public class FileSystemAnalysisImageRepository : IAnalysisImageRepository
 
     private string GetMetadataFilePath(string name) => Path.Combine(this.analyzeFilePath, $"{name}.metadata.json");
 
+    public Task MarkAsProcessedAsync(string name, CancellationToken ct = default)
+    {
+        // No-op for file system implementation
+        return Task.CompletedTask;
+    }
+
     private static byte[] ReadStreamToBytes(Stream input)
     {
         using MemoryStream ms = new();

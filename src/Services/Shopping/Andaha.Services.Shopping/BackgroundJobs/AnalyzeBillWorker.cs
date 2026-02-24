@@ -63,6 +63,8 @@ internal class AnalyzeBillWorker(
                 
                 await messageBroker.PublishMessageAsync(message, ct);
 
+                await imageRepository.MarkAsProcessedAsync(blob.ImageName, ct);
+
                 logger.LogInformation("Successfully processed blob '{ImageName}'", blob.ImageName);
             }
             catch (Exception ex)

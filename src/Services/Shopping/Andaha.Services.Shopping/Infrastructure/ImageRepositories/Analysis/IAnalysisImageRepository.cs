@@ -9,4 +9,6 @@ public interface IAnalysisImageRepository
     Task DeleteImageAsync(string name, CancellationToken ct = default);
 
     Task<IReadOnlyCollection<ImageMetadata>> ListImagesAsync(CancellationToken ct = default);
+
+    Task MarkAsProcessedAsync(string name, CancellationToken ct = default);
 }

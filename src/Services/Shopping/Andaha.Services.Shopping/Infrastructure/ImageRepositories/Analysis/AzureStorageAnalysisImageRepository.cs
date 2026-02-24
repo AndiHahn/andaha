@@ -42,19 +42,55 @@ public class AzureStorageAnalysisImageRepository(BlobServiceClient blobServiceCl
 
     public async Task<IReadOnlyCollection<ImageMetadata>> ListImagesAsync(CancellationToken ct = default)
     {
-        var allBlobs = await analysisBlobStorageService.ListBlobsAsync(ct: ct);
+        var containerClient = blobServiceClient.GetBlobContainerClient("analysis");
+        var result = new List<ImageMetadata>();
 
-        return allBlobs
-            .Select(blob => new ImageMetadata
+        await foreach (var blobItem in containerClient.GetBlobsAsync(
+            traits: BlobTraits.Metadata,
+            cancellationToken: ct))
+        {
+            // Only include blobs that have not been processed yet
+            if (blobItem.Metadata == null || !blobItem.Metadata.ContainsKey("processedAt"))
             {
-                ImageName = Path.GetFileName(blob.Name),
-                LastModified = blob.Properties.LastModified ?? blob.Properties.CreatedOn ?? DateTimeOffset.MinValue,
-            })
-            .ToArray();
+                result.Add(new ImageMetadata
+                {
+                    ImageName = Path.GetFileName(blobItem.Name),
+                    LastModified = blobItem.Properties.LastModified ?? blobItem.Properties.CreatedOn ?? DateTimeOffset.MinValue,
+                });
+            }
+        }
+
+        return result;
     }
 
     public async Task DeleteImageAsync(string name, CancellationToken ct = default)
     {
         await this.analysisBlobStorageService.DeleteDocumentAsync(name, ct);
+    }
+
+    public async Task MarkAsProcessedAsync(string name, CancellationToken ct = default)
+    {
+        var blobClient = blobServiceClient.GetBlobContainerClient("analysis").GetBlobClient(name);
+
+        var properties = await blobClient.GetPropertiesAsync(cancellationToken: ct);
+
+        var metadata = properties.Value.Metadata ?? new Dictionary<string, string>();
+        metadata["processedAt"] = DateTimeOffset.UtcNow.ToString("O");
+
+        var options = new BlobUploadOptions
+        {
+            Metadata = metadata,
+        };
+
+        var stream = await blobClient.OpenReadAsync(cancellationToken: ct);
+
+        try
+        {
+            await this.analysisBlobStorageService.UpdateBlobContentAsync(name, stream, options, ct: ct);
+        }
+        finally
+        {
+            await stream.DisposeAsync();
+        }
     }
 }

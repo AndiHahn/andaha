@@ -203,10 +203,10 @@ internal class AnalyzeBillMessageHandler(
         var analyzedBill = new AnalyzedBill(
                     createdByUserId: file.UserId,
                     categoryId: classificationResult?.CategoryId,
-                    subCategoryId: null,
-                    shopName: analysisResult.VendorName!,
-                    price: analysisResult.TotalAmount!.Value,
-                    date: analysisResult.InvoiceDate!.Value.Date,
+                    subCategoryId: classificationResult?.SubCategoryId,
+                    shopName: analysisResult.VendorName,
+                    price: analysisResult.TotalAmount,
+                    date: analysisResult.InvoiceDate?.Date,
                     confidence: analysisResult.Confidence,
                     totalAmountConfidence: analysisResult.TotalAmountConfidence);
 
