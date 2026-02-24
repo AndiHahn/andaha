@@ -110,7 +110,7 @@ internal class AnalyzeBillMessageHandler(
 
         foreach (var lineItem in analysisResult.LineItems)
         {
-            bill.AddLineItem(lineItem.Description, lineItem.UnitPrice, lineItem.TotalPrice!.Value, lineItem.Quantity);
+            bill.AddLineItem(lineItem.Description, lineItem.UnitPrice, lineItem.TotalPrice, lineItem.Quantity);
         }
 
         dbContext.Bill.Add(bill);
