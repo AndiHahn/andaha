@@ -16,21 +16,6 @@ public class BillLineItem : Entity<Guid>
         int? quantity)
         : base(Guid.NewGuid())
     {
-        if (string.IsNullOrEmpty(description))
-        {
-            throw new ArgumentNullException(nameof(description));
-        }
-
-        if (unitPrice < 0)
-        {
-            throw new ArgumentException("Unit price must not be negative.", nameof(unitPrice));
-        }
-
-        if (totalPrice < 0)
-        {
-            throw new ArgumentException("Total price must not be negative.", nameof(totalPrice));
-        }
-
         if (quantity < 0)
         {
             throw new ArgumentException("Quantity must be greater than zero.", nameof(quantity));
