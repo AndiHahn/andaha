@@ -96,7 +96,7 @@ public class Bill : Entity<Guid>
 
     public void AddImage(string imageName, byte[] thumbnail)
     {
-        this.Images.Add(new BillImage(this.Id, imageName, thumbnail));
+        this.Images.Add(new BillImage(billId: this.Id, analyzedBillId: null, imageName, thumbnail));
     }
 
     public void RemoveImage(BillImage image)

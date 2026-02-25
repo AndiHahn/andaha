@@ -6,7 +6,7 @@ namespace Andaha.Services.Shopping.Infrastructure.CategoryClassification;
 public interface ICategoryClassificationService
 {
     Task<CategoryClassificationResult> ClassifyAsync(
-        string vendorName,
+        string? vendorName,
         string[] lineItemDescriptions,
         BillCategory[] availableCategories,
         CancellationToken ct = default);

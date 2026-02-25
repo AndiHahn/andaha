@@ -8,36 +8,22 @@ using System.Text.Json;
 
 namespace Andaha.Services.Shopping.Infrastructure.CategoryClassification;
 
-internal class AzureOpenAIClassificationService : ICategoryClassificationService
+internal class AzureOpenAIClassificationService(
+    IOptions<AzureOpenAiConfiguration> options,
+    ILogger<AzureOpenAIClassificationService> logger) : ICategoryClassificationService
 {
-    private readonly AzureOpenAIClient openAIClient;
-    private readonly string deploymentName;
-    private readonly ILogger<AzureOpenAIClassificationService> logger;
-
-    public AzureOpenAIClassificationService(
-        IOptions<AzureOpenAiConfiguration> options,
-        ILogger<AzureOpenAIClassificationService> logger)
-    {
-        this.openAIClient = new AzureOpenAIClient(
-            new Uri(options.Value.Endpoint),
-            new AzureKeyCredential(options.Value.ApiKey));
-
-        this.deploymentName = options.Value.DeploymentName;
-
-        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+    private readonly AzureOpenAIClient openAIClient = new(
+        new Uri(options.Value.Endpoint),
+        new AzureKeyCredential(options.Value.ApiKey));
+    private readonly string deploymentName = options.Value.DeploymentName;
+    private readonly ILogger<AzureOpenAIClassificationService> logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     public async Task<CategoryClassificationResult> ClassifyAsync(
-        string vendorName,
+        string? vendorName,
         string[] lineItemDescriptions,
         BillCategory[] availableCategories,
         CancellationToken ct = default)
     {
-        if (string.IsNullOrWhiteSpace(vendorName))
-        {
-            throw new ArgumentException("Vendor name cannot be null or empty.", nameof(vendorName));
-        }
-
         try
         {
             var systemPrompt = GetSystemPrompt(availableCategories);
@@ -104,7 +90,7 @@ Beachte folgende Regeln:
 - Wenn die Zuordnung nicht eindeutig ist, nutze eine niedrigere confidence";
     }
 
-    private static string BuildUserMessage(string vendorName, string[] lineItemDescriptions)
+    private static string BuildUserMessage(string? vendorName, string[] lineItemDescriptions)
     {
         var message = $"Klassifiziere folgende Ausgabe:\n";
         message += $"Verkäufer: {vendorName}";
@@ -124,8 +110,6 @@ Beachte folgende Regeln:
             var entry = content.FirstOrDefault();
 
             logger.LogInformation("Classification Result: {Entry}", entry?.Text);
-
-            //return JsonSerializer.Deserialize<CategoryClassificationResult>(entry!.Text)!;
 
             using var jsonDoc = JsonDocument.Parse(entry.Text);
             var root = jsonDoc.RootElement;

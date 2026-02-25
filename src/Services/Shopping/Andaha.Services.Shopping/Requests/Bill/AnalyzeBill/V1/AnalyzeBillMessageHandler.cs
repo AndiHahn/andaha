@@ -96,17 +96,17 @@ internal class AnalyzeBillMessageHandler(
         CancellationToken cancellationToken)
     {
         var bill = new Core.Bill(
-                        Guid.NewGuid(),
-                        file.UserId,
-                        categoryId: classificationResult.CategoryId,
-                        subCategoryId: classificationResult.SubCategoryId,
-                        shopName: analysisResult.VendorName!,
-                        price: analysisResult.TotalAmount!.Value,
-                        date: analysisResult.InvoiceDate!.Value.Date,
-                        notes: null,
-                        fromAutoAnalysis: true,
-                        confidence: analysisResult.Confidence,
-                        totalAmountConfidence: analysisResult.TotalAmountConfidence);
+            Guid.NewGuid(),
+            file.UserId,
+            categoryId: classificationResult.CategoryId,
+            subCategoryId: classificationResult.SubCategoryId,
+            shopName: analysisResult.VendorName!,
+            price: analysisResult.TotalAmount!.Value,
+            date: analysisResult.InvoiceDate!.Value.Date,
+            notes: null,
+            fromAutoAnalysis: true,
+            confidence: analysisResult.Confidence,
+            totalAmountConfidence: analysisResult.TotalAmountConfidence);
 
         foreach (var lineItem in analysisResult.LineItems)
         {
@@ -167,7 +167,7 @@ internal class AnalyzeBillMessageHandler(
         var billCategories = await GetBillCategoriesAsync(userId, cancellationToken);
 
         var classificationResult = await categoryClassificationService.ClassifyAsync(
-            analysisResult.VendorName!,
+            analysisResult.VendorName,
             analysisResult.LineItems.Select(li => li.Description).ToArray()!,
             [.. billCategories],
             cancellationToken);

@@ -58,7 +58,7 @@ public class AnalyzedBill : Entity<Guid>
 
     public void AddImage(string imageName, byte[] thumbnail)
     {
-        this.Images.Add(new BillImage(this.Id, imageName, thumbnail));
+        this.Images.Add(new BillImage(billId: null, analyzedBillId: this.Id, imageName, thumbnail));
     }
 
     public void AddLineItem(string? description, double? unitPrice, double? totalPrice, int? quantity)
