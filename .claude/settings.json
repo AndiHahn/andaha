@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(**/.env*)",
+      "Edit(**/.env*)",
+      "Read(./cert/**)",
+      "Read(./volumes/**)",
+      "Read(./src/**/keys/**)",
+      "Read(./src/**/images/**)",
+      "Read(**/*.jwk)"
+    ]
+  }
+}
