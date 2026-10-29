@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Andaha · Analyse</title>
+</head>
+<body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;display=swap">
+<style>
+.th{--board:#E6DFD3;--bg:#F8F4EC;--well:#F0EADF;--side:#F1EBE1;--hover-row:#F1EBE1;--surface:#FFFDF8;--menu:#FFFDF8;--raised:#EFE8DC;--line:#E0D8CA;--line2:#EAE3D7;--line-sheet:#E6DED1;--act:#ECE3D4;--seg-on:#FFFDF8;--line3:#D6CDBD;--raised-line:#D6CDBD;--grab:#CFC5B4;--fg:#1E1913;--fg2:#3B332A;--mut:#685F52;--faint:#72685B;--dim:#A0968A;--pos:#2E7443;--pos-bg:#DFEEDB;--neg:#B63A3A;--neg-bg:#F7DEDA;--neg-line:#E8C3BE;--neg-bar:#D27466;--neg-text:#A33A33;--paper:#FFFFFF;--paper-bar:#D9D0C0;--paper-ink:#2B241B;--scrim:rgba(40,30,18,.38);--sh4:rgba(60,40,20,.14);--sh5:rgba(60,40,20,.18);--sh6:rgba(60,40,20,.16);--sh7:rgba(60,40,20,.22);--ring-sw:rgba(0,0,0,.12);--pri:#2E4FA8;--on-pri:#FFFFFF;--pri-text:#2E4FA8;--pri-ring:rgba(46,79,168,.2);--pri-soft:#E3E9F8;--pri-line:#9DB0E0;--pri-chip:#24418F;--sec:#B8692F;--sec-soft:#F6E4D3;--sec-text:#9A5220}
+body{margin:0;background:#E6DFD3}
+*{box-sizing:border-box}
+::selection{background:var(--pri);color:var(--on-pri)}
+.board{padding:40px;display:flex;gap:40px;align-items:flex-start;background:var(--board);font-family:'Hanken Grotesk',system-ui,sans-serif;color:var(--fg);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.shot{display:flex;flex-direction:column;gap:12px;flex:none}
+.cap{margin:0;font-size:13px;font-weight:500;color:var(--mut);line-height:20px}
+.phone{position:relative;width:390px;height:844px;padding:12px 0 8px;background:var(--bg);border-radius:28px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 0 1px var(--line),0 24px 48px -24px var(--sh6)}
+.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.top{height:56px;flex:none;display:flex;align-items:center;gap:2px;padding:0 6px}
+.top h1{margin:0 0 0 6px;font-size:18px;font-weight:600;letter-spacing:-.01em;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ib{width:44px;height:44px;border:0;background:transparent;color:var(--fg);border-radius:12px;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;flex:none;position:relative}
+.body{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column}
+.nav{flex:none;height:64px;display:flex;border-top:1px solid var(--line);background:var(--bg)}
+.nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--faint);text-decoration:none;font-size:12px;font-weight:500;position:relative}
+.nav a.on{color:var(--fg)}
+.nav a.on .i{color:var(--pri-text)}
+.nav a.on::before{content:"";position:absolute;top:-1px;left:calc(50% - 14px);width:28px;height:2px;background:var(--pri);border-radius:0 0 2px 2px}
+.row{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--line2);min-height:60px;text-decoration:none;color:inherit;flex:none}
+.date{width:34px;flex:none;display:flex;flex-direction:column;line-height:1.15}
+.date b{font-size:17px;font-weight:600}
+.date span{font-size:12px;color:var(--mut)}
+.t{flex:1;min-width:0;font-size:16px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.amt{font-size:16px;font-weight:600;white-space:nowrap;text-align:right}
+.amt small{font-weight:500;color:var(--mut);margin-left:3px;font-size:14px}
+.dot{width:8px;height:8px;border-radius:50%;flex:none;display:inline-block}
+.btn{height:52px;border-radius:12px;border:0;font:inherit;font-size:16px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 20px;cursor:pointer;white-space:nowrap}
+.btn .i{width:20px;height:20px}
+.pri{background:var(--pri);color:var(--on-pri)}
+.actions{flex:none;display:flex;gap:10px;padding:12px 16px;border-top:1px solid var(--line);background:var(--bg)}
+.grow{flex:1}
+.big{font-size:44px;font-weight:600;letter-spacing:-.025em;line-height:1}
+.big small{font-size:22px;font-weight:500;color:var(--mut);margin-left:6px;letter-spacing:0}
+.kv{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 16px;border-bottom:1px solid var(--line2);font-size:15px}
+.k{color:var(--mut)}
+.v{font-weight:500;text-align:right}
+.hint{font-size:13px;color:var(--mut)}
+.receipt{background:var(--paper);color:var(--paper-ink);border-radius:4px;padding:18px 16px 22px;display:flex;flex-direction:column;gap:7px;font-size:11px;line-height:1.2;box-shadow:0 10px 24px -10px var(--sh7)}
+.receipt .l{display:flex;justify-content:space-between}
+.receipt .b{height:5px;border-radius:2px;background:var(--paper-bar)}
+</style>
+<div class="board th" style="width: 1330px; height: 964px">
+
+<!-- ============ 1 · ANALYSIERT ============ -->
+<div class="shot">
+<p class="cap">Analysierte Rechnungen · gleiche Listenzeile wie Rechnungen</p>
+<div class="phone">
+<header class="top">
+<button class="ib" aria-label="Menü öffnen"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+<h1>Analyse</h1>
+<button class="ib" aria-label="Benutzerkonto"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.2 18.4a7 7 0 0 1 11.6 0"/></svg></button>
+</header>
+<div class="body" style="border-top: 1px solid var(--line)">
+<a class="row" href="#"><div class="date"><b>27</b><span>Okt</span></div><div class="t">dm drogerie markt</div><div class="amt">18,45<small>€</small></div></a>
+<a class="row" href="#"><div class="date"><b>23</b><span>Okt</span></div><div class="t">Spar Gourmet</div><div class="amt">63,18<small>€</small></div></a>
+<a class="row" href="#"><div class="date"><b>20</b><span>Okt</span></div><div class="t">Bipa</div><div class="amt">9,97<small>€</small></div></a>
+<a class="row" href="#"><div class="date"><b>16</b><span>Okt</span></div><div class="t">Billa Plus</div><div class="amt">84,52<small>€</small></div></a>
+<a class="row" href="#"><div class="date"><b>11</b><span>Okt</span></div><div class="t">Interspar</div><div class="amt">112,06<small>€</small></div></a>
+<a class="row" href="#"><div class="date"><b>07</b><span>Okt</span></div><div class="t">Hornbach</div><div class="amt">47,90<small>€</small></div></a>
+<a class="row" href="#"><div class="date"><b>02</b><span>Okt</span></div><div class="t">Lidl</div><div class="amt">31,44<small>€</small></div></a>
+<a class="row" href="#"><div class="date"><b>29</b><span>Sep</span></div><div class="t">Müller</div><div class="amt">22,80<small>€</small></div></a>
+<a class="row" href="#"><div class="date"><b>26</b><span>Sep</span></div><div class="t">Billa</div><div class="amt">38,65<small>€</small></div></a>
+</div>
+<nav class="nav" aria-label="Analyse">
+<a class="on" href="#" aria-current="page"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg>Analysiert</a>
+<a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V5M7 10l5-5 5 5M5 20h14"/></svg>Rechnung hochladen</a>
+</nav>
+</div>
+</div>
+
+<!-- ============ 2 · HOCHLADEN ============ -->
+<div class="shot">
+<p class="cap">Rechnung hochladen · Foto gewählt, bereit zum Hochladen</p>
+<div class="phone">
+<header class="top">
+<button class="ib" aria-label="Menü öffnen"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+<h1>Rechnung hochladen</h1>
+<button class="ib" aria-label="Benutzerkonto"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.2 18.4a7 7 0 0 1 11.6 0"/></svg></button>
+</header>
+<div class="body" style="padding: 8px 16px 16px; gap: 16px">
+<label style="flex: 1; min-height: 0; border-radius: 16px; border: 1px dashed var(--grab); background: var(--well); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 24px; cursor: pointer">
+<div style="width: 168px; transform: rotate(-2deg)">
+<div class="receipt" aria-hidden="true">
+<div style="text-align:center;font-weight:700;font-size:12px">SPAR</div>
+<div class="b" style="width:60%;align-self:center"></div>
+<div class="l"><span>Bio Äpfel</span><span>3,49</span></div>
+<div class="l"><span>Vollmilch</span><span>1,29</span></div>
+<div class="l"><span>Brot</span><span>2,99</span></div>
+<div class="b"></div>
+<div class="l" style="font-weight:700"><span>SUMME</span><span>7,77</span></div>
+</div>
+</div>
+<span style="display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center">
+<span style="font-size: 15px; font-weight: 600">IMG_2041.jpg</span>
+<span class="hint">Tippen, um ein anderes Foto zu wählen</span>
+</span>
+<input type="file" accept="image/*" capture="environment" style="position:absolute;width:1px;height:1px;opacity:0" aria-label="Foto der Rechnung aufnehmen oder auswählen">
+</label>
+<p class="hint" style="margin: 0; line-height: 1.5">Shop, Datum, Betrag und Kategorie werden automatisch erkannt. Die Rechnung erscheint danach unter „Analysiert“.</p>
+</div>
+<div class="actions"><button class="btn pri grow"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17.5h-.5a4.5 4.5 0 0 1-.6-9A6 6 0 0 1 17.6 8a4.5 4.5 0 0 1 .4 9H17"/><path d="M12 20v-8M9 15l3-3 3 3"/></svg>Hochladen</button></div>
+<nav class="nav" aria-label="Analyse">
+<a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg>Analysiert</a>
+<a class="on" href="#" aria-current="page"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V5M7 10l5-5 5 5M5 20h14"/></svg>Rechnung hochladen</a>
+</nav>
+</div>
+</div>
+
+<!-- ============ 3 · ANALYSIERTE RECHNUNG ============ -->
+<div class="shot">
+<p class="cap">Analysierte Rechnung · Erkannte Werte und Konfidenz</p>
+<div class="phone">
+<header class="top">
+<button class="ib" aria-label="Zurück zur Liste"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+<h1>Analysierte Rechnung</h1>
+<button class="ib" aria-label="Benutzerkonto"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.2 18.4a7 7 0 0 1 11.6 0"/></svg></button>
+</header>
+<div class="body">
+<div style="padding: 16px 16px 24px; display: flex; flex-direction: column; gap: 12px; border-bottom: 1px solid var(--line)">
+<div style="font-size: 26px; font-weight: 600; letter-spacing: -0.015em">Spar Gourmet</div>
+<div class="big">63,18<small>€</small></div>
+<div style="font-size: 14px; color: var(--mut)">23.10.2026</div>
+</div>
+<div class="kv"><span class="k">Kategorie</span><span class="v" style="display:inline-flex;align-items:center;gap:8px"><span class="dot" style="background:#7FB89A"></span>Lebensmittel</span></div>
+<div class="kv"><span class="k">Unterkategorie</span><span class="v">Getränke</span></div>
+<div class="kv"><span class="k">Analyse-Konfidenz</span><span class="v" style="display:inline-flex;align-items:center;gap:10px"><span style="width:72px;height:6px;border-radius:3px;background:var(--line-sheet);display:inline-block;overflow:hidden"><span style="display:block;width:92%;height:100%;background:var(--pos)"></span></span>92 %</span></div>
+<div style="padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid var(--line2)">
+<span class="k" style="font-size: 15px">Notizen</span>
+<span style="font-size: 15px; line-height: 1.5">Wein für Samstag, Rechnung geteilt.</span>
+</div>
+<div style="padding: 20px 16px; display: flex; justify-content: center; background: var(--well); flex: 1">
+<button style="all: unset; cursor: pointer; width: 200px; transform: rotate(1.5deg)" aria-label="Rechnungsfoto vergrößern">
+<div class="receipt">
+<div style="text-align:center;font-weight:700;font-size:12px">SPAR GOURMET</div>
+<div class="b" style="width:50%;align-self:center"></div>
+<div class="l"><span>Grüner Veltliner</span><span>14,90</span></div>
+<div class="l"><span>Zweigelt</span><span>16,40</span></div>
+<div class="l"><span>Mineralwasser 6×</span><span>4,74</span></div>
+<div class="l"><span>Käseplatte</span><span>12,99</span></div>
+<div class="b"></div>
+</div>
+</button>
+</div>
+</div>
+<nav class="nav" aria-label="Analyse">
+<a class="on" href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg>Analysiert</a>
+<a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V5M7 10l5-5 5 5M5 20h14"/></svg>Rechnung hochladen</a>
+</nav>
+</div>
+</div>
+
+</div>
+</body>
+</html>

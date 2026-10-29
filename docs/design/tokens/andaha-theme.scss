@@ -1,0 +1,97 @@
+// Andaha MiniClient – Angular Material 14 Theme (hell, „Tinte & Kupfer“)
+//
+// Ersetzt src/themes/custom-theme.scss (bisher: define-dark-theme, Pink/Blue-Grey).
+// Material liefert nur die Basis (Ripple, Overlays, Datepicker, Select-Panels);
+// das eigentliche Aussehen kommt aus den Overrides in styles.scss, siehe
+// docs/design/umsetzung.md, Phase 1.
+
+@use '@angular/material' as mat;
+@import 'andaha-tokens';
+
+$andaha-ink: (
+  50: #ECEFF8,
+  100: #CFD7EE,
+  200: #AFBDE3,
+  300: #8EA2D7,
+  400: #6C86CA,
+  500: #3F5FBE,
+  600: #3657B3,
+  700: #2E4FA8,
+  800: #244190,
+  900: #183071,
+  A100: #C3D1FA,
+  A200: #93ACF2,
+  A400: #5F82E8,
+  A700: #4A6CD4,
+  contrast: (
+    50: $andaha-fg, 100: $andaha-fg, 200: $andaha-fg, 300: $andaha-fg, 400: $andaha-fg,
+    500: #FFFFFF, 600: #FFFFFF, 700: #FFFFFF, 800: #FFFFFF, 900: #FFFFFF,
+    A100: $andaha-fg, A200: $andaha-fg, A400: #FFFFFF, A700: #FFFFFF,
+  )
+);
+
+// Kupfer ist eine Text-/Markierungsfarbe. Weiß auf #B8692F hat nur 4:1,
+// daher nie als Button-Füllung mit kleinem weißem Text verwenden.
+$andaha-copper: (
+  50: #F9EEE4,
+  100: #F6E4D3,
+  200: #EBC6A4,
+  300: #DFA676,
+  400: #D08A52,
+  500: #B8692F,
+  600: #A85E28,
+  700: #9A5220,
+  800: #7F4219,
+  900: #623210,
+  A100: #F6D3B5,
+  A200: #E9A877,
+  A400: #D9915A,
+  A700: #B8692F,
+  contrast: (
+    50: $andaha-fg, 100: $andaha-fg, 200: $andaha-fg, 300: $andaha-fg, 400: $andaha-fg,
+    500: #FFFFFF, 600: #FFFFFF, 700: #FFFFFF, 800: #FFFFFF, 900: #FFFFFF,
+    A100: $andaha-fg, A200: $andaha-fg, A400: $andaha-fg, A700: #FFFFFF,
+  )
+);
+
+$andaha-red: (
+  50: #FBEDEB,
+  100: #F7DEDA,
+  200: #EDB9B2,
+  300: #E1928A,
+  400: #D27466,
+  500: #C24A42,
+  600: #B63A3A,
+  700: #A33A33,
+  800: #8A2E29,
+  900: #6B221E,
+  A100: #F7DEDA,
+  A200: #E1928A,
+  A400: #C24A42,
+  A700: #A33A33,
+  contrast: (
+    50: $andaha-fg, 100: $andaha-fg, 200: $andaha-fg, 300: $andaha-fg, 400: $andaha-fg,
+    500: #FFFFFF, 600: #FFFFFF, 700: #FFFFFF, 800: #FFFFFF, 900: #FFFFFF,
+    A100: $andaha-fg, A200: $andaha-fg, A400: #FFFFFF, A700: #FFFFFF,
+  )
+);
+
+$primary: mat.define-palette($andaha-ink, 700, 100, 900);
+$accent: mat.define-palette($andaha-copper, 500, 100, 700);
+$warn: mat.define-palette($andaha-red, 600, 100, 800);
+
+$typography: mat.define-typography-config(
+  $font-family: $andaha-font,
+);
+
+$theme: mat.define-light-theme((
+  color: (
+    primary: $primary,
+    accent: $accent,
+    warn: $warn,
+  ),
+  typography: $typography,
+));
+
+@include mat.core($typography);
+@include mat.all-component-themes($theme);

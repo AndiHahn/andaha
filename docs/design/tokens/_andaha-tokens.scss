@@ -1,0 +1,140 @@
+// Andaha MiniClient – Design-Tokens (helles Theme, Palette „Tinte & Kupfer“)
+//
+// Quelle: docs/design/DESIGN.md. Die Variablennamen sind identisch mit den
+// HTML-Mockups in docs/design/mockups, damit Styles 1:1 übertragbar sind.
+// Ziel in der App: src/WebApps/Miniclient/Andaha.WebApps.MiniClient/src/themes/
+
+// ---------------------------------------------------------------------------
+// SCSS-Variablen (für Material-Theme und Berechnungen)
+// ---------------------------------------------------------------------------
+
+// Flächen
+$andaha-board:        #E6DFD3; // nur Mockup-Hintergrund hinter den Geräten
+$andaha-bg:           #F8F4EC; // App-Hintergrund, warmes Papier
+$andaha-surface:      #FFFDF8; // Eingabefelder, Sheets, Menüs
+$andaha-raised:       #EFE8DC; // Sekundär-Buttons, Icon-Kacheln
+$andaha-well:         #F0EADF; // Upload-Fläche, Bildbereich
+$andaha-side:         #F1EBE1; // Desktop-Sidebar
+$andaha-active:       #ECE3D4; // aktiver Eintrag in Drawer/Sidebar
+
+// Linien
+$andaha-line:         #E0D8CA; // Trennlinien zwischen Bereichen
+$andaha-line-row:     #EAE3D7; // Haarlinie zwischen Listenzeilen
+$andaha-line-field:   #D6CDBD; // Rahmen von Feldern und Chips
+$andaha-grab:         #CFC5B4; // Griff am Bottom Sheet
+
+// Text
+$andaha-fg:           #1E1913; // Text
+$andaha-fg2:          #3B332A; // Text in Chips/sekundären Elementen
+$andaha-muted:        #685F52; // Labels, Metadaten (5,7:1 auf bg)
+$andaha-faint:        #72685B; // Hinweise, Platzhalter (4,8:1 auf bg)
+$andaha-dim:          #A0968A; // nur Deko: Chevrons, deaktiviert, Drag-Griff
+
+// Primär – Tintenblau
+$andaha-primary:      #2E4FA8; // Buttons, aktive Navigation, Fokus (7,5:1 mit Weiß)
+$andaha-on-primary:   #FFFFFF;
+$andaha-primary-soft: #E3E9F8; // ausgewählter Chip, Hintergrund
+$andaha-primary-line: #9DB0E0; // ausgewählter Chip, Rahmen
+$andaha-primary-chip: #24418F; // ausgewählter Chip, Text
+$andaha-primary-ring: rgba(46, 79, 168, .2); // Fokusring
+
+// Sekundär – Kupfer (offen / ausstehend)
+$andaha-secondary:      #B8692F;
+$andaha-secondary-soft: #F6E4D3; // Hintergrund „Zahlung offen“
+$andaha-secondary-text: #9A5220; // Text „offen“, „ausstehend“ (5,2:1 auf bg)
+
+// Semantik
+$andaha-positive:     #2E7443; // Überschuss, aktiv, annehmen
+$andaha-positive-bg:  #DFEEDB;
+$andaha-negative:     #B63A3A; // Löschen, Fehler, abgelehnt
+$andaha-negative-bg:  #F7DEDA;
+$andaha-negative-line:#E8C3BE; // Rahmen Löschen-Button
+$andaha-negative-bar: #D27466; // Ausgaben-Anteil im Haushaltsplan-Balken
+$andaha-negative-text:#A33A33;
+
+// Overlay & Schatten
+$andaha-scrim:        rgba(40, 30, 18, .38);
+$andaha-shadow-sm:    0 1px 2px rgba(60, 40, 20, .14);
+$andaha-shadow-md:    0 10px 24px -8px rgba(60, 40, 20, .22);
+$andaha-shadow-sheet: 0 -12px 40px rgba(60, 40, 20, .18);
+$andaha-shadow-menu:  0 0 0 1px $andaha-line-field, 0 16px 40px -8px rgba(60, 40, 20, .22);
+
+// Typografie
+$andaha-font: 'Hanken Grotesk', system-ui, sans-serif;
+
+// Radien
+$andaha-radius-field:  10px;
+$andaha-radius-button: 12px;
+$andaha-radius-chip:   20px; // = Höhe/2 (Pill)
+$andaha-radius-tag:    6px;
+$andaha-radius-sheet:  20px; // nur obere Ecken
+
+// Maße
+$andaha-topbar-height: 56px;
+$andaha-nav-height:    64px;
+$andaha-field-height:  48px;
+$andaha-button-height: 52px;
+$andaha-chip-height:   40px;
+$andaha-row-min:       60px;
+$andaha-touch-min:     44px;
+$andaha-gutter:        16px;
+$andaha-breakpoint-desktop: 1024px;
+
+// ---------------------------------------------------------------------------
+// CSS Custom Properties (gleiche Namen wie in den Mockups)
+// ---------------------------------------------------------------------------
+:root {
+  --bg: #{$andaha-bg};
+  --surface: #{$andaha-surface};
+  --raised: #{$andaha-raised};
+  --raised-line: #{$andaha-line-field};
+  --well: #{$andaha-well};
+  --side: #{$andaha-side};
+  --hover-row: #{$andaha-side};
+  --menu: #{$andaha-surface};
+  --act: #{$andaha-active};
+  --seg-on: #{$andaha-surface};
+
+  --line: #{$andaha-line};
+  --line2: #{$andaha-line-row};
+  --line3: #{$andaha-line-field};
+  --line-sheet: #E6DED1;
+  --grab: #{$andaha-grab};
+
+  --fg: #{$andaha-fg};
+  --fg2: #{$andaha-fg2};
+  --mut: #{$andaha-muted};
+  --faint: #{$andaha-faint};
+  --dim: #{$andaha-dim};
+
+  --pri: #{$andaha-primary};
+  --on-pri: #{$andaha-on-primary};
+  --pri-text: #{$andaha-primary};
+  --pri-ring: #{$andaha-primary-ring};
+  --pri-soft: #{$andaha-primary-soft};
+  --pri-line: #{$andaha-primary-line};
+  --pri-chip: #{$andaha-primary-chip};
+
+  --sec: #{$andaha-secondary};
+  --sec-soft: #{$andaha-secondary-soft};
+  --sec-text: #{$andaha-secondary-text};
+
+  --pos: #{$andaha-positive};
+  --pos-bg: #{$andaha-positive-bg};
+  --neg: #{$andaha-negative};
+  --neg-bg: #{$andaha-negative-bg};
+  --neg-line: #{$andaha-negative-line};
+  --neg-bar: #{$andaha-negative-bar};
+  --neg-text: #{$andaha-negative-text};
+
+  --paper: #FFFFFF;
+  --paper-bar: #D9D0C0;
+  --paper-ink: #2B241B;
+
+  --scrim: #{$andaha-scrim};
+  --sh4: rgba(60, 40, 20, .14);
+  --sh5: rgba(60, 40, 20, .18);
+  --sh6: rgba(60, 40, 20, .16);
+  --sh7: rgba(60, 40, 20, .22);
+  --ring-sw: rgba(0, 0, 0, .12);
+}
