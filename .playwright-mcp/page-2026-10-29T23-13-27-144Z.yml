@@ -1,0 +1,89 @@
+- generic [ref=f71e3]:
+  - navigation "Hauptnavigation" [ref=f71e352]:
+    - generic [ref=f71e6]:
+      - generic [ref=f71e7]: Andaha
+      - link "Rechnungen" [ref=f71e353] [cursor=pointer]:
+        - /url: /
+        - img [aria-hidden] [ref=f71e10]: receipt_long
+        - text: Rechnungen
+      - link "Analyse" [ref=f71e354] [cursor=pointer]:
+        - /url: /analyzed
+        - img [aria-hidden] [ref=f71e12]: document_scanner
+        - text: Analyse
+      - link "Haushaltsplan" [ref=f71e355] [cursor=pointer]:
+        - /url: /budgetplan
+        - img [aria-hidden] [ref=f71e14]: account_balance_wallet
+        - text: Haushaltsplan
+      - link "Stundenaufzeichnungen" [ref=f71e356] [cursor=pointer]:
+        - /url: /work
+        - img [aria-hidden] [ref=f71e16]: group
+        - text: Stundenaufzeichnungen
+      - link "Einstellungen" [ref=f71e357] [cursor=pointer]:
+        - /url: /settings
+        - img [aria-hidden] [ref=f71e18]: settings
+        - text: Einstellungen
+      - link "Export" [ref=f71e358] [cursor=pointer]:
+        - /url: /export
+        - img [aria-hidden] [ref=f71e20]: download
+        - text: Export
+      - generic [ref=f71e22]:
+        - link "AGB" [ref=f71e359] [cursor=pointer]:
+          - /url: /agb
+        - link "Datenschutzerklärung" [ref=f71e360] [cursor=pointer]:
+          - /url: /data-protection
+        - link "Benutzerdaten" [ref=f71e361] [cursor=pointer]:
+          - /url: /user-data
+  - generic [ref=f71e27]:
+    - banner [ref=f71e28]:
+      - heading "Rechnungen" [level=1] [ref=f71e362]
+      - generic [ref=f71e30]: Test1
+      - button "Benutzerkonto" [ref=f71e363] [cursor=pointer]:
+        - img [aria-hidden] [ref=f71e32]: account_circle
+    - main [ref=f71e33]:
+      - generic [ref=f71e35]:
+        - generic [ref=f71e36]:
+          - generic [ref=f71e39]:
+            - generic [ref=f71e40]:
+              - listbox [ref=f71e42]:
+                - option [ref=f71e44]:
+                  - img [aria-hidden] [ref=f71e45]: search
+                  - textbox "Suche Rechnungen..." [ref=f71e364]
+              - button [active] [ref=f71e48] [cursor=pointer]:
+                - img [aria-hidden] [ref=f71e50]: filter_list
+            - listbox [ref=f71e52]:
+              - generic [ref=f71e53]:
+                - option "Alle" [selected] [ref=f71e365]
+                - option "Keine" [ref=f71e366]
+                - option "Lebensmittel" [ref=f71e367]
+                - option "Wohnen" [ref=f71e368]
+                - option "Kleidung" [ref=f71e369]
+                - option "Ausbildung" [ref=f71e370]
+                - option "Freizeit" [ref=f71e371]
+                - option "Auto/Motorrad" [ref=f71e372]
+                - option "Hygiene/Gesundheit" [ref=f71e373]
+                - option "Geschenke" [ref=f71e374]
+                - option "Restaurant" [ref=f71e375]
+            - listbox [ref=f71e377]:
+              - generic [ref=f71e378]:
+                - option [ref=f71e379]:
+                  - text: "Von: 10.01.2026"
+                  - button [ref=f71e380] [cursor=pointer]:
+                    - img [aria-hidden] [ref=f71e382]: cancel
+                - option [ref=f71e383]:
+                  - text: "Bis: 20.10.2026"
+                  - button [ref=f71e384] [cursor=pointer]:
+                    - img [aria-hidden] [ref=f71e386]: cancel
+          - generic [ref=f71e387]: Keine Rechnungen verfügbar.
+        - navigation "Rechnungen" [ref=f71e388]:
+          - link "Rechnungen" [ref=f71e389] [cursor=pointer]:
+            - /url: /bill/list
+            - img [aria-hidden] [ref=f71e76]: list
+            - text: Rechnungen
+          - link "Hinzufügen" [ref=f71e390] [cursor=pointer]:
+            - /url: /bill/create
+            - img [aria-hidden] [ref=f71e78]: add_circle
+            - text: Hinzufügen
+          - link "Statistik" [ref=f71e391] [cursor=pointer]:
+            - /url: /bill/expenses
+            - img [aria-hidden] [ref=f71e80]: donut_small
+            - text: Statistik

@@ -1,0 +1,103 @@
+- generic [ref=f53e1]:
+  - generic [ref=f53e3]:
+    - navigation "Hauptnavigation" [ref=f53e5]:
+      - generic [ref=f53e6]:
+        - generic [ref=f53e7]: Andaha
+        - link "Rechnungen" [ref=f53e9] [cursor=pointer]:
+          - /url: /
+          - img [aria-hidden] [ref=f53e10]: receipt_long
+          - text: Rechnungen
+        - link "Analyse" [ref=f53e11] [cursor=pointer]:
+          - /url: /analyzed
+          - img [aria-hidden] [ref=f53e12]: document_scanner
+          - text: Analyse
+        - link "Haushaltsplan" [ref=f53e13] [cursor=pointer]:
+          - /url: /budgetplan
+          - img [aria-hidden] [ref=f53e14]: account_balance_wallet
+          - text: Haushaltsplan
+        - link "Stundenaufzeichnungen" [ref=f53e15] [cursor=pointer]:
+          - /url: /work
+          - img [aria-hidden] [ref=f53e16]: group
+          - text: Stundenaufzeichnungen
+        - link "Einstellungen" [ref=f53e17] [cursor=pointer]:
+          - /url: /settings
+          - img [aria-hidden] [ref=f53e18]: settings
+          - text: Einstellungen
+        - link "Export" [ref=f53e19] [cursor=pointer]:
+          - /url: /export
+          - img [aria-hidden] [ref=f53e20]: download
+          - text: Export
+        - generic [ref=f53e22]:
+          - link "AGB" [ref=f53e23] [cursor=pointer]:
+            - /url: /agb
+          - link "Datenschutzerklärung" [ref=f53e24] [cursor=pointer]:
+            - /url: /data-protection
+          - link "Benutzerdaten" [ref=f53e25] [cursor=pointer]:
+            - /url: /user-data
+    - generic [ref=f53e27]:
+      - banner [ref=f53e28]:
+        - heading "Rechnung hinzufügen" [level=1] [ref=f53e29]
+        - generic [ref=f53e30]:
+          - img [aria-hidden] [ref=f53e31]: sync
+          - text: Synchronisiert …
+        - generic [ref=f53e32]: Test1
+        - button "Benutzerkonto" [ref=f53e33] [cursor=pointer]:
+          - img [aria-hidden] [ref=f53e34]: account_circle
+      - main [ref=f53e35]:
+        - generic [ref=f53e37]:
+          - generic [ref=f53e40]:
+            - generic [ref=f53e41]:
+              - button [ref=f53e45] [cursor=pointer]:
+                - img [aria-hidden] [ref=f53e47]: add_a_photo
+              - generic [ref=f53e51]:
+                - textbox "Shopname" [ref=f53e52]: Probe Spar
+                - generic: Shopname *
+              - generic [ref=f53e56]:
+                - textbox "Notizen" [ref=f53e57]
+                - generic: Notizen
+              - generic [ref=f53e61]:
+                - spinbutton "Preis" [ref=f53e62]: "7"
+                - generic: Preis *
+              - generic [ref=f53e66] [cursor=pointer]:
+                - combobox "Kategorie Lebensmittel" [active] [ref=f53e124]:
+                  - generic [ref=f53e68]: Lebensmittel
+                - generic: Kategorie *
+              - generic [ref=f53e74]:
+                - generic [ref=f53e75]:
+                  - generic [ref=f53e76]:
+                    - textbox "Datum" [ref=f53e77]: 29.10.2026
+                    - generic: Datum
+                  - button "Open calendar" [ref=f53e80] [cursor=pointer]
+                - generic [ref=f53e84]: DD.MM.YYYY
+            - button [ref=f53e90] [cursor=pointer]:
+              - generic [ref=f53e91]:
+                - img [aria-hidden] [ref=f53e92]: save
+                - text: Speichern
+          - navigation "Rechnungen" [ref=f53e93]:
+            - link "Rechnungen" [ref=f53e94] [cursor=pointer]:
+              - /url: /bill/list
+              - img [aria-hidden] [ref=f53e95]: list
+              - text: Rechnungen
+            - link "Hinzufügen" [ref=f53e96] [cursor=pointer]:
+              - /url: /bill/create
+              - img [aria-hidden] [ref=f53e97]: add_circle
+              - text: Hinzufügen
+            - link "Statistik" [ref=f53e98] [cursor=pointer]:
+              - /url: /bill/expenses
+              - img [aria-hidden] [ref=f53e99]: donut_small
+              - text: Statistik
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - listbox "Kategorie":
+            - option "Keine"
+            - option "Lebensmittel" [selected]
+            - option "Wohnen"
+            - option "Kleidung"
+            - option "Ausbildung"
+            - option "Freizeit"
+            - option "Auto/Motorrad"
+            - option "Hygiene/Gesundheit"
+            - option "Geschenke"
+            - option "Restaurant"

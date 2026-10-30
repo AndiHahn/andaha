@@ -1,0 +1,62 @@
+- generic [ref=f36e6]:
+  - banner [ref=f36e7]:
+    - button "Menü öffnen" [ref=f36e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f36e9]: menu
+    - heading "Rechnung hinzufügen" [level=1] [ref=f36e10]
+    - img "Synchronisierung aktiv" [ref=f36e11]:
+      - img [aria-hidden] [ref=f36e12]: sync
+    - button "Benutzerkonto" [ref=f36e13] [cursor=pointer]:
+      - img [aria-hidden] [ref=f36e14]: account_circle
+  - main [ref=f36e15]:
+    - generic [ref=f36e17]:
+      - generic [ref=f36e20]:
+        - generic [ref=f36e21]:
+          - button [ref=f36e25] [cursor=pointer]:
+            - img [aria-hidden] [ref=f36e27]: add_a_photo
+          - generic [ref=f36e31]:
+            - textbox "Shopname" [ref=f36e32]: Testshop
+            - generic: Shopname *
+          - generic [ref=f36e36]:
+            - textbox "Notizen" [ref=f36e37]
+            - generic: Notizen
+          - generic [ref=f36e41]:
+            - spinbutton "Preis" [ref=f36e42]: "12.5"
+            - generic: Preis *
+          - generic [ref=f36e46] [cursor=pointer]:
+            - combobox "Kategorie" [expanded] [active] [ref=f36e47]:
+              - listbox "Kategorie" [ref=f36e81]:
+                - option "Keine" [ref=f36e82]
+                - option "Lebensmittel" [ref=f36e84]
+                - option "Wohnen" [ref=f36e86]
+                - option "Kleidung" [ref=f36e88]
+                - option "Ausbildung" [ref=f36e90]
+                - option "Freizeit" [ref=f36e92]
+                - option "Auto/Motorrad" [ref=f36e94]
+                - option "Hygiene/Gesundheit" [ref=f36e96]
+                - option "Geschenke" [ref=f36e98]
+                - option "Restaurant" [ref=f36e100]
+            - generic: Kategorie *
+          - generic [ref=f36e54]:
+            - generic [ref=f36e55]:
+              - generic [ref=f36e56]:
+                - textbox "Datum" [ref=f36e57]: 29.10.2026
+                - generic: Datum
+              - button "Open calendar" [ref=f36e60] [cursor=pointer]
+            - generic [ref=f36e64]: DD.MM.YYYY
+        - button [disabled] [ref=f36e70]:
+          - generic [ref=f36e71]:
+            - img [aria-hidden] [ref=f36e72]: save
+            - text: Speichern
+      - navigation "Rechnungen" [ref=f36e73]:
+        - link "Rechnungen" [ref=f36e74] [cursor=pointer]:
+          - /url: /bill/list
+          - img [aria-hidden] [ref=f36e75]: list
+          - text: Rechnungen
+        - link "Hinzufügen" [ref=f36e76] [cursor=pointer]:
+          - /url: /bill/create
+          - img [aria-hidden] [ref=f36e77]: add_circle
+          - text: Hinzufügen
+        - link "Statistik" [ref=f36e78] [cursor=pointer]:
+          - /url: /bill/expenses
+          - img [aria-hidden] [ref=f36e79]: donut_small
+          - text: Statistik

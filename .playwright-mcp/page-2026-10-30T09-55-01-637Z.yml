@@ -1,0 +1,19 @@
+- generic [ref=f498e6]:
+  - banner [ref=f498e7]:
+    - button "Menü öffnen" [ref=f498e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f498e9]: menu
+    - heading "Analyse" [level=1] [ref=f498e10]
+    - button "Benutzerkonto" [ref=f498e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f498e12]: account_circle
+  - main [ref=f498e13]:
+    - generic [ref=f498e15]:
+      - generic [ref=f498e16]: Keine Rechnungen verfügbar.
+      - navigation "Analyse" [ref=f498e21]:
+        - link "Analysiert" [ref=f498e22] [cursor=pointer]:
+          - /url: /analyzed/list
+          - img [aria-hidden] [ref=f498e23]: list
+          - text: Analysiert
+        - link "Rechnung hochladen" [ref=f498e24] [cursor=pointer]:
+          - /url: /analyzed/create
+          - img [aria-hidden] [ref=f498e25]: upload
+          - text: Rechnung hochladen

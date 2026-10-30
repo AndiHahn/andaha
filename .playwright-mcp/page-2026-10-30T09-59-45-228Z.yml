@@ -1,0 +1,27 @@
+- generic [ref=f507e6]:
+  - banner [ref=f507e7]:
+    - button "Menü öffnen" [ref=f507e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f507e9]: menu
+    - heading "Stundenaufzeichnungen" [level=1] [ref=f507e10]
+    - button "Benutzerkonto" [ref=f507e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f507e12]: account_circle
+  - main [ref=f507e13]:
+    - generic [ref=f507e15]:
+      - generic [ref=f507e17]:
+        - progressbar [ref=f507e20]
+        - generic [ref=f507e23]:
+          - link "Arbeitszeiten hinzufügen" [ref=f507e24] [cursor=pointer]:
+            - /url: /work/person/create-working-entry
+            - img [aria-hidden] [ref=f507e25]: schedule
+          - link "Person hinzufügen" [ref=f507e27] [cursor=pointer]:
+            - /url: /work/person/create
+            - img [aria-hidden] [ref=f507e28]: add
+      - navigation "Stunden" [ref=f507e30]:
+        - link "Personen" [ref=f507e31] [cursor=pointer]:
+          - /url: /work/person
+          - img [aria-hidden] [ref=f507e32]: group
+          - text: Personen
+        - link "Statistik" [ref=f507e33] [cursor=pointer]:
+          - /url: /work/statistics
+          - img [aria-hidden] [ref=f507e34]: donut_small
+          - text: Statistik

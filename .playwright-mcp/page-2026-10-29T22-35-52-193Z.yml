@@ -1,0 +1,23 @@
+- generic [ref=f35e6]:
+  - banner [ref=f35e7]:
+    - button "Menü öffnen" [ref=f35e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f35e9]: menu
+    - heading [level=1]
+    - img "Synchronisierung aktiv" [ref=f35e10]:
+      - img [aria-hidden] [ref=f35e11]: sync
+    - button "Benutzerkonto" [ref=f35e12] [cursor=pointer]:
+      - img [aria-hidden] [ref=f35e13]: account_circle
+  - main [ref=f35e14]:
+    - navigation "Rechnungen" [ref=f35e17]:
+      - link "Rechnungen" [ref=f35e18] [cursor=pointer]:
+        - /url: /
+        - img [aria-hidden] [ref=f35e19]: list
+        - text: Rechnungen
+      - link "Hinzufügen" [ref=f35e20] [cursor=pointer]:
+        - /url: /
+        - img [aria-hidden] [ref=f35e21]: add_circle
+        - text: Hinzufügen
+      - link "Statistik" [ref=f35e22] [cursor=pointer]:
+        - /url: /
+        - img [aria-hidden] [ref=f35e23]: donut_small
+        - text: Statistik

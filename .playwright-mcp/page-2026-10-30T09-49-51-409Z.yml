@@ -1,0 +1,21 @@
+- generic [ref=f493e6]:
+  - banner [ref=f493e7]:
+    - button "Menü öffnen" [ref=f493e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f493e9]: menu
+    - heading [level=1]
+    - button "Benutzerkonto" [ref=f493e10] [cursor=pointer]:
+      - img [aria-hidden] [ref=f493e11]: account_circle
+  - main [ref=f493e12]:
+    - navigation "Rechnungen" [ref=f493e15]:
+      - link "Rechnungen" [ref=f493e16] [cursor=pointer]:
+        - /url: /
+        - img [aria-hidden] [ref=f493e17]: list
+        - text: Rechnungen
+      - link "Hinzufügen" [ref=f493e18] [cursor=pointer]:
+        - /url: /
+        - img [aria-hidden] [ref=f493e19]: add_circle
+        - text: Hinzufügen
+      - link "Statistik" [ref=f493e20] [cursor=pointer]:
+        - /url: /
+        - img [aria-hidden] [ref=f493e21]: donut_small
+        - text: Statistik

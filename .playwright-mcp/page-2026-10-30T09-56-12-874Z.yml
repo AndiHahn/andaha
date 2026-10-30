@@ -1,0 +1,27 @@
+- generic [ref=f501e6]:
+  - banner [ref=f501e7]:
+    - button "Menü öffnen" [ref=f501e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f501e9]: menu
+    - heading "Fixkosten" [level=1] [ref=f501e10]
+    - button "Benutzerkonto" [ref=f501e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f501e12]: account_circle
+  - main [ref=f501e13]:
+    - generic [ref=f501e15]:
+      - generic [ref=f501e17]:
+        - progressbar [ref=f501e20]
+        - link "Hinzufügen" [ref=f501e24] [cursor=pointer]:
+          - /url: /budgetplan/fixedcost/create
+          - img [aria-hidden] [ref=f501e25]: add
+      - navigation "Haushaltsplan" [ref=f501e27]:
+        - link "Haushaltsplan" [ref=f501e28] [cursor=pointer]:
+          - /url: /budgetplan/overview
+          - img [aria-hidden] [ref=f501e29]: account_balance_wallet
+          - text: Haushaltsplan
+        - link "Fixkosten" [ref=f501e30] [cursor=pointer]:
+          - /url: /budgetplan/fixedcost
+          - img [aria-hidden] [ref=f501e31]: north_east
+          - text: Fixkosten
+        - link "Einkommen" [ref=f501e32] [cursor=pointer]:
+          - /url: /budgetplan/income
+          - img [aria-hidden] [ref=f501e33]: south_west
+          - text: Einkommen

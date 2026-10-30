@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "src/WebApps/MiniClient/Andaha.WebApps.MiniClient/src/app/features/bill/modules/bill-image-dialog/bill-image-dialog.component.html"
+        ],
+        "createdAt": "2026-10-30T00:47:36.114Z",
+        "reason": "agent: src is an Angular property binding [src]=imageSrc guarded by *ngIf=imageSrc (unchanged from pre-redesign template), not an empty src"
+      }
+    ]
+  }
+}

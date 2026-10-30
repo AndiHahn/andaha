@@ -1,0 +1,102 @@
+- generic [ref=f164e6]:
+  - banner [ref=f164e7]:
+    - button "Menü öffnen" [ref=f164e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f164e9]: menu
+    - heading "Statistik" [level=1] [ref=f164e10]
+    - button "Benutzerkonto" [ref=f164e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f164e12]: account_circle
+  - main [ref=f164e13]:
+    - generic [ref=f164e15]:
+      - generic [ref=f164e17]:
+        - generic [ref=f164e31]:
+          - radiogroup "Datumstyp" [ref=f164e32]:
+            - generic [ref=f164e33]:
+              - radio "Monat" [checked] [ref=f164e34] [cursor=pointer]
+              - generic [ref=f164e35]: Monat
+            - generic [ref=f164e36]:
+              - radio "Jahr" [ref=f164e37] [cursor=pointer]
+              - generic [ref=f164e38]: Jahr
+            - generic [ref=f164e39]:
+              - radio "Gesamt" [ref=f164e40] [cursor=pointer]
+              - generic [ref=f164e41]: Gesamt
+            - generic [ref=f164e42]:
+              - radio "Von – Bis" [ref=f164e43] [cursor=pointer]
+              - generic [ref=f164e44]: Von – Bis
+          - generic [ref=f164e45]:
+            - generic [ref=f164e46]: Monat
+            - generic [ref=f164e47]:
+              - combobox "Monat" [expanded] [active] [ref=f164e48]:
+                - generic [ref=f164e49] [cursor=pointer]:
+                  - generic [ref=f164e50]: Oktober 2026
+                  - listbox "Monat" [ref=f164e112]:
+                    - option "Mai 2026" [ref=f164e113]
+                    - option "Juni 2026" [ref=f164e115]
+                    - option "Juli 2026" [ref=f164e117]
+                    - option "August 2026" [ref=f164e119]
+                    - option "September 2026" [ref=f164e121]
+                    - option "Oktober 2026" [selected] [ref=f164e123]
+              - img [aria-hidden] [ref=f164e52]: expand_more
+        - generic [ref=f164e53]:
+          - generic [ref=f164e54]:
+            - generic:
+              - generic: Summe der Ausgaben
+              - generic: 2.204,89 €
+          - generic [ref=f164e56]:
+            - button "Kleidung 20 % 438,99 €" [ref=f164e57] [cursor=pointer]:
+              - generic [ref=f164e59]: Kleidung
+              - generic [ref=f164e60]: 20 %
+              - generic [ref=f164e61]: 438,99 €
+              - img [aria-hidden] [ref=f164e62]: chevron_right
+            - button "Ausbildung 17 % 370,02 €" [ref=f164e63] [cursor=pointer]:
+              - generic [ref=f164e65]: Ausbildung
+              - generic [ref=f164e66]: 17 %
+              - generic [ref=f164e67]: 370,02 €
+              - img [aria-hidden] [ref=f164e68]: chevron_right
+            - button "Wohnen 15 % 327,96 €" [ref=f164e69] [cursor=pointer]:
+              - generic [ref=f164e71]: Wohnen
+              - generic [ref=f164e72]: 15 %
+              - generic [ref=f164e73]: 327,96 €
+              - img [aria-hidden] [ref=f164e74]: chevron_right
+            - button "Geschenke 13 % 292,66 €" [ref=f164e75] [cursor=pointer]:
+              - generic [ref=f164e77]: Geschenke
+              - generic [ref=f164e78]: 13 %
+              - generic [ref=f164e79]: 292,66 €
+              - img [aria-hidden] [ref=f164e80]: chevron_right
+            - button "Hygiene/Gesundheit 10 % 218,64 €" [ref=f164e81] [cursor=pointer]:
+              - generic [ref=f164e83]: Hygiene/Gesundheit
+              - generic [ref=f164e84]: 10 %
+              - generic [ref=f164e85]: 218,64 €
+              - img [aria-hidden] [ref=f164e86]: chevron_right
+            - button "Restaurant 8 % 186,68 €" [ref=f164e87] [cursor=pointer]:
+              - generic [ref=f164e89]: Restaurant
+              - generic [ref=f164e90]: 8 %
+              - generic [ref=f164e91]: 186,68 €
+              - img [aria-hidden] [ref=f164e92]: chevron_right
+            - button "Lebensmittel 7 % 154,72 €" [ref=f164e93] [cursor=pointer]:
+              - generic [ref=f164e95]: Lebensmittel
+              - generic [ref=f164e96]: 7 %
+              - generic [ref=f164e97]: 154,72 €
+              - img [aria-hidden] [ref=f164e98]: chevron_right
+            - button "Auto/Motorrad 7 % 144,62 €" [ref=f164e99] [cursor=pointer]:
+              - generic [ref=f164e101]: Auto/Motorrad
+              - generic [ref=f164e102]: 7 %
+              - generic [ref=f164e103]: 144,62 €
+              - img [aria-hidden] [ref=f164e104]: chevron_right
+            - button "Freizeit 3 % 70,60 €" [ref=f164e105] [cursor=pointer]:
+              - generic [ref=f164e107]: Freizeit
+              - generic [ref=f164e108]: 3 %
+              - generic [ref=f164e109]: 70,60 €
+              - img [aria-hidden] [ref=f164e110]: chevron_right
+      - navigation "Rechnungen" [ref=f164e23]:
+        - link "Rechnungen" [ref=f164e24] [cursor=pointer]:
+          - /url: /bill/list
+          - img [aria-hidden] [ref=f164e25]: list
+          - text: Rechnungen
+        - link "Hinzufügen" [ref=f164e26] [cursor=pointer]:
+          - /url: /bill/create
+          - img [aria-hidden] [ref=f164e27]: add_circle
+          - text: Hinzufügen
+        - link "Statistik" [ref=f164e28] [cursor=pointer]:
+          - /url: /bill/expenses
+          - img [aria-hidden] [ref=f164e29]: donut_small
+          - text: Statistik

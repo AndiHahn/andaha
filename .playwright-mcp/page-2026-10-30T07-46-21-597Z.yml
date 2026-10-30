@@ -1,0 +1,60 @@
+- generic [ref=f321e3]:
+  - navigation "Hauptnavigation" [ref=f321e5]:
+    - generic [ref=f321e6]:
+      - generic [ref=f321e7]: Andaha
+      - link "Rechnungen" [ref=f321e9] [cursor=pointer]:
+        - /url: /
+        - img [aria-hidden] [ref=f321e10]: receipt_long
+        - text: Rechnungen
+      - link "Analyse" [ref=f321e11] [cursor=pointer]:
+        - /url: /analyzed
+        - img [aria-hidden] [ref=f321e12]: document_scanner
+        - text: Analyse
+      - link "Haushaltsplan" [ref=f321e13] [cursor=pointer]:
+        - /url: /budgetplan
+        - img [aria-hidden] [ref=f321e14]: account_balance_wallet
+        - text: Haushaltsplan
+      - link "Stundenaufzeichnungen" [ref=f321e15] [cursor=pointer]:
+        - /url: /work
+        - img [aria-hidden] [ref=f321e16]: group
+        - text: Stundenaufzeichnungen
+      - link "Einstellungen" [ref=f321e17] [cursor=pointer]:
+        - /url: /settings
+        - img [aria-hidden] [ref=f321e18]: settings
+        - text: Einstellungen
+      - link "Export" [ref=f321e19] [cursor=pointer]:
+        - /url: /export
+        - img [aria-hidden] [ref=f321e20]: download
+        - text: Export
+      - generic [ref=f321e22]:
+        - link "AGB" [ref=f321e23] [cursor=pointer]:
+          - /url: /agb
+        - link "Datenschutzerklärung" [ref=f321e24] [cursor=pointer]:
+          - /url: /data-protection
+        - link "Benutzerdaten" [ref=f321e25] [cursor=pointer]:
+          - /url: /user-data
+  - generic [ref=f321e27]:
+    - banner [ref=f321e28]:
+      - heading "Verbindungen" [level=1] [ref=f321e29]
+      - button "Benutzerkonto" [ref=f321e30] [cursor=pointer]:
+        - img [aria-hidden] [ref=f321e31]: account_circle
+    - main [ref=f321e32]:
+      - generic [ref=f321e34]:
+        - generic [ref=f321e35]:
+          - paragraph [ref=f321e36]: Verbindungen
+          - generic [ref=f321e37]: Keine Verbindungen vorhanden.
+          - button "Verbindung herstellen" [ref=f321e41] [cursor=pointer]:
+            - img [aria-hidden] [ref=f321e42]: link
+          - paragraph [ref=f321e44]: Eingehende Verbindungsanfragen
+          - generic [ref=f321e45]: Keine eingehenden Verbindungsanfragen vorhanden.
+          - paragraph [ref=f321e48]: Ausgehende Verbindungsanfragen
+          - generic [ref=f321e49]: Keine ausgehenden Verbindungsanfragen vorhanden.
+        - navigation "Einstellungen" [ref=f321e52]:
+          - link "Verbindungen" [ref=f321e53] [cursor=pointer]:
+            - /url: /settings/connections
+            - img [aria-hidden] [ref=f321e54]: link
+            - text: Verbindungen
+          - link "Kategorien" [ref=f321e55] [cursor=pointer]:
+            - /url: /settings/categories
+            - img [aria-hidden] [ref=f321e56]: category
+            - text: Kategorien

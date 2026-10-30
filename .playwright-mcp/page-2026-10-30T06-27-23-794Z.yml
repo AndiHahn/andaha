@@ -1,0 +1,125 @@
+- generic [ref=f195e3]:
+  - navigation "Hauptnavigation" [ref=f195e187]:
+    - generic [ref=f195e188]:
+      - generic [ref=f195e189]: Andaha
+      - link "Rechnungen" [ref=f195e191] [cursor=pointer]:
+        - /url: /
+        - img [aria-hidden] [ref=f195e192]: receipt_long
+        - text: Rechnungen
+      - link "Analyse" [ref=f195e193] [cursor=pointer]:
+        - /url: /analyzed
+        - img [aria-hidden] [ref=f195e194]: document_scanner
+        - text: Analyse
+      - link "Haushaltsplan" [ref=f195e195] [cursor=pointer]:
+        - /url: /budgetplan
+        - img [aria-hidden] [ref=f195e196]: account_balance_wallet
+        - text: Haushaltsplan
+      - link "Stundenaufzeichnungen" [ref=f195e197] [cursor=pointer]:
+        - /url: /work
+        - img [aria-hidden] [ref=f195e198]: group
+        - text: Stundenaufzeichnungen
+      - link "Einstellungen" [ref=f195e199] [cursor=pointer]:
+        - /url: /settings
+        - img [aria-hidden] [ref=f195e200]: settings
+        - text: Einstellungen
+      - link "Export" [ref=f195e201] [cursor=pointer]:
+        - /url: /export
+        - img [aria-hidden] [ref=f195e202]: download
+        - text: Export
+      - generic [ref=f195e204]:
+        - link "AGB" [ref=f195e205] [cursor=pointer]:
+          - /url: /agb
+        - link "Datenschutzerklärung" [ref=f195e206] [cursor=pointer]:
+          - /url: /data-protection
+        - link "Benutzerdaten" [ref=f195e207] [cursor=pointer]:
+          - /url: /user-data
+  - generic [ref=f195e6]:
+    - banner [ref=f195e208]:
+      - heading "Analyse" [level=1] [ref=f195e209]
+      - generic [ref=f195e210]: Test1
+      - button "Benutzerkonto" [ref=f195e211] [cursor=pointer]:
+        - img [aria-hidden] [ref=f195e212]: account_circle
+    - main [ref=f195e13]:
+      - generic [ref=f195e15]:
+        - generic [ref=f195e216]:
+          - link "23.10.2026 Spar Gourmet 63,18€" [ref=f195e217] [cursor=pointer]:
+            - /url: /analyzed/analyzed/t0
+            - generic [ref=f195e219]:
+              - generic [ref=f195e220]: 23.10.2026
+              - generic [ref=f195e221]: Spar Gourmet
+              - generic [ref=f195e222]: 63,18€
+          - link "20.10.2026 Ein sehr sehr langer Shopname der abgeschnitten werden muss weil er zu lang ist 12.345,67€" [ref=f195e223] [cursor=pointer]:
+            - /url: /analyzed/analyzed/t1
+            - generic [ref=f195e225]:
+              - generic [ref=f195e226]: 20.10.2026
+              - generic [ref=f195e227]: Ein sehr sehr langer Shopname der abgeschnitten werden muss weil er zu lang ist
+              - generic [ref=f195e228]: 12.345,67€
+          - link "10.10.2026 Shop 0 10,00€" [ref=f195e229] [cursor=pointer]:
+            - /url: /analyzed/analyzed/t2
+            - generic [ref=f195e231]:
+              - generic [ref=f195e232]: 10.10.2026
+              - generic [ref=f195e233]: Shop 0
+              - generic [ref=f195e234]: 10,00€
+          - link "11.10.2026 Shop 1 11,00€" [ref=f195e235] [cursor=pointer]:
+            - /url: /analyzed/analyzed/t3
+            - generic [ref=f195e237]:
+              - generic [ref=f195e238]: 11.10.2026
+              - generic [ref=f195e239]: Shop 1
+              - generic [ref=f195e240]: 11,00€
+          - link "12.10.2026 Shop 2 12,00€" [ref=f195e241] [cursor=pointer]:
+            - /url: /analyzed/analyzed/t4
+            - generic [ref=f195e243]:
+              - generic [ref=f195e244]: 12.10.2026
+              - generic [ref=f195e245]: Shop 2
+              - generic [ref=f195e246]: 12,00€
+          - link "13.10.2026 Shop 3 13,00€" [ref=f195e247] [cursor=pointer]:
+            - /url: /analyzed/analyzed/t5
+            - generic [ref=f195e249]:
+              - generic [ref=f195e250]: 13.10.2026
+              - generic [ref=f195e251]: Shop 3
+              - generic [ref=f195e252]: 13,00€
+          - link "14.10.2026 Shop 4 14,00€" [ref=f195e253] [cursor=pointer]:
+            - /url: /analyzed/analyzed/t6
+            - generic [ref=f195e255]:
+              - generic [ref=f195e256]: 14.10.2026
+              - generic [ref=f195e257]: Shop 4
+              - generic [ref=f195e258]: 14,00€
+          - link "15.10.2026 Shop 5 15,00€" [ref=f195e259] [cursor=pointer]:
+            - /url: /analyzed/analyzed/t7
+            - generic [ref=f195e261]:
+              - generic [ref=f195e262]: 15.10.2026
+              - generic [ref=f195e263]: Shop 5
+              - generic [ref=f195e264]: 15,00€
+          - link "16.10.2026 Shop 6 16,00€" [ref=f195e265] [cursor=pointer]:
+            - /url: /analyzed/analyzed/t8
+            - generic [ref=f195e267]:
+              - generic [ref=f195e268]: 16.10.2026
+              - generic [ref=f195e269]: Shop 6
+              - generic [ref=f195e270]: 16,00€
+          - link "17.10.2026 Shop 7 17,00€" [ref=f195e271] [cursor=pointer]:
+            - /url: /analyzed/analyzed/t9
+            - generic [ref=f195e273]:
+              - generic [ref=f195e274]: 17.10.2026
+              - generic [ref=f195e275]: Shop 7
+              - generic [ref=f195e276]: 17,00€
+          - link "18.10.2026 Shop 8 18,00€" [ref=f195e277] [cursor=pointer]:
+            - /url: /analyzed/analyzed/t10
+            - generic [ref=f195e279]:
+              - generic [ref=f195e280]: 18.10.2026
+              - generic [ref=f195e281]: Shop 8
+              - generic [ref=f195e282]: 18,00€
+          - link "10.10.2026 Shop 9 19,00€" [ref=f195e283] [cursor=pointer]:
+            - /url: /analyzed/analyzed/t11
+            - generic [ref=f195e285]:
+              - generic [ref=f195e286]: 10.10.2026
+              - generic [ref=f195e287]: Shop 9
+              - generic [ref=f195e288]: 19,00€
+        - navigation "Analyse" [ref=f195e290]:
+          - link "Analysiert" [ref=f195e291] [cursor=pointer]:
+            - /url: /analyzed/list
+            - img [aria-hidden] [ref=f195e119]: list
+            - text: Analysiert
+          - link "Rechnung hochladen" [ref=f195e292] [cursor=pointer]:
+            - /url: /analyzed/create
+            - img [aria-hidden] [ref=f195e121]: upload
+            - text: Rechnung hochladen

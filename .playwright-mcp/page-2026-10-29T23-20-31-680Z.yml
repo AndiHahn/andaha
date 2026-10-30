@@ -1,0 +1,49 @@
+- generic [ref=f79e6]:
+  - banner [ref=f79e7]:
+    - button "Menü öffnen" [ref=f79e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f79e9]: menu
+    - heading "Rechnung hinzufügen" [level=1] [ref=f79e10]
+    - button "Benutzerkonto" [ref=f79e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f79e12]: account_circle
+  - main [ref=f79e13]:
+    - generic [ref=f79e15]:
+      - generic [ref=f79e18]:
+        - generic [ref=f79e19]:
+          - button [ref=f79e23] [cursor=pointer]:
+            - img [aria-hidden] [ref=f79e25]: add_a_photo
+          - generic [ref=f79e29]:
+            - textbox "Shopname" [ref=f79e30]
+            - generic: Shopname *
+          - generic [ref=f79e34]:
+            - textbox "Notizen" [ref=f79e35]
+            - generic: Notizen
+          - generic [ref=f79e39]:
+            - spinbutton "Preis" [ref=f79e40]
+            - generic: Preis *
+          - generic [ref=f79e44] [cursor=pointer]:
+            - combobox [ref=f79e45]
+            - generic: Kategorie *
+          - generic [ref=f79e52]:
+            - generic [ref=f79e53]:
+              - generic [ref=f79e54]:
+                - textbox "Datum" [ref=f79e55]: 30.10.2026
+                - generic: Datum
+              - button "Open calendar" [ref=f79e58] [cursor=pointer]
+            - generic [ref=f79e62]: DD.MM.YYYY
+        - button [disabled] [ref=f79e68]:
+          - generic [ref=f79e69]:
+            - img [aria-hidden] [ref=f79e70]: save
+            - text: Speichern
+      - navigation "Rechnungen" [ref=f79e71]:
+        - link "Rechnungen" [ref=f79e72] [cursor=pointer]:
+          - /url: /bill/list
+          - img [aria-hidden] [ref=f79e73]: list
+          - text: Rechnungen
+        - link "Hinzufügen" [ref=f79e74] [cursor=pointer]:
+          - /url: /bill/create
+          - img [aria-hidden] [ref=f79e75]: add_circle
+          - text: Hinzufügen
+        - link "Statistik" [ref=f79e76] [cursor=pointer]:
+          - /url: /bill/expenses
+          - img [aria-hidden] [ref=f79e77]: donut_small
+          - text: Statistik

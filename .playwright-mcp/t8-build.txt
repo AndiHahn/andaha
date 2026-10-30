@@ -1,0 +1,109 @@
+
+> andaha.web-apps.mini-client@0.0.0 build
+> ng build
+
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+✔ Browser application bundle generation complete.
+- Copying assets...
+✔ Copying assets complete.
+- Generating index html...
+✔ Index html generation complete.
+- Generating service worker...
+✔ Service worker generation complete.
+
+Initial Chunk Files           | Names                                                           |  Raw Size | Estimated Transfer Size
+main.57ff5a5072e7e56e.js      | main                                                            |   1.18 MB |               251.77 kB
+styles.d6ce38fc41c3f73d.css   | styles                                                          |  97.10 kB |                10.41 kB
+polyfills.a46d39aca2f8e410.js | polyfills                                                       |  33.11 kB |                10.65 kB
+runtime.e469e87b5c1b533f.js   | runtime                                                         |   4.47 kB |                 2.13 kB
+
+| Initial Total                                                   |   1.32 MB |               274.97 kB
+
+Lazy Chunk Files              | Names                                                           |  Raw Size | Estimated Transfer Size
+6067.70ad67fa4b273a45.js      | modules-expenses-expenses-module                                | 219.84 kB |                65.14 kB
+9801.7367720f5d22d7e0.js      | add-working-entry-add-working-entry-module                      | 126.68 kB |                30.95 kB
+9771.ac33b762d000e533.js      | modules-categories-categories-module                            |  55.45 kB |                13.72 kB
+8590.09e603d1313c0185.js      | modules-bill-list-bill-list-module                              |  33.33 kB |                 8.02 kB
+1817.9ce24447d65115a6.js      | bill-image-dialog-component                                     |  30.34 kB |                 6.97 kB
+common.51f911f2849b6a82.js    | common                                                          |  29.63 kB |                 6.77 kB
+9402.48010887d615ab7d.js      | add-bill-image-dialog-component                                 |  26.23 kB |                 7.73 kB
+3641.81f6026be7e120ff.js      | features-data-protection-data-protection-data-protection-module |  25.89 kB |                 7.24 kB
+4385.d3abb99035d576f3.js      | modules-bill-list-bill-list-module                              |  23.85 kB |                 6.57 kB
+5950.e12b7ffc6e9d72fe.js      | modules-bill-list-bill-list-module                              |  23.43 kB |                 5.86 kB
+3962.2292103592acc3f8.js      | modules-overview-overview-module                                |  22.86 kB |                 5.44 kB
+4413.af184ddb7ec98a43.js      | modules-add-bill-add-bill-module                                |  19.74 kB |                 5.44 kB
+6572.223f8ba8d40f7f5b.js      | create-category-create-category-module                          |  18.30 kB |                 4.59 kB
+4666.e8c313e64abc1d71.js      | add-working-entry-add-working-entry-module                      |  17.79 kB |                 4.85 kB
+5611.75dc72e2e2faaeef.js      | modules-expenses-expenses-module                                |  17.13 kB |                 4.36 kB
+3044.b610d7eb1773bd47.js      | modules-analyzed-bill-details-analyzed-bill-details-module      |  16.37 kB |                 4.37 kB
+3077.fbd7f2472e2f6c75.js      | modules-add-bill-add-bill-module                                |  16.33 kB |                 4.60 kB
+6716.9f0e2cbbeb8fe5c8.js      | create-fixed-cost-create-fixed-cost-module                      |  15.02 kB |                 4.03 kB
+7096.6bd0d1b65370e2a0.js      | modules-bill-details-bill-details-module                        |  14.48 kB |                 3.93 kB
+6174.aba2f70368d7c1a0.js      | create-income-create-income-module                              |  14.42 kB |                 3.91 kB
+6215.0e10516178d24669.js      | add-person-add-person-module                                    |  13.74 kB |                 3.66 kB
+7653.b77801f755f0bdf1.js      | person-details-person-details-module                            |  13.48 kB |                 3.82 kB
+1799.49b2fc55bcf9f2b4.js      | modules-fixed-cost-fixed-cost-module                            |  12.24 kB |                 3.15 kB
+9619.dafe9bd46ab0d541.js      | category-item-details-category-item-details-module              |  11.83 kB |                 3.38 kB
+6351.733e6f9c3766d0da.js      | features-data-protection-agb-agb-module                         |  11.49 kB |                 4.06 kB
+3602.7fa9c34be48839ab.js      | add-connection-dialog-component                                 |  11.39 kB |                 3.17 kB
+8447.3f1728ddd4c0d535.js      | modules-bill-details-bill-details-module                        |  11.04 kB |                 2.86 kB
+8628.c9ea9a1f63a807a2.js      | features-export-export-module                                   |  10.94 kB |                 3.06 kB
+4378.188fc918b3b08dd3.js      | modules-add-bill-for-analysis-add-bill-for-analysis-module      |  10.57 kB |                 2.95 kB
+2117.de5024ca5d5ee95d.js      | modules-analyzed-bill-analyzed-bill-list-module                 |  10.27 kB |                 2.80 kB
+3534.3bdbfaeca57e2848.js      | modules-connection-connection-module                            |   8.76 kB |                 1.79 kB
+6544.a60d307137cb0aa4.js      | fixed-cost-details-fixed-cost-details-module                    |   8.11 kB |                 2.61 kB
+3121.9761a2167d7dd133.js      | modules-statistics-statistics-module                            |   7.88 kB |                 2.05 kB
+9659.15de8aca605d41bb.js      | income-details-income-details-module                            |   7.48 kB |                 2.50 kB
+9499.a384835b85e84cca.js      | bill-list-filter-dialog-component                               |   5.99 kB |                 2.10 kB
+3142.c441265837430f84.js      | modules-analyzed-bill-analyzed-bill-list-module                 |   5.61 kB |                 2.00 kB
+9261.15782476ac6c3edc.js      | modules-fixed-cost-fixed-cost-module                            |   4.74 kB |                 1.68 kB
+9110.72f68902ff94eed3.js      | modules-person-person-module                                    |   4.74 kB |                 1.64 kB
+6424.d3dd81a28ae065eb.js      | create-category-create-category-module                          |   4.36 kB |                 1.68 kB
+2847.939b83f5bfcacff6.js      | modules-income-income-module                                    |   4.09 kB |                 1.51 kB
+683.e967ff428c0daedd.js       | person-payment-dialog-component                                 |   4.01 kB |                 1.48 kB
+7396.0484085680d1c6f6.js      | fixed-cost-history-dialog-component                             |   2.67 kB |                 1.12 kB
+3529.f30703f243cb0dd4.js      | income-history-dialog-component                                 |   2.61 kB |                 1.11 kB
+1405.6c4d2406fafdc67c.js      | features-settings-settings-module                               |   2.57 kB |                 1.12 kB
+6978.03587f2e4fafcfdb.js      | features-bill-bill-module                                       |   2.28 kB |               917 bytes
+7374.997a12c4103a28b3.js      | features-budgetplan-budgetplan-module                           |   2.01 kB |               862 bytes
+4762.2796db70a7d980e4.js      | features-bill-analysis-bill-analysis-module                     |   1.86 kB |               878 bytes
+985.1c3ed8134478da03.js       | confirmation-dialog-component                                   |   1.73 kB |               817 bytes
+3991.a6babb7e9447b80f.js      | features-work-work-module                                       |   1.67 kB |               806 bytes
+5137.f25ddbe394ea1ac1.js      | features-data-protection-user-data-user-data-module             |   1.03 kB |               589 bytes
+9087.d848029de9f56e5b.js      | work-entry-details-work-entry-details-dialog-module             | 778 bytes |               413 bytes
+
+Build at: 2026-10-30T01:19:31.606Z - Hash: fc2a6db355632e70 - Time: 87074ms
+
+Warning: C:/Dev/Andi/andaha/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/src/app/features/bill/modules/add-bill-image-dialog/add-bill-image-dialog.module.ts is part of the TypeScript compilation but it's unused.
+Add only entry points to the 'files' or 'include' properties in your tsconfig.
+
+Warning: C:/Dev/Andi/andaha/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/src/app/features/bill/modules/bill-image-dialog/bill-image-dialog.module.ts is part of the TypeScript compilation but it's unused.
+Add only entry points to the 'files' or 'include' properties in your tsconfig.
+
+Warning: C:/Dev/Andi/andaha/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/src/app/features/bill/modules/bill-list/bill-list-filter/bill-list-filter-dialog/bill-list-filter-dialog.module.ts is part of the TypeScript compilation but it's unused.
+Add only entry points to the 'files' or 'include' properties in your tsconfig.
+
+Warning: C:/Dev/Andi/andaha/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/src/app/features/budgetplan/modules/fixed-cost/fixed-cost-history-dialog/fixed-cost-history-dialog.module.ts is part of the TypeScript compilation but it's unused.
+Add only entry points to the 'files' or 'include' properties in your tsconfig.
+
+Warning: C:/Dev/Andi/andaha/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/src/app/features/budgetplan/modules/income/income-history-dialog/income-history-dialog.module.ts is part of the TypeScript compilation but it's unused.
+Add only entry points to the 'files' or 'include' properties in your tsconfig.
+
+Warning: C:/Dev/Andi/andaha/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/src/app/features/settings/modules/connection/add-connection-dialog/add-connection-dialog.module.ts is part of the TypeScript compilation but it's unused.
+Add only entry points to the 'files' or 'include' properties in your tsconfig.
+
+Warning: C:/Dev/Andi/andaha/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/src/app/features/work/modules/person/person-payment-dialog/person-payment-dialog.module.ts is part of the TypeScript compilation but it's unused.
+Add only entry points to the 'files' or 'include' properties in your tsconfig.
+
+Warning: C:/Dev/Andi/andaha/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/src/app/shared/confirmation-dialog/confirmation-dialog.module.ts is part of the TypeScript compilation but it's unused.
+Add only entry points to the 'files' or 'include' properties in your tsconfig.
+
+Warning: C:\Dev\Andi\andaha\src\WebApps\MiniClient\Andaha.WebApps.MiniClient\node_modules\angular-oauth2-oidc\fesm2020\angular-oauth2-oidc.mjs depends on 'fast-sha256'. CommonJS or AMD dependencies can cause optimization bailouts.
+For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies
+
+Warning: C:\Dev\Andi\andaha\src\WebApps\MiniClient\Andaha.WebApps.MiniClient\src\app\shared\utils\utils.ts depends on 'moment'. CommonJS or AMD dependencies can cause optimization bailouts.
+For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies
+
+
+EXIT 0

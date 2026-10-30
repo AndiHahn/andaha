@@ -1,0 +1,84 @@
+- generic [ref=f494e1]:
+  - generic [ref=f494e6]:
+    - banner [ref=f494e7]:
+      - link [ref=f494e318] [cursor=pointer]:
+        - /url: /bill/list
+        - img [aria-hidden] [ref=f494e239]: arrow_back
+      - heading [level=1] [ref=f494e319]: Rechnung
+      - button [ref=f494e320] [cursor=pointer]:
+        - img [aria-hidden] [ref=f494e12]: account_circle
+    - main [ref=f494e13]:
+      - generic [ref=f494e15]:
+        - generic [ref=f494e242]:
+          - generic [ref=f494e243]:
+            - button [ref=f494e321] [cursor=pointer]:
+              - img [aria-hidden] [ref=f494e252]: photo_camera
+              - generic [ref=f494e253]:
+                - text: Foto der Rechnung
+                - generic [ref=f494e254]: Optional
+            - generic [ref=f494e270]:
+              - generic [ref=f494e271]:
+                - generic [ref=f494e272]: Shopname
+                - textbox [ref=f494e322]: UIT Testshop A edit
+              - generic [ref=f494e275]:
+                - generic [ref=f494e276]: Notizen
+                - textbox [ref=f494e323]: ui test
+              - generic [ref=f494e279]:
+                - generic [ref=f494e280]: Preis
+                - generic [ref=f494e281]:
+                  - spinbutton [ref=f494e324]: "12.34"
+                  - generic [aria-hidden] [ref=f494e283]: €
+              - generic [ref=f494e284]:
+                - generic [ref=f494e285]: Kategorie
+                - generic [ref=f494e286]:
+                  - combobox [ref=f494e325]:
+                    - generic [ref=f494e288] [cursor=pointer]: Lebensmittel
+                  - img [aria-hidden] [ref=f494e294]: expand_more
+              - generic [ref=f494e295]:
+                - generic [ref=f494e296]: Unterkategorie
+                - generic [ref=f494e297]:
+                  - combobox [ref=f494e326]:
+                    - generic [ref=f494e299] [cursor=pointer]
+                  - img [aria-hidden] [ref=f494e301]: expand_more
+              - generic [ref=f494e302]:
+                - generic [ref=f494e303]: Datum
+                - generic [ref=f494e304]:
+                  - textbox [invalid] [ref=f494e327]: 15.10.2026
+                  - button [ref=f494e328] [cursor=pointer]:
+                    - img [aria-hidden] [ref=f494e309]: calendar_today
+                - generic [ref=f494e310]: DD.MM.YYYY
+          - generic [ref=f494e311]:
+            - button [ref=f494e329] [cursor=pointer]:
+              - img [aria-hidden] [ref=f494e313]: close
+              - generic [ref=f494e314]: Abbrechen
+            - button [ref=f494e330] [cursor=pointer]:
+              - img [aria-hidden] [ref=f494e316]: check
+              - generic [ref=f494e317]: Speichern
+        - navigation [ref=f494e331]:
+          - link [ref=f494e332] [cursor=pointer]:
+            - /url: /bill/list
+            - img [aria-hidden] [ref=f494e51]: list
+            - text: Rechnungen
+          - link [ref=f494e333] [cursor=pointer]:
+            - /url: /bill/create
+            - img [aria-hidden] [ref=f494e53]: add_circle
+            - text: Hinzufügen
+          - link [ref=f494e334] [cursor=pointer]:
+            - /url: /bill/expenses
+            - img [aria-hidden] [ref=f494e55]: donut_small
+            - text: Statistik
+  - dialog [ref=f494e338]:
+    - generic [ref=f494e340]:
+      - button "Schließen" [ref=f494e343] [cursor=pointer]:
+        - img [aria-hidden] [ref=f494e344]: close
+      - generic [ref=f494e345]:
+        - radiogroup [ref=f494e346]:
+          - generic [ref=f494e348] [cursor=pointer]:
+            - radio "Foto aufnehmen" [ref=f494e352]
+            - generic [ref=f494e353]: Foto aufnehmen
+          - generic [ref=f494e355] [cursor=pointer]:
+            - radio "Aus Galerie hochladen" [checked] [active] [ref=f494e359]
+            - generic [ref=f494e360]: Aus Galerie hochladen
+        - button "Foto auswählen" [ref=f494e374] [cursor=pointer]:
+          - img [aria-hidden] [ref=f494e375]: upload
+      - button "Übernehmen" [disabled] [ref=f494e371]

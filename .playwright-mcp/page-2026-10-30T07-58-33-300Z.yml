@@ -1,0 +1,35 @@
+- generic [ref=f339e6]:
+  - banner [ref=f339e7]:
+    - link "Zurück" [ref=f339e84] [cursor=pointer]:
+      - /url: /settings/categories
+      - img [aria-hidden] [ref=f339e85]: arrow_back
+    - heading "Kategorie hinzufügen" [level=1] [ref=f339e86]
+    - button "Benutzerkonto" [ref=f339e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f339e12]: account_circle
+  - main [ref=f339e13]:
+    - generic [ref=f339e15]:
+      - generic [ref=f339e88]:
+        - generic [ref=f339e89]:
+          - generic [ref=f339e90]:
+            - generic [ref=f339e91]: Name der Kategorie
+            - textbox "Name der Kategorie" [ref=f339e93]
+          - generic [ref=f339e94]:
+            - generic [ref=f339e95]: Farbe
+            - generic [ref=f339e96]:
+              - combobox "Farbe" [ref=f339e97]:
+                - generic [ref=f339e98] [cursor=pointer]
+              - img [aria-hidden] [ref=f339e100]: expand_more
+          - generic [ref=f339e103] [cursor=pointer]:
+            - checkbox "Aufnehmen in Statistik" [checked] [ref=f339e105]
+            - generic [ref=f339e106]: Aufnehmen in Statistik
+        - button "Speichern" [disabled] [ref=f339e108]:
+          - img [aria-hidden] [ref=f339e109]: check
+      - navigation "Einstellungen" [ref=f339e78]:
+        - link "Verbindungen" [ref=f339e79] [cursor=pointer]:
+          - /url: /settings/connections
+          - img [aria-hidden] [ref=f339e80]: link
+          - text: Verbindungen
+        - link "Kategorien" [ref=f339e81] [cursor=pointer]:
+          - /url: /settings/categories
+          - img [aria-hidden] [ref=f339e82]: category
+          - text: Kategorien

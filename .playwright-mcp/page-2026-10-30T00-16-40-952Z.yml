@@ -1,0 +1,186 @@
+- generic [ref=f107e6]:
+  - banner [ref=f107e7]:
+    - button "Menü öffnen" [ref=f107e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f107e9]: menu
+    - heading "Rechnungen" [level=1] [ref=f107e10]
+    - button "Benutzerkonto" [ref=f107e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f107e12]: account_circle
+  - main [ref=f107e13]:
+    - generic [ref=f107e15]:
+      - generic [ref=f107e16]:
+        - generic [ref=f107e19]:
+          - generic [ref=f107e20]:
+            - generic [ref=f107e22]:
+              - img [aria-hidden] [ref=f107e23]: search
+              - textbox "Rechnungen durchsuchen" [ref=f107e24]:
+                - /placeholder: Suche Rechnungen...
+            - button "Datumfilter öffnen" [ref=f107e25] [cursor=pointer]:
+              - img [aria-hidden] [ref=f107e26]: filter_list
+          - generic [ref=f107e27]:
+            - button "Alle" [pressed] [ref=f107e59] [cursor=pointer]:
+              - img [aria-hidden] [ref=f107e60]: check
+              - text: Alle
+            - button "Keine" [ref=f107e61] [cursor=pointer]
+            - button "Lebensmittel" [ref=f107e62] [cursor=pointer]
+            - button "Wohnen" [ref=f107e63] [cursor=pointer]
+            - button "Kleidung" [ref=f107e64] [cursor=pointer]
+            - button "Ausbildung" [ref=f107e65] [cursor=pointer]
+            - button "Freizeit" [ref=f107e66] [cursor=pointer]
+            - button "Auto/Motorrad" [ref=f107e67] [cursor=pointer]
+            - button "Hygiene/Gesundheit" [ref=f107e68] [cursor=pointer]
+            - button "Geschenke" [ref=f107e69] [cursor=pointer]
+            - button "Restaurant" [ref=f107e70] [cursor=pointer]
+        - generic [ref=f107e71]:
+          - link "29 Okt. Bauernmarkt Urfahr und Feinkost Hinterberger GmbH & Co KG Lebensmittel 12.345,67€" [ref=f107e240] [cursor=pointer]:
+            - /url: /bill/951c5b15-5d4c-49b4-82ae-8f5d8d3863ea
+            - generic [ref=f107e230]:
+              - generic [ref=f107e231]:
+                - generic [ref=f107e232]: "29"
+                - generic [ref=f107e233]: Okt.
+              - generic [ref=f107e234]:
+                - generic [ref=f107e235]: Bauernmarkt Urfahr und Feinkost Hinterberger GmbH & Co KG
+                - generic [ref=f107e236]: Lebensmittel
+              - generic [ref=f107e239]: 12.345,67€
+          - link "29 Okt. Probe Spar Lebensmittel 7,00€" [ref=f107e241] [cursor=pointer]:
+            - /url: /bill/5b74405f-2c23-4260-97fc-1da18f274b43
+            - generic [ref=f107e218]:
+              - generic [ref=f107e219]:
+                - generic [ref=f107e220]: "29"
+                - generic [ref=f107e221]: Okt.
+              - generic [ref=f107e222]:
+                - generic [ref=f107e223]: Probe Spar
+                - generic [ref=f107e224]: Lebensmittel
+              - generic [ref=f107e227]: 7,00€
+          - link "28 Okt. Billa 1 Keine 5,00€" [ref=f107e242] [cursor=pointer]:
+            - /url: /bill/950ca13e-39b5-4fb1-93bf-6b1f6ba87abc
+            - generic [ref=f107e206]:
+              - generic [ref=f107e207]:
+                - generic [ref=f107e208]: "28"
+                - generic [ref=f107e209]: Okt.
+              - generic [ref=f107e210]:
+                - generic [ref=f107e211]: Billa 1
+                - generic [ref=f107e212]: Keine
+              - generic [ref=f107e215]: 5,00€
+          - link "27 Okt. Hofer 2 Lebensmittel 42,01€" [ref=f107e243] [cursor=pointer]:
+            - /url: /bill/1a806047-ed2a-4203-9a30-8897659363a6
+            - generic [ref=f107e194]:
+              - generic [ref=f107e195]:
+                - generic [ref=f107e196]: "27"
+                - generic [ref=f107e197]: Okt.
+              - generic [ref=f107e198]:
+                - generic [ref=f107e199]: Hofer 2
+                - generic [ref=f107e200]: Lebensmittel
+              - generic [ref=f107e203]: 42,01€
+          - link "26 Okt. Spar 3 Wohnen 79,02€" [ref=f107e244] [cursor=pointer]:
+            - /url: /bill/e1f37c0a-2508-4778-a048-5918b8697caa
+            - generic [ref=f107e182]:
+              - generic [ref=f107e183]:
+                - generic [ref=f107e184]: "26"
+                - generic [ref=f107e185]: Okt.
+              - generic [ref=f107e186]:
+                - generic [ref=f107e187]: Spar 3
+                - generic [ref=f107e188]: Wohnen
+              - generic [ref=f107e191]: 79,02€
+          - link "25 Okt. dm drogerie markt 4 Kleidung 116,03€" [ref=f107e245] [cursor=pointer]:
+            - /url: /bill/0ddbfd51-e179-4f45-8482-7fd13eaa30a6
+            - generic [ref=f107e170]:
+              - generic [ref=f107e171]:
+                - generic [ref=f107e172]: "25"
+                - generic [ref=f107e173]: Okt.
+              - generic [ref=f107e174]:
+                - generic [ref=f107e175]: dm drogerie markt 4
+                - generic [ref=f107e176]: Kleidung
+              - generic [ref=f107e179]: 116,03€
+          - link "23 Okt. OMV Tankstelle 5 Ausbildung 153,04€" [ref=f107e246] [cursor=pointer]:
+            - /url: /bill/50d79078-fce0-427c-ab80-f027d0bf7bfa
+            - generic [ref=f107e158]:
+              - generic [ref=f107e159]:
+                - generic [ref=f107e160]: "23"
+                - generic [ref=f107e161]: Okt.
+              - generic [ref=f107e162]:
+                - generic [ref=f107e163]: OMV Tankstelle 5
+                - generic [ref=f107e164]: Ausbildung
+              - generic [ref=f107e167]: 153,04€
+          - link "22 Okt. Thalia 6 Freizeit 10,05€" [ref=f107e247] [cursor=pointer]:
+            - /url: /bill/bcec0e0c-e292-4e46-a158-93b35e7d872d
+            - generic [ref=f107e146]:
+              - generic [ref=f107e147]:
+                - generic [ref=f107e148]: "22"
+                - generic [ref=f107e149]: Okt.
+              - generic [ref=f107e150]:
+                - generic [ref=f107e151]: Thalia 6
+                - generic [ref=f107e152]: Freizeit
+              - generic [ref=f107e155]: 10,05€
+          - link "21 Okt. IKEA 7 Auto/Motorrad 47,06€" [ref=f107e248] [cursor=pointer]:
+            - /url: /bill/36f1b63f-a87b-4935-b749-b933c5855122
+            - generic [ref=f107e134]:
+              - generic [ref=f107e135]:
+                - generic [ref=f107e136]: "21"
+                - generic [ref=f107e137]: Okt.
+              - generic [ref=f107e138]:
+                - generic [ref=f107e139]: IKEA 7
+                - generic [ref=f107e140]: Auto/Motorrad
+              - generic [ref=f107e143]: 47,06€
+          - link "19 Okt. Apotheke zum Löwen 8 Hygiene/Gesundheit 84,07€" [ref=f107e249] [cursor=pointer]:
+            - /url: /bill/d277de27-5aea-463e-8faa-679147ab52ba
+            - generic [ref=f107e122]:
+              - generic [ref=f107e123]:
+                - generic [ref=f107e124]: "19"
+                - generic [ref=f107e125]: Okt.
+              - generic [ref=f107e126]:
+                - generic [ref=f107e127]: Apotheke zum Löwen 8
+                - generic [ref=f107e128]: Hygiene/Gesundheit
+              - generic [ref=f107e131]: 84,07€
+          - link "18 Okt. Merkur 9 Geschenke 121,08€" [ref=f107e250] [cursor=pointer]:
+            - /url: /bill/c00844ad-47cb-4d74-972c-d5c71900ded8
+            - generic [ref=f107e110]:
+              - generic [ref=f107e111]:
+                - generic [ref=f107e112]: "18"
+                - generic [ref=f107e113]: Okt.
+              - generic [ref=f107e114]:
+                - generic [ref=f107e115]: Merkur 9
+                - generic [ref=f107e116]: Geschenke
+              - generic [ref=f107e119]: 121,08€
+          - link "17 Okt. Interspar 10 Restaurant 158,09€" [ref=f107e251] [cursor=pointer]:
+            - /url: /bill/01313af0-b691-434c-a20c-5e584b03e76a
+            - generic [ref=f107e98]:
+              - generic [ref=f107e99]:
+                - generic [ref=f107e100]: "17"
+                - generic [ref=f107e101]: Okt.
+              - generic [ref=f107e102]:
+                - generic [ref=f107e103]: Interspar 10
+                - generic [ref=f107e104]: Restaurant
+              - generic [ref=f107e107]: 158,09€
+          - link "15 Okt. Lidl 11 Keine 15,10€" [ref=f107e252] [cursor=pointer]:
+            - /url: /bill/61fcccb5-1dab-4c41-a7c7-8651b48cae4c
+            - generic [ref=f107e86]:
+              - generic [ref=f107e87]:
+                - generic [ref=f107e88]: "15"
+                - generic [ref=f107e89]: Okt.
+              - generic [ref=f107e90]:
+                - generic [ref=f107e91]: Lidl 11
+                - generic [ref=f107e92]: Keine
+              - generic [ref=f107e95]: 15,10€
+          - link "14 Okt. H&M 12 Lebensmittel 52,11€" [ref=f107e253] [cursor=pointer]:
+            - /url: /bill/4f013648-3373-4c56-bf35-5fdb12761f3d
+            - generic [ref=f107e74]:
+              - generic [ref=f107e75]:
+                - generic [ref=f107e76]: "14"
+                - generic [ref=f107e77]: Okt.
+              - generic [ref=f107e78]:
+                - generic [ref=f107e79]: H&M 12
+                - generic [ref=f107e80]: Lebensmittel
+              - generic [ref=f107e83]: 52,11€
+      - navigation "Rechnungen" [ref=f107e49]:
+        - link "Rechnungen" [ref=f107e50] [cursor=pointer]:
+          - /url: /bill/list
+          - img [aria-hidden] [ref=f107e51]: list
+          - text: Rechnungen
+        - link "Hinzufügen" [ref=f107e52] [cursor=pointer]:
+          - /url: /bill/create
+          - img [aria-hidden] [ref=f107e53]: add_circle
+          - text: Hinzufügen
+        - link "Statistik" [ref=f107e54] [cursor=pointer]:
+          - /url: /bill/expenses
+          - img [aria-hidden] [ref=f107e55]: donut_small
+          - text: Statistik

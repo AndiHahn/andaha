@@ -1,0 +1,31 @@
+- generic [ref=f65e6]:
+  - banner [ref=f65e7]:
+    - button "Menü öffnen" [ref=f65e46] [cursor=pointer]:
+      - img [aria-hidden] [ref=f65e47]: menu
+    - heading "Stundenaufzeichnungen" [level=1] [ref=f65e48]
+    - button "Benutzerkonto" [ref=f65e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f65e12]: account_circle
+  - main [ref=f65e13]:
+    - generic [ref=f65e15]:
+      - generic [ref=f65e49]:
+        - generic [ref=f65e55]:
+          - generic [ref=f65e56]: Spike A
+          - generic [ref=f65e57]: 00:00 h
+        - generic [ref=f65e58]:
+          - button [ref=f65e62] [cursor=pointer]:
+            - generic [ref=f65e63]:
+              - img [aria-hidden] [ref=f65e64]: add_circle
+              - text: Arbeitszeiten hinzufügen
+          - button [ref=f65e68] [cursor=pointer]:
+            - generic [ref=f65e69]:
+              - img [aria-hidden] [ref=f65e70]: add_circle
+              - text: Person hinzufügen
+      - navigation "Stunden" [ref=f65e40]:
+        - link "Personen" [ref=f65e41] [cursor=pointer]:
+          - /url: /work/person
+          - img [aria-hidden] [ref=f65e42]: group
+          - text: Personen
+        - link "Statistik" [ref=f65e43] [cursor=pointer]:
+          - /url: /work/statistics
+          - img [aria-hidden] [ref=f65e44]: donut_small
+          - text: Statistik

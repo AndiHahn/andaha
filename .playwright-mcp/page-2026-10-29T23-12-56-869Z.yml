@@ -1,0 +1,120 @@
+- generic [ref=f71e1]:
+  - generic [ref=f71e3]:
+    - navigation [ref=f71e82]:
+      - generic [ref=f71e6]:
+        - generic [ref=f71e7]: Andaha
+        - link [ref=f71e83] [cursor=pointer]:
+          - /url: /
+          - img [aria-hidden] [ref=f71e10]: receipt_long
+          - text: Rechnungen
+        - link [ref=f71e84] [cursor=pointer]:
+          - /url: /analyzed
+          - img [aria-hidden] [ref=f71e12]: document_scanner
+          - text: Analyse
+        - link [ref=f71e85] [cursor=pointer]:
+          - /url: /budgetplan
+          - img [aria-hidden] [ref=f71e14]: account_balance_wallet
+          - text: Haushaltsplan
+        - link [ref=f71e86] [cursor=pointer]:
+          - /url: /work
+          - img [aria-hidden] [ref=f71e16]: group
+          - text: Stundenaufzeichnungen
+        - link [ref=f71e87] [cursor=pointer]:
+          - /url: /settings
+          - img [aria-hidden] [ref=f71e18]: settings
+          - text: Einstellungen
+        - link [ref=f71e88] [cursor=pointer]:
+          - /url: /export
+          - img [aria-hidden] [ref=f71e20]: download
+          - text: Export
+        - generic [ref=f71e22]:
+          - link [ref=f71e89] [cursor=pointer]:
+            - /url: /agb
+            - text: AGB
+          - link [ref=f71e90] [cursor=pointer]:
+            - /url: /data-protection
+            - text: Datenschutzerklärung
+          - link [ref=f71e91] [cursor=pointer]:
+            - /url: /user-data
+            - text: Benutzerdaten
+    - generic [ref=f71e27]:
+      - banner [ref=f71e28]:
+        - heading [level=1] [ref=f71e92]: Rechnungen
+        - generic [ref=f71e30]: Test1
+        - button [ref=f71e93] [cursor=pointer]:
+          - img [aria-hidden] [ref=f71e32]: account_circle
+      - main [ref=f71e33]:
+        - generic [ref=f71e35]:
+          - generic [ref=f71e36]:
+            - generic [ref=f71e39]:
+              - generic [ref=f71e40]:
+                - listbox [ref=f71e42]:
+                  - option [ref=f71e44]:
+                    - img [aria-hidden] [ref=f71e45]: search
+                    - textbox [ref=f71e94]:
+                      - /placeholder: Suche Rechnungen...
+                - button [active] [ref=f71e48] [cursor=pointer]:
+                  - img [aria-hidden] [ref=f71e50]: filter_list
+              - listbox [ref=f71e52]:
+                - generic [ref=f71e53]:
+                  - option [selected] [ref=f71e95]: Alle
+                  - option [ref=f71e96]: Keine
+                  - option [ref=f71e97]: Lebensmittel
+                  - option [ref=f71e98]: Wohnen
+                  - option [ref=f71e99]: Kleidung
+                  - option [ref=f71e100]: Ausbildung
+                  - option [ref=f71e101]: Freizeit
+                  - option [ref=f71e102]: Auto/Motorrad
+                  - option [ref=f71e103]: Hygiene/Gesundheit
+                  - option [ref=f71e104]: Geschenke
+                  - option [ref=f71e105]: Restaurant
+            - generic [ref=f71e109]:
+              - generic [ref=f71e110]:
+                - generic [ref=f71e112]:
+                  - generic [ref=f71e113]: Probe Spar
+                  - generic [ref=f71e114]: 7 €
+                - generic [ref=f71e116]:
+                  - listbox [ref=f71e117]:
+                    - option [selected] [ref=f71e119]: Lebensmittel
+                  - generic [ref=f71e120]: 29.10.2026
+              - separator [ref=f71e121]
+          - navigation [ref=f71e122]:
+            - link [ref=f71e123] [cursor=pointer]:
+              - /url: /bill/list
+              - img [aria-hidden] [ref=f71e76]: list
+              - text: Rechnungen
+            - link [ref=f71e124] [cursor=pointer]:
+              - /url: /bill/create
+              - img [aria-hidden] [ref=f71e78]: add_circle
+              - text: Hinzufügen
+            - link [ref=f71e125] [cursor=pointer]:
+              - /url: /bill/expenses
+              - img [aria-hidden] [ref=f71e80]: donut_small
+              - text: Statistik
+  - dialog [ref=f71e129]:
+    - generic [ref=f71e131]:
+      - button [ref=f71e133] [cursor=pointer]:
+        - img [aria-hidden] [ref=f71e135]: close
+      - generic [ref=f71e136]:
+        - heading "Datumfilter:" [level=3] [ref=f71e137]
+        - generic [ref=f71e138]:
+          - generic [ref=f71e140]:
+            - generic [ref=f71e141]:
+              - generic [ref=f71e142]:
+                - textbox "Von" [ref=f71e143]
+                - generic: Von
+              - button "Open calendar" [ref=f71e146] [cursor=pointer]
+            - generic [ref=f71e150]: DD.MM.YYYY
+          - button [ref=f71e154] [cursor=pointer]:
+            - img [aria-hidden] [ref=f71e156]: close
+        - generic [ref=f71e158]:
+          - generic [ref=f71e160]:
+            - generic [ref=f71e161]:
+              - generic [ref=f71e162]:
+                - textbox "Bis" [ref=f71e163]
+                - generic: Bis
+              - button "Open calendar" [ref=f71e166] [cursor=pointer]
+            - generic [ref=f71e170]: DD.MM.YYYY
+          - button [ref=f71e174] [cursor=pointer]:
+            - img [aria-hidden] [ref=f71e176]: close
+      - button "Übernehmen" [ref=f71e178] [cursor=pointer]

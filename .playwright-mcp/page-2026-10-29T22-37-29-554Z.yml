@@ -1,0 +1,19 @@
+- generic [ref=f41e6]:
+  - banner [ref=f41e7]:
+    - button "Menü öffnen" [ref=f41e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f41e9]: menu
+    - heading [level=1]
+    - img "Synchronisierung aktiv" [ref=f41e10]:
+      - img [aria-hidden] [ref=f41e11]: sync
+    - button "Benutzerkonto" [ref=f41e12] [cursor=pointer]:
+      - img [aria-hidden] [ref=f41e13]: account_circle
+  - main [ref=f41e14]:
+    - navigation "Analyse" [ref=f41e17]:
+      - link "Analysiert" [ref=f41e18] [cursor=pointer]:
+        - /url: /analyzed/list
+        - img [aria-hidden] [ref=f41e19]: list
+        - text: Analysiert
+      - link "Rechnung hochladen" [ref=f41e20] [cursor=pointer]:
+        - /url: /analyzed/create
+        - img [aria-hidden] [ref=f41e21]: upload
+        - text: Rechnung hochladen

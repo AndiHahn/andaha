@@ -1,0 +1,115 @@
+- generic [ref=f195e6]:
+  - banner [ref=f195e7]:
+    - button "Menü öffnen" [ref=f195e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f195e9]: menu
+    - heading "Analyse" [level=1] [ref=f195e10]
+    - button "Benutzerkonto" [ref=f195e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f195e12]: account_circle
+  - main [ref=f195e13]:
+    - generic [ref=f195e15]:
+      - generic [ref=f195e19]:
+        - link "23 Okt Spar Gourmet 63,18€" [active] [ref=f195e20] [cursor=pointer]:
+          - /url: /analyzed/analyzed/t0
+          - generic [ref=f195e22]:
+            - generic [ref=f195e23]:
+              - generic [ref=f195e24]: "23"
+              - generic [ref=f195e25]: Okt
+            - generic [ref=f195e26]: Spar Gourmet
+            - generic [ref=f195e27]: 63,18€
+        - link "20 Okt Ein sehr sehr langer Shopname der abgeschnitten werden muss weil er zu lang ist 12.345,67€" [ref=f195e28] [cursor=pointer]:
+          - /url: /analyzed/analyzed/t1
+          - generic [ref=f195e30]:
+            - generic [ref=f195e31]:
+              - generic [ref=f195e32]: "20"
+              - generic [ref=f195e33]: Okt
+            - generic [ref=f195e34]: Ein sehr sehr langer Shopname der abgeschnitten werden muss weil er zu lang ist
+            - generic [ref=f195e35]: 12.345,67€
+        - link "10 Okt Shop 0 10,00€" [ref=f195e36] [cursor=pointer]:
+          - /url: /analyzed/analyzed/t2
+          - generic [ref=f195e38]:
+            - generic [ref=f195e39]:
+              - generic [ref=f195e40]: "10"
+              - generic [ref=f195e41]: Okt
+            - generic [ref=f195e42]: Shop 0
+            - generic [ref=f195e43]: 10,00€
+        - link "11 Okt Shop 1 11,00€" [ref=f195e44] [cursor=pointer]:
+          - /url: /analyzed/analyzed/t3
+          - generic [ref=f195e46]:
+            - generic [ref=f195e47]:
+              - generic [ref=f195e48]: "11"
+              - generic [ref=f195e49]: Okt
+            - generic [ref=f195e50]: Shop 1
+            - generic [ref=f195e51]: 11,00€
+        - link "12 Okt Shop 2 12,00€" [ref=f195e52] [cursor=pointer]:
+          - /url: /analyzed/analyzed/t4
+          - generic [ref=f195e54]:
+            - generic [ref=f195e55]:
+              - generic [ref=f195e56]: "12"
+              - generic [ref=f195e57]: Okt
+            - generic [ref=f195e58]: Shop 2
+            - generic [ref=f195e59]: 12,00€
+        - link "13 Okt Shop 3 13,00€" [ref=f195e60] [cursor=pointer]:
+          - /url: /analyzed/analyzed/t5
+          - generic [ref=f195e62]:
+            - generic [ref=f195e63]:
+              - generic [ref=f195e64]: "13"
+              - generic [ref=f195e65]: Okt
+            - generic [ref=f195e66]: Shop 3
+            - generic [ref=f195e67]: 13,00€
+        - link "14 Okt Shop 4 14,00€" [ref=f195e68] [cursor=pointer]:
+          - /url: /analyzed/analyzed/t6
+          - generic [ref=f195e70]:
+            - generic [ref=f195e71]:
+              - generic [ref=f195e72]: "14"
+              - generic [ref=f195e73]: Okt
+            - generic [ref=f195e74]: Shop 4
+            - generic [ref=f195e75]: 14,00€
+        - link "15 Okt Shop 5 15,00€" [ref=f195e76] [cursor=pointer]:
+          - /url: /analyzed/analyzed/t7
+          - generic [ref=f195e78]:
+            - generic [ref=f195e79]:
+              - generic [ref=f195e80]: "15"
+              - generic [ref=f195e81]: Okt
+            - generic [ref=f195e82]: Shop 5
+            - generic [ref=f195e83]: 15,00€
+        - link "16 Okt Shop 6 16,00€" [ref=f195e84] [cursor=pointer]:
+          - /url: /analyzed/analyzed/t8
+          - generic [ref=f195e86]:
+            - generic [ref=f195e87]:
+              - generic [ref=f195e88]: "16"
+              - generic [ref=f195e89]: Okt
+            - generic [ref=f195e90]: Shop 6
+            - generic [ref=f195e91]: 16,00€
+        - link "17 Okt Shop 7 17,00€" [ref=f195e92] [cursor=pointer]:
+          - /url: /analyzed/analyzed/t9
+          - generic [ref=f195e94]:
+            - generic [ref=f195e95]:
+              - generic [ref=f195e96]: "17"
+              - generic [ref=f195e97]: Okt
+            - generic [ref=f195e98]: Shop 7
+            - generic [ref=f195e99]: 17,00€
+        - link "18 Okt Shop 8 18,00€" [ref=f195e100] [cursor=pointer]:
+          - /url: /analyzed/analyzed/t10
+          - generic [ref=f195e102]:
+            - generic [ref=f195e103]:
+              - generic [ref=f195e104]: "18"
+              - generic [ref=f195e105]: Okt
+            - generic [ref=f195e106]: Shop 8
+            - generic [ref=f195e107]: 18,00€
+        - link "10 Okt Shop 9 19,00€" [ref=f195e108] [cursor=pointer]:
+          - /url: /analyzed/analyzed/t11
+          - generic [ref=f195e110]:
+            - generic [ref=f195e111]:
+              - generic [ref=f195e112]: "10"
+              - generic [ref=f195e113]: Okt
+            - generic [ref=f195e114]: Shop 9
+            - generic [ref=f195e115]: 19,00€
+      - navigation "Analyse" [ref=f195e117]:
+        - link "Analysiert" [ref=f195e118] [cursor=pointer]:
+          - /url: /analyzed/list
+          - img [aria-hidden] [ref=f195e119]: list
+          - text: Analysiert
+        - link "Rechnung hochladen" [ref=f195e120] [cursor=pointer]:
+          - /url: /analyzed/create
+          - img [aria-hidden] [ref=f195e121]: upload
+          - text: Rechnung hochladen

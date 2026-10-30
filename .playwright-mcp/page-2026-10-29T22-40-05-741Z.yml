@@ -1,0 +1,73 @@
+- generic [ref=f45e1]:
+  - generic [ref=f45e3]:
+    - navigation "Hauptnavigation" [ref=f45e43]:
+      - generic [ref=f45e44]:
+        - generic [ref=f45e45]: Andaha
+        - link "Rechnungen" [ref=f45e47] [cursor=pointer]:
+          - /url: /
+          - img [aria-hidden] [ref=f45e48]: receipt_long
+          - text: Rechnungen
+        - link "Analyse" [ref=f45e49] [cursor=pointer]:
+          - /url: /analyzed
+          - img [aria-hidden] [ref=f45e50]: document_scanner
+          - text: Analyse
+        - link "Haushaltsplan" [ref=f45e51] [cursor=pointer]:
+          - /url: /budgetplan
+          - img [aria-hidden] [ref=f45e52]: account_balance_wallet
+          - text: Haushaltsplan
+        - link "Stundenaufzeichnungen" [ref=f45e53] [cursor=pointer]:
+          - /url: /work
+          - img [aria-hidden] [ref=f45e54]: group
+          - text: Stundenaufzeichnungen
+        - link "Einstellungen" [ref=f45e55] [cursor=pointer]:
+          - /url: /settings
+          - img [aria-hidden] [ref=f45e56]: settings
+          - text: Einstellungen
+        - link "Export" [ref=f45e57] [cursor=pointer]:
+          - /url: /export
+          - img [aria-hidden] [ref=f45e58]: download
+          - text: Export
+        - generic [ref=f45e60]:
+          - link "AGB" [ref=f45e61] [cursor=pointer]:
+            - /url: /agb
+          - link "Datenschutzerklärung" [ref=f45e62] [cursor=pointer]:
+            - /url: /data-protection
+          - link "Benutzerdaten" [ref=f45e63] [cursor=pointer]:
+            - /url: /user-data
+    - generic [ref=f45e6]:
+      - banner [ref=f45e64]:
+        - heading "Stundenaufzeichnungen" [level=1] [ref=f45e65]
+        - generic [ref=f45e66]:
+          - img [aria-hidden] [ref=f45e67]: sync
+          - text: Synchronisiert …
+        - generic [ref=f45e68]: Test1
+        - button "Benutzerkonto" [expanded] [ref=f45e69] [cursor=pointer]:
+          - img [aria-hidden] [ref=f45e70]: account_circle
+      - main [ref=f45e15]:
+        - generic [ref=f45e17]:
+          - generic [ref=f45e18]:
+            - generic [ref=f45e41]: Keine Personen vorhanden.
+            - generic [ref=f45e23]:
+              - button [ref=f45e27] [cursor=pointer]:
+                - generic [ref=f45e28]:
+                  - img [aria-hidden] [ref=f45e29]: add_circle
+                  - text: Arbeitszeiten hinzufügen
+              - button [ref=f45e33] [cursor=pointer]:
+                - generic [ref=f45e34]:
+                  - img [aria-hidden] [ref=f45e35]: add_circle
+                  - text: Person hinzufügen
+          - navigation "Stunden" [ref=f45e36]:
+            - link "Personen" [ref=f45e37] [cursor=pointer]:
+              - /url: /work/person
+              - img [aria-hidden] [ref=f45e38]: group
+              - text: Personen
+            - link "Statistik" [ref=f45e39] [cursor=pointer]:
+              - /url: /work/statistics
+              - img [aria-hidden] [ref=f45e40]: donut_small
+              - text: Statistik
+  - generic [ref=f45e71]:
+    - menu:
+      - generic:
+        - menuitem "Ausloggen" [active]:
+          - img [aria-hidden]: logout
+          - text: Ausloggen

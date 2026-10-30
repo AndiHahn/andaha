@@ -1,0 +1,66 @@
+- generic [ref=f494e6]:
+  - banner [ref=f494e7]:
+    - link "Zurück" [ref=f494e379] [cursor=pointer]:
+      - /url: /bill/list
+      - img [aria-hidden] [ref=f494e239]: arrow_back
+    - heading "Rechnung" [level=1] [ref=f494e380]
+    - button "Benutzerkonto" [ref=f494e381] [cursor=pointer]:
+      - img [aria-hidden] [ref=f494e12]: account_circle
+  - main [ref=f494e13]:
+    - generic [ref=f494e15]:
+      - generic [ref=f494e242]:
+        - generic [ref=f494e243]:
+          - button "Foto der Rechnung Optional" [active] [ref=f494e382] [cursor=pointer]:
+            - img [aria-hidden] [ref=f494e252]: photo_camera
+            - generic [ref=f494e253]:
+              - text: Foto der Rechnung
+              - generic [ref=f494e254]: Optional
+          - generic [ref=f494e270]:
+            - generic [ref=f494e271]:
+              - generic [ref=f494e272]: Shopname
+              - textbox "Shopname" [ref=f494e383]: UIT Testshop A edit
+            - generic [ref=f494e275]:
+              - generic [ref=f494e276]: Notizen
+              - textbox "Notizen" [ref=f494e384]: ui test
+            - generic [ref=f494e279]:
+              - generic [ref=f494e280]: Preis
+              - generic [ref=f494e281]:
+                - spinbutton "Preis" [ref=f494e385]: "12.34"
+                - generic [aria-hidden] [ref=f494e283]: €
+            - generic [ref=f494e284]:
+              - generic [ref=f494e285]: Kategorie
+              - generic [ref=f494e286]:
+                - combobox "Kategorie" [ref=f494e386]:
+                  - generic [ref=f494e288] [cursor=pointer]: Lebensmittel
+                - img [aria-hidden] [ref=f494e294]: expand_more
+            - generic [ref=f494e295]:
+              - generic [ref=f494e296]: Unterkategorie
+              - generic [ref=f494e297]:
+                - combobox "Unterkategorie" [ref=f494e387]:
+                  - generic [ref=f494e299] [cursor=pointer]
+                - img [aria-hidden] [ref=f494e301]: expand_more
+            - generic [ref=f494e302]:
+              - generic [ref=f494e303]: Datum
+              - generic [ref=f494e304]:
+                - textbox "Datum" [invalid] [ref=f494e388]: 15.10.2026
+                - button "Kalender öffnen" [ref=f494e389] [cursor=pointer]:
+                  - img [aria-hidden] [ref=f494e309]: calendar_today
+              - generic [ref=f494e310]: DD.MM.YYYY
+        - generic [ref=f494e311]:
+          - button "Abbrechen" [ref=f494e390] [cursor=pointer]:
+            - img [aria-hidden] [ref=f494e313]: close
+          - button "Speichern" [ref=f494e391] [cursor=pointer]:
+            - img [aria-hidden] [ref=f494e316]: check
+      - navigation "Rechnungen" [ref=f494e392]:
+        - link "Rechnungen" [ref=f494e393] [cursor=pointer]:
+          - /url: /bill/list
+          - img [aria-hidden] [ref=f494e51]: list
+          - text: Rechnungen
+        - link "Hinzufügen" [ref=f494e394] [cursor=pointer]:
+          - /url: /bill/create
+          - img [aria-hidden] [ref=f494e53]: add_circle
+          - text: Hinzufügen
+        - link "Statistik" [ref=f494e395] [cursor=pointer]:
+          - /url: /bill/expenses
+          - img [aria-hidden] [ref=f494e55]: donut_small
+          - text: Statistik

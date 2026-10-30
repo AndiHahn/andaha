@@ -1,0 +1,48 @@
+- generic [ref=f500e6]:
+  - banner [ref=f500e7]:
+    - button "Menü öffnen" [ref=f500e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f500e9]: menu
+    - heading "Haushaltsplan" [level=1] [ref=f500e10]
+    - button "Benutzerkonto" [ref=f500e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f500e12]: account_circle
+  - main [ref=f500e13]:
+    - generic [ref=f500e15]:
+      - generic [ref=f500e28]:
+        - generic [ref=f500e29]:
+          - generic [ref=f500e30]: Monatlicher Überschuss
+          - generic [ref=f500e31]: +1.361,20€
+          - generic [ref=f500e32]:
+            - img "Ausgaben 77,3 Prozent, Überschuss 22,7 Prozent" [ref=f500e33]
+            - generic [ref=f500e36]:
+              - generic [ref=f500e37]: Ausgaben 77,3 %
+              - generic [ref=f500e38]: Überschuss 22,7 %
+        - paragraph [ref=f500e39]: Einnahmen
+        - generic [ref=f500e40]:
+          - generic [ref=f500e41]: Einkommen
+          - generic [ref=f500e42]: 6.000,00 €
+        - paragraph [ref=f500e43]: Ausgaben
+        - generic [ref=f500e44]:
+          - generic [ref=f500e45]: Lebenserhaltungskosten
+          - generic [ref=f500e46]: 2.100,00 €
+        - generic [ref=f500e47]:
+          - generic [ref=f500e48]: Wohnen
+          - generic [ref=f500e49]: 1.010,00 €
+        - generic [ref=f500e50]:
+          - generic [ref=f500e51]: Auto
+          - generic [ref=f500e52]: 1.028,81 €
+        - generic [ref=f500e53]:
+          - generic [ref=f500e54]: Sparen
+          - generic [ref=f500e55]: 500,00 €
+      - navigation "Haushaltsplan" [ref=f500e21]:
+        - link "Haushaltsplan" [ref=f500e22] [cursor=pointer]:
+          - /url: /budgetplan/overview
+          - img [aria-hidden] [ref=f500e23]: account_balance_wallet
+          - text: Haushaltsplan
+        - link "Fixkosten" [ref=f500e24] [cursor=pointer]:
+          - /url: /budgetplan/fixedcost
+          - img [aria-hidden] [ref=f500e25]: north_east
+          - text: Fixkosten
+        - link "Einkommen" [ref=f500e26] [cursor=pointer]:
+          - /url: /budgetplan/income
+          - img [aria-hidden] [ref=f500e27]: south_west
+          - text: Einkommen

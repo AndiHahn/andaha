@@ -1,0 +1,25 @@
+- generic [ref=f164e6]:
+  - banner [ref=f164e7]:
+    - button "Menü öffnen" [ref=f164e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f164e9]: menu
+    - heading "Statistik" [level=1] [ref=f164e10]
+    - button "Benutzerkonto" [ref=f164e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f164e12]: account_circle
+  - main [ref=f164e13]:
+    - generic [ref=f164e15]:
+      - generic [ref=f164e17]:
+        - progressbar [ref=f164e19]
+        - generic [ref=f164e22]: Keine Daten vorhanden.
+      - navigation "Rechnungen" [ref=f164e23]:
+        - link "Rechnungen" [ref=f164e24] [cursor=pointer]:
+          - /url: /bill/list
+          - img [aria-hidden] [ref=f164e25]: list
+          - text: Rechnungen
+        - link "Hinzufügen" [ref=f164e26] [cursor=pointer]:
+          - /url: /bill/create
+          - img [aria-hidden] [ref=f164e27]: add_circle
+          - text: Hinzufügen
+        - link "Statistik" [ref=f164e28] [cursor=pointer]:
+          - /url: /bill/expenses
+          - img [aria-hidden] [ref=f164e29]: donut_small
+          - text: Statistik

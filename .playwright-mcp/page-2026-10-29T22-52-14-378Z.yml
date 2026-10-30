@@ -1,0 +1,54 @@
+- generic [ref=f56e6]:
+  - banner [ref=f56e7]:
+    - button "Menü öffnen" [ref=f56e88] [cursor=pointer]:
+      - img [aria-hidden] [ref=f56e89]: menu
+    - heading "Rechnungen" [level=1] [ref=f56e90]
+    - button "Benutzerkonto" [ref=f56e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f56e12]: account_circle
+  - main [ref=f56e13]:
+    - generic [ref=f56e15]:
+      - generic [ref=f56e91]:
+        - generic [ref=f56e94]:
+          - generic [ref=f56e95]:
+            - listbox [ref=f56e97]:
+              - option [ref=f56e99]:
+                - img [aria-hidden] [ref=f56e100]: search
+                - textbox "Suche Rechnungen..." [ref=f56e101]
+            - button [ref=f56e103] [cursor=pointer]:
+              - img [aria-hidden] [ref=f56e105]: filter_list
+          - listbox [ref=f56e107]:
+            - generic [ref=f56e108]:
+              - option "Alle" [selected] [ref=f56e109]
+              - option "Keine" [ref=f56e110]
+              - option "Lebensmittel" [ref=f56e111]
+              - option "Wohnen" [ref=f56e112]
+              - option "Kleidung" [ref=f56e113]
+              - option "Ausbildung" [ref=f56e114]
+              - option "Freizeit" [ref=f56e115]
+              - option "Auto/Motorrad" [ref=f56e116]
+              - option "Hygiene/Gesundheit" [ref=f56e117]
+              - option "Geschenke" [ref=f56e118]
+              - option "Restaurant" [ref=f56e119]
+        - generic [ref=f56e125]:
+          - generic [ref=f56e126]:
+            - generic [ref=f56e128]:
+              - generic [ref=f56e129]: Probe Spar
+              - generic [ref=f56e130]: 7 €
+            - generic [ref=f56e132]:
+              - listbox [ref=f56e133]:
+                - option "Lebensmittel" [selected] [ref=f56e135]
+              - generic [ref=f56e136]: 29.10.2026
+          - separator [ref=f56e137]
+      - navigation "Rechnungen" [ref=f56e80]:
+        - link "Rechnungen" [ref=f56e81] [cursor=pointer]:
+          - /url: /bill/list
+          - img [aria-hidden] [ref=f56e82]: list
+          - text: Rechnungen
+        - link "Hinzufügen" [ref=f56e83] [cursor=pointer]:
+          - /url: /bill/create
+          - img [aria-hidden] [ref=f56e84]: add_circle
+          - text: Hinzufügen
+        - link "Statistik" [ref=f56e85] [cursor=pointer]:
+          - /url: /bill/expenses
+          - img [aria-hidden] [ref=f56e86]: donut_small
+          - text: Statistik

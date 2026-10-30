@@ -1,0 +1,336 @@
+- generic [ref=f108e1]:
+  - generic [ref=f108e6]:
+    - banner [ref=f108e7]:
+      - button [ref=f108e8] [cursor=pointer]:
+        - img [aria-hidden] [ref=f108e9]: menu
+      - heading [level=1] [ref=f108e10]: Rechnungen
+      - button [ref=f108e11] [cursor=pointer]:
+        - img [aria-hidden] [ref=f108e12]: account_circle
+    - main [ref=f108e13]:
+      - generic [ref=f108e15]:
+        - generic [ref=f108e16]:
+          - generic [ref=f108e19]:
+            - generic [ref=f108e20]:
+              - generic [ref=f108e22]:
+                - img [aria-hidden] [ref=f108e23]: search
+                - textbox [ref=f108e24]:
+                  - /placeholder: Suche Rechnungen...
+              - button [ref=f108e25] [cursor=pointer]:
+                - img [aria-hidden] [ref=f108e26]: filter_list
+            - generic [ref=f108e27]:
+              - button [pressed] [ref=f108e28] [cursor=pointer]:
+                - img [aria-hidden] [ref=f108e29]: check
+                - text: Alle
+              - button [ref=f108e30] [cursor=pointer]: Keine
+              - button [ref=f108e31] [cursor=pointer]: Lebensmittel
+              - button [ref=f108e32] [cursor=pointer]: Wohnen
+              - button [ref=f108e33] [cursor=pointer]: Kleidung
+              - button [ref=f108e34] [cursor=pointer]: Ausbildung
+              - button [ref=f108e35] [cursor=pointer]: Freizeit
+              - button [ref=f108e36] [cursor=pointer]: Auto/Motorrad
+              - button [ref=f108e37] [cursor=pointer]: Hygiene/Gesundheit
+              - button [ref=f108e38] [cursor=pointer]: Geschenke
+              - button [ref=f108e39] [cursor=pointer]: Restaurant
+          - generic [ref=f108e42]:
+            - link [ref=f108e43] [cursor=pointer]:
+              - /url: /bill/951c5b15-5d4c-49b4-82ae-8f5d8d3863ea
+              - generic [ref=f108e45]:
+                - generic [ref=f108e46]:
+                  - generic [ref=f108e47]: "29"
+                  - generic [ref=f108e48]: Okt.
+                - generic [ref=f108e49]:
+                  - generic [ref=f108e50]: Bauernmarkt Urfahr und Feinkost Hinterberger GmbH & Co KG
+                  - generic [ref=f108e51]: Lebensmittel
+                - generic [ref=f108e54]: 12.345,67€
+            - link [ref=f108e55] [cursor=pointer]:
+              - /url: /bill/5b74405f-2c23-4260-97fc-1da18f274b43
+              - generic [ref=f108e57]:
+                - generic [ref=f108e58]:
+                  - generic [ref=f108e59]: "29"
+                  - generic [ref=f108e60]: Okt.
+                - generic [ref=f108e61]:
+                  - generic [ref=f108e62]: Probe Spar
+                  - generic [ref=f108e63]: Lebensmittel
+                - generic [ref=f108e66]: 7,00€
+            - link [ref=f108e67] [cursor=pointer]:
+              - /url: /bill/950ca13e-39b5-4fb1-93bf-6b1f6ba87abc
+              - generic [ref=f108e69]:
+                - generic [ref=f108e70]:
+                  - generic [ref=f108e71]: "28"
+                  - generic [ref=f108e72]: Okt.
+                - generic [ref=f108e73]:
+                  - generic [ref=f108e74]: Billa 1
+                  - generic [ref=f108e75]: Keine
+                - generic [ref=f108e78]: 5,00€
+            - link [ref=f108e79] [cursor=pointer]:
+              - /url: /bill/1a806047-ed2a-4203-9a30-8897659363a6
+              - generic [ref=f108e81]:
+                - generic [ref=f108e82]:
+                  - generic [ref=f108e83]: "27"
+                  - generic [ref=f108e84]: Okt.
+                - generic [ref=f108e85]:
+                  - generic [ref=f108e86]: Hofer 2
+                  - generic [ref=f108e87]: Lebensmittel
+                - generic [ref=f108e90]: 42,01€
+            - link [ref=f108e91] [cursor=pointer]:
+              - /url: /bill/e1f37c0a-2508-4778-a048-5918b8697caa
+              - generic [ref=f108e93]:
+                - generic [ref=f108e94]:
+                  - generic [ref=f108e95]: "26"
+                  - generic [ref=f108e96]: Okt.
+                - generic [ref=f108e97]:
+                  - generic [ref=f108e98]: Spar 3
+                  - generic [ref=f108e99]: Wohnen
+                - generic [ref=f108e102]: 79,02€
+            - link [ref=f108e103] [cursor=pointer]:
+              - /url: /bill/0ddbfd51-e179-4f45-8482-7fd13eaa30a6
+              - generic [ref=f108e105]:
+                - generic [ref=f108e106]:
+                  - generic [ref=f108e107]: "25"
+                  - generic [ref=f108e108]: Okt.
+                - generic [ref=f108e109]:
+                  - generic [ref=f108e110]: dm drogerie markt 4
+                  - generic [ref=f108e111]: Kleidung
+                - generic [ref=f108e114]: 116,03€
+            - link [ref=f108e115] [cursor=pointer]:
+              - /url: /bill/50d79078-fce0-427c-ab80-f027d0bf7bfa
+              - generic [ref=f108e117]:
+                - generic [ref=f108e118]:
+                  - generic [ref=f108e119]: "23"
+                  - generic [ref=f108e120]: Okt.
+                - generic [ref=f108e121]:
+                  - generic [ref=f108e122]: OMV Tankstelle 5
+                  - generic [ref=f108e123]: Ausbildung
+                - generic [ref=f108e126]: 153,04€
+            - link [ref=f108e127] [cursor=pointer]:
+              - /url: /bill/bcec0e0c-e292-4e46-a158-93b35e7d872d
+              - generic [ref=f108e129]:
+                - generic [ref=f108e130]:
+                  - generic [ref=f108e131]: "22"
+                  - generic [ref=f108e132]: Okt.
+                - generic [ref=f108e133]:
+                  - generic [ref=f108e134]: Thalia 6
+                  - generic [ref=f108e135]: Freizeit
+                - generic [ref=f108e138]: 10,05€
+            - link [ref=f108e139] [cursor=pointer]:
+              - /url: /bill/36f1b63f-a87b-4935-b749-b933c5855122
+              - generic [ref=f108e141]:
+                - generic [ref=f108e142]:
+                  - generic [ref=f108e143]: "21"
+                  - generic [ref=f108e144]: Okt.
+                - generic [ref=f108e145]:
+                  - generic [ref=f108e146]: IKEA 7
+                  - generic [ref=f108e147]: Auto/Motorrad
+                - generic [ref=f108e150]: 47,06€
+            - link [ref=f108e151] [cursor=pointer]:
+              - /url: /bill/d277de27-5aea-463e-8faa-679147ab52ba
+              - generic [ref=f108e153]:
+                - generic [ref=f108e154]:
+                  - generic [ref=f108e155]: "19"
+                  - generic [ref=f108e156]: Okt.
+                - generic [ref=f108e157]:
+                  - generic [ref=f108e158]: Apotheke zum Löwen 8
+                  - generic [ref=f108e159]: Hygiene/Gesundheit
+                - generic [ref=f108e162]: 84,07€
+            - link [ref=f108e163] [cursor=pointer]:
+              - /url: /bill/c00844ad-47cb-4d74-972c-d5c71900ded8
+              - generic [ref=f108e165]:
+                - generic [ref=f108e166]:
+                  - generic [ref=f108e167]: "18"
+                  - generic [ref=f108e168]: Okt.
+                - generic [ref=f108e169]:
+                  - generic [ref=f108e170]: Merkur 9
+                  - generic [ref=f108e171]: Geschenke
+                - generic [ref=f108e174]: 121,08€
+            - link [ref=f108e175] [cursor=pointer]:
+              - /url: /bill/01313af0-b691-434c-a20c-5e584b03e76a
+              - generic [ref=f108e177]:
+                - generic [ref=f108e178]:
+                  - generic [ref=f108e179]: "17"
+                  - generic [ref=f108e180]: Okt.
+                - generic [ref=f108e181]:
+                  - generic [ref=f108e182]: Interspar 10
+                  - generic [ref=f108e183]: Restaurant
+                - generic [ref=f108e186]: 158,09€
+            - link [ref=f108e187] [cursor=pointer]:
+              - /url: /bill/61fcccb5-1dab-4c41-a7c7-8651b48cae4c
+              - generic [ref=f108e189]:
+                - generic [ref=f108e190]:
+                  - generic [ref=f108e191]: "15"
+                  - generic [ref=f108e192]: Okt.
+                - generic [ref=f108e193]:
+                  - generic [ref=f108e194]: Lidl 11
+                  - generic [ref=f108e195]: Keine
+                - generic [ref=f108e198]: 15,10€
+            - link [ref=f108e199] [cursor=pointer]:
+              - /url: /bill/4f013648-3373-4c56-bf35-5fdb12761f3d
+              - generic [ref=f108e201]:
+                - generic [ref=f108e202]:
+                  - generic [ref=f108e203]: "14"
+                  - generic [ref=f108e204]: Okt.
+                - generic [ref=f108e205]:
+                  - generic [ref=f108e206]: H&M 12
+                  - generic [ref=f108e207]: Lebensmittel
+                - generic [ref=f108e210]: 52,11€
+        - navigation [ref=f108e212]:
+          - link [ref=f108e213] [cursor=pointer]:
+            - /url: /bill/list
+            - img [aria-hidden] [ref=f108e214]: list
+            - text: Rechnungen
+          - link [ref=f108e215] [cursor=pointer]:
+            - /url: /bill/create
+            - img [aria-hidden] [ref=f108e216]: add_circle
+            - text: Hinzufügen
+          - link [ref=f108e217] [cursor=pointer]:
+            - /url: /bill/expenses
+            - img [aria-hidden] [ref=f108e218]: donut_small
+            - text: Statistik
+  - generic:
+    - dialog [ref=f108e223]:
+      - generic "Datumfilter" [ref=f108e225]:
+        - generic [ref=f108e227]:
+          - heading "Datumfilter" [level=2] [ref=f108e228]
+          - button "Schließen" [ref=f108e229] [cursor=pointer]:
+            - img [aria-hidden] [ref=f108e230]: close
+        - generic [ref=f108e232]:
+          - generic [ref=f108e233]:
+            - generic [ref=f108e234]: Von
+            - generic [ref=f108e235]:
+              - generic [ref=f108e236]:
+                - textbox "Von" [ref=f108e237]: 22.10.2026
+                - button "Open calendar" [ref=f108e239] [cursor=pointer]:
+                  - img [aria-hidden] [ref=f108e241]: calendar_today
+              - button "Von-Datum leeren" [ref=f108e242] [cursor=pointer]:
+                - img [aria-hidden] [ref=f108e243]: close
+            - generic [ref=f108e244]: DD.MM.YYYY
+          - generic [ref=f108e245]:
+            - generic [ref=f108e246]: Bis
+            - generic [ref=f108e247]:
+              - generic [ref=f108e248]:
+                - textbox "Bis" [ref=f108e249]: 27.10.2026
+                - button "Open calendar" [ref=f108e251] [cursor=pointer]:
+                  - img [aria-hidden] [ref=f108e253]: calendar_today
+              - button "Bis-Datum leeren" [ref=f108e254] [cursor=pointer]:
+                - img [aria-hidden] [ref=f108e255]: close
+            - generic [ref=f108e256]: DD.MM.YYYY
+        - button "Übernehmen" [ref=f108e258] [cursor=pointer]
+    - dialog [ref=f108e597]:
+      - generic [ref=f108e430]:
+        - generic [ref=f108e433]:
+          - button "Choose month and year" [ref=f108e434] [cursor=pointer]:
+            - generic [ref=f108e435]: OCTOBER 2026
+          - button "Previous month" [ref=f108e439] [cursor=pointer]
+          - button "Next month" [ref=f108e440] [cursor=pointer]
+        - grid [ref=f108e443]:
+          - rowgroup [ref=f108e444]:
+            - row [ref=f108e445]:
+              - columnheader "Sunday" [ref=f108e446]: Su
+              - columnheader "Monday" [ref=f108e448]: Mo
+              - columnheader "Tuesday" [ref=f108e450]: Tu
+              - columnheader "Wednesday" [ref=f108e452]: We
+              - columnheader "Thursday" [ref=f108e454]: Th
+              - columnheader "Friday" [ref=f108e456]: Fr
+              - columnheader "Saturday" [ref=f108e458]: Sa
+            - row [ref=f108e460]:
+              - columnheader [aria-hidden] [ref=f108e461]
+          - rowgroup [ref=f108e462]:
+            - row [ref=f108e463]:
+              - gridcell "OCT" [ref=f108e464]
+              - gridcell [ref=f108e465]:
+                - button "01.10.2026" [ref=f108e466] [cursor=pointer]:
+                  - generic [ref=f108e467]: "1"
+              - gridcell [ref=f108e469]:
+                - button "02.10.2026" [ref=f108e470] [cursor=pointer]:
+                  - generic [ref=f108e471]: "2"
+              - gridcell [ref=f108e473]:
+                - button "03.10.2026" [ref=f108e474] [cursor=pointer]:
+                  - generic [ref=f108e475]: "3"
+            - row [ref=f108e477]:
+              - gridcell [ref=f108e478]:
+                - button "04.10.2026" [ref=f108e479] [cursor=pointer]:
+                  - generic [ref=f108e480]: "4"
+              - gridcell [ref=f108e482]:
+                - button "05.10.2026" [ref=f108e483] [cursor=pointer]:
+                  - generic [ref=f108e484]: "5"
+              - gridcell [ref=f108e486]:
+                - button "06.10.2026" [ref=f108e487] [cursor=pointer]:
+                  - generic [ref=f108e488]: "6"
+              - gridcell [ref=f108e490]:
+                - button "07.10.2026" [ref=f108e491] [cursor=pointer]:
+                  - generic [ref=f108e492]: "7"
+              - gridcell [ref=f108e494]:
+                - button "08.10.2026" [ref=f108e495] [cursor=pointer]:
+                  - generic [ref=f108e496]: "8"
+              - gridcell [ref=f108e498]:
+                - button "09.10.2026" [ref=f108e499] [cursor=pointer]:
+                  - generic [ref=f108e500]: "9"
+              - gridcell [ref=f108e502]:
+                - button "10.10.2026" [ref=f108e503] [cursor=pointer]:
+                  - generic [ref=f108e504]: "10"
+            - row [ref=f108e506]:
+              - gridcell [ref=f108e507]:
+                - button "11.10.2026" [ref=f108e508] [cursor=pointer]:
+                  - generic [ref=f108e509]: "11"
+              - gridcell [ref=f108e511]:
+                - button "12.10.2026" [ref=f108e512] [cursor=pointer]:
+                  - generic [ref=f108e513]: "12"
+              - gridcell [ref=f108e515]:
+                - button "13.10.2026" [ref=f108e516] [cursor=pointer]:
+                  - generic [ref=f108e517]: "13"
+              - gridcell [ref=f108e519]:
+                - button "14.10.2026" [ref=f108e520] [cursor=pointer]:
+                  - generic [ref=f108e521]: "14"
+              - gridcell [ref=f108e523]:
+                - button "15.10.2026" [ref=f108e524] [cursor=pointer]:
+                  - generic [ref=f108e525]: "15"
+              - gridcell [ref=f108e527]:
+                - button "16.10.2026" [ref=f108e528] [cursor=pointer]:
+                  - generic [ref=f108e529]: "16"
+              - gridcell [ref=f108e531]:
+                - button "17.10.2026" [ref=f108e532] [cursor=pointer]:
+                  - generic [ref=f108e533]: "17"
+            - row [ref=f108e535]:
+              - gridcell [ref=f108e536]:
+                - button "18.10.2026" [ref=f108e537] [cursor=pointer]:
+                  - generic [ref=f108e538]: "18"
+              - gridcell [ref=f108e540]:
+                - button "19.10.2026" [ref=f108e541] [cursor=pointer]:
+                  - generic [ref=f108e542]: "19"
+              - gridcell [ref=f108e544]:
+                - button "20.10.2026" [ref=f108e545] [cursor=pointer]:
+                  - generic [ref=f108e546]: "20"
+              - gridcell [ref=f108e548]:
+                - button "21.10.2026" [ref=f108e549] [cursor=pointer]:
+                  - generic [ref=f108e550]: "21"
+              - gridcell [ref=f108e552]:
+                - button "22.10.2026" [ref=f108e553] [cursor=pointer]:
+                  - generic [ref=f108e554]: "22"
+              - gridcell [ref=f108e556]:
+                - button "23.10.2026" [ref=f108e557] [cursor=pointer]:
+                  - generic [ref=f108e558]: "23"
+              - gridcell [ref=f108e560]:
+                - button "24.10.2026" [ref=f108e561] [cursor=pointer]:
+                  - generic [ref=f108e562]: "24"
+            - row [ref=f108e564]:
+              - gridcell [ref=f108e565]:
+                - button "25.10.2026" [ref=f108e566] [cursor=pointer]:
+                  - generic [ref=f108e567]: "25"
+              - gridcell [ref=f108e569]:
+                - button "26.10.2026" [ref=f108e570] [cursor=pointer]:
+                  - generic [ref=f108e571]: "26"
+              - gridcell [ref=f108e573]:
+                - button "27.10.2026" [active] [pressed] [ref=f108e574] [cursor=pointer]:
+                  - generic [ref=f108e575]: "27"
+              - gridcell [ref=f108e577]:
+                - button "28.10.2026" [ref=f108e578] [cursor=pointer]:
+                  - generic [ref=f108e579]: "28"
+              - gridcell [ref=f108e581]:
+                - button "29.10.2026" [ref=f108e582] [cursor=pointer]:
+                  - generic [ref=f108e583]: "29"
+              - gridcell [ref=f108e585]:
+                - button "30.10.2026" [ref=f108e586] [cursor=pointer]:
+                  - generic [ref=f108e587]: "30"
+              - gridcell [ref=f108e589]:
+                - button "31.10.2026" [ref=f108e590] [cursor=pointer]:
+                  - generic [ref=f108e591]: "31"
+      - button "Close calendar" [ref=f108e598] [cursor=pointer]

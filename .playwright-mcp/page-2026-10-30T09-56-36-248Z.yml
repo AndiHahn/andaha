@@ -1,0 +1,47 @@
+- generic [ref=f501e6]:
+  - banner [ref=f501e7]:
+    - link "Zurück" [ref=f501e61] [cursor=pointer]:
+      - /url: /budgetplan/fixedcost
+      - img [aria-hidden] [ref=f501e62]: arrow_back
+    - heading "Fixkosten hinzufügen" [level=1] [ref=f501e63]
+    - button "Benutzerkonto" [ref=f501e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f501e12]: account_circle
+  - main [ref=f501e13]:
+    - generic [ref=f501e15]:
+      - generic [ref=f501e65]:
+        - generic [ref=f501e66]:
+          - generic [ref=f501e67]:
+            - generic [ref=f501e68]: Name
+            - textbox "Name" [ref=f501e70]
+          - generic [ref=f501e71]:
+            - generic [ref=f501e72]: Kategorie
+            - generic [ref=f501e73]:
+              - combobox "Kategorie" [ref=f501e74]:
+                - generic [ref=f501e75] [cursor=pointer]: Wohnen
+              - img [aria-hidden] [ref=f501e78]: expand_more
+          - generic [ref=f501e79]:
+            - generic [ref=f501e80]: Intervall
+            - generic [ref=f501e81]:
+              - combobox "Intervall" [ref=f501e82]:
+                - generic [ref=f501e83] [cursor=pointer]: monatlich
+              - img [aria-hidden] [ref=f501e86]: expand_more
+          - generic [ref=f501e87]:
+            - generic [ref=f501e88]: Kosten
+            - generic [ref=f501e89]:
+              - spinbutton "Kosten" [ref=f501e90]
+              - generic [aria-hidden] [ref=f501e91]: €
+        - button "Speichern" [disabled] [ref=f501e93]:
+          - img [aria-hidden] [ref=f501e94]: check
+      - navigation "Haushaltsplan" [ref=f501e27]:
+        - link "Haushaltsplan" [ref=f501e28] [cursor=pointer]:
+          - /url: /budgetplan/overview
+          - img [aria-hidden] [ref=f501e29]: account_balance_wallet
+          - text: Haushaltsplan
+        - link "Fixkosten" [ref=f501e30] [cursor=pointer]:
+          - /url: /budgetplan/fixedcost
+          - img [aria-hidden] [ref=f501e31]: north_east
+          - text: Fixkosten
+        - link "Einkommen" [ref=f501e32] [cursor=pointer]:
+          - /url: /budgetplan/income
+          - img [aria-hidden] [ref=f501e33]: south_west
+          - text: Einkommen

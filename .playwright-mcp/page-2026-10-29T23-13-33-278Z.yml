@@ -1,0 +1,99 @@
+- generic [ref=f72e3]:
+  - navigation "Hauptnavigation" [ref=f72e5]:
+    - generic [ref=f72e6]:
+      - generic [ref=f72e7]: Andaha
+      - link "Rechnungen" [ref=f72e9] [cursor=pointer]:
+        - /url: /
+        - img [aria-hidden] [ref=f72e10]: receipt_long
+        - text: Rechnungen
+      - link "Analyse" [ref=f72e11] [cursor=pointer]:
+        - /url: /analyzed
+        - img [aria-hidden] [ref=f72e12]: document_scanner
+        - text: Analyse
+      - link "Haushaltsplan" [ref=f72e13] [cursor=pointer]:
+        - /url: /budgetplan
+        - img [aria-hidden] [ref=f72e14]: account_balance_wallet
+        - text: Haushaltsplan
+      - link "Stundenaufzeichnungen" [ref=f72e15] [cursor=pointer]:
+        - /url: /work
+        - img [aria-hidden] [ref=f72e16]: group
+        - text: Stundenaufzeichnungen
+      - link "Einstellungen" [ref=f72e17] [cursor=pointer]:
+        - /url: /settings
+        - img [aria-hidden] [ref=f72e18]: settings
+        - text: Einstellungen
+      - link "Export" [ref=f72e19] [cursor=pointer]:
+        - /url: /export
+        - img [aria-hidden] [ref=f72e20]: download
+        - text: Export
+      - generic [ref=f72e22]:
+        - link "AGB" [ref=f72e23] [cursor=pointer]:
+          - /url: /agb
+        - link "Datenschutzerklärung" [ref=f72e24] [cursor=pointer]:
+          - /url: /data-protection
+        - link "Benutzerdaten" [ref=f72e25] [cursor=pointer]:
+          - /url: /user-data
+  - generic [ref=f72e27]:
+    - banner [ref=f72e28]:
+      - link "Zurück" [ref=f72e29] [cursor=pointer]:
+        - /url: /work/person
+        - img [aria-hidden] [ref=f72e30]: arrow_back
+      - heading "Arbeitszeiten hinzufügen" [level=1] [ref=f72e31]
+      - button "Benutzerkonto" [ref=f72e32] [cursor=pointer]:
+        - img [aria-hidden] [ref=f72e33]: account_circle
+    - main [ref=f72e34]:
+      - generic [ref=f72e36]:
+        - generic [ref=f72e39]:
+          - generic [ref=f72e40]:
+            - generic [ref=f72e41]:
+              - generic [ref=f72e42]: Personen *
+              - generic [ref=f72e43]:
+                - combobox "Personen" [ref=f72e44]:
+                  - generic [ref=f72e45] [cursor=pointer]
+                - img [aria-hidden] [ref=f72e47]: expand_more
+            - generic [ref=f72e48]:
+              - generic [ref=f72e49]: Einzel-Select (Probe)
+              - generic [ref=f72e50]:
+                - combobox "Probe" [ref=f72e51]:
+                  - generic [ref=f72e52] [cursor=pointer]: Wählen
+                - img [aria-hidden] [ref=f72e54]: expand_more
+              - generic [ref=f72e55]: "Wert:"
+            - generic [ref=f72e57]:
+              - generic [ref=f72e58]: Datum
+              - generic [ref=f72e59]:
+                - textbox "Datum Open calendar DD.MM.YYYY" [ref=f72e60]: 30.10.2026
+                - button "Open calendar" [ref=f72e62] [cursor=pointer]:
+                  - img [aria-hidden] [ref=f72e64]: calendar_today
+              - generic [ref=f72e65]: DD.MM.YYYY
+            - generic [ref=f72e67]:
+              - generic [ref=f72e68]: Startzeit
+              - generic [ref=f72e69]:
+                - textbox "Startzeit" [ref=f72e70]: 07:00
+                - img [aria-hidden] [ref=f72e71]: schedule
+            - generic [ref=f72e73]:
+              - generic [ref=f72e74]: Endzeit
+              - generic [ref=f72e75]:
+                - textbox "Endzeit" [ref=f72e76]: 17:00
+                - img [aria-hidden] [ref=f72e77]: schedule
+            - generic [ref=f72e79]:
+              - generic [ref=f72e80]: Pause
+              - generic [ref=f72e81]:
+                - textbox "Pause" [ref=f72e82]: 01:00
+                - img [aria-hidden] [ref=f72e83]: schedule
+            - generic [ref=f72e84]: "Arbeitszeit netto: 09:00 h"
+            - generic [ref=f72e88]:
+              - textbox "Notizen" [ref=f72e89]
+              - generic: Notizen
+          - button [disabled] [ref=f72e94]:
+            - generic [ref=f72e95]:
+              - img [aria-hidden] [ref=f72e96]: save
+              - text: Speichern
+        - navigation "Stunden" [ref=f72e97]:
+          - link "Personen" [ref=f72e98] [cursor=pointer]:
+            - /url: /work/person
+            - img [aria-hidden] [ref=f72e99]: group
+            - text: Personen
+          - link "Statistik" [ref=f72e100] [cursor=pointer]:
+            - /url: /work/statistics
+            - img [aria-hidden] [ref=f72e101]: donut_small
+            - text: Statistik

@@ -1,0 +1,89 @@
+- generic [ref=f566e3]:
+  - navigation "Hauptnavigation" [ref=f566e5]:
+    - generic [ref=f566e6]:
+      - generic [ref=f566e7]: Andaha
+      - link "Rechnungen" [ref=f566e9] [cursor=pointer]:
+        - /url: /
+        - img [aria-hidden] [ref=f566e10]: receipt_long
+        - text: Rechnungen
+      - link "Analyse" [ref=f566e11] [cursor=pointer]:
+        - /url: /analyzed
+        - img [aria-hidden] [ref=f566e12]: document_scanner
+        - text: Analyse
+      - link "Haushaltsplan" [ref=f566e13] [cursor=pointer]:
+        - /url: /budgetplan
+        - img [aria-hidden] [ref=f566e14]: account_balance_wallet
+        - text: Haushaltsplan
+      - link "Stundenaufzeichnungen" [ref=f566e15] [cursor=pointer]:
+        - /url: /work
+        - img [aria-hidden] [ref=f566e16]: group
+        - text: Stundenaufzeichnungen
+      - link "Einstellungen" [ref=f566e17] [cursor=pointer]:
+        - /url: /settings
+        - img [aria-hidden] [ref=f566e18]: settings
+        - text: Einstellungen
+      - link "Export" [ref=f566e19] [cursor=pointer]:
+        - /url: /export
+        - img [aria-hidden] [ref=f566e20]: download
+        - text: Export
+      - generic [ref=f566e22]:
+        - link "AGB" [ref=f566e23] [cursor=pointer]:
+          - /url: /agb
+        - link "Datenschutzerklärung" [ref=f566e24] [cursor=pointer]:
+          - /url: /data-protection
+        - link "Benutzerdaten" [ref=f566e25] [cursor=pointer]:
+          - /url: /user-data
+  - generic [ref=f566e27]:
+    - banner [ref=f566e28]:
+      - heading "Rechnung hinzufügen" [level=1] [ref=f566e29]
+      - generic [ref=f566e30]: Test1
+      - button "Benutzerkonto" [ref=f566e31] [cursor=pointer]:
+        - img [aria-hidden] [ref=f566e32]: account_circle
+    - main [ref=f566e33]:
+      - generic [ref=f566e35]:
+        - generic [ref=f566e37]:
+          - generic [ref=f566e38]:
+            - button "Foto der Rechnung Optional" [ref=f566e40] [cursor=pointer]:
+              - img [aria-hidden] [ref=f566e42]: photo_camera
+              - generic [ref=f566e43]:
+                - text: Foto der Rechnung
+                - generic [ref=f566e44]: Optional
+            - generic [ref=f566e45]:
+              - generic [ref=f566e46]: Shopname
+              - textbox "Shopname" [ref=f566e48]
+            - generic [ref=f566e49]:
+              - generic [ref=f566e50]: Notizen
+              - textbox "Notizen" [ref=f566e52]
+            - generic [ref=f566e53]:
+              - generic [ref=f566e54]: Preis
+              - generic [ref=f566e55]:
+                - spinbutton "Preis" [ref=f566e56]
+                - generic [aria-hidden] [ref=f566e57]: €
+            - generic [ref=f566e58]:
+              - generic [ref=f566e59]: Kategorie
+              - generic [ref=f566e60]:
+                - combobox "Kategorie" [ref=f566e61]:
+                  - generic [ref=f566e62] [cursor=pointer]
+                - img [aria-hidden] [ref=f566e64]: expand_more
+            - generic [ref=f566e65]:
+              - generic [ref=f566e66]: Datum
+              - generic [ref=f566e67]:
+                - textbox "Datum" [ref=f566e68]: 30.10.2026
+                - button "Kalender öffnen" [ref=f566e70] [cursor=pointer]:
+                  - img [aria-hidden] [ref=f566e72]: calendar_today
+              - generic [ref=f566e73]: DD.MM.YYYY
+          - button "Speichern" [disabled] [ref=f566e75]:
+            - img [aria-hidden] [ref=f566e76]: check
+        - navigation "Rechnungen" [ref=f566e78]:
+          - link "Rechnungen" [ref=f566e79] [cursor=pointer]:
+            - /url: /bill/list
+            - img [aria-hidden] [ref=f566e80]: list
+            - text: Rechnungen
+          - link "Hinzufügen" [ref=f566e81] [cursor=pointer]:
+            - /url: /bill/create
+            - img [aria-hidden] [ref=f566e82]: add_circle
+            - text: Hinzufügen
+          - link "Statistik" [ref=f566e83] [cursor=pointer]:
+            - /url: /bill/expenses
+            - img [aria-hidden] [ref=f566e84]: donut_small
+            - text: Statistik

@@ -1,0 +1,50 @@
+- generic [ref=f7e3]:
+  - generic [ref=f7e4]:
+    - button [ref=f7e5] [cursor=pointer]:
+      - img [aria-hidden] [ref=f7e7]: menu
+    - button [ref=f7e8] [cursor=pointer]:
+      - heading "Andaha" [level=2] [ref=f7e10]
+    - generic [ref=f7e95]: Test1
+    - button [ref=f7e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f7e13]: account_circle
+  - generic [ref=f7e19]:
+    - generic [ref=f7e22]:
+      - generic [ref=f7e23]:
+        - button [ref=f7e27] [cursor=pointer]:
+          - img [aria-hidden] [ref=f7e29]: add_a_photo
+        - generic [ref=f7e33]:
+          - textbox "Shopname" [ref=f7e34]
+          - generic: Shopname *
+        - generic [ref=f7e38]:
+          - textbox "Notizen" [ref=f7e39]
+          - generic: Notizen
+        - generic [ref=f7e43]:
+          - spinbutton "Preis" [ref=f7e44]
+          - generic: Preis *
+        - generic [ref=f7e48] [cursor=pointer]:
+          - combobox [ref=f7e292]
+          - generic: Kategorie *
+        - generic [ref=f7e56]:
+          - generic [ref=f7e57]:
+            - generic [ref=f7e58]:
+              - textbox "Datum" [ref=f7e59]: 29.10.2026
+              - generic: Datum
+            - button "Open calendar" [ref=f7e62] [cursor=pointer]
+          - generic [ref=f7e66]: DD.MM.YYYY
+      - button [disabled] [ref=f7e72]:
+        - generic [ref=f7e73]:
+          - img [aria-hidden] [ref=f7e74]: save
+          - text: Speichern
+    - generic [ref=f7e78]:
+      - generic [ref=f7e79]:
+        - button [ref=f7e80] [cursor=pointer]:
+          - img [aria-hidden] [ref=f7e82]: list
+        - generic [ref=f7e83]: Rechnungen
+      - generic [ref=f7e84]:
+        - button [ref=f7e85] [cursor=pointer]:
+          - img [aria-hidden] [ref=f7e87]: add_circle
+        - generic [ref=f7e88]: Hinzufügen
+      - generic [ref=f7e89]:
+        - button [ref=f7e90] [cursor=pointer]:
+          - img [aria-hidden] [ref=f7e92]: donut_small
+        - generic [ref=f7e93]: Statistik

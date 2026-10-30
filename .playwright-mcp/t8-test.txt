@@ -1,0 +1,22 @@
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+30 10 2026 02:20:59.301:INFO [karma-server]: Karma v6.3.20 server started at http://localhost:9876/
+30 10 2026 02:20:59.302:INFO [launcher]: Launching browsers ChromeHeadless with concurrency unlimited
+30 10 2026 02:20:59.357:INFO [launcher]: Starting browser ChromeHeadless
+30 10 2026 02:21:00.399:INFO [Chrome Headless 156.0.0.0 (Windows 10)]: Connected on socket 2L-jJw_-biczXCtZAAAB with id 32544489
+Chrome Headless 156.0.0.0 (Windows 10): Executed 0 of 10[32m SUCCESS[39m (0 secs / 0 secs)
+[1A[2KChrome Headless 156.0.0.0 (Windows 10): Executed 1 of 10[32m SUCCESS[39m (0 secs / 0.019 secs)
+[1A[2KChrome Headless 156.0.0.0 (Windows 10): Executed 2 of 10[32m SUCCESS[39m (0 secs / 0.022 secs)
+[1A[2KChrome Headless 156.0.0.0 (Windows 10): Executed 3 of 10[32m SUCCESS[39m (0 secs / 0.026 secs)
+[1A[2KChrome Headless 156.0.0.0 (Windows 10): Executed 4 of 10[32m SUCCESS[39m (0 secs / 0.029 secs)
+[1A[2KChrome Headless 156.0.0.0 (Windows 10): Executed 5 of 10[32m SUCCESS[39m (0 secs / 0.03 secs)
+[1A[2KChrome Headless 156.0.0.0 (Windows 10): Executed 6 of 10[32m SUCCESS[39m (0 secs / 0.03 secs)
+[1A[2KChrome Headless 156.0.0.0 (Windows 10): Executed 7 of 10[32m SUCCESS[39m (0 secs / 0.031 secs)
+[1A[2KChrome Headless 156.0.0.0 (Windows 10): Executed 8 of 10[32m SUCCESS[39m (0 secs / 0.031 secs)
+[1A[2KChrome Headless 156.0.0.0 (Windows 10): Executed 9 of 10[32m SUCCESS[39m (0 secs / 0.031 secs)
+[1A[2KChrome Headless 156.0.0.0 (Windows 10): Executed 10 of 10[32m SUCCESS[39m (0 secs / 0.031 secs)
+[1A[2KChrome Headless 156.0.0.0 (Windows 10): Executed 10 of 10[32m SUCCESS[39m (0.038 secs / 0.031 secs)
+[32mTOTAL: 10 SUCCESS[39m
+✔ Browser application bundle generation complete.
+✔ Browser application bundle generation complete.
+EXIT 0

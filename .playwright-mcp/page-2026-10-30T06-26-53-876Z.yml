@@ -1,0 +1,46 @@
+- generic [ref=f195e1]:
+  - generic [ref=f195e6]:
+    - banner [ref=f195e7]:
+      - link [ref=f195e160] [cursor=pointer]:
+        - /url: /analyzed/list
+        - img [aria-hidden] [ref=f195e124]: arrow_back
+      - heading [level=1] [ref=f195e161]: Analysierte Rechnung
+      - button [ref=f195e162] [cursor=pointer]:
+        - img [aria-hidden] [ref=f195e12]: account_circle
+    - main [ref=f195e13]:
+      - generic [ref=f195e15]:
+        - generic [ref=f195e128]:
+          - generic [ref=f195e129]:
+            - generic [ref=f195e130]:
+              - generic [ref=f195e131]: Spar Gourmet
+              - generic [ref=f195e132]: 63,18€
+              - generic [ref=f195e133]: 23.10.2026
+            - generic [ref=f195e134]:
+              - generic [ref=f195e135]: Kategorie
+              - generic [ref=f195e136]: Lebensmittel
+            - generic [ref=f195e138]:
+              - generic [ref=f195e139]: Unterkategorie
+              - generic [ref=f195e140]: Getränke
+            - generic [ref=f195e141]:
+              - generic [ref=f195e142]: Analyse-Konfidenz
+              - generic [ref=f195e143]: 92%
+            - generic [ref=f195e146]:
+              - generic [ref=f195e147]: Notizen
+              - generic [ref=f195e148]: Wein für Samstag, Rechnung geteilt.
+          - button [active] [ref=f195e163] [cursor=pointer]
+        - navigation [ref=f195e164]:
+          - link [ref=f195e165] [cursor=pointer]:
+            - /url: /analyzed/list
+            - img [aria-hidden] [ref=f195e119]: list
+            - text: Analysiert
+          - link [ref=f195e166] [cursor=pointer]:
+            - /url: /analyzed/create
+            - img [aria-hidden] [ref=f195e121]: upload
+            - text: Rechnung hochladen
+  - generic:
+    - dialog [ref=f195e170]:
+      - button "Schließen" [ref=f195e175] [cursor=pointer]:
+        - img [aria-hidden] [ref=f195e176]: close
+    - generic [ref=f195e184]:
+      - img [aria-hidden] [ref=f195e185]: warning
+      - generic [ref=f195e186]: Foto konnte nicht geladen werden.

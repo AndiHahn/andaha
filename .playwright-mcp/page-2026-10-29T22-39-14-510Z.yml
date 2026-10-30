@@ -1,0 +1,82 @@
+- generic [ref=f44e3]:
+  - navigation "Hauptnavigation" [ref=f44e5]:
+    - generic [ref=f44e6]:
+      - generic [ref=f44e7]: Andaha
+      - link "Rechnungen" [ref=f44e9] [cursor=pointer]:
+        - /url: /
+        - img [aria-hidden] [ref=f44e10]: receipt_long
+        - text: Rechnungen
+      - link "Analyse" [ref=f44e11] [cursor=pointer]:
+        - /url: /analyzed
+        - img [aria-hidden] [ref=f44e12]: document_scanner
+        - text: Analyse
+      - link "Haushaltsplan" [ref=f44e13] [cursor=pointer]:
+        - /url: /budgetplan
+        - img [aria-hidden] [ref=f44e14]: account_balance_wallet
+        - text: Haushaltsplan
+      - link "Stundenaufzeichnungen" [ref=f44e15] [cursor=pointer]:
+        - /url: /work
+        - img [aria-hidden] [ref=f44e16]: group
+        - text: Stundenaufzeichnungen
+      - link "Einstellungen" [ref=f44e17] [cursor=pointer]:
+        - /url: /settings
+        - img [aria-hidden] [ref=f44e18]: settings
+        - text: Einstellungen
+      - link "Export" [ref=f44e19] [cursor=pointer]:
+        - /url: /export
+        - img [aria-hidden] [ref=f44e20]: download
+        - text: Export
+      - generic [ref=f44e22]:
+        - link "AGB" [ref=f44e23] [cursor=pointer]:
+          - /url: /agb
+        - link "Datenschutzerklärung" [ref=f44e24] [cursor=pointer]:
+          - /url: /data-protection
+        - link "Benutzerdaten" [ref=f44e25] [cursor=pointer]:
+          - /url: /user-data
+  - generic [ref=f44e27]:
+    - banner [ref=f44e28]:
+      - link "Zurück" [ref=f44e29] [cursor=pointer]:
+        - /url: /budgetplan/fixedcost
+        - img [aria-hidden] [ref=f44e30]: arrow_back
+      - heading "Fixkosten hinzufügen" [level=1] [ref=f44e31]
+      - generic [ref=f44e32]:
+        - img [aria-hidden] [ref=f44e33]: sync
+        - text: Synchronisiert …
+      - generic [ref=f44e34]: Test1
+      - button "Benutzerkonto" [ref=f44e35] [cursor=pointer]:
+        - img [aria-hidden] [ref=f44e36]: account_circle
+    - main [ref=f44e37]:
+      - generic [ref=f44e39]:
+        - generic [ref=f44e42]:
+          - generic [ref=f44e43]:
+            - generic [ref=f44e47]:
+              - textbox "Name" [ref=f44e48]
+              - generic: Name *
+            - generic [ref=f44e52] [cursor=pointer]:
+              - combobox "Kategorie Wohnen" [ref=f44e53]:
+                - generic [ref=f44e54]: Wohnen
+              - generic: Kategorie *
+            - generic [ref=f44e62] [cursor=pointer]:
+              - combobox "Intervall monatlich" [ref=f44e63]:
+                - generic [ref=f44e64]: monatlich
+              - generic: Intervall *
+            - generic [ref=f44e72]:
+              - spinbutton "Kosten" [ref=f44e73]
+              - generic: Kosten *
+          - button [disabled] [ref=f44e76]:
+            - generic [ref=f44e77]:
+              - img [aria-hidden] [ref=f44e78]: save
+              - text: Speichern
+        - navigation "Haushaltsplan" [ref=f44e79]:
+          - link "Haushaltsplan" [ref=f44e80] [cursor=pointer]:
+            - /url: /budgetplan/overview
+            - img [aria-hidden] [ref=f44e81]: account_balance_wallet
+            - text: Haushaltsplan
+          - link "Fixkosten" [ref=f44e82] [cursor=pointer]:
+            - /url: /budgetplan/fixedcost
+            - img [aria-hidden] [ref=f44e83]: north_east
+            - text: Fixkosten
+          - link "Einkommen" [ref=f44e84] [cursor=pointer]:
+            - /url: /budgetplan/income
+            - img [aria-hidden] [ref=f44e85]: south_west
+            - text: Einkommen

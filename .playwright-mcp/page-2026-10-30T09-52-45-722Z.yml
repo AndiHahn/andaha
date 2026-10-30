@@ -1,0 +1,94 @@
+- generic [ref=f497e6]:
+  - banner [ref=f497e7]:
+    - button "Menü öffnen" [ref=f497e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f497e9]: menu
+    - heading "Statistik" [level=1] [ref=f497e10]
+    - button "Benutzerkonto" [ref=f497e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f497e12]: account_circle
+  - main [ref=f497e13]:
+    - generic [ref=f497e15]:
+      - generic [ref=f497e17]:
+        - generic [ref=f497e31]:
+          - radiogroup "Datumstyp" [ref=f497e32]:
+            - generic [ref=f497e33]:
+              - radio "Monat" [checked] [ref=f497e34] [cursor=pointer]
+              - generic [ref=f497e35]: Monat
+            - generic [ref=f497e36]:
+              - radio "Jahr" [ref=f497e37] [cursor=pointer]
+              - generic [ref=f497e38]: Jahr
+            - generic [ref=f497e39]:
+              - radio "Gesamt" [ref=f497e40] [cursor=pointer]
+              - generic [ref=f497e41]: Gesamt
+            - generic [ref=f497e42]:
+              - radio "Von – Bis" [ref=f497e43] [cursor=pointer]
+              - generic [ref=f497e44]: Von – Bis
+          - generic [ref=f497e45]:
+            - generic [ref=f497e46]: Monat
+            - generic [ref=f497e47]:
+              - combobox "Monat" [ref=f497e48]:
+                - generic [ref=f497e49] [cursor=pointer]: Oktober 2026
+              - img [aria-hidden] [ref=f497e52]: expand_more
+        - generic [ref=f497e58]:
+          - generic [ref=f497e59]:
+            - generic:
+              - generic: Summe der Ausgaben
+              - generic: 14.200,08 €
+          - generic [ref=f497e61]:
+            - button "Lebensmittel 89 % 12.582,40 €" [ref=f497e62] [cursor=pointer]:
+              - generic [ref=f497e64]: Lebensmittel
+              - generic [ref=f497e65]: 89 %
+              - generic [ref=f497e66]: 12.582,40 €
+              - img [aria-hidden] [ref=f497e67]: chevron_right
+            - button "Restaurant 2 % 326,28 €" [ref=f497e68] [cursor=pointer]:
+              - generic [ref=f497e70]: Restaurant
+              - generic [ref=f497e71]: 2 %
+              - generic [ref=f497e72]: 326,28 €
+              - img [aria-hidden] [ref=f497e73]: chevron_right
+            - button "Ausbildung 2 % 316,18 €" [ref=f497e74] [cursor=pointer]:
+              - generic [ref=f497e76]: Ausbildung
+              - generic [ref=f497e77]: 2 %
+              - generic [ref=f497e78]: 316,18 €
+              - img [aria-hidden] [ref=f497e79]: chevron_right
+            - button "Geschenke 2 % 252,26 €" [ref=f497e80] [cursor=pointer]:
+              - generic [ref=f497e82]: Geschenke
+              - generic [ref=f497e83]: 2 %
+              - generic [ref=f497e84]: 252,26 €
+              - img [aria-hidden] [ref=f497e85]: chevron_right
+            - button "Kleidung 2 % 242,16 €" [ref=f497e86] [cursor=pointer]:
+              - generic [ref=f497e88]: Kleidung
+              - generic [ref=f497e89]: 2 %
+              - generic [ref=f497e90]: 242,16 €
+              - img [aria-hidden] [ref=f497e91]: chevron_right
+            - button "Hygiene/Gesundheit 1 % 178,24 €" [ref=f497e92] [cursor=pointer]:
+              - generic [ref=f497e94]: Hygiene/Gesundheit
+              - generic [ref=f497e95]: 1 %
+              - generic [ref=f497e96]: 178,24 €
+              - img [aria-hidden] [ref=f497e97]: chevron_right
+            - button "Wohnen 1 % 168,14 €" [ref=f497e98] [cursor=pointer]:
+              - generic [ref=f497e100]: Wohnen
+              - generic [ref=f497e101]: 1 %
+              - generic [ref=f497e102]: 168,14 €
+              - img [aria-hidden] [ref=f497e103]: chevron_right
+            - button "Auto/Motorrad 1 % 104,22 €" [ref=f497e104] [cursor=pointer]:
+              - generic [ref=f497e106]: Auto/Motorrad
+              - generic [ref=f497e107]: 1 %
+              - generic [ref=f497e108]: 104,22 €
+              - img [aria-hidden] [ref=f497e109]: chevron_right
+            - button "Freizeit 0 % 30,20 €" [ref=f497e110] [cursor=pointer]:
+              - generic [ref=f497e112]: Freizeit
+              - generic [ref=f497e113]: 0 %
+              - generic [ref=f497e114]: 30,20 €
+              - img [aria-hidden] [ref=f497e115]: chevron_right
+      - navigation "Rechnungen" [ref=f497e23]:
+        - link "Rechnungen" [ref=f497e24] [cursor=pointer]:
+          - /url: /bill/list
+          - img [aria-hidden] [ref=f497e25]: list
+          - text: Rechnungen
+        - link "Hinzufügen" [ref=f497e26] [cursor=pointer]:
+          - /url: /bill/create
+          - img [aria-hidden] [ref=f497e27]: add_circle
+          - text: Hinzufügen
+        - link "Statistik" [ref=f497e28] [cursor=pointer]:
+          - /url: /bill/expenses
+          - img [aria-hidden] [ref=f497e29]: donut_small
+          - text: Statistik

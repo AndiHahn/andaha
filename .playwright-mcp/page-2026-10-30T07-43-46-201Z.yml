@@ -1,0 +1,41 @@
+- generic [ref=f316e1]:
+  - generic [ref=f316e6]:
+    - banner [ref=f316e7]:
+      - button [ref=f316e38] [cursor=pointer]:
+        - img [aria-hidden] [ref=f316e9]: menu
+      - heading [level=1] [ref=f316e39]: Verbindungen
+      - button [ref=f316e40] [cursor=pointer]:
+        - img [aria-hidden] [ref=f316e12]: account_circle
+    - main [ref=f316e13]:
+      - generic [ref=f316e15]:
+        - generic [ref=f316e16]:
+          - paragraph [ref=f316e17]: Verbindungen
+          - generic [ref=f316e18]: Keine Verbindungen vorhanden.
+          - button [ref=f316e42] [cursor=pointer]:
+            - img [aria-hidden] [ref=f316e23]: link
+            - generic [ref=f316e24]: Verbindung herstellen
+          - paragraph [ref=f316e25]: Eingehende Verbindungsanfragen
+          - generic [ref=f316e26]: Keine eingehenden Verbindungsanfragen vorhanden.
+          - paragraph [ref=f316e29]: Ausgehende Verbindungsanfragen
+          - generic [ref=f316e30]: Keine ausgehenden Verbindungsanfragen vorhanden.
+        - navigation [ref=f316e45]:
+          - link [ref=f316e46] [cursor=pointer]:
+            - /url: /settings/connections
+            - img [aria-hidden] [ref=f316e35]: link
+            - text: Verbindungen
+          - link [ref=f316e47] [cursor=pointer]:
+            - /url: /settings/categories
+            - img [aria-hidden] [ref=f316e37]: category
+            - text: Kategorien
+  - dialog [ref=f316e51]:
+    - generic [ref=f316e53]:
+      - generic [ref=f316e55]:
+        - heading "Verbindung zu Benutzer anfordern:" [level=2] [ref=f316e56]
+        - button "Schließen" [ref=f316e57] [cursor=pointer]:
+          - img [aria-hidden] [ref=f316e58]: close
+      - generic [ref=f316e59]:
+        - generic [ref=f316e62]:
+          - generic [ref=f316e63]: Email Adresse
+          - textbox "Email Adresse Keine gültige email Adresse." [active] [ref=f316e70]: abc
+          - generic [ref=f316e71]: Keine gültige email Adresse.
+        - button "Verbindung anfordern" [ref=f316e67] [cursor=pointer]

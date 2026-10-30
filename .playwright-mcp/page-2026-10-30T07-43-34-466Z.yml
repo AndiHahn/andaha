@@ -1,0 +1,27 @@
+- generic [ref=f316e6]:
+  - banner [ref=f316e7]:
+    - button "Menü öffnen" [ref=f316e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f316e9]: menu
+    - heading "Verbindungen" [level=1] [ref=f316e10]
+    - button "Benutzerkonto" [ref=f316e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f316e12]: account_circle
+  - main [ref=f316e13]:
+    - generic [ref=f316e15]:
+      - generic [ref=f316e16]:
+        - paragraph [ref=f316e17]: Verbindungen
+        - generic [ref=f316e18]: Keine Verbindungen vorhanden.
+        - button "Verbindung herstellen" [ref=f316e22] [cursor=pointer]:
+          - img [aria-hidden] [ref=f316e23]: link
+        - paragraph [ref=f316e25]: Eingehende Verbindungsanfragen
+        - generic [ref=f316e26]: Keine eingehenden Verbindungsanfragen vorhanden.
+        - paragraph [ref=f316e29]: Ausgehende Verbindungsanfragen
+        - generic [ref=f316e30]: Keine ausgehenden Verbindungsanfragen vorhanden.
+      - navigation "Einstellungen" [ref=f316e33]:
+        - link "Verbindungen" [ref=f316e34] [cursor=pointer]:
+          - /url: /settings/connections
+          - img [aria-hidden] [ref=f316e35]: link
+          - text: Verbindungen
+        - link "Kategorien" [ref=f316e36] [cursor=pointer]:
+          - /url: /settings/categories
+          - img [aria-hidden] [ref=f316e37]: category
+          - text: Kategorien

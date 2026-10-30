@@ -1,0 +1,48 @@
+- generic [ref=f167e6]:
+  - banner [ref=f167e7]:
+    - link "Zurück" [ref=f167e158] [cursor=pointer]:
+      - /url: /settings/categories
+      - img [aria-hidden] [ref=f167e159]: arrow_back
+    - heading "Kategorie" [level=1] [ref=f167e160]
+    - button "Benutzerkonto" [ref=f167e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f167e12]: account_circle
+  - main [ref=f167e13]:
+    - generic [ref=f167e15]:
+      - generic [ref=f167e161]:
+        - generic [ref=f167e163]:
+          - generic [ref=f167e168]:
+            - textbox "Name der Kategorie" [disabled] [ref=f167e169]: Lebensmittel
+            - generic: Name der Kategorie
+          - generic [ref=f167e174]:
+            - combobox "Farbe" [disabled] [ref=f167e177]
+            - generic: Farbe
+          - generic [ref=f167e185]:
+            - checkbox "Aufnehmen in Statistik" [checked] [disabled] [ref=f167e187]
+            - generic [ref=f167e188]: Aufnehmen in Statistik
+        - heading "Unterkategorien:" [level=3] [ref=f167e189]
+        - generic [ref=f167e217]:
+          - generic [ref=f167e219]:
+            - textbox "Unterkategorie" [disabled] [ref=f167e225]: Obst & Gemüse
+            - button [disabled] [ref=f167e226]:
+              - img [aria-hidden] [ref=f167e228]: delete
+          - generic [ref=f167e230]:
+            - textbox "Unterkategorie" [disabled] [ref=f167e236]: Getränke
+            - button [disabled] [ref=f167e237]:
+              - img [aria-hidden] [ref=f167e239]: delete
+        - button [ref=f167e241] [cursor=pointer]:
+          - generic [ref=f167e242]:
+            - img [aria-hidden] [ref=f167e243]: edit
+            - text: Bearbeiten
+        - button [ref=f167e202] [cursor=pointer]:
+          - generic [ref=f167e203]:
+            - img [aria-hidden] [ref=f167e204]: delete
+            - text: Löschen
+      - navigation "Einstellungen" [ref=f167e92]:
+        - link "Verbindungen" [ref=f167e93] [cursor=pointer]:
+          - /url: /settings/connections
+          - img [aria-hidden] [ref=f167e94]: link
+          - text: Verbindungen
+        - link "Kategorien" [ref=f167e95] [cursor=pointer]:
+          - /url: /settings/categories
+          - img [aria-hidden] [ref=f167e96]: category
+          - text: Kategorien

@@ -1,0 +1,189 @@
+- generic [ref=f492e6]:
+  - banner [ref=f492e7]:
+    - button "Menü öffnen" [ref=f492e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f492e9]: menu
+    - heading "Rechnungen" [level=1] [ref=f492e10]
+    - button "Benutzerkonto" [ref=f492e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f492e12]: account_circle
+  - main [ref=f492e13]:
+    - generic [ref=f492e15]:
+      - generic [ref=f492e16]:
+        - generic [ref=f492e19]:
+          - generic [ref=f492e20]:
+            - generic [ref=f492e22]:
+              - img [aria-hidden] [ref=f492e23]: search
+              - textbox "Rechnungen durchsuchen" [active] [ref=f492e24]:
+                - /placeholder: Suche Rechnungen...
+                - text: UIT
+              - button "Clear" [ref=f492e238] [cursor=pointer]:
+                - img [aria-hidden] [ref=f492e239]: close
+            - button "Datumfilter öffnen" [ref=f492e25] [cursor=pointer]:
+              - img [aria-hidden] [ref=f492e26]: filter_list
+          - generic [ref=f492e27]:
+            - button "Alle" [pressed] [ref=f492e57] [cursor=pointer]:
+              - img [aria-hidden] [ref=f492e58]: check
+              - text: Alle
+            - button "Keine" [ref=f492e59] [cursor=pointer]
+            - button "Lebensmittel" [ref=f492e60] [cursor=pointer]
+            - button "Wohnen" [ref=f492e61] [cursor=pointer]
+            - button "Kleidung" [ref=f492e62] [cursor=pointer]
+            - button "Ausbildung" [ref=f492e63] [cursor=pointer]
+            - button "Freizeit" [ref=f492e64] [cursor=pointer]
+            - button "Auto/Motorrad" [ref=f492e65] [cursor=pointer]
+            - button "Hygiene/Gesundheit" [ref=f492e66] [cursor=pointer]
+            - button "Geschenke" [ref=f492e67] [cursor=pointer]
+            - button "Restaurant" [ref=f492e68] [cursor=pointer]
+        - generic [ref=f492e69]:
+          - link "30 Okt UIT Testshop A Lebensmittel 12,34€" [ref=f492e70] [cursor=pointer]:
+            - /url: /bill/84f6e868-e2f2-49cb-b7fd-f59036a8b36e
+            - generic [ref=f492e72]:
+              - generic [ref=f492e73]:
+                - generic [ref=f492e74]: "30"
+                - generic [ref=f492e75]: Okt
+              - generic [ref=f492e76]:
+                - generic [ref=f492e77]: UIT Testshop A
+                - generic [ref=f492e78]: Lebensmittel
+              - generic [ref=f492e81]: 12,34€
+          - link "30 Okt T8 Bauernmarkt Lebensmittel · Obst & Gemüse 12,10€" [ref=f492e82] [cursor=pointer]:
+            - /url: /bill/b5f0f8e6-25fc-409f-b3dc-5c549234c598
+            - generic [ref=f492e84]:
+              - generic [ref=f492e85]:
+                - generic [ref=f492e86]: "30"
+                - generic [ref=f492e87]: Okt
+              - generic [ref=f492e88]:
+                - generic [ref=f492e89]: T8 Bauernmarkt
+                - generic [ref=f492e90]: Lebensmittel · Obst & Gemüse
+              - generic [ref=f492e93]: 12,10€
+          - link "30 Okt T8 Getränkemarkt Lebensmittel · Getränke 18,40€" [ref=f492e94] [cursor=pointer]:
+            - /url: /bill/9c915647-c266-4dbc-bb2d-30fdfe8817d8
+            - generic [ref=f492e96]:
+              - generic [ref=f492e97]:
+                - generic [ref=f492e98]: "30"
+                - generic [ref=f492e99]: Okt
+              - generic [ref=f492e100]:
+                - generic [ref=f492e101]: T8 Getränkemarkt
+                - generic [ref=f492e102]: Lebensmittel · Getränke
+              - generic [ref=f492e105]: 18,40€
+          - link "30 Okt T7 Billa ohne Foto Lebensmittel 42,90€" [ref=f492e106] [cursor=pointer]:
+            - /url: /bill/b8984544-21ca-4459-9e0e-5f73d60bba7a
+            - generic [ref=f492e108]:
+              - generic [ref=f492e109]:
+                - generic [ref=f492e110]: "30"
+                - generic [ref=f492e111]: Okt
+              - generic [ref=f492e112]:
+                - generic [ref=f492e113]: T7 Billa ohne Foto
+                - generic [ref=f492e114]: Lebensmittel
+              - generic [ref=f492e117]: 42,90€
+          - link "29 Okt Bauernmarkt Urfahr und Feinkost Hinterberger GmbH & Co KG Lebensmittel 12.345,67€" [ref=f492e118] [cursor=pointer]:
+            - /url: /bill/951c5b15-5d4c-49b4-82ae-8f5d8d3863ea
+            - generic [ref=f492e120]:
+              - generic [ref=f492e121]:
+                - generic [ref=f492e122]: "29"
+                - generic [ref=f492e123]: Okt
+              - generic [ref=f492e124]:
+                - generic [ref=f492e125]: Bauernmarkt Urfahr und Feinkost Hinterberger GmbH & Co KG
+                - generic [ref=f492e126]: Lebensmittel
+              - generic [ref=f492e129]: 12.345,67€
+          - link "29 Okt Probe Spar Lebensmittel 7,00€" [ref=f492e130] [cursor=pointer]:
+            - /url: /bill/5b74405f-2c23-4260-97fc-1da18f274b43
+            - generic [ref=f492e132]:
+              - generic [ref=f492e133]:
+                - generic [ref=f492e134]: "29"
+                - generic [ref=f492e135]: Okt
+              - generic [ref=f492e136]:
+                - generic [ref=f492e137]: Probe Spar
+                - generic [ref=f492e138]: Lebensmittel
+              - generic [ref=f492e141]: 7,00€
+          - link "28 Okt Billa 1 Keine 5,00€" [ref=f492e142] [cursor=pointer]:
+            - /url: /bill/950ca13e-39b5-4fb1-93bf-6b1f6ba87abc
+            - generic [ref=f492e144]:
+              - generic [ref=f492e145]:
+                - generic [ref=f492e146]: "28"
+                - generic [ref=f492e147]: Okt
+              - generic [ref=f492e148]:
+                - generic [ref=f492e149]: Billa 1
+                - generic [ref=f492e150]: Keine
+              - generic [ref=f492e153]: 5,00€
+          - link "27 Okt Hofer 2 Lebensmittel 42,01€" [ref=f492e154] [cursor=pointer]:
+            - /url: /bill/1a806047-ed2a-4203-9a30-8897659363a6
+            - generic [ref=f492e156]:
+              - generic [ref=f492e157]:
+                - generic [ref=f492e158]: "27"
+                - generic [ref=f492e159]: Okt
+              - generic [ref=f492e160]:
+                - generic [ref=f492e161]: Hofer 2
+                - generic [ref=f492e162]: Lebensmittel
+              - generic [ref=f492e165]: 42,01€
+          - link "26 Okt Spar 3 Wohnen 79,02€" [ref=f492e166] [cursor=pointer]:
+            - /url: /bill/e1f37c0a-2508-4778-a048-5918b8697caa
+            - generic [ref=f492e168]:
+              - generic [ref=f492e169]:
+                - generic [ref=f492e170]: "26"
+                - generic [ref=f492e171]: Okt
+              - generic [ref=f492e172]:
+                - generic [ref=f492e173]: Spar 3
+                - generic [ref=f492e174]: Wohnen
+              - generic [ref=f492e177]: 79,02€
+          - link "25 Okt dm drogerie markt 4 Kleidung 116,03€" [ref=f492e178] [cursor=pointer]:
+            - /url: /bill/0ddbfd51-e179-4f45-8482-7fd13eaa30a6
+            - generic [ref=f492e180]:
+              - generic [ref=f492e181]:
+                - generic [ref=f492e182]: "25"
+                - generic [ref=f492e183]: Okt
+              - generic [ref=f492e184]:
+                - generic [ref=f492e185]: dm drogerie markt 4
+                - generic [ref=f492e186]: Kleidung
+              - generic [ref=f492e189]: 116,03€
+          - link "23 Okt OMV Tankstelle 5 Ausbildung 153,04€" [ref=f492e190] [cursor=pointer]:
+            - /url: /bill/50d79078-fce0-427c-ab80-f027d0bf7bfa
+            - generic [ref=f492e192]:
+              - generic [ref=f492e193]:
+                - generic [ref=f492e194]: "23"
+                - generic [ref=f492e195]: Okt
+              - generic [ref=f492e196]:
+                - generic [ref=f492e197]: OMV Tankstelle 5
+                - generic [ref=f492e198]: Ausbildung
+              - generic [ref=f492e201]: 153,04€
+          - link "22 Okt Thalia 6 Freizeit 10,05€" [ref=f492e202] [cursor=pointer]:
+            - /url: /bill/bcec0e0c-e292-4e46-a158-93b35e7d872d
+            - generic [ref=f492e204]:
+              - generic [ref=f492e205]:
+                - generic [ref=f492e206]: "22"
+                - generic [ref=f492e207]: Okt
+              - generic [ref=f492e208]:
+                - generic [ref=f492e209]: Thalia 6
+                - generic [ref=f492e210]: Freizeit
+              - generic [ref=f492e213]: 10,05€
+          - link "21 Okt IKEA 7 Auto/Motorrad 47,06€" [ref=f492e214] [cursor=pointer]:
+            - /url: /bill/36f1b63f-a87b-4935-b749-b933c5855122
+            - generic [ref=f492e216]:
+              - generic [ref=f492e217]:
+                - generic [ref=f492e218]: "21"
+                - generic [ref=f492e219]: Okt
+              - generic [ref=f492e220]:
+                - generic [ref=f492e221]: IKEA 7
+                - generic [ref=f492e222]: Auto/Motorrad
+              - generic [ref=f492e225]: 47,06€
+          - link "19 Okt Apotheke zum Löwen 8 Hygiene/Gesundheit 84,07€" [ref=f492e226] [cursor=pointer]:
+            - /url: /bill/d277de27-5aea-463e-8faa-679147ab52ba
+            - generic [ref=f492e228]:
+              - generic [ref=f492e229]:
+                - generic [ref=f492e230]: "19"
+                - generic [ref=f492e231]: Okt
+              - generic [ref=f492e232]:
+                - generic [ref=f492e233]: Apotheke zum Löwen 8
+                - generic [ref=f492e234]: Hygiene/Gesundheit
+              - generic [ref=f492e237]: 84,07€
+      - navigation "Rechnungen" [ref=f492e49]:
+        - link "Rechnungen" [ref=f492e50] [cursor=pointer]:
+          - /url: /bill/list
+          - img [aria-hidden] [ref=f492e51]: list
+          - text: Rechnungen
+        - link "Hinzufügen" [ref=f492e52] [cursor=pointer]:
+          - /url: /bill/create
+          - img [aria-hidden] [ref=f492e53]: add_circle
+          - text: Hinzufügen
+        - link "Statistik" [ref=f492e54] [cursor=pointer]:
+          - /url: /bill/expenses
+          - img [aria-hidden] [ref=f492e55]: donut_small
+          - text: Statistik

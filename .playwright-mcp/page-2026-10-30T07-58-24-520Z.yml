@@ -1,0 +1,56 @@
+- generic [ref=f339e6]:
+  - banner [ref=f339e7]:
+    - button "Menü öffnen" [ref=f339e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f339e9]: menu
+    - heading "Kategorien" [level=1] [ref=f339e10]
+    - button "Benutzerkonto" [ref=f339e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f339e12]: account_circle
+  - main [ref=f339e13]:
+    - generic [ref=f339e15]:
+      - generic [ref=f339e17]:
+        - generic [ref=f339e20]:
+          - link "Keine" [ref=f339e22] [cursor=pointer]:
+            - /url: /settings/categories/01f9e5fe-adba-4ca3-87bb-c4702ba8e875
+            - img [aria-hidden] [ref=f339e25]: chevron_right
+          - link "Lebensmittel" [ref=f339e27] [cursor=pointer]:
+            - /url: /settings/categories/18c5714f-40ae-47e0-9715-6e29c32db82c
+            - img [aria-hidden] [ref=f339e30]: chevron_right
+          - link "Wohnen" [ref=f339e32] [cursor=pointer]:
+            - /url: /settings/categories/281d3091-0338-4c75-9862-b5055923920e
+            - img [aria-hidden] [ref=f339e35]: chevron_right
+          - link "Kleidung" [ref=f339e37] [cursor=pointer]:
+            - /url: /settings/categories/f7310fad-1148-445f-8fd3-f2b012d2927d
+            - img [aria-hidden] [ref=f339e40]: chevron_right
+          - link "Ausbildung" [ref=f339e42] [cursor=pointer]:
+            - /url: /settings/categories/890065b2-720a-49fd-91d8-fafcaf65fae4
+            - img [aria-hidden] [ref=f339e45]: chevron_right
+          - link "Freizeit" [ref=f339e47] [cursor=pointer]:
+            - /url: /settings/categories/17765f4f-6392-41ce-9ff1-cedd381cc511
+            - img [aria-hidden] [ref=f339e50]: chevron_right
+          - link "Auto/Motorrad" [ref=f339e52] [cursor=pointer]:
+            - /url: /settings/categories/09e99226-723c-4832-b905-5ee29b1ee47b
+            - img [aria-hidden] [ref=f339e55]: chevron_right
+          - link "Hygiene/Gesundheit" [ref=f339e57] [cursor=pointer]:
+            - /url: /settings/categories/0dce598d-954a-482d-bc60-95eb5b6f4873
+            - img [aria-hidden] [ref=f339e60]: chevron_right
+          - link "Geschenke" [ref=f339e62] [cursor=pointer]:
+            - /url: /settings/categories/229f289d-7e1e-4707-83d7-210c838cb7bd
+            - img [aria-hidden] [ref=f339e65]: chevron_right
+          - link "Restaurant" [ref=f339e67] [cursor=pointer]:
+            - /url: /settings/categories/e6d37c68-ad65-4f4d-94c7-2e4110ea472c
+            - img [aria-hidden] [ref=f339e70]: chevron_right
+        - generic [ref=f339e71]:
+          - link "Hinzufügen" [ref=f339e72] [cursor=pointer]:
+            - /url: /settings/categories/create
+            - img [aria-hidden] [ref=f339e73]: add
+          - button "Reihenfolge anpassen" [ref=f339e75] [cursor=pointer]:
+            - img [aria-hidden] [ref=f339e76]: swap_vert
+      - navigation "Einstellungen" [ref=f339e78]:
+        - link "Verbindungen" [ref=f339e79] [cursor=pointer]:
+          - /url: /settings/connections
+          - img [aria-hidden] [ref=f339e80]: link
+          - text: Verbindungen
+        - link "Kategorien" [ref=f339e81] [cursor=pointer]:
+          - /url: /settings/categories
+          - img [aria-hidden] [ref=f339e82]: category
+          - text: Kategorien

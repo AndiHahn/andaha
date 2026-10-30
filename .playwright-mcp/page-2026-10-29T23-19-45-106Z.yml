@@ -1,0 +1,45 @@
+- generic [ref=f78e6]:
+  - banner [ref=f78e7]:
+    - button "Menü öffnen" [ref=f78e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f78e9]: menu
+    - heading "Rechnungen" [level=1] [ref=f78e10]
+    - button "Benutzerkonto" [ref=f78e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f78e12]: account_circle
+  - main [ref=f78e13]:
+    - generic [ref=f78e15]:
+      - generic [ref=f78e16]:
+        - generic [ref=f78e19]:
+          - generic [ref=f78e20]:
+            - listbox [ref=f78e22]:
+              - option [ref=f78e24]:
+                - img [aria-hidden] [ref=f78e25]: search
+                - textbox "Suche Rechnungen..." [ref=f78e26]
+            - button [ref=f78e28] [cursor=pointer]:
+              - img [aria-hidden] [ref=f78e30]: filter_list
+          - listbox [ref=f78e32]:
+            - generic [ref=f78e33]:
+              - option "Alle" [selected] [ref=f78e34]
+              - option "Keine" [ref=f78e35]
+              - option "Lebensmittel" [ref=f78e36]
+              - option "Wohnen" [ref=f78e37]
+              - option "Kleidung" [ref=f78e38]
+              - option "Ausbildung" [ref=f78e39]
+              - option "Freizeit" [ref=f78e40]
+              - option "Auto/Motorrad" [ref=f78e41]
+              - option "Hygiene/Gesundheit" [ref=f78e42]
+              - option "Geschenke" [ref=f78e43]
+              - option "Restaurant" [ref=f78e44]
+        - progressbar [ref=f78e46]
+      - navigation "Rechnungen" [ref=f78e54]:
+        - link "Rechnungen" [ref=f78e55] [cursor=pointer]:
+          - /url: /bill/list
+          - img [aria-hidden] [ref=f78e56]: list
+          - text: Rechnungen
+        - link "Hinzufügen" [ref=f78e57] [cursor=pointer]:
+          - /url: /bill/create
+          - img [aria-hidden] [ref=f78e58]: add_circle
+          - text: Hinzufügen
+        - link "Statistik" [ref=f78e59] [cursor=pointer]:
+          - /url: /bill/expenses
+          - img [aria-hidden] [ref=f78e60]: donut_small
+          - text: Statistik

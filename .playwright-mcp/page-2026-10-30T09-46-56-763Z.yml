@@ -1,0 +1,58 @@
+- generic [ref=f492e6]:
+  - banner [ref=f492e7]:
+    - button "Menü öffnen" [ref=f492e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f492e9]: menu
+    - heading "Rechnungen" [level=1] [ref=f492e10]
+    - button "Benutzerkonto" [ref=f492e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f492e12]: account_circle
+  - main [ref=f492e13]:
+    - generic [ref=f492e15]:
+      - generic [ref=f492e16]:
+        - generic [ref=f492e19]:
+          - generic [ref=f492e20]:
+            - generic [ref=f492e22]:
+              - img [aria-hidden] [ref=f492e23]: search
+              - textbox "Rechnungen durchsuchen" [active] [ref=f492e24]:
+                - /placeholder: Suche Rechnungen...
+                - text: UIT
+              - button "Clear" [ref=f492e238] [cursor=pointer]:
+                - img [aria-hidden] [ref=f492e239]: close
+            - button "Datumfilter öffnen" [ref=f492e25] [cursor=pointer]:
+              - img [aria-hidden] [ref=f492e26]: filter_list
+          - generic [ref=f492e27]:
+            - button "Alle" [pressed] [ref=f492e57] [cursor=pointer]:
+              - img [aria-hidden] [ref=f492e58]: check
+              - text: Alle
+            - button "Keine" [ref=f492e59] [cursor=pointer]
+            - button "Lebensmittel" [ref=f492e60] [cursor=pointer]
+            - button "Wohnen" [ref=f492e61] [cursor=pointer]
+            - button "Kleidung" [ref=f492e62] [cursor=pointer]
+            - button "Ausbildung" [ref=f492e63] [cursor=pointer]
+            - button "Freizeit" [ref=f492e64] [cursor=pointer]
+            - button "Auto/Motorrad" [ref=f492e65] [cursor=pointer]
+            - button "Hygiene/Gesundheit" [ref=f492e66] [cursor=pointer]
+            - button "Geschenke" [ref=f492e67] [cursor=pointer]
+            - button "Restaurant" [ref=f492e68] [cursor=pointer]
+        - link "30 Okt UIT Testshop A Lebensmittel 12,34€" [ref=f492e240] [cursor=pointer]:
+          - /url: /bill/84f6e868-e2f2-49cb-b7fd-f59036a8b36e
+          - generic [ref=f492e228]:
+            - generic [ref=f492e229]:
+              - generic [ref=f492e230]: "30"
+              - generic [ref=f492e231]: Okt
+            - generic [ref=f492e232]:
+              - generic [ref=f492e233]: UIT Testshop A
+              - generic [ref=f492e234]: Lebensmittel
+            - generic [ref=f492e237]: 12,34€
+      - navigation "Rechnungen" [ref=f492e49]:
+        - link "Rechnungen" [ref=f492e50] [cursor=pointer]:
+          - /url: /bill/list
+          - img [aria-hidden] [ref=f492e51]: list
+          - text: Rechnungen
+        - link "Hinzufügen" [ref=f492e52] [cursor=pointer]:
+          - /url: /bill/create
+          - img [aria-hidden] [ref=f492e53]: add_circle
+          - text: Hinzufügen
+        - link "Statistik" [ref=f492e54] [cursor=pointer]:
+          - /url: /bill/expenses
+          - img [aria-hidden] [ref=f492e55]: donut_small
+          - text: Statistik

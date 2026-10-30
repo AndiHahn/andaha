@@ -1,0 +1,173 @@
+- generic [ref=f7e1]:
+  - generic [ref=f7e3]:
+    - generic [ref=f7e4]:
+      - button [ref=f7e5] [cursor=pointer]:
+        - img [aria-hidden] [ref=f7e7]: menu
+      - button [ref=f7e8] [cursor=pointer]:
+        - heading "Andaha" [level=2] [ref=f7e10]
+      - generic [ref=f7e95]: Test1
+      - button [ref=f7e11] [cursor=pointer]:
+        - img [aria-hidden] [ref=f7e13]: account_circle
+    - generic [ref=f7e19]:
+      - generic [ref=f7e22]:
+        - generic [ref=f7e23]:
+          - button [ref=f7e27] [cursor=pointer]:
+            - img [aria-hidden] [ref=f7e29]: add_a_photo
+          - generic [ref=f7e33]:
+            - textbox "Shopname" [ref=f7e34]: Task1 Test
+            - generic: Shopname *
+          - generic [ref=f7e38]:
+            - textbox "Notizen" [ref=f7e39]
+            - generic: Notizen
+          - generic [ref=f7e43]:
+            - spinbutton "Preis" [ref=f7e44]: "12.5"
+            - generic: Preis *
+          - generic [ref=f7e48] [cursor=pointer]:
+            - combobox "Kategorie Lebensmittel" [ref=f7e120]:
+              - generic [ref=f7e50]: Lebensmittel
+            - generic: Kategorie *
+          - generic [ref=f7e56]:
+            - generic [ref=f7e57]:
+              - generic [ref=f7e58]:
+                - textbox "Datum" [ref=f7e59]:
+                  - text: 29.10.2026
+                  - generic [ref=f7e122]:
+                    - generic [ref=f7e125]:
+                      - button "Choose month and year" [ref=f7e126] [cursor=pointer]:
+                        - generic [ref=f7e127]: OKTOBER 2026
+                      - button "Previous month" [ref=f7e131] [cursor=pointer]
+                      - button "Next month" [ref=f7e132] [cursor=pointer]
+                    - grid [ref=f7e135]:
+                      - rowgroup [ref=f7e136]:
+                        - row [ref=f7e137]:
+                          - columnheader "Montag" [ref=f7e138]: Mo
+                          - columnheader "Dienstag" [ref=f7e140]: Di
+                          - columnheader "Mittwoch" [ref=f7e142]: Mi
+                          - columnheader "Donnerstag" [ref=f7e144]: Do
+                          - columnheader "Freitag" [ref=f7e146]: Fr
+                          - columnheader "Samstag" [ref=f7e148]: Sa
+                          - columnheader "Sonntag" [ref=f7e150]: So
+                        - row [ref=f7e152]:
+                          - columnheader [aria-hidden] [ref=f7e153]
+                      - rowgroup [ref=f7e154]:
+                        - row [ref=f7e155]:
+                          - gridcell "OKT." [ref=f7e156]
+                          - gridcell [ref=f7e157]:
+                            - button "01.10.2026" [ref=f7e158] [cursor=pointer]:
+                              - generic [ref=f7e159]: "1"
+                          - gridcell [ref=f7e161]:
+                            - button "02.10.2026" [ref=f7e162] [cursor=pointer]:
+                              - generic [ref=f7e163]: "2"
+                          - gridcell [ref=f7e165]:
+                            - button "03.10.2026" [ref=f7e166] [cursor=pointer]:
+                              - generic [ref=f7e167]: "3"
+                          - gridcell [ref=f7e169]:
+                            - button "04.10.2026" [ref=f7e170] [cursor=pointer]:
+                              - generic [ref=f7e171]: "4"
+                        - row [ref=f7e173]:
+                          - gridcell [ref=f7e174]:
+                            - button "05.10.2026" [ref=f7e175] [cursor=pointer]:
+                              - generic [ref=f7e176]: "5"
+                          - gridcell [ref=f7e178]:
+                            - button "06.10.2026" [ref=f7e179] [cursor=pointer]:
+                              - generic [ref=f7e180]: "6"
+                          - gridcell [ref=f7e182]:
+                            - button "07.10.2026" [ref=f7e183] [cursor=pointer]:
+                              - generic [ref=f7e184]: "7"
+                          - gridcell [ref=f7e186]:
+                            - button "08.10.2026" [ref=f7e187] [cursor=pointer]:
+                              - generic [ref=f7e188]: "8"
+                          - gridcell [ref=f7e190]:
+                            - button "09.10.2026" [ref=f7e191] [cursor=pointer]:
+                              - generic [ref=f7e192]: "9"
+                          - gridcell [ref=f7e194]:
+                            - button "10.10.2026" [ref=f7e195] [cursor=pointer]:
+                              - generic [ref=f7e196]: "10"
+                          - gridcell [ref=f7e198]:
+                            - button "11.10.2026" [ref=f7e199] [cursor=pointer]:
+                              - generic [ref=f7e200]: "11"
+                        - row [ref=f7e202]:
+                          - gridcell [ref=f7e203]:
+                            - button "12.10.2026" [ref=f7e204] [cursor=pointer]:
+                              - generic [ref=f7e205]: "12"
+                          - gridcell [ref=f7e207]:
+                            - button "13.10.2026" [ref=f7e208] [cursor=pointer]:
+                              - generic [ref=f7e209]: "13"
+                          - gridcell [ref=f7e211]:
+                            - button "14.10.2026" [ref=f7e212] [cursor=pointer]:
+                              - generic [ref=f7e213]: "14"
+                          - gridcell [ref=f7e215]:
+                            - button "15.10.2026" [ref=f7e216] [cursor=pointer]:
+                              - generic [ref=f7e217]: "15"
+                          - gridcell [ref=f7e219]:
+                            - button "16.10.2026" [ref=f7e220] [cursor=pointer]:
+                              - generic [ref=f7e221]: "16"
+                          - gridcell [ref=f7e223]:
+                            - button "17.10.2026" [ref=f7e224] [cursor=pointer]:
+                              - generic [ref=f7e225]: "17"
+                          - gridcell [ref=f7e227]:
+                            - button "18.10.2026" [ref=f7e228] [cursor=pointer]:
+                              - generic [ref=f7e229]: "18"
+                        - row [ref=f7e231]:
+                          - gridcell [ref=f7e232]:
+                            - button "19.10.2026" [ref=f7e233] [cursor=pointer]:
+                              - generic [ref=f7e234]: "19"
+                          - gridcell [ref=f7e236]:
+                            - button "20.10.2026" [ref=f7e237] [cursor=pointer]:
+                              - generic [ref=f7e238]: "20"
+                          - gridcell [ref=f7e240]:
+                            - button "21.10.2026" [ref=f7e241] [cursor=pointer]:
+                              - generic [ref=f7e242]: "21"
+                          - gridcell [ref=f7e244]:
+                            - button "22.10.2026" [ref=f7e245] [cursor=pointer]:
+                              - generic [ref=f7e246]: "22"
+                          - gridcell [ref=f7e248]:
+                            - button "23.10.2026" [ref=f7e249] [cursor=pointer]:
+                              - generic [ref=f7e250]: "23"
+                          - gridcell [ref=f7e252]:
+                            - button "24.10.2026" [ref=f7e253] [cursor=pointer]:
+                              - generic [ref=f7e254]: "24"
+                          - gridcell [ref=f7e256]:
+                            - button "25.10.2026" [ref=f7e257] [cursor=pointer]:
+                              - generic [ref=f7e258]: "25"
+                        - row [ref=f7e260]:
+                          - gridcell [ref=f7e261]:
+                            - button "26.10.2026" [ref=f7e262] [cursor=pointer]:
+                              - generic [ref=f7e263]: "26"
+                          - gridcell [ref=f7e265]:
+                            - button "27.10.2026" [ref=f7e266] [cursor=pointer]:
+                              - generic [ref=f7e267]: "27"
+                          - gridcell [ref=f7e269]:
+                            - button "28.10.2026" [ref=f7e270] [cursor=pointer]:
+                              - generic [ref=f7e271]: "28"
+                          - gridcell [ref=f7e273]:
+                            - button "29.10.2026" [active] [pressed] [ref=f7e274] [cursor=pointer]:
+                              - generic [ref=f7e275]: "29"
+                          - gridcell [ref=f7e277]:
+                            - button "30.10.2026" [ref=f7e278] [cursor=pointer]:
+                              - generic [ref=f7e279]: "30"
+                          - gridcell [ref=f7e281]:
+                            - button "31.10.2026" [ref=f7e282] [cursor=pointer]:
+                              - generic [ref=f7e283]: "31"
+                - generic: Datum
+              - button "Open calendar" [ref=f7e62] [cursor=pointer]
+            - generic [ref=f7e66]: DD.MM.YYYY
+        - button [ref=f7e72] [cursor=pointer]:
+          - generic [ref=f7e73]:
+            - img [aria-hidden] [ref=f7e74]: save
+            - text: Speichern
+      - generic [ref=f7e78]:
+        - generic [ref=f7e79]:
+          - button [ref=f7e80] [cursor=pointer]:
+            - img [aria-hidden] [ref=f7e82]: list
+          - generic [ref=f7e83]: Rechnungen
+        - generic [ref=f7e84]:
+          - button [ref=f7e85] [cursor=pointer]:
+            - img [aria-hidden] [ref=f7e87]: add_circle
+          - generic [ref=f7e88]: Hinzufügen
+        - generic [ref=f7e89]:
+          - button [ref=f7e90] [cursor=pointer]:
+            - img [aria-hidden] [ref=f7e92]: donut_small
+          - generic [ref=f7e93]: Statistik
+  - dialog "Datum 29.10.2026" [ref=f7e289]:
+    - button "Close calendar" [ref=f7e290] [cursor=pointer]

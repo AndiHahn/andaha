@@ -1,0 +1,71 @@
+- generic [active] [ref=f136e34]:
+  - generic [ref=f136e39]:
+    - banner [ref=f136e40]:
+      - button [ref=f136e41] [cursor=pointer]:
+        - img [aria-hidden] [ref=f136e42]: menu
+      - heading [level=1] [ref=f136e43]: Rechnung hinzufügen
+      - button [ref=f136e44] [cursor=pointer]:
+        - img [aria-hidden] [ref=f136e45]: account_circle
+    - main [ref=f136e46]:
+      - generic [ref=f136e48]:
+        - generic [ref=f136e50]:
+          - generic [ref=f136e51]:
+            - button [ref=f136e53] [cursor=pointer]:
+              - img [aria-hidden] [ref=f136e55]: photo_camera
+              - generic [ref=f136e56]:
+                - text: Foto der Rechnung
+                - generic [ref=f136e57]: Optional
+            - generic [ref=f136e58]:
+              - generic [ref=f136e59]: Shopname
+              - textbox [ref=f136e61]
+            - generic [ref=f136e62]:
+              - generic [ref=f136e63]: Notizen
+              - textbox [ref=f136e65]
+            - generic [ref=f136e66]:
+              - generic [ref=f136e67]: Preis
+              - generic [ref=f136e68]:
+                - spinbutton [ref=f136e69]
+                - generic [aria-hidden] [ref=f136e70]: €
+            - generic [ref=f136e71]:
+              - generic [ref=f136e72]: Kategorie
+              - generic [ref=f136e73]:
+                - combobox [ref=f136e74]:
+                  - generic [ref=f136e75] [cursor=pointer]
+                - img [aria-hidden] [ref=f136e77]: expand_more
+            - generic [ref=f136e78]:
+              - generic [ref=f136e79]: Datum
+              - generic [ref=f136e80]:
+                - textbox [ref=f136e81]: 30.10.2026
+                - button [ref=f136e83] [cursor=pointer]:
+                  - img [aria-hidden] [ref=f136e85]: calendar_today
+              - generic [ref=f136e86]: DD.MM.YYYY
+          - button [disabled] [ref=f136e88]:
+            - img [aria-hidden] [ref=f136e89]: check
+            - generic [ref=f136e90]: Speichern
+        - navigation [ref=f136e91]:
+          - link [ref=f136e92] [cursor=pointer]:
+            - /url: /bill/list
+            - img [aria-hidden] [ref=f136e93]: list
+            - text: Rechnungen
+          - link [ref=f136e94] [cursor=pointer]:
+            - /url: /bill/create
+            - img [aria-hidden] [ref=f136e95]: add_circle
+            - text: Hinzufügen
+          - link [ref=f136e96] [cursor=pointer]:
+            - /url: /bill/expenses
+            - img [aria-hidden] [ref=f136e97]: donut_small
+            - text: Statistik
+  - dialog [ref=f136e1]:
+    - generic [ref=f136e3]:
+      - button "Schließen" [ref=f136e6] [cursor=pointer]:
+        - img [aria-hidden] [ref=f136e7]: close
+      - generic [ref=f136e8]:
+        - radiogroup [ref=f136e9]:
+          - generic [ref=f136e11] [cursor=pointer]:
+            - radio "Foto aufnehmen" [ref=f136e15]
+            - generic [ref=f136e16]: Foto aufnehmen
+          - generic [ref=f136e18] [cursor=pointer]:
+            - radio "Aus Galerie hochladen" [checked] [ref=f136e22]
+            - generic [ref=f136e23]: Aus Galerie hochladen
+        - img "image" [ref=f136e108]
+      - button "Übernehmen" [ref=f136e33] [cursor=pointer]

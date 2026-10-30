@@ -1,0 +1,17 @@
+- generic [ref=f307e6]:
+  - banner [ref=f307e7]:
+    - button "Menü öffnen" [ref=f307e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f307e9]: menu
+    - heading "Statistik" [level=1] [ref=f307e10]
+    - button "Benutzerkonto" [ref=f307e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f307e12]: account_circle
+  - main [ref=f307e13]:
+    - navigation "Stunden" [ref=f307e17]:
+      - link "Personen" [ref=f307e18] [cursor=pointer]:
+        - /url: /work/person
+        - img [aria-hidden] [ref=f307e19]: group
+        - text: Personen
+      - link "Statistik" [ref=f307e20] [cursor=pointer]:
+        - /url: /work/statistics
+        - img [aria-hidden] [ref=f307e21]: donut_small
+        - text: Statistik

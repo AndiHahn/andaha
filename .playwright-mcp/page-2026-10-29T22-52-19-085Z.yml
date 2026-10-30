@@ -1,0 +1,92 @@
+- generic [ref=f56e3]:
+  - navigation "Hauptnavigation" [ref=f56e139]:
+    - generic [ref=f56e140]:
+      - generic [ref=f56e141]: Andaha
+      - link "Rechnungen" [ref=f56e143] [cursor=pointer]:
+        - /url: /
+        - img [aria-hidden] [ref=f56e144]: receipt_long
+        - text: Rechnungen
+      - link "Analyse" [ref=f56e145] [cursor=pointer]:
+        - /url: /analyzed
+        - img [aria-hidden] [ref=f56e146]: document_scanner
+        - text: Analyse
+      - link "Haushaltsplan" [ref=f56e147] [cursor=pointer]:
+        - /url: /budgetplan
+        - img [aria-hidden] [ref=f56e148]: account_balance_wallet
+        - text: Haushaltsplan
+      - link "Stundenaufzeichnungen" [ref=f56e149] [cursor=pointer]:
+        - /url: /work
+        - img [aria-hidden] [ref=f56e150]: group
+        - text: Stundenaufzeichnungen
+      - link "Einstellungen" [ref=f56e151] [cursor=pointer]:
+        - /url: /settings
+        - img [aria-hidden] [ref=f56e152]: settings
+        - text: Einstellungen
+      - link "Export" [ref=f56e153] [cursor=pointer]:
+        - /url: /export
+        - img [aria-hidden] [ref=f56e154]: download
+        - text: Export
+      - generic [ref=f56e156]:
+        - link "AGB" [ref=f56e157] [cursor=pointer]:
+          - /url: /agb
+        - link "Datenschutzerklärung" [ref=f56e158] [cursor=pointer]:
+          - /url: /data-protection
+        - link "Benutzerdaten" [ref=f56e159] [cursor=pointer]:
+          - /url: /user-data
+  - generic [ref=f56e6]:
+    - banner [ref=f56e160]:
+      - link "Zurück" [ref=f56e161] [cursor=pointer]:
+        - /url: /bill/list
+        - img [aria-hidden] [ref=f56e162]: arrow_back
+      - heading "Rechnung" [level=1] [ref=f56e163]
+      - generic [ref=f56e164]: Test1
+      - button "Benutzerkonto" [ref=f56e165] [cursor=pointer]:
+        - img [aria-hidden] [ref=f56e166]: account_circle
+    - main [ref=f56e13]:
+      - generic [ref=f56e15]:
+        - generic [ref=f56e167]:
+          - button [disabled] [ref=f56e171]:
+            - img [aria-hidden] [ref=f56e173]: add_a_photo
+          - generic [ref=f56e175]:
+            - generic [ref=f56e176]:
+              - generic [ref=f56e180]:
+                - textbox "Shopname" [disabled] [ref=f56e181]: Probe Spar
+                - generic: Shopname
+              - generic [ref=f56e185]:
+                - textbox "Notizen" [disabled] [ref=f56e186]
+                - generic: Notizen
+              - generic [ref=f56e190]:
+                - spinbutton "Preis" [disabled] [ref=f56e191]: "7"
+                - generic: Preis
+              - generic [ref=f56e195]:
+                - combobox "Kategorie Lebensmittel" [disabled] [ref=f56e196]:
+                  - generic [ref=f56e197]: Lebensmittel
+                - generic: Kategorie
+              - generic [ref=f56e203]:
+                - generic [ref=f56e204]:
+                  - generic [ref=f56e205]:
+                    - textbox "Datum" [disabled] [ref=f56e206]: 29.10.2026
+                    - generic: Datum
+                  - button "Open calendar" [disabled] [ref=f56e209]
+                - generic [ref=f56e213]: DD.MM.YYYY
+            - button [ref=f56e222] [cursor=pointer]:
+              - generic [ref=f56e223]:
+                - img [aria-hidden] [ref=f56e224]: edit
+                - text: Bearbeiten
+            - button [ref=f56e228] [cursor=pointer]:
+              - generic [ref=f56e229]:
+                - img [aria-hidden] [ref=f56e230]: delete
+                - text: Löschen
+        - navigation "Rechnungen" [ref=f56e80]:
+          - link "Rechnungen" [ref=f56e81] [cursor=pointer]:
+            - /url: /bill/list
+            - img [aria-hidden] [ref=f56e82]: list
+            - text: Rechnungen
+          - link "Hinzufügen" [ref=f56e83] [cursor=pointer]:
+            - /url: /bill/create
+            - img [aria-hidden] [ref=f56e84]: add_circle
+            - text: Hinzufügen
+          - link "Statistik" [ref=f56e85] [cursor=pointer]:
+            - /url: /bill/expenses
+            - img [aria-hidden] [ref=f56e86]: donut_small
+            - text: Statistik

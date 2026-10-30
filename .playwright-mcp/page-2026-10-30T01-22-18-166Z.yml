@@ -1,0 +1,49 @@
+- generic [ref=f167e6]:
+  - banner [ref=f167e7]:
+    - link "Zurück" [ref=f167e158] [cursor=pointer]:
+      - /url: /settings/categories
+      - img [aria-hidden] [ref=f167e159]: arrow_back
+    - heading "Kategorie" [level=1] [ref=f167e160]
+    - button "Benutzerkonto" [ref=f167e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f167e12]: account_circle
+  - main [ref=f167e13]:
+    - generic [ref=f167e15]:
+      - generic [ref=f167e161]:
+        - generic [ref=f167e163]:
+          - generic [ref=f167e168]:
+            - textbox "Name der Kategorie" [ref=f167e169]: Lebensmittel
+            - generic: Name der Kategorie *
+          - generic [ref=f167e174] [cursor=pointer]:
+            - combobox "Farbe" [ref=f167e177]
+            - generic: Farbe *
+          - generic [ref=f167e185] [cursor=pointer]:
+            - checkbox "Aufnehmen in Statistik" [checked] [ref=f167e187]
+            - generic [ref=f167e188]: Aufnehmen in Statistik
+        - heading "Unterkategorien:" [level=3] [ref=f167e189]
+        - generic [ref=f167e190]: Es sind noch keine Unterkategorien vorhanden. Diese können im Editiermodus mit "Unterkategorie hinzufügen" erstellt werden.
+        - button [ref=f167e207] [cursor=pointer]:
+          - generic [ref=f167e208]:
+            - img [aria-hidden] [ref=f167e209]: add_circle
+            - text: Unterkategorie hinzufügen
+        - generic [ref=f167e210]:
+          - button [ref=f167e211] [cursor=pointer]:
+            - generic [ref=f167e212]:
+              - img [aria-hidden] [ref=f167e213]: close
+              - text: Abbrechen
+          - button [ref=f167e214] [cursor=pointer]:
+            - generic [ref=f167e215]:
+              - img [aria-hidden] [ref=f167e216]: save
+              - text: Speichern
+        - button [disabled] [ref=f167e202]:
+          - generic [ref=f167e203]:
+            - img [aria-hidden] [ref=f167e204]: delete
+            - text: Löschen
+      - navigation "Einstellungen" [ref=f167e92]:
+        - link "Verbindungen" [ref=f167e93] [cursor=pointer]:
+          - /url: /settings/connections
+          - img [aria-hidden] [ref=f167e94]: link
+          - text: Verbindungen
+        - link "Kategorien" [ref=f167e95] [cursor=pointer]:
+          - /url: /settings/categories
+          - img [aria-hidden] [ref=f167e96]: category
+          - text: Kategorien

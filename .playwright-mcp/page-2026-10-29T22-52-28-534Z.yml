@@ -1,0 +1,53 @@
+- generic [ref=f57e3]:
+  - navigation "Hauptnavigation" [ref=f57e5]:
+    - generic [ref=f57e6]:
+      - generic [ref=f57e7]: Andaha
+      - link "Rechnungen" [ref=f57e9] [cursor=pointer]:
+        - /url: /
+        - img [aria-hidden] [ref=f57e10]: receipt_long
+        - text: Rechnungen
+      - link "Analyse" [ref=f57e11] [cursor=pointer]:
+        - /url: /analyzed
+        - img [aria-hidden] [ref=f57e12]: document_scanner
+        - text: Analyse
+      - link "Haushaltsplan" [ref=f57e13] [cursor=pointer]:
+        - /url: /budgetplan
+        - img [aria-hidden] [ref=f57e14]: account_balance_wallet
+        - text: Haushaltsplan
+      - link "Stundenaufzeichnungen" [ref=f57e15] [cursor=pointer]:
+        - /url: /work
+        - img [aria-hidden] [ref=f57e16]: group
+        - text: Stundenaufzeichnungen
+      - link "Einstellungen" [ref=f57e17] [cursor=pointer]:
+        - /url: /settings
+        - img [aria-hidden] [ref=f57e18]: settings
+        - text: Einstellungen
+      - link "Export" [ref=f57e19] [cursor=pointer]:
+        - /url: /export
+        - img [aria-hidden] [ref=f57e20]: download
+        - text: Export
+      - generic [ref=f57e22]:
+        - link "AGB" [ref=f57e23] [cursor=pointer]:
+          - /url: /agb
+        - link "Datenschutzerklärung" [ref=f57e24] [cursor=pointer]:
+          - /url: /data-protection
+        - link "Benutzerdaten" [ref=f57e25] [cursor=pointer]:
+          - /url: /user-data
+  - generic [ref=f57e27]:
+    - banner [ref=f57e28]:
+      - heading "Analyse" [level=1] [ref=f57e29]
+      - generic [ref=f57e30]: Test1
+      - button "Benutzerkonto" [ref=f57e31] [cursor=pointer]:
+        - img [aria-hidden] [ref=f57e32]: account_circle
+    - main [ref=f57e33]:
+      - generic [ref=f57e35]:
+        - generic [ref=f57e36]: Keine Rechnungen verfügbar.
+        - navigation "Analyse" [ref=f57e39]:
+          - link "Analysiert" [ref=f57e40] [cursor=pointer]:
+            - /url: /analyzed/list
+            - img [aria-hidden] [ref=f57e41]: list
+            - text: Analysiert
+          - link "Rechnung hochladen" [ref=f57e42] [cursor=pointer]:
+            - /url: /analyzed/create
+            - img [aria-hidden] [ref=f57e43]: upload
+            - text: Rechnung hochladen

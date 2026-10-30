@@ -1,0 +1,55 @@
+- generic [ref=f168e6]:
+  - banner [ref=f168e7]:
+    - button "Menü öffnen" [ref=f168e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f168e9]: menu
+    - heading "Rechnung hinzufügen" [level=1] [ref=f168e10]
+    - button "Benutzerkonto" [ref=f168e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f168e12]: account_circle
+  - main [ref=f168e13]:
+    - generic [ref=f168e15]:
+      - generic [ref=f168e17]:
+        - generic [ref=f168e18]:
+          - button "Foto der Rechnung Optional" [ref=f168e20] [cursor=pointer]:
+            - img [aria-hidden] [ref=f168e22]: photo_camera
+            - generic [ref=f168e23]:
+              - text: Foto der Rechnung
+              - generic [ref=f168e24]: Optional
+          - generic [ref=f168e25]:
+            - generic [ref=f168e26]: Shopname
+            - textbox "Shopname" [ref=f168e28]
+          - generic [ref=f168e29]:
+            - generic [ref=f168e30]: Notizen
+            - textbox "Notizen" [ref=f168e32]
+          - generic [ref=f168e33]:
+            - generic [ref=f168e34]: Preis
+            - generic [ref=f168e35]:
+              - spinbutton "Preis" [ref=f168e36]
+              - generic [aria-hidden] [ref=f168e37]: €
+          - generic [ref=f168e38]:
+            - generic [ref=f168e39]: Kategorie
+            - generic [ref=f168e40]:
+              - combobox "Kategorie" [ref=f168e41]:
+                - generic [ref=f168e42] [cursor=pointer]
+              - img [aria-hidden] [ref=f168e44]: expand_more
+          - generic [ref=f168e45]:
+            - generic [ref=f168e46]: Datum
+            - generic [ref=f168e47]:
+              - textbox "Datum" [ref=f168e48]: 30.10.2026
+              - button "Open calendar" [ref=f168e50] [cursor=pointer]:
+                - img [aria-hidden] [ref=f168e52]: calendar_today
+            - generic [ref=f168e53]: DD.MM.YYYY
+        - button "Speichern" [disabled] [ref=f168e55]:
+          - img [aria-hidden] [ref=f168e56]: check
+      - navigation "Rechnungen" [ref=f168e58]:
+        - link "Rechnungen" [ref=f168e59] [cursor=pointer]:
+          - /url: /bill/list
+          - img [aria-hidden] [ref=f168e60]: list
+          - text: Rechnungen
+        - link "Hinzufügen" [ref=f168e61] [cursor=pointer]:
+          - /url: /bill/create
+          - img [aria-hidden] [ref=f168e62]: add_circle
+          - text: Hinzufügen
+        - link "Statistik" [ref=f168e63] [cursor=pointer]:
+          - /url: /bill/expenses
+          - img [aria-hidden] [ref=f168e64]: donut_small
+          - text: Statistik

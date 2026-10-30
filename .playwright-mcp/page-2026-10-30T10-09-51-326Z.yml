@@ -1,0 +1,75 @@
+- generic [ref=f520e6]:
+  - banner [ref=f520e7]:
+    - link "Zurück" [ref=f520e8] [cursor=pointer]:
+      - /url: /settings/categories
+      - img [aria-hidden] [ref=f520e9]: arrow_back
+    - heading "Kategorie hinzufügen" [level=1] [ref=f520e10]
+    - button "Benutzerkonto" [ref=f520e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f520e12]: account_circle
+  - main [ref=f520e13]:
+    - generic [ref=f520e15]:
+      - generic [ref=f520e17]:
+        - generic [ref=f520e18]:
+          - generic [ref=f520e19]:
+            - generic [ref=f520e20]: Name der Kategorie
+            - textbox "Name der Kategorie" [ref=f520e22]
+          - generic [ref=f520e23]:
+            - generic [ref=f520e24]: Farbe
+            - generic [ref=f520e25]:
+              - combobox "Farbe" [expanded] [active] [ref=f520e26]:
+                - listbox "Farbe" [ref=f520e46]:
+                  - option "indigo" [ref=f520e47] [cursor=pointer]
+                  - option "lemonchiffon" [ref=f520e53] [cursor=pointer]
+                  - option "khaki" [ref=f520e59] [cursor=pointer]
+                  - option "darkkhaki" [ref=f520e65] [cursor=pointer]
+                  - option "gold" [ref=f520e71] [cursor=pointer]
+                  - option "yellow" [ref=f520e77] [cursor=pointer]
+                  - option "darksalmon" [ref=f520e83] [cursor=pointer]
+                  - option "indianred" [ref=f520e89] [cursor=pointer]
+                  - option "chocolate" [ref=f520e95] [cursor=pointer]
+                  - option "orange" [ref=f520e101] [cursor=pointer]
+                  - option "darkorange" [ref=f520e107] [cursor=pointer]
+                  - option "brown" [ref=f520e113] [cursor=pointer]
+                  - option "deeppink" [ref=f520e119] [cursor=pointer]
+                  - option "pink" [ref=f520e125] [cursor=pointer]
+                  - option "purple" [ref=f520e131] [cursor=pointer]
+                  - option "red" [ref=f520e137] [cursor=pointer]
+                  - option "darkred" [ref=f520e143] [cursor=pointer]
+                  - option "blueviolet" [ref=f520e149] [cursor=pointer]
+                  - option "darkviolet" [ref=f520e155] [cursor=pointer]
+                  - option "magenta" [ref=f520e161] [cursor=pointer]
+                  - option "darkmagenta" [ref=f520e167] [cursor=pointer]
+                  - option "aliceblue" [ref=f520e173] [cursor=pointer]
+                  - option "aquamarine" [ref=f520e179] [cursor=pointer]
+                  - option "cadetblue" [ref=f520e185] [cursor=pointer]
+                  - option "darkturquoise" [ref=f520e191] [cursor=pointer]
+                  - option "darkcyan" [ref=f520e197] [cursor=pointer]
+                  - option "aqua" [ref=f520e203] [cursor=pointer]
+                  - option "deepskyblue" [ref=f520e209] [cursor=pointer]
+                  - option "cornflowerblue" [ref=f520e215] [cursor=pointer]
+                  - option "blue" [ref=f520e221] [cursor=pointer]
+                  - option "darkblue" [ref=f520e227] [cursor=pointer]
+                  - option "darkseagreen" [ref=f520e233] [cursor=pointer]
+                  - option "darkolivegreen" [ref=f520e239] [cursor=pointer]
+                  - option "greenyellow" [ref=f520e245] [cursor=pointer]
+                  - option "chartreuse" [ref=f520e251] [cursor=pointer]
+                  - option "green" [ref=f520e257] [cursor=pointer]
+                  - option "darkgreen" [ref=f520e263] [cursor=pointer]
+                  - option "grey" [ref=f520e269] [cursor=pointer]
+                  - option "darkslategray" [ref=f520e275] [cursor=pointer]
+                  - option "darkgray" [ref=f520e281] [cursor=pointer]
+              - img [aria-hidden] [ref=f520e29]: expand_more
+          - generic [ref=f520e32] [cursor=pointer]:
+            - checkbox "Aufnehmen in Statistik" [checked] [ref=f520e34]
+            - generic [ref=f520e35]: Aufnehmen in Statistik
+        - button "Speichern" [disabled] [ref=f520e37]:
+          - img [aria-hidden] [ref=f520e38]: check
+      - navigation "Einstellungen" [ref=f520e40]:
+        - link "Verbindungen" [ref=f520e41] [cursor=pointer]:
+          - /url: /settings/connections
+          - img [aria-hidden] [ref=f520e42]: link
+          - text: Verbindungen
+        - link "Kategorien" [ref=f520e43] [cursor=pointer]:
+          - /url: /settings/categories
+          - img [aria-hidden] [ref=f520e44]: category
+          - text: Kategorien

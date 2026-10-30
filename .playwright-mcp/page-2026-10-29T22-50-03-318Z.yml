@@ -1,0 +1,64 @@
+- generic [ref=f52e3]:
+  - navigation "Hauptnavigation" [ref=f52e5]:
+    - generic [ref=f52e6]:
+      - generic [ref=f52e7]: Andaha
+      - link "Rechnungen" [ref=f52e9] [cursor=pointer]:
+        - /url: /
+        - img [aria-hidden] [ref=f52e10]: receipt_long
+        - text: Rechnungen
+      - link "Analyse" [ref=f52e11] [cursor=pointer]:
+        - /url: /analyzed
+        - img [aria-hidden] [ref=f52e12]: document_scanner
+        - text: Analyse
+      - link "Haushaltsplan" [ref=f52e13] [cursor=pointer]:
+        - /url: /budgetplan
+        - img [aria-hidden] [ref=f52e14]: account_balance_wallet
+        - text: Haushaltsplan
+      - link "Stundenaufzeichnungen" [ref=f52e15] [cursor=pointer]:
+        - /url: /work
+        - img [aria-hidden] [ref=f52e16]: group
+        - text: Stundenaufzeichnungen
+      - link "Einstellungen" [ref=f52e17] [cursor=pointer]:
+        - /url: /settings
+        - img [aria-hidden] [ref=f52e18]: settings
+        - text: Einstellungen
+      - link "Export" [ref=f52e19] [cursor=pointer]:
+        - /url: /export
+        - img [aria-hidden] [ref=f52e20]: download
+        - text: Export
+      - generic [ref=f52e22]:
+        - link "AGB" [ref=f52e23] [cursor=pointer]:
+          - /url: /agb
+        - link "Datenschutzerklärung" [ref=f52e24] [cursor=pointer]:
+          - /url: /data-protection
+        - link "Benutzerdaten" [ref=f52e25] [cursor=pointer]:
+          - /url: /user-data
+  - generic [ref=f52e27]:
+    - banner [ref=f52e28]:
+      - heading "Rechnungen" [level=1] [ref=f52e29]
+      - button "Benutzerkonto" [ref=f52e30] [cursor=pointer]:
+        - img [aria-hidden] [ref=f52e31]: account_circle
+    - main [ref=f52e32]:
+      - generic [ref=f52e34]:
+        - generic [ref=f52e35]:
+          - generic [ref=f52e39]:
+            - listbox [ref=f52e41]:
+              - option [ref=f52e43]:
+                - img [aria-hidden] [ref=f52e44]: search
+                - textbox "Suche Rechnungen..." [ref=f52e45]
+            - button [ref=f52e47] [cursor=pointer]:
+              - img [aria-hidden] [ref=f52e49]: filter_list
+          - progressbar [ref=f52e51]
+        - navigation "Rechnungen" [ref=f52e59]:
+          - link "Rechnungen" [ref=f52e60] [cursor=pointer]:
+            - /url: /bill/list
+            - img [aria-hidden] [ref=f52e61]: list
+            - text: Rechnungen
+          - link "Hinzufügen" [ref=f52e62] [cursor=pointer]:
+            - /url: /bill/create
+            - img [aria-hidden] [ref=f52e63]: add_circle
+            - text: Hinzufügen
+          - link "Statistik" [ref=f52e64] [cursor=pointer]:
+            - /url: /bill/expenses
+            - img [aria-hidden] [ref=f52e65]: donut_small
+            - text: Statistik

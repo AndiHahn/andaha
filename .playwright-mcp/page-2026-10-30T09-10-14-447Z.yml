@@ -1,0 +1,8 @@
+- generic [ref=f437e6]:
+  - banner [ref=f437e7]:
+    - button "Menü öffnen" [ref=f437e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f437e9]: menu
+    - heading [level=1]
+    - button "Benutzerkonto" [ref=f437e10] [cursor=pointer]:
+      - img [aria-hidden] [ref=f437e11]: account_circle
+  - main [ref=f437e12]

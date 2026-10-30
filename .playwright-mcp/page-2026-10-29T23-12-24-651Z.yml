@@ -1,0 +1,103 @@
+- generic [ref=f69e1]:
+  - generic [ref=f69e6]:
+    - banner [ref=f69e7]:
+      - link [ref=f69e407] [cursor=pointer]:
+        - /url: /work/person
+        - img [aria-hidden] [ref=f69e9]: arrow_back
+      - heading [level=1] [ref=f69e408]: Arbeitszeiten hinzufügen
+      - button [ref=f69e409] [cursor=pointer]:
+        - img [aria-hidden] [ref=f69e12]: account_circle
+    - main [ref=f69e13]:
+      - generic [ref=f69e15]:
+        - generic [ref=f69e18]:
+          - generic [ref=f69e19]:
+            - generic [ref=f69e20]:
+              - generic [ref=f69e21]: Personen *
+              - generic [ref=f69e22]:
+                - combobox [invalid] [ref=f69e410]:
+                  - generic [ref=f69e24] [cursor=pointer]
+                - img [aria-hidden] [ref=f69e26]: expand_more
+              - generic [ref=f69e92]: Pflichtfeld
+            - generic [ref=f69e27]:
+              - generic [ref=f69e28]: Einzel-Select (Probe)
+              - generic [ref=f69e29]:
+                - combobox [ref=f69e411]:
+                  - generic [ref=f69e31] [cursor=pointer]: Spike A
+                - img [aria-hidden] [ref=f69e33]: expand_more
+              - generic [ref=f69e34]: "Wert: Spike A"
+            - generic [ref=f69e36]:
+              - generic [ref=f69e37]: Datum
+              - generic [ref=f69e38]:
+                - textbox [ref=f69e412]: 15.10.2026
+                - button [ref=f69e413] [cursor=pointer]:
+                  - img [aria-hidden] [ref=f69e43]: calendar_today
+              - generic [ref=f69e44]: DD.MM.YYYY
+            - generic [ref=f69e46]:
+              - generic [ref=f69e47]: Startzeit
+              - generic [ref=f69e48]:
+                - textbox [ref=f69e414]: 11:00
+                - img [aria-hidden] [ref=f69e50]: schedule
+            - generic [ref=f69e52]:
+              - generic [ref=f69e53]: Endzeit
+              - generic [ref=f69e54]:
+                - textbox [ref=f69e415]: 17:00
+                - img [aria-hidden] [ref=f69e56]: schedule
+            - generic [ref=f69e58]:
+              - generic [ref=f69e59]: Pause
+              - generic [ref=f69e60]:
+                - textbox [ref=f69e416]: 01:00
+                - img [aria-hidden] [ref=f69e62]: schedule
+            - generic [ref=f69e63]: "Arbeitszeit netto: 05:00 h"
+            - generic [ref=f69e67]:
+              - textbox [ref=f69e417]
+              - generic: Notizen
+          - button [disabled] [ref=f69e418]:
+            - generic [ref=f69e74]:
+              - img [aria-hidden] [ref=f69e75]: save
+              - text: Speichern
+        - navigation [ref=f69e419]:
+          - link [ref=f69e420] [cursor=pointer]:
+            - /url: /work/person
+            - img [aria-hidden] [ref=f69e78]: group
+            - text: Personen
+          - link [ref=f69e421] [cursor=pointer]:
+            - /url: /work/statistics
+            - img [aria-hidden] [ref=f69e80]: donut_small
+            - text: Statistik
+  - dialog [ref=f69e425]:
+    - generic [ref=f69e426]:
+      - generic [ref=f69e429]:
+        - generic [ref=f69e434]:
+          - textbox [active] [ref=f69e436]: "17"
+          - generic [ref=f69e437]: ":"
+          - textbox [ref=f69e439]: "00"
+        - generic [ref=f69e445]:
+          - generic:
+            - button "1" [ref=f69e447] [cursor=pointer]
+            - button "2" [ref=f69e450] [cursor=pointer]
+            - button "3" [ref=f69e453] [cursor=pointer]
+            - button "4" [ref=f69e456] [cursor=pointer]
+            - button "5" [ref=f69e459] [cursor=pointer]
+            - button "6" [ref=f69e462] [cursor=pointer]
+            - button "7" [ref=f69e465] [cursor=pointer]
+            - button "8" [ref=f69e468] [cursor=pointer]
+            - button "9" [ref=f69e471] [cursor=pointer]
+            - button "10" [ref=f69e474] [cursor=pointer]
+            - button "11" [ref=f69e477] [cursor=pointer]
+            - button "12" [ref=f69e480] [cursor=pointer]
+            - generic [ref=f69e482]:
+              - button "13" [ref=f69e484] [cursor=pointer]
+              - button "14" [ref=f69e487] [cursor=pointer]
+              - button "15" [ref=f69e490] [cursor=pointer]
+              - button "16" [ref=f69e493] [cursor=pointer]
+              - button "17" [ref=f69e496] [cursor=pointer]
+              - button "18" [ref=f69e499] [cursor=pointer]
+              - button "19" [ref=f69e502] [cursor=pointer]
+              - button "20" [ref=f69e505] [cursor=pointer]
+              - button "21" [ref=f69e508] [cursor=pointer]
+              - button "22" [ref=f69e511] [cursor=pointer]
+              - button "23" [ref=f69e514] [cursor=pointer]
+              - button "00" [ref=f69e517] [cursor=pointer]
+      - generic [ref=f69e521]:
+        - button "CANCEL" [ref=f69e523] [cursor=pointer]
+        - button "OK" [ref=f69e525] [cursor=pointer]

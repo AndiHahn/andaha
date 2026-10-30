@@ -1,0 +1,46 @@
+- generic [ref=f121e6]:
+  - banner [ref=f121e7]:
+    - button "Menü öffnen" [ref=f121e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f121e9]: menu
+    - heading "Rechnungen" [level=1] [ref=f121e10]
+    - button "Benutzerkonto" [ref=f121e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f121e12]: account_circle
+  - main [ref=f121e13]:
+    - generic [ref=f121e15]:
+      - generic [ref=f121e16]:
+        - generic [ref=f121e19]:
+          - generic [ref=f121e20]:
+            - generic [ref=f121e22]:
+              - img [aria-hidden] [ref=f121e23]: search
+              - textbox "Rechnungen durchsuchen" [ref=f121e24]:
+                - /placeholder: Suche Rechnungen...
+            - button "Datumfilter öffnen" [ref=f121e25] [cursor=pointer]:
+              - img [aria-hidden] [ref=f121e26]: filter_list
+          - generic [ref=f121e27]:
+            - button "Alle" [pressed] [ref=f121e28] [cursor=pointer]:
+              - img [aria-hidden] [ref=f121e29]: check
+              - text: Alle
+            - button "Keine" [ref=f121e30] [cursor=pointer]
+            - button "Lebensmittel" [ref=f121e31] [cursor=pointer]
+            - button "Wohnen" [ref=f121e32] [cursor=pointer]
+            - button "Kleidung" [ref=f121e33] [cursor=pointer]
+            - button "Ausbildung" [ref=f121e34] [cursor=pointer]
+            - button "Freizeit" [ref=f121e35] [cursor=pointer]
+            - button "Auto/Motorrad" [ref=f121e36] [cursor=pointer]
+            - button "Hygiene/Gesundheit" [ref=f121e37] [cursor=pointer]
+            - button "Geschenke" [ref=f121e38] [cursor=pointer]
+            - button "Restaurant" [ref=f121e39] [cursor=pointer]
+        - progressbar [ref=f121e41]
+      - navigation "Rechnungen" [ref=f121e49]:
+        - link "Rechnungen" [ref=f121e50] [cursor=pointer]:
+          - /url: /bill/list
+          - img [aria-hidden] [ref=f121e51]: list
+          - text: Rechnungen
+        - link "Hinzufügen" [ref=f121e52] [cursor=pointer]:
+          - /url: /bill/create
+          - img [aria-hidden] [ref=f121e53]: add_circle
+          - text: Hinzufügen
+        - link "Statistik" [ref=f121e54] [cursor=pointer]:
+          - /url: /bill/expenses
+          - img [aria-hidden] [ref=f121e55]: donut_small
+          - text: Statistik

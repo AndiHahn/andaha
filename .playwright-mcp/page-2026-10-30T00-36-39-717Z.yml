@@ -1,0 +1,254 @@
+- generic [ref=f115e1]:
+  - generic [ref=f115e3]:
+    - navigation [ref=f115e57]:
+      - generic [ref=f115e58]:
+        - generic [ref=f115e59]: Andaha
+        - link [ref=f115e61] [cursor=pointer]:
+          - /url: /
+          - img [aria-hidden] [ref=f115e62]: receipt_long
+          - text: Rechnungen
+        - link [ref=f115e63] [cursor=pointer]:
+          - /url: /analyzed
+          - img [aria-hidden] [ref=f115e64]: document_scanner
+          - text: Analyse
+        - link [ref=f115e65] [cursor=pointer]:
+          - /url: /budgetplan
+          - img [aria-hidden] [ref=f115e66]: account_balance_wallet
+          - text: Haushaltsplan
+        - link [ref=f115e67] [cursor=pointer]:
+          - /url: /work
+          - img [aria-hidden] [ref=f115e68]: group
+          - text: Stundenaufzeichnungen
+        - link [ref=f115e69] [cursor=pointer]:
+          - /url: /settings
+          - img [aria-hidden] [ref=f115e70]: settings
+          - text: Einstellungen
+        - link [ref=f115e71] [cursor=pointer]:
+          - /url: /export
+          - img [aria-hidden] [ref=f115e72]: download
+          - text: Export
+        - generic [ref=f115e74]:
+          - link [ref=f115e75] [cursor=pointer]:
+            - /url: /agb
+            - text: AGB
+          - link [ref=f115e76] [cursor=pointer]:
+            - /url: /data-protection
+            - text: Datenschutzerklärung
+          - link [ref=f115e77] [cursor=pointer]:
+            - /url: /user-data
+            - text: Benutzerdaten
+    - generic [ref=f115e6]:
+      - banner [ref=f115e78]:
+        - heading [level=1] [ref=f115e79]: Rechnungen
+        - generic [ref=f115e80]: Test1
+        - button [ref=f115e81] [cursor=pointer]:
+          - img [aria-hidden] [ref=f115e82]: account_circle
+      - main [ref=f115e13]:
+        - generic [ref=f115e15]:
+          - generic [ref=f115e16]:
+            - generic [ref=f115e19]:
+              - generic [ref=f115e22]:
+                - img [aria-hidden] [ref=f115e23]: search
+                - textbox [ref=f115e83]:
+                  - /placeholder: Suche Rechnungen...
+              - generic [ref=f115e27]:
+                - button [pressed] [ref=f115e84] [cursor=pointer]:
+                  - img [aria-hidden] [ref=f115e85]: check
+                  - text: Alle
+                - button [ref=f115e86] [cursor=pointer]: Keine
+                - button [ref=f115e87] [cursor=pointer]: Lebensmittel
+                - button [ref=f115e88] [cursor=pointer]: Wohnen
+                - button [ref=f115e89] [cursor=pointer]: Kleidung
+                - button [ref=f115e90] [cursor=pointer]: Ausbildung
+                - button [ref=f115e91] [cursor=pointer]: Freizeit
+                - button [ref=f115e92] [cursor=pointer]: Auto/Motorrad
+                - button [ref=f115e93] [cursor=pointer]: Hygiene/Gesundheit
+                - button [ref=f115e94] [cursor=pointer]: Geschenke
+                - button [ref=f115e95] [cursor=pointer]: Restaurant
+              - button [active] [ref=f115e96] [cursor=pointer]:
+                - img [aria-hidden] [ref=f115e97]: calendar_today
+                - text: Datumfilter
+            - generic [aria-hidden] [ref=f115e98]:
+              - generic [ref=f115e99]: Datum
+              - generic [ref=f115e100]: Shop
+              - generic [ref=f115e101]: Kategorie
+              - generic [ref=f115e102]: Herkunft
+              - generic [ref=f115e104]: Preis
+            - generic [ref=f115e105]:
+              - link [ref=f115e106] [cursor=pointer]:
+                - /url: /bill/951c5b15-5d4c-49b4-82ae-8f5d8d3863ea
+                - generic [ref=f115e108]:
+                  - generic [ref=f115e109]: 29.10.2026
+                  - generic [ref=f115e110]:
+                    - generic [ref=f115e111]: Bauernmarkt Urfahr und Feinkost Hinterberger GmbH & Co KG
+                    - generic [ref=f115e112]: Lebensmittel
+                  - generic [ref=f115e115]: 12.345,67€
+              - link [ref=f115e116] [cursor=pointer]:
+                - /url: /bill/5b74405f-2c23-4260-97fc-1da18f274b43
+                - generic [ref=f115e118]:
+                  - generic [ref=f115e119]: 29.10.2026
+                  - generic [ref=f115e120]:
+                    - generic [ref=f115e121]: Probe Spar
+                    - generic [ref=f115e122]: Lebensmittel
+                  - generic [ref=f115e125]: 7,00€
+              - link [ref=f115e126] [cursor=pointer]:
+                - /url: /bill/950ca13e-39b5-4fb1-93bf-6b1f6ba87abc
+                - generic [ref=f115e128]:
+                  - generic [ref=f115e129]: 28.10.2026
+                  - generic [ref=f115e130]:
+                    - generic [ref=f115e131]: Billa 1
+                    - generic [ref=f115e132]: Keine
+                  - generic [ref=f115e135]: 5,00€
+              - link [ref=f115e136] [cursor=pointer]:
+                - /url: /bill/1a806047-ed2a-4203-9a30-8897659363a6
+                - generic [ref=f115e138]:
+                  - generic [ref=f115e139]: 27.10.2026
+                  - generic [ref=f115e140]:
+                    - generic [ref=f115e141]: Hofer 2
+                    - generic [ref=f115e142]: Lebensmittel
+                  - generic [ref=f115e145]: 42,01€
+              - link [ref=f115e146] [cursor=pointer]:
+                - /url: /bill/e1f37c0a-2508-4778-a048-5918b8697caa
+                - generic [ref=f115e148]:
+                  - generic [ref=f115e149]: 26.10.2026
+                  - generic [ref=f115e150]:
+                    - generic [ref=f115e151]: Spar 3
+                    - generic [ref=f115e152]: Wohnen
+                  - generic [ref=f115e155]: 79,02€
+              - link [ref=f115e156] [cursor=pointer]:
+                - /url: /bill/0ddbfd51-e179-4f45-8482-7fd13eaa30a6
+                - generic [ref=f115e158]:
+                  - generic [ref=f115e159]: 25.10.2026
+                  - generic [ref=f115e160]:
+                    - generic [ref=f115e161]: dm drogerie markt 4
+                    - generic [ref=f115e162]: Kleidung
+                  - generic [ref=f115e165]: 116,03€
+              - link [ref=f115e166] [cursor=pointer]:
+                - /url: /bill/50d79078-fce0-427c-ab80-f027d0bf7bfa
+                - generic [ref=f115e168]:
+                  - generic [ref=f115e169]: 23.10.2026
+                  - generic [ref=f115e170]:
+                    - generic [ref=f115e171]: OMV Tankstelle 5
+                    - generic [ref=f115e172]: Ausbildung
+                  - generic [ref=f115e175]: 153,04€
+              - link [ref=f115e176] [cursor=pointer]:
+                - /url: /bill/bcec0e0c-e292-4e46-a158-93b35e7d872d
+                - generic [ref=f115e178]:
+                  - generic [ref=f115e179]: 22.10.2026
+                  - generic [ref=f115e180]:
+                    - generic [ref=f115e181]: Thalia 6
+                    - generic [ref=f115e182]: Freizeit
+                  - generic [ref=f115e185]: 10,05€
+              - link [ref=f115e186] [cursor=pointer]:
+                - /url: /bill/36f1b63f-a87b-4935-b749-b933c5855122
+                - generic [ref=f115e188]:
+                  - generic [ref=f115e189]: 21.10.2026
+                  - generic [ref=f115e190]:
+                    - generic [ref=f115e191]: IKEA 7
+                    - generic [ref=f115e192]: Auto/Motorrad
+                  - generic [ref=f115e195]: 47,06€
+              - link [ref=f115e196] [cursor=pointer]:
+                - /url: /bill/d277de27-5aea-463e-8faa-679147ab52ba
+                - generic [ref=f115e198]:
+                  - generic [ref=f115e199]: 19.10.2026
+                  - generic [ref=f115e200]:
+                    - generic [ref=f115e201]: Apotheke zum Löwen 8
+                    - generic [ref=f115e202]: Hygiene/Gesundheit
+                  - generic [ref=f115e205]: 84,07€
+              - link [ref=f115e206] [cursor=pointer]:
+                - /url: /bill/c00844ad-47cb-4d74-972c-d5c71900ded8
+                - generic [ref=f115e208]:
+                  - generic [ref=f115e209]: 18.10.2026
+                  - generic [ref=f115e210]:
+                    - generic [ref=f115e211]: Merkur 9
+                    - generic [ref=f115e212]: Geschenke
+                  - generic [ref=f115e215]: 121,08€
+              - link [ref=f115e216] [cursor=pointer]:
+                - /url: /bill/01313af0-b691-434c-a20c-5e584b03e76a
+                - generic [ref=f115e218]:
+                  - generic [ref=f115e219]: 17.10.2026
+                  - generic [ref=f115e220]:
+                    - generic [ref=f115e221]: Interspar 10
+                    - generic [ref=f115e222]: Restaurant
+                  - generic [ref=f115e225]: 158,09€
+              - link [ref=f115e226] [cursor=pointer]:
+                - /url: /bill/61fcccb5-1dab-4c41-a7c7-8651b48cae4c
+                - generic [ref=f115e228]:
+                  - generic [ref=f115e229]: 15.10.2026
+                  - generic [ref=f115e230]:
+                    - generic [ref=f115e231]: Lidl 11
+                    - generic [ref=f115e232]: Keine
+                  - generic [ref=f115e235]: 15,10€
+              - link [ref=f115e236] [cursor=pointer]:
+                - /url: /bill/4f013648-3373-4c56-bf35-5fdb12761f3d
+                - generic [ref=f115e238]:
+                  - generic [ref=f115e239]: 14.10.2026
+                  - generic [ref=f115e240]:
+                    - generic [ref=f115e241]: H&M 12
+                    - generic [ref=f115e242]: Lebensmittel
+                  - generic [ref=f115e245]: 52,11€
+              - link [ref=f115e246] [cursor=pointer]:
+                - /url: /bill/c42e9da4-429a-4a36-8b83-f8d245c4ee7a
+                - generic [ref=f115e248]:
+                  - generic [ref=f115e249]: 13.10.2026
+                  - generic [ref=f115e250]:
+                    - generic [ref=f115e251]: Billa 13
+                    - generic [ref=f115e252]: Wohnen
+                  - generic [ref=f115e255]: 89,12€
+              - link [ref=f115e256] [cursor=pointer]:
+                - /url: /bill/25a468b3-174f-456a-8231-af357c81fb0c
+                - generic [ref=f115e258]:
+                  - generic [ref=f115e259]: 12.10.2026
+                  - generic [ref=f115e260]:
+                    - generic [ref=f115e261]: Hofer 14
+                    - generic [ref=f115e262]: Kleidung
+                  - generic [ref=f115e265]: 126,13€
+              - link [ref=f115e266] [cursor=pointer]:
+                - /url: /bill/9c9d64be-9646-4f26-adeb-e56521e9a57c
+                - generic [ref=f115e268]:
+                  - generic [ref=f115e269]: 10.10.2026
+                  - generic [ref=f115e270]:
+                    - generic [ref=f115e271]: Spar 15
+                    - generic [ref=f115e272]: Ausbildung
+                  - generic [ref=f115e275]: 163,14€
+          - navigation [ref=f115e276]:
+            - link [ref=f115e277] [cursor=pointer]:
+              - /url: /bill/list
+              - img [aria-hidden] [ref=f115e51]: list
+              - text: Rechnungen
+            - link [ref=f115e278] [cursor=pointer]:
+              - /url: /bill/create
+              - img [aria-hidden] [ref=f115e53]: add_circle
+              - text: Hinzufügen
+            - link [ref=f115e279] [cursor=pointer]:
+              - /url: /bill/expenses
+              - img [aria-hidden] [ref=f115e55]: donut_small
+              - text: Statistik
+  - dialog [ref=f115e283]:
+    - generic "Datumfilter" [ref=f115e285]:
+      - generic [ref=f115e286]:
+        - heading "Datumfilter" [level=2] [ref=f115e287]
+        - button "Schließen" [ref=f115e288] [cursor=pointer]:
+          - img [aria-hidden] [ref=f115e289]: close
+      - generic [ref=f115e291]:
+        - generic [ref=f115e292]:
+          - generic [ref=f115e293]: Von
+          - generic [ref=f115e294]:
+            - generic [ref=f115e295]:
+              - textbox "Von" [ref=f115e296]
+              - button "Open calendar" [ref=f115e298] [cursor=pointer]:
+                - img [aria-hidden] [ref=f115e300]: calendar_today
+            - button "Von-Datum leeren" [ref=f115e301] [cursor=pointer]:
+              - img [aria-hidden] [ref=f115e302]: close
+          - generic [ref=f115e303]: DD.MM.YYYY
+        - generic [ref=f115e304]:
+          - generic [ref=f115e305]: Bis
+          - generic [ref=f115e306]:
+            - generic [ref=f115e307]:
+              - textbox "Bis" [ref=f115e308]
+              - button "Open calendar" [ref=f115e310] [cursor=pointer]:
+                - img [aria-hidden] [ref=f115e312]: calendar_today
+            - button "Bis-Datum leeren" [ref=f115e313] [cursor=pointer]:
+              - img [aria-hidden] [ref=f115e314]: close
+          - generic [ref=f115e315]: DD.MM.YYYY
+      - button "Übernehmen" [ref=f115e317] [cursor=pointer]

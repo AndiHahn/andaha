@@ -1,0 +1,45 @@
+- generic [ref=f494e6]:
+  - banner [ref=f494e7]:
+    - link "Zurück" [ref=f494e238] [cursor=pointer]:
+      - /url: /bill/list
+      - img [aria-hidden] [ref=f494e239]: arrow_back
+    - heading "Rechnung" [level=1] [ref=f494e240]
+    - button "Benutzerkonto" [ref=f494e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f494e12]: account_circle
+  - main [ref=f494e13]:
+    - generic [ref=f494e15]:
+      - generic [ref=f494e242]:
+        - generic [ref=f494e243]:
+          - generic [ref=f494e244]:
+            - generic [ref=f494e245]: UIT Testshop A
+            - generic [ref=f494e246]: 12,34€
+            - generic [ref=f494e247]: 30.10.2026
+          - button "Foto der Rechnung Optional" [disabled] [ref=f494e250]:
+            - img [aria-hidden] [ref=f494e252]: photo_camera
+            - generic [ref=f494e253]:
+              - text: Foto der Rechnung
+              - generic [ref=f494e254]: Optional
+          - generic [ref=f494e255]:
+            - generic [ref=f494e256]: Kategorie
+            - generic [ref=f494e257]: Lebensmittel
+          - generic [ref=f494e259]:
+            - generic [ref=f494e260]: Notizen
+            - generic [ref=f494e261]: ui test
+        - generic [ref=f494e263]:
+          - button "Bearbeiten" [ref=f494e264] [cursor=pointer]:
+            - img [aria-hidden] [ref=f494e265]: edit
+          - button "Löschen" [ref=f494e267] [cursor=pointer]:
+            - img [aria-hidden] [ref=f494e268]: delete
+      - navigation "Rechnungen" [ref=f494e49]:
+        - link "Rechnungen" [ref=f494e50] [cursor=pointer]:
+          - /url: /bill/list
+          - img [aria-hidden] [ref=f494e51]: list
+          - text: Rechnungen
+        - link "Hinzufügen" [ref=f494e52] [cursor=pointer]:
+          - /url: /bill/create
+          - img [aria-hidden] [ref=f494e53]: add_circle
+          - text: Hinzufügen
+        - link "Statistik" [ref=f494e54] [cursor=pointer]:
+          - /url: /bill/expenses
+          - img [aria-hidden] [ref=f494e55]: donut_small
+          - text: Statistik

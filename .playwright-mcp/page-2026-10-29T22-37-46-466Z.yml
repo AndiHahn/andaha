@@ -1,0 +1,47 @@
+- generic [ref=f42e6]:
+  - banner [ref=f42e7]:
+    - button "Menü öffnen" [ref=f42e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f42e9]: menu
+    - heading "Rechnungen" [level=1] [ref=f42e10]
+    - img "Synchronisierung aktiv" [ref=f42e11]:
+      - img [aria-hidden] [ref=f42e12]: sync
+    - button "Benutzerkonto" [ref=f42e13] [cursor=pointer]:
+      - img [aria-hidden] [ref=f42e14]: account_circle
+  - main [ref=f42e15]:
+    - generic [ref=f42e17]:
+      - generic [ref=f42e18]:
+        - generic [ref=f42e21]:
+          - generic [ref=f42e22]:
+            - listbox [ref=f42e24]:
+              - option [ref=f42e26]:
+                - img [aria-hidden] [ref=f42e27]: search
+                - textbox "Suche Rechnungen..." [ref=f42e28]
+            - button [ref=f42e30] [cursor=pointer]:
+              - img [aria-hidden] [ref=f42e32]: filter_list
+          - listbox [ref=f42e34]:
+            - generic [ref=f42e35]:
+              - option "Alle" [selected] [ref=f42e36]
+              - option "Keine" [ref=f42e37]
+              - option "Lebensmittel" [ref=f42e38]
+              - option "Wohnen" [ref=f42e39]
+              - option "Kleidung" [ref=f42e40]
+              - option "Ausbildung" [ref=f42e41]
+              - option "Freizeit" [ref=f42e42]
+              - option "Auto/Motorrad" [ref=f42e43]
+              - option "Hygiene/Gesundheit" [ref=f42e44]
+              - option "Geschenke" [ref=f42e45]
+              - option "Restaurant" [ref=f42e46]
+        - progressbar [ref=f42e48]
+      - navigation "Rechnungen" [ref=f42e56]:
+        - link "Rechnungen" [ref=f42e57] [cursor=pointer]:
+          - /url: /bill/list
+          - img [aria-hidden] [ref=f42e58]: list
+          - text: Rechnungen
+        - link "Hinzufügen" [ref=f42e59] [cursor=pointer]:
+          - /url: /bill/create
+          - img [aria-hidden] [ref=f42e60]: add_circle
+          - text: Hinzufügen
+        - link "Statistik" [ref=f42e61] [cursor=pointer]:
+          - /url: /bill/expenses
+          - img [aria-hidden] [ref=f42e62]: donut_small
+          - text: Statistik

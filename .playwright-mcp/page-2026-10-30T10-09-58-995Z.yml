@@ -1,0 +1,81 @@
+- generic [ref=f520e1]:
+  - generic [ref=f520e6]:
+    - banner [ref=f520e7]:
+      - link "Zurück" [ref=f520e8] [cursor=pointer]:
+        - /url: /settings/categories
+        - img [aria-hidden] [ref=f520e9]: arrow_back
+      - heading "Kategorie hinzufügen" [level=1] [ref=f520e10]
+      - button "Benutzerkonto" [ref=f520e11] [cursor=pointer]:
+        - img [aria-hidden] [ref=f520e12]: account_circle
+    - main [ref=f520e13]:
+      - generic [ref=f520e15]:
+        - generic [ref=f520e17]:
+          - generic [ref=f520e18]:
+            - generic [ref=f520e19]:
+              - generic [ref=f520e20]: Name der Kategorie
+              - textbox "Name der Kategorie" [ref=f520e22]
+            - generic [ref=f520e23]:
+              - generic [ref=f520e24]: Farbe
+              - generic [ref=f520e25]:
+                - combobox "Farbe" [active] [ref=f520e26]:
+                  - generic [ref=f520e27] [cursor=pointer]: cornflowerblue
+                - img [aria-hidden] [ref=f520e29]: expand_more
+            - generic [ref=f520e32] [cursor=pointer]:
+              - checkbox "Aufnehmen in Statistik" [checked] [ref=f520e34]
+              - generic [ref=f520e35]: Aufnehmen in Statistik
+          - button "Speichern" [disabled] [ref=f520e37]:
+            - img [aria-hidden] [ref=f520e38]: check
+        - navigation "Einstellungen" [ref=f520e40]:
+          - link "Verbindungen" [ref=f520e41] [cursor=pointer]:
+            - /url: /settings/connections
+            - img [aria-hidden] [ref=f520e42]: link
+            - text: Verbindungen
+          - link "Kategorien" [ref=f520e43] [cursor=pointer]:
+            - /url: /settings/categories
+            - img [aria-hidden] [ref=f520e44]: category
+            - text: Kategorien
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - listbox "Farbe":
+            - option "indigo"
+            - option "lemonchiffon"
+            - option "khaki"
+            - option "darkkhaki"
+            - option "gold"
+            - option "yellow"
+            - option "darksalmon"
+            - option "indianred"
+            - option "chocolate"
+            - option "orange"
+            - option "darkorange"
+            - option "brown"
+            - option "deeppink"
+            - option "pink"
+            - option "purple"
+            - option "red"
+            - option "darkred"
+            - option "blueviolet"
+            - option "darkviolet"
+            - option "magenta"
+            - option "darkmagenta"
+            - option "aliceblue"
+            - option "aquamarine"
+            - option "cadetblue"
+            - option "darkturquoise"
+            - option "darkcyan"
+            - option "aqua"
+            - option "deepskyblue"
+            - option "cornflowerblue" [selected]
+            - option "blue"
+            - option "darkblue"
+            - option "darkseagreen"
+            - option "darkolivegreen"
+            - option "greenyellow"
+            - option "chartreuse"
+            - option "green"
+            - option "darkgreen"
+            - option "grey"
+            - option "darkslategray"
+            - option "darkgray"

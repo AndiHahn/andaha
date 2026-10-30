@@ -1,0 +1,25 @@
+- generic [ref=f11e6]:
+  - img "Firmenlogo" [ref=f11e7]
+  - main [ref=f11e8]:
+    - heading "Anmelden" [level=1] [ref=f11e10]
+    - form "Mit E-Mail-Adresse anmelden" [ref=f11e11]:
+      - heading "Mit E-Mail-Adresse anmelden" [level=2] [ref=f11e13]
+      - generic [ref=f11e14]:
+        - textbox "E-Mail-Adresse" [ref=f11e16]
+        - generic [ref=f11e17]:
+          - textbox "Kennwort" [ref=f11e18]
+          - link "Kennwort vergessen?" [ref=f11e21] [cursor=pointer]:
+            - /url: /andreasorganization.onmicrosoft.com/B2C_1_SignUpSignIn/api/CombinedSigninAndSignup/unified?claimsexchange=ForgotPassword&csrf_token=aHFBQ0dyZkNsNjZ2U3lOOThDc215T2VidC9vUmxNb0p5cUZsYzgwbjBPZUlwM05BMUJPNnBVYUtPWlg1SWRtRXBDS1pDbHc4TlBCZC9MOXJ5bW02blE9PTsyMDI2LTEwLTI5VDIxOjE1OjIzLjg4ODM2NjVaOzQzM1NBdFNXZjgwYmdCRnJwbVl0U1E9PTt7Ik9yY2hlc3RyYXRpb25TdGVwIjoxfQ==&tx=StateProperties=eyJUSUQiOiI1MjI2Y2E3ZC00ZjgzLTQ3MjctYjBlZC02OTVkMWFkZWZmNTAifQ&p=B2C_1_SignUpSignIn
+        - generic [ref=f11e22]:
+          - checkbox "Angemeldet bleiben" [ref=f11e23]
+          - generic [ref=f11e24]: Angemeldet bleiben
+        - button "Anmelden" [ref=f11e26] [cursor=pointer]
+      - paragraph [ref=f11e28]:
+        - text: Sie haben noch kein Konto?
+        - link "Jetzt registrieren" [ref=f11e29] [cursor=pointer]:
+          - /url: /andreasorganization.onmicrosoft.com/B2C_1_SignUpSignIn/api/CombinedSigninAndSignup/unified?local=signup&csrf_token=aHFBQ0dyZkNsNjZ2U3lOOThDc215T2VidC9vUmxNb0p5cUZsYzgwbjBPZUlwM05BMUJPNnBVYUtPWlg1SWRtRXBDS1pDbHc4TlBCZC9MOXJ5bW02blE9PTsyMDI2LTEwLTI5VDIxOjE1OjIzLjg4ODM2NjVaOzQzM1NBdFNXZjgwYmdCRnJwbVl0U1E9PTt7Ik9yY2hlc3RyYXRpb25TdGVwIjoxfQ==&tx=StateProperties=eyJUSUQiOiI1MjI2Y2E3ZC00ZjgzLTQ3MjctYjBlZC02OTVkMWFkZWZmNTAifQ&p=B2C_1_SignUpSignIn
+    - form "Mit Konto für soziales Netzwerk anmelden" [ref=f11e30]:
+      - heading "Mit Konto für soziales Netzwerk anmelden" [level=2] [ref=f11e32]
+      - generic [ref=f11e33]:
+        - link "Google" [ref=f11e35] [cursor=pointer]
+        - link "Facebook" [ref=f11e37] [cursor=pointer]

@@ -1,0 +1,9 @@
+- generic [ref=f10e3]:
+  - generic [ref=f10e4]:
+    - button [ref=f10e5] [cursor=pointer]:
+      - img [aria-hidden] [ref=f10e7]: menu
+    - button [ref=f10e8] [cursor=pointer]:
+      - heading "Andaha" [level=2] [ref=f10e10]
+    - button [ref=f10e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f10e13]: account_circle
+  - heading "Warten auf Login..." [level=2] [ref=f10e20]

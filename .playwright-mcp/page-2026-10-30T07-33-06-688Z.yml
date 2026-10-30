@@ -1,0 +1,63 @@
+- generic [ref=f303e6]:
+  - banner [ref=f303e7]:
+    - link "Zurück" [ref=f303e8] [cursor=pointer]:
+      - /url: /work/person
+      - img [aria-hidden] [ref=f303e9]: arrow_back
+    - heading "Arbeitszeiten hinzufügen" [level=1] [ref=f303e10]
+    - button "Benutzerkonto" [ref=f303e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f303e12]: account_circle
+  - main [ref=f303e13]:
+    - generic [ref=f303e15]:
+      - generic [ref=f303e17]:
+        - generic [ref=f303e18]:
+          - generic [ref=f303e19]:
+            - generic [ref=f303e20]: Personen
+            - generic [ref=f303e21]:
+              - combobox "Personen" [expanded] [active] [ref=f303e22]:
+                - listbox "Personen" [ref=f303e72]:
+                  - textbox "Suche nach Personen..." [ref=f303e73]
+                  - option "Maria Test" [ref=f303e74] [cursor=pointer]
+                  - option "Jakob Test" [ref=f303e77] [cursor=pointer]
+                  - option "Spike B" [ref=f303e80] [cursor=pointer]
+                  - option "Spike A" [ref=f303e83] [cursor=pointer]
+              - img [aria-hidden] [ref=f303e25]: expand_more
+          - generic [ref=f303e27]:
+            - generic [ref=f303e28]: Datum
+            - generic [ref=f303e29]:
+              - textbox "Datum" [ref=f303e30]: 30.10.2026
+              - button "Open calendar" [ref=f303e32] [cursor=pointer]:
+                - img [aria-hidden] [ref=f303e34]: calendar_today
+            - generic [ref=f303e35]: DD.MM.YYYY
+          - generic [ref=f303e36]:
+            - generic [ref=f303e38]:
+              - generic [ref=f303e39]: Startzeit
+              - generic [ref=f303e40]:
+                - textbox "Startzeit" [ref=f303e41]: 07:00
+                - img [aria-hidden] [ref=f303e42]: schedule
+            - generic [ref=f303e44]:
+              - generic [ref=f303e45]: Endzeit
+              - generic [ref=f303e46]:
+                - textbox "Endzeit" [ref=f303e47]: 17:00
+                - img [aria-hidden] [ref=f303e48]: schedule
+            - generic [ref=f303e50]:
+              - generic [ref=f303e51]: Pause
+              - generic [ref=f303e52]:
+                - textbox "Pause" [ref=f303e53]: 01:00
+                - img [aria-hidden] [ref=f303e54]: schedule
+          - generic [ref=f303e55]:
+            - generic [ref=f303e56]: Arbeitszeit netto
+            - generic [ref=f303e57]: 09:00 h
+          - generic [ref=f303e58]:
+            - generic [ref=f303e59]: Notizen
+            - textbox "Notizen" [ref=f303e61]
+        - button "Speichern" [disabled] [ref=f303e63]:
+          - img [aria-hidden] [ref=f303e64]: check
+      - navigation "Stunden" [ref=f303e66]:
+        - link "Personen" [ref=f303e67] [cursor=pointer]:
+          - /url: /work/person
+          - img [aria-hidden] [ref=f303e68]: group
+          - text: Personen
+        - link "Statistik" [ref=f303e69] [cursor=pointer]:
+          - /url: /work/statistics
+          - img [aria-hidden] [ref=f303e70]: donut_small
+          - text: Statistik

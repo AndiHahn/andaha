@@ -1,0 +1,83 @@
+- generic [ref=f55e3]:
+  - navigation "Hauptnavigation" [ref=f55e5]:
+    - generic [ref=f55e6]:
+      - generic [ref=f55e7]: Andaha
+      - link "Rechnungen" [ref=f55e9] [cursor=pointer]:
+        - /url: /
+        - img [aria-hidden] [ref=f55e10]: receipt_long
+        - text: Rechnungen
+      - link "Analyse" [ref=f55e11] [cursor=pointer]:
+        - /url: /analyzed
+        - img [aria-hidden] [ref=f55e12]: document_scanner
+        - text: Analyse
+      - link "Haushaltsplan" [ref=f55e13] [cursor=pointer]:
+        - /url: /budgetplan
+        - img [aria-hidden] [ref=f55e14]: account_balance_wallet
+        - text: Haushaltsplan
+      - link "Stundenaufzeichnungen" [ref=f55e15] [cursor=pointer]:
+        - /url: /work
+        - img [aria-hidden] [ref=f55e16]: group
+        - text: Stundenaufzeichnungen
+      - link "Einstellungen" [ref=f55e17] [cursor=pointer]:
+        - /url: /settings
+        - img [aria-hidden] [ref=f55e18]: settings
+        - text: Einstellungen
+      - link "Export" [ref=f55e19] [cursor=pointer]:
+        - /url: /export
+        - img [aria-hidden] [ref=f55e20]: download
+        - text: Export
+      - generic [ref=f55e22]:
+        - link "AGB" [ref=f55e23] [cursor=pointer]:
+          - /url: /agb
+        - link "Datenschutzerklärung" [ref=f55e24] [cursor=pointer]:
+          - /url: /data-protection
+        - link "Benutzerdaten" [ref=f55e25] [cursor=pointer]:
+          - /url: /user-data
+  - generic [ref=f55e27]:
+    - banner [ref=f55e28]:
+      - heading "Rechnung hinzufügen" [level=1] [ref=f55e29]
+      - generic [ref=f55e30]: Test1
+      - button "Benutzerkonto" [ref=f55e31] [cursor=pointer]:
+        - img [aria-hidden] [ref=f55e32]: account_circle
+    - main [ref=f55e33]:
+      - generic [ref=f55e35]:
+        - generic [ref=f55e38]:
+          - generic [ref=f55e39]:
+            - button [ref=f55e43] [cursor=pointer]:
+              - img [aria-hidden] [ref=f55e45]: add_a_photo
+            - generic [ref=f55e49]:
+              - textbox "Shopname" [ref=f55e50]
+              - generic: Shopname *
+            - generic [ref=f55e54]:
+              - textbox "Notizen" [ref=f55e55]
+              - generic: Notizen
+            - generic [ref=f55e59]:
+              - spinbutton "Preis" [ref=f55e60]
+              - generic: Preis *
+            - generic [ref=f55e64] [cursor=pointer]:
+              - combobox [ref=f55e124]
+              - generic: Kategorie *
+            - generic [ref=f55e72]:
+              - generic [ref=f55e73]:
+                - generic [ref=f55e74]:
+                  - textbox "Datum" [ref=f55e75]: 29.10.2026
+                  - generic: Datum
+                - button "Open calendar" [ref=f55e78] [cursor=pointer]
+              - generic [ref=f55e82]: DD.MM.YYYY
+          - button [disabled] [ref=f55e88]:
+            - generic [ref=f55e89]:
+              - img [aria-hidden] [ref=f55e90]: save
+              - text: Speichern
+        - navigation "Rechnungen" [ref=f55e91]:
+          - link "Rechnungen" [ref=f55e92] [cursor=pointer]:
+            - /url: /bill/list
+            - img [aria-hidden] [ref=f55e93]: list
+            - text: Rechnungen
+          - link "Hinzufügen" [ref=f55e94] [cursor=pointer]:
+            - /url: /bill/create
+            - img [aria-hidden] [ref=f55e95]: add_circle
+            - text: Hinzufügen
+          - link "Statistik" [ref=f55e96] [cursor=pointer]:
+            - /url: /bill/expenses
+            - img [aria-hidden] [ref=f55e97]: donut_small
+            - text: Statistik

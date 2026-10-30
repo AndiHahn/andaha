@@ -1,0 +1,38 @@
+- generic [ref=f167e6]:
+  - banner [ref=f167e7]:
+    - button "Menü öffnen" [ref=f167e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f167e9]: menu
+    - heading "Kategorien" [level=1] [ref=f167e10]
+    - button "Benutzerkonto" [ref=f167e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f167e12]: account_circle
+  - main [ref=f167e13]:
+    - generic [ref=f167e15]:
+      - generic [ref=f167e16]:
+        - generic [ref=f167e18]:
+          - generic [ref=f167e19]: Keine
+          - generic [ref=f167e25]: Lebensmittel
+          - generic [ref=f167e31]: Wohnen
+          - generic [ref=f167e37]: Kleidung
+          - generic [ref=f167e43]: Ausbildung
+          - generic [ref=f167e49]: Freizeit
+          - generic [ref=f167e55]: Auto/Motorrad
+          - generic [ref=f167e61]: Hygiene/Gesundheit
+          - generic [ref=f167e67]: Geschenke
+          - generic [ref=f167e73]: Restaurant
+        - button [ref=f167e83] [cursor=pointer]:
+          - generic [ref=f167e84]:
+            - img [aria-hidden] [ref=f167e85]: edit
+            - text: Reihenfolge anpassen
+        - button [ref=f167e89] [cursor=pointer]:
+          - generic [ref=f167e90]:
+            - img [aria-hidden] [ref=f167e91]: add_circle
+            - text: Hinzufügen
+      - navigation "Einstellungen" [ref=f167e92]:
+        - link "Verbindungen" [ref=f167e93] [cursor=pointer]:
+          - /url: /settings/connections
+          - img [aria-hidden] [ref=f167e94]: link
+          - text: Verbindungen
+        - link "Kategorien" [ref=f167e95] [cursor=pointer]:
+          - /url: /settings/categories
+          - img [aria-hidden] [ref=f167e96]: category
+          - text: Kategorien

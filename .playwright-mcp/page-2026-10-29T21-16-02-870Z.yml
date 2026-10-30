@@ -1,0 +1,46 @@
+- generic [ref=f13e3]:
+  - generic [ref=f13e4]:
+    - button [ref=f13e5] [cursor=pointer]:
+      - img [aria-hidden] [ref=f13e7]: menu
+    - button [ref=f13e8] [cursor=pointer]:
+      - heading "Andaha" [level=2] [ref=f13e10]
+    - generic [ref=f13e78]: Test1
+    - button [ref=f13e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f13e13]: account_circle
+  - generic [ref=f13e19]:
+    - generic [ref=f13e20]:
+      - generic [ref=f13e23]:
+        - generic [ref=f13e24]:
+          - listbox [ref=f13e26]:
+            - option [ref=f13e28]:
+              - img [aria-hidden] [ref=f13e29]: search
+              - textbox "Suche Rechnungen..." [ref=f13e30]
+          - button [ref=f13e32] [cursor=pointer]:
+            - img [aria-hidden] [ref=f13e34]: filter_list
+        - listbox [ref=f13e36]:
+          - generic [ref=f13e37]:
+            - option "Alle" [selected] [ref=f13e79]
+            - option "Keine" [ref=f13e80]
+            - option "Lebensmittel" [ref=f13e81]
+            - option "Wohnen" [ref=f13e82]
+            - option "Kleidung" [ref=f13e83]
+            - option "Ausbildung" [ref=f13e84]
+            - option "Freizeit" [ref=f13e85]
+            - option "Auto/Motorrad" [ref=f13e86]
+            - option "Hygiene/Gesundheit" [ref=f13e87]
+            - option "Geschenke" [ref=f13e88]
+            - option "Restaurant" [ref=f13e89]
+      - generic [ref=f13e90]: Keine Rechnungen verfügbar.
+    - generic [ref=f13e61]:
+      - generic [ref=f13e62]:
+        - button [ref=f13e63] [cursor=pointer]:
+          - img [aria-hidden] [ref=f13e65]: list
+        - generic [ref=f13e66]: Rechnungen
+      - generic [ref=f13e67]:
+        - button [ref=f13e68] [cursor=pointer]:
+          - img [aria-hidden] [ref=f13e70]: add_circle
+        - generic [ref=f13e71]: Hinzufügen
+      - generic [ref=f13e72]:
+        - button [ref=f13e73] [cursor=pointer]:
+          - img [aria-hidden] [ref=f13e75]: donut_small
+        - generic [ref=f13e76]: Statistik

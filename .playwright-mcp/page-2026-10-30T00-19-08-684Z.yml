@@ -1,0 +1,105 @@
+- generic [ref=f108e6]:
+  - banner [ref=f108e7]:
+    - button "Menü öffnen" [ref=f108e600] [cursor=pointer]:
+      - img [aria-hidden] [ref=f108e9]: menu
+    - heading "Rechnungen" [level=1] [ref=f108e601]
+    - button "Benutzerkonto" [ref=f108e602] [cursor=pointer]:
+      - img [aria-hidden] [ref=f108e12]: account_circle
+  - main [ref=f108e13]:
+    - generic [ref=f108e15]:
+      - generic [ref=f108e16]:
+        - generic [ref=f108e19]:
+          - generic [ref=f108e20]:
+            - generic [ref=f108e22]:
+              - img [aria-hidden] [ref=f108e23]: search
+              - textbox "Rechnungen durchsuchen" [ref=f108e603]:
+                - /placeholder: Suche Rechnungen...
+            - button "Datumfilter öffnen" [active] [ref=f108e604] [cursor=pointer]:
+              - img [aria-hidden] [ref=f108e26]: filter_list
+          - generic [ref=f108e27]:
+            - button "Alle" [pressed] [ref=f108e606] [cursor=pointer]:
+              - img [aria-hidden] [ref=f108e29]: check
+              - text: Alle
+            - button "Keine" [ref=f108e607] [cursor=pointer]
+            - button "Lebensmittel" [ref=f108e608] [cursor=pointer]
+            - button "Wohnen" [ref=f108e609] [cursor=pointer]
+            - button "Kleidung" [ref=f108e610] [cursor=pointer]
+            - button "Ausbildung" [ref=f108e611] [cursor=pointer]
+            - button "Freizeit" [ref=f108e612] [cursor=pointer]
+            - button "Auto/Motorrad" [ref=f108e613] [cursor=pointer]
+            - button "Hygiene/Gesundheit" [ref=f108e614] [cursor=pointer]
+            - button "Geschenke" [ref=f108e615] [cursor=pointer]
+            - button "Restaurant" [ref=f108e616] [cursor=pointer]
+          - generic [ref=f108e617]:
+            - generic [ref=f108e618]:
+              - 'button "Von: 22.10.2026" [ref=f108e619] [cursor=pointer]'
+              - button "Von-Datum entfernen" [ref=f108e620] [cursor=pointer]:
+                - img [aria-hidden] [ref=f108e621]: close
+            - generic [ref=f108e622]:
+              - 'button "Bis: 27.10.2026" [ref=f108e623] [cursor=pointer]'
+              - button "Bis-Datum entfernen" [ref=f108e624] [cursor=pointer]:
+                - img [aria-hidden] [ref=f108e625]: close
+        - generic [ref=f108e42]:
+          - link "27 Okt. Hofer 2 Lebensmittel 42,01€" [ref=f108e626] [cursor=pointer]:
+            - /url: /bill/1a806047-ed2a-4203-9a30-8897659363a6
+            - generic [ref=f108e201]:
+              - generic [ref=f108e202]:
+                - generic [ref=f108e203]: "27"
+                - generic [ref=f108e204]: Okt.
+              - generic [ref=f108e205]:
+                - generic [ref=f108e206]: Hofer 2
+                - generic [ref=f108e207]: Lebensmittel
+              - generic [ref=f108e210]: 42,01€
+          - link "26 Okt. Spar 3 Wohnen 79,02€" [ref=f108e627] [cursor=pointer]:
+            - /url: /bill/e1f37c0a-2508-4778-a048-5918b8697caa
+            - generic [ref=f108e189]:
+              - generic [ref=f108e190]:
+                - generic [ref=f108e191]: "26"
+                - generic [ref=f108e192]: Okt.
+              - generic [ref=f108e193]:
+                - generic [ref=f108e194]: Spar 3
+                - generic [ref=f108e195]: Wohnen
+              - generic [ref=f108e198]: 79,02€
+          - link "25 Okt. dm drogerie markt 4 Kleidung 116,03€" [ref=f108e628] [cursor=pointer]:
+            - /url: /bill/0ddbfd51-e179-4f45-8482-7fd13eaa30a6
+            - generic [ref=f108e177]:
+              - generic [ref=f108e178]:
+                - generic [ref=f108e179]: "25"
+                - generic [ref=f108e180]: Okt.
+              - generic [ref=f108e181]:
+                - generic [ref=f108e182]: dm drogerie markt 4
+                - generic [ref=f108e183]: Kleidung
+              - generic [ref=f108e186]: 116,03€
+          - link "23 Okt. OMV Tankstelle 5 Ausbildung 153,04€" [ref=f108e629] [cursor=pointer]:
+            - /url: /bill/50d79078-fce0-427c-ab80-f027d0bf7bfa
+            - generic [ref=f108e165]:
+              - generic [ref=f108e166]:
+                - generic [ref=f108e167]: "23"
+                - generic [ref=f108e168]: Okt.
+              - generic [ref=f108e169]:
+                - generic [ref=f108e170]: OMV Tankstelle 5
+                - generic [ref=f108e171]: Ausbildung
+              - generic [ref=f108e174]: 153,04€
+          - link "22 Okt. Thalia 6 Freizeit 10,05€" [ref=f108e630] [cursor=pointer]:
+            - /url: /bill/bcec0e0c-e292-4e46-a158-93b35e7d872d
+            - generic [ref=f108e153]:
+              - generic [ref=f108e154]:
+                - generic [ref=f108e155]: "22"
+                - generic [ref=f108e156]: Okt.
+              - generic [ref=f108e157]:
+                - generic [ref=f108e158]: Thalia 6
+                - generic [ref=f108e159]: Freizeit
+              - generic [ref=f108e162]: 10,05€
+      - navigation "Rechnungen" [ref=f108e631]:
+        - link "Rechnungen" [ref=f108e632] [cursor=pointer]:
+          - /url: /bill/list
+          - img [aria-hidden] [ref=f108e214]: list
+          - text: Rechnungen
+        - link "Hinzufügen" [ref=f108e633] [cursor=pointer]:
+          - /url: /bill/create
+          - img [aria-hidden] [ref=f108e216]: add_circle
+          - text: Hinzufügen
+        - link "Statistik" [ref=f108e634] [cursor=pointer]:
+          - /url: /bill/expenses
+          - img [aria-hidden] [ref=f108e218]: donut_small
+          - text: Statistik

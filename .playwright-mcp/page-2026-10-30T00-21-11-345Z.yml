@@ -1,0 +1,214 @@
+- generic [ref=f109e3]:
+  - navigation "Hauptnavigation" [ref=f109e5]:
+    - generic [ref=f109e6]:
+      - generic [ref=f109e7]: Andaha
+      - link "Rechnungen" [ref=f109e9] [cursor=pointer]:
+        - /url: /
+        - img [aria-hidden] [ref=f109e10]: receipt_long
+        - text: Rechnungen
+      - link "Analyse" [ref=f109e11] [cursor=pointer]:
+        - /url: /analyzed
+        - img [aria-hidden] [ref=f109e12]: document_scanner
+        - text: Analyse
+      - link "Haushaltsplan" [ref=f109e13] [cursor=pointer]:
+        - /url: /budgetplan
+        - img [aria-hidden] [ref=f109e14]: account_balance_wallet
+        - text: Haushaltsplan
+      - link "Stundenaufzeichnungen" [ref=f109e15] [cursor=pointer]:
+        - /url: /work
+        - img [aria-hidden] [ref=f109e16]: group
+        - text: Stundenaufzeichnungen
+      - link "Einstellungen" [ref=f109e17] [cursor=pointer]:
+        - /url: /settings
+        - img [aria-hidden] [ref=f109e18]: settings
+        - text: Einstellungen
+      - link "Export" [ref=f109e19] [cursor=pointer]:
+        - /url: /export
+        - img [aria-hidden] [ref=f109e20]: download
+        - text: Export
+      - generic [ref=f109e22]:
+        - link "AGB" [ref=f109e23] [cursor=pointer]:
+          - /url: /agb
+        - link "Datenschutzerklärung" [ref=f109e24] [cursor=pointer]:
+          - /url: /data-protection
+        - link "Benutzerdaten" [ref=f109e25] [cursor=pointer]:
+          - /url: /user-data
+  - generic [ref=f109e27]:
+    - banner [ref=f109e28]:
+      - heading "Rechnungen" [level=1] [ref=f109e29]
+      - generic [ref=f109e83]: Test1
+      - button "Benutzerkonto" [ref=f109e30] [cursor=pointer]:
+        - img [aria-hidden] [ref=f109e31]: account_circle
+    - main [ref=f109e32]:
+      - generic [ref=f109e34]:
+        - generic [ref=f109e35]:
+          - generic [ref=f109e38]:
+            - generic [ref=f109e41]:
+              - img [aria-hidden] [ref=f109e42]: search
+              - textbox "Rechnungen durchsuchen" [ref=f109e43]:
+                - /placeholder: Suche Rechnungen...
+            - generic [ref=f109e44]:
+              - button "Alle" [pressed] [ref=f109e84] [cursor=pointer]:
+                - img [aria-hidden] [ref=f109e85]: check
+                - text: Alle
+              - button "Keine" [ref=f109e86] [cursor=pointer]
+              - button "Lebensmittel" [ref=f109e87] [cursor=pointer]
+              - button "Wohnen" [ref=f109e88] [cursor=pointer]
+              - button "Kleidung" [ref=f109e89] [cursor=pointer]
+              - button "Ausbildung" [ref=f109e90] [cursor=pointer]
+              - button "Freizeit" [ref=f109e91] [cursor=pointer]
+              - button "Auto/Motorrad" [ref=f109e92] [cursor=pointer]
+              - button "Hygiene/Gesundheit" [ref=f109e93] [cursor=pointer]
+              - button "Geschenke" [ref=f109e94] [cursor=pointer]
+              - button "Restaurant" [ref=f109e95] [cursor=pointer]
+            - button "Datumfilter" [ref=f109e57] [cursor=pointer]:
+              - img [aria-hidden] [ref=f109e58]: calendar_today
+              - text: Datumfilter
+          - generic [aria-hidden] [ref=f109e66]:
+            - generic [ref=f109e67]: Datum
+            - generic [ref=f109e68]: Shop
+            - generic [ref=f109e69]: Kategorie
+            - generic [ref=f109e70]: Herkunft
+            - generic [ref=f109e72]: Preis
+          - generic [ref=f109e96]:
+            - link "29.10.2026 Bauernmarkt Urfahr und Feinkost Hinterberger GmbH & Co KG Lebensmittel 12.345,67€" [ref=f109e97] [cursor=pointer]:
+              - /url: /bill/951c5b15-5d4c-49b4-82ae-8f5d8d3863ea
+              - generic [ref=f109e99]:
+                - generic [ref=f109e100]: 29.10.2026
+                - generic [ref=f109e101]:
+                  - generic [ref=f109e102]: Bauernmarkt Urfahr und Feinkost Hinterberger GmbH & Co KG
+                  - generic [ref=f109e103]: Lebensmittel
+                - generic [ref=f109e106]: 12.345,67€
+            - link "29.10.2026 Probe Spar Lebensmittel 7,00€" [ref=f109e107] [cursor=pointer]:
+              - /url: /bill/5b74405f-2c23-4260-97fc-1da18f274b43
+              - generic [ref=f109e109]:
+                - generic [ref=f109e110]: 29.10.2026
+                - generic [ref=f109e111]:
+                  - generic [ref=f109e112]: Probe Spar
+                  - generic [ref=f109e113]: Lebensmittel
+                - generic [ref=f109e116]: 7,00€
+            - link "28.10.2026 Billa 1 Keine 5,00€" [ref=f109e117] [cursor=pointer]:
+              - /url: /bill/950ca13e-39b5-4fb1-93bf-6b1f6ba87abc
+              - generic [ref=f109e119]:
+                - generic [ref=f109e120]: 28.10.2026
+                - generic [ref=f109e121]:
+                  - generic [ref=f109e122]: Billa 1
+                  - generic [ref=f109e123]: Keine
+                - generic [ref=f109e126]: 5,00€
+            - link "27.10.2026 Hofer 2 Lebensmittel 42,01€" [ref=f109e127] [cursor=pointer]:
+              - /url: /bill/1a806047-ed2a-4203-9a30-8897659363a6
+              - generic [ref=f109e129]:
+                - generic [ref=f109e130]: 27.10.2026
+                - generic [ref=f109e131]:
+                  - generic [ref=f109e132]: Hofer 2
+                  - generic [ref=f109e133]: Lebensmittel
+                - generic [ref=f109e136]: 42,01€
+            - link "26.10.2026 Spar 3 Wohnen 79,02€" [ref=f109e137] [cursor=pointer]:
+              - /url: /bill/e1f37c0a-2508-4778-a048-5918b8697caa
+              - generic [ref=f109e139]:
+                - generic [ref=f109e140]: 26.10.2026
+                - generic [ref=f109e141]:
+                  - generic [ref=f109e142]: Spar 3
+                  - generic [ref=f109e143]: Wohnen
+                - generic [ref=f109e146]: 79,02€
+            - link "25.10.2026 dm drogerie markt 4 Kleidung 116,03€" [ref=f109e147] [cursor=pointer]:
+              - /url: /bill/0ddbfd51-e179-4f45-8482-7fd13eaa30a6
+              - generic [ref=f109e149]:
+                - generic [ref=f109e150]: 25.10.2026
+                - generic [ref=f109e151]:
+                  - generic [ref=f109e152]: dm drogerie markt 4
+                  - generic [ref=f109e153]: Kleidung
+                - generic [ref=f109e156]: 116,03€
+            - link "23.10.2026 OMV Tankstelle 5 Ausbildung 153,04€" [ref=f109e157] [cursor=pointer]:
+              - /url: /bill/50d79078-fce0-427c-ab80-f027d0bf7bfa
+              - generic [ref=f109e159]:
+                - generic [ref=f109e160]: 23.10.2026
+                - generic [ref=f109e161]:
+                  - generic [ref=f109e162]: OMV Tankstelle 5
+                  - generic [ref=f109e163]: Ausbildung
+                - generic [ref=f109e166]: 153,04€
+            - link "22.10.2026 Thalia 6 Freizeit 10,05€" [ref=f109e167] [cursor=pointer]:
+              - /url: /bill/bcec0e0c-e292-4e46-a158-93b35e7d872d
+              - generic [ref=f109e169]:
+                - generic [ref=f109e170]: 22.10.2026
+                - generic [ref=f109e171]:
+                  - generic [ref=f109e172]: Thalia 6
+                  - generic [ref=f109e173]: Freizeit
+                - generic [ref=f109e176]: 10,05€
+            - link "21.10.2026 IKEA 7 Auto/Motorrad 47,06€" [ref=f109e177] [cursor=pointer]:
+              - /url: /bill/36f1b63f-a87b-4935-b749-b933c5855122
+              - generic [ref=f109e179]:
+                - generic [ref=f109e180]: 21.10.2026
+                - generic [ref=f109e181]:
+                  - generic [ref=f109e182]: IKEA 7
+                  - generic [ref=f109e183]: Auto/Motorrad
+                - generic [ref=f109e186]: 47,06€
+            - link "19.10.2026 Apotheke zum Löwen 8 Hygiene/Gesundheit 84,07€" [ref=f109e187] [cursor=pointer]:
+              - /url: /bill/d277de27-5aea-463e-8faa-679147ab52ba
+              - generic [ref=f109e189]:
+                - generic [ref=f109e190]: 19.10.2026
+                - generic [ref=f109e191]:
+                  - generic [ref=f109e192]: Apotheke zum Löwen 8
+                  - generic [ref=f109e193]: Hygiene/Gesundheit
+                - generic [ref=f109e196]: 84,07€
+            - link "18.10.2026 Merkur 9 Geschenke 121,08€" [ref=f109e197] [cursor=pointer]:
+              - /url: /bill/c00844ad-47cb-4d74-972c-d5c71900ded8
+              - generic [ref=f109e199]:
+                - generic [ref=f109e200]: 18.10.2026
+                - generic [ref=f109e201]:
+                  - generic [ref=f109e202]: Merkur 9
+                  - generic [ref=f109e203]: Geschenke
+                - generic [ref=f109e206]: 121,08€
+            - link "17.10.2026 Interspar 10 Restaurant 158,09€" [ref=f109e207] [cursor=pointer]:
+              - /url: /bill/01313af0-b691-434c-a20c-5e584b03e76a
+              - generic [ref=f109e209]:
+                - generic [ref=f109e210]: 17.10.2026
+                - generic [ref=f109e211]:
+                  - generic [ref=f109e212]: Interspar 10
+                  - generic [ref=f109e213]: Restaurant
+                - generic [ref=f109e216]: 158,09€
+            - link "15.10.2026 Lidl 11 Keine 15,10€" [ref=f109e217] [cursor=pointer]:
+              - /url: /bill/61fcccb5-1dab-4c41-a7c7-8651b48cae4c
+              - generic [ref=f109e219]:
+                - generic [ref=f109e220]: 15.10.2026
+                - generic [ref=f109e221]:
+                  - generic [ref=f109e222]: Lidl 11
+                  - generic [ref=f109e223]: Keine
+                - generic [ref=f109e226]: 15,10€
+            - link "14.10.2026 H&M 12 Lebensmittel 52,11€" [ref=f109e227] [cursor=pointer]:
+              - /url: /bill/4f013648-3373-4c56-bf35-5fdb12761f3d
+              - generic [ref=f109e229]:
+                - generic [ref=f109e230]: 14.10.2026
+                - generic [ref=f109e231]:
+                  - generic [ref=f109e232]: H&M 12
+                  - generic [ref=f109e233]: Lebensmittel
+                - generic [ref=f109e236]: 52,11€
+            - link "13.10.2026 Billa 13 Wohnen 89,12€" [ref=f109e237] [cursor=pointer]:
+              - /url: /bill/c42e9da4-429a-4a36-8b83-f8d245c4ee7a
+              - generic [ref=f109e239]:
+                - generic [ref=f109e240]: 13.10.2026
+                - generic [ref=f109e241]:
+                  - generic [ref=f109e242]: Billa 13
+                  - generic [ref=f109e243]: Wohnen
+                - generic [ref=f109e246]: 89,12€
+            - link "12.10.2026 Hofer 14 Kleidung 126,13€" [ref=f109e247] [cursor=pointer]:
+              - /url: /bill/25a468b3-174f-456a-8231-af357c81fb0c
+              - generic [ref=f109e249]:
+                - generic [ref=f109e250]: 12.10.2026
+                - generic [ref=f109e251]:
+                  - generic [ref=f109e252]: Hofer 14
+                  - generic [ref=f109e253]: Kleidung
+                - generic [ref=f109e256]: 126,13€
+        - navigation "Rechnungen" [ref=f109e75]:
+          - link "Rechnungen" [ref=f109e76] [cursor=pointer]:
+            - /url: /bill/list
+            - img [aria-hidden] [ref=f109e77]: list
+            - text: Rechnungen
+          - link "Hinzufügen" [ref=f109e78] [cursor=pointer]:
+            - /url: /bill/create
+            - img [aria-hidden] [ref=f109e79]: add_circle
+            - text: Hinzufügen
+          - link "Statistik" [ref=f109e80] [cursor=pointer]:
+            - /url: /bill/expenses
+            - img [aria-hidden] [ref=f109e81]: donut_small
+            - text: Statistik

@@ -1,0 +1,100 @@
+- generic [ref=f51e1]:
+  - generic [ref=f51e3]:
+    - navigation "Hauptnavigation" [ref=f51e5]:
+      - generic [ref=f51e6]:
+        - generic [ref=f51e7]: Andaha
+        - link "Rechnungen" [ref=f51e9] [cursor=pointer]:
+          - /url: /
+          - img [aria-hidden] [ref=f51e10]: receipt_long
+          - text: Rechnungen
+        - link "Analyse" [ref=f51e11] [cursor=pointer]:
+          - /url: /analyzed
+          - img [aria-hidden] [ref=f51e12]: document_scanner
+          - text: Analyse
+        - link "Haushaltsplan" [ref=f51e13] [cursor=pointer]:
+          - /url: /budgetplan
+          - img [aria-hidden] [ref=f51e14]: account_balance_wallet
+          - text: Haushaltsplan
+        - link "Stundenaufzeichnungen" [ref=f51e15] [cursor=pointer]:
+          - /url: /work
+          - img [aria-hidden] [ref=f51e16]: group
+          - text: Stundenaufzeichnungen
+        - link "Einstellungen" [ref=f51e17] [cursor=pointer]:
+          - /url: /settings
+          - img [aria-hidden] [ref=f51e18]: settings
+          - text: Einstellungen
+        - link "Export" [ref=f51e19] [cursor=pointer]:
+          - /url: /export
+          - img [aria-hidden] [ref=f51e20]: download
+          - text: Export
+        - generic [ref=f51e22]:
+          - link "AGB" [ref=f51e23] [cursor=pointer]:
+            - /url: /agb
+          - link "Datenschutzerklärung" [ref=f51e24] [cursor=pointer]:
+            - /url: /data-protection
+          - link "Benutzerdaten" [ref=f51e25] [cursor=pointer]:
+            - /url: /user-data
+    - generic [ref=f51e27]:
+      - banner [ref=f51e28]:
+        - heading "Rechnung hinzufügen" [level=1] [ref=f51e29]
+        - generic [ref=f51e98]: Test1
+        - button "Benutzerkonto" [ref=f51e30] [cursor=pointer]:
+          - img [aria-hidden] [ref=f51e31]: account_circle
+      - main [ref=f51e32]:
+        - generic [ref=f51e34]:
+          - generic [ref=f51e37]:
+            - generic [ref=f51e38]:
+              - button [ref=f51e42] [cursor=pointer]:
+                - img [aria-hidden] [ref=f51e44]: add_a_photo
+              - generic [ref=f51e48]:
+                - textbox "Shopname" [ref=f51e49]: Probe Billa
+                - generic: Shopname *
+              - generic [ref=f51e53]:
+                - textbox "Notizen" [ref=f51e54]
+                - generic: Notizen
+              - generic [ref=f51e58]:
+                - spinbutton "Preis" [ref=f51e59]: "12.5"
+                - generic: Preis *
+              - generic [ref=f51e63] [cursor=pointer]:
+                - combobox "Kategorie Lebensmittel" [active] [ref=f51e122]:
+                  - generic [ref=f51e65]: Lebensmittel
+                - generic: Kategorie *
+              - generic [ref=f51e71]:
+                - generic [ref=f51e72]:
+                  - generic [ref=f51e73]:
+                    - textbox "Datum" [ref=f51e74]: 29.10.2026
+                    - generic: Datum
+                  - button "Open calendar" [ref=f51e77] [cursor=pointer]
+                - generic [ref=f51e81]: DD.MM.YYYY
+            - button [ref=f51e87] [cursor=pointer]:
+              - generic [ref=f51e88]:
+                - img [aria-hidden] [ref=f51e89]: save
+                - text: Speichern
+          - navigation "Rechnungen" [ref=f51e90]:
+            - link "Rechnungen" [ref=f51e91] [cursor=pointer]:
+              - /url: /bill/list
+              - img [aria-hidden] [ref=f51e92]: list
+              - text: Rechnungen
+            - link "Hinzufügen" [ref=f51e93] [cursor=pointer]:
+              - /url: /bill/create
+              - img [aria-hidden] [ref=f51e94]: add_circle
+              - text: Hinzufügen
+            - link "Statistik" [ref=f51e95] [cursor=pointer]:
+              - /url: /bill/expenses
+              - img [aria-hidden] [ref=f51e96]: donut_small
+              - text: Statistik
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - listbox "Kategorie":
+            - option "Keine"
+            - option "Lebensmittel" [selected]
+            - option "Wohnen"
+            - option "Kleidung"
+            - option "Ausbildung"
+            - option "Freizeit"
+            - option "Auto/Motorrad"
+            - option "Hygiene/Gesundheit"
+            - option "Geschenke"
+            - option "Restaurant"

@@ -1,0 +1,108 @@
+- generic [active] [ref=f566e1]:
+  - generic [ref=f566e3]:
+    - navigation [ref=f566e86]:
+      - generic [ref=f566e6]:
+        - generic [ref=f566e7]: Andaha
+        - link [ref=f566e87] [cursor=pointer]:
+          - /url: /
+          - img [aria-hidden] [ref=f566e10]: receipt_long
+          - text: Rechnungen
+        - link [ref=f566e88] [cursor=pointer]:
+          - /url: /analyzed
+          - img [aria-hidden] [ref=f566e12]: document_scanner
+          - text: Analyse
+        - link [ref=f566e89] [cursor=pointer]:
+          - /url: /budgetplan
+          - img [aria-hidden] [ref=f566e14]: account_balance_wallet
+          - text: Haushaltsplan
+        - link [ref=f566e90] [cursor=pointer]:
+          - /url: /work
+          - img [aria-hidden] [ref=f566e16]: group
+          - text: Stundenaufzeichnungen
+        - link [ref=f566e91] [cursor=pointer]:
+          - /url: /settings
+          - img [aria-hidden] [ref=f566e18]: settings
+          - text: Einstellungen
+        - link [ref=f566e92] [cursor=pointer]:
+          - /url: /export
+          - img [aria-hidden] [ref=f566e20]: download
+          - text: Export
+        - generic [ref=f566e22]:
+          - link [ref=f566e93] [cursor=pointer]:
+            - /url: /agb
+            - text: AGB
+          - link [ref=f566e94] [cursor=pointer]:
+            - /url: /data-protection
+            - text: Datenschutzerklärung
+          - link [ref=f566e95] [cursor=pointer]:
+            - /url: /user-data
+            - text: Benutzerdaten
+    - generic [ref=f566e27]:
+      - banner [ref=f566e28]:
+        - heading [level=1] [ref=f566e96]: Rechnung hinzufügen
+        - generic [ref=f566e30]: Test1
+        - button [ref=f566e97] [cursor=pointer]:
+          - img [aria-hidden] [ref=f566e32]: account_circle
+      - main [ref=f566e33]:
+        - generic [ref=f566e35]:
+          - generic [ref=f566e37]:
+            - generic [ref=f566e38]:
+              - button [ref=f566e98] [cursor=pointer]:
+                - img [aria-hidden] [ref=f566e42]: photo_camera
+                - generic [ref=f566e43]:
+                  - text: Foto der Rechnung
+                  - generic [ref=f566e44]: Optional
+              - generic [ref=f566e45]:
+                - generic [ref=f566e46]: Shopname
+                - textbox [ref=f566e99]: UIT Desk
+              - generic [ref=f566e49]:
+                - generic [ref=f566e50]: Notizen
+                - textbox [ref=f566e100]
+              - generic [ref=f566e53]:
+                - generic [ref=f566e54]: Preis
+                - generic [ref=f566e55]:
+                  - spinbutton [ref=f566e101]: "9.99"
+                  - generic [aria-hidden] [ref=f566e57]: €
+              - generic [ref=f566e58]:
+                - generic [ref=f566e59]: Kategorie
+                - generic [ref=f566e60]:
+                  - combobox [ref=f566e102]:
+                    - generic [ref=f566e62] [cursor=pointer]: Wohnen
+                  - img [aria-hidden] [ref=f566e64]: expand_more
+              - generic [ref=f566e65]:
+                - generic [ref=f566e66]: Datum
+                - generic [ref=f566e67]:
+                  - textbox [ref=f566e107]: 30.10.2026
+                  - button [ref=f566e108] [cursor=pointer]:
+                    - img [aria-hidden] [ref=f566e72]: calendar_today
+                - generic [ref=f566e73]: DD.MM.YYYY
+            - button [ref=f566e109] [cursor=pointer]:
+              - img [aria-hidden] [ref=f566e76]: check
+              - generic [ref=f566e77]: Speichern
+          - navigation [ref=f566e110]:
+            - link [ref=f566e111] [cursor=pointer]:
+              - /url: /bill/list
+              - img [aria-hidden] [ref=f566e80]: list
+              - text: Rechnungen
+            - link [ref=f566e112] [cursor=pointer]:
+              - /url: /bill/create
+              - img [aria-hidden] [ref=f566e82]: add_circle
+              - text: Hinzufügen
+            - link [ref=f566e113] [cursor=pointer]:
+              - /url: /bill/expenses
+              - img [aria-hidden] [ref=f566e84]: donut_small
+              - text: Statistik
+  - dialog [ref=f566e117]:
+    - generic [ref=f566e119]:
+      - button "Schließen" [ref=f566e121] [cursor=pointer]:
+        - img [aria-hidden] [ref=f566e122]: close
+      - generic [ref=f566e123]:
+        - radiogroup [ref=f566e124]:
+          - generic [ref=f566e126] [cursor=pointer]:
+            - radio "Foto aufnehmen" [ref=f566e130]
+            - generic [ref=f566e131]: Foto aufnehmen
+          - generic [ref=f566e133] [cursor=pointer]:
+            - radio "Aus Galerie hochladen" [checked] [ref=f566e137]
+            - generic [ref=f566e138]: Aus Galerie hochladen
+        - img "Rechnungsfoto" [ref=f566e140]
+      - button "Übernehmen" [ref=f566e142] [cursor=pointer]

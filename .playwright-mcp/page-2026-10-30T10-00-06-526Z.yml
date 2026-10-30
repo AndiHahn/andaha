@@ -1,0 +1,34 @@
+- generic [ref=f507e6]:
+  - banner [ref=f507e7]:
+    - link "Zurück" [ref=f507e35] [cursor=pointer]:
+      - /url: /work/person
+      - img [aria-hidden] [ref=f507e36]: arrow_back
+    - heading "Person hinzufügen" [level=1] [ref=f507e37]
+    - button "Benutzerkonto" [ref=f507e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f507e12]: account_circle
+  - main [ref=f507e13]:
+    - generic [ref=f507e15]:
+      - generic [ref=f507e39]:
+        - generic [ref=f507e40]:
+          - generic [ref=f507e41]:
+            - generic [ref=f507e42]: Name
+            - textbox "Name" [ref=f507e44]
+          - generic [ref=f507e45]:
+            - generic [ref=f507e46]: Stundensatz
+            - generic [ref=f507e47]:
+              - spinbutton "Stundensatz" [ref=f507e48]: "0"
+              - generic [aria-hidden] [ref=f507e49]: €
+          - generic [ref=f507e50]:
+            - generic [ref=f507e51]: Notizen
+            - textbox "Notizen" [ref=f507e53]
+        - button "Speichern" [disabled] [ref=f507e55]:
+          - img [aria-hidden] [ref=f507e56]: check
+      - navigation "Stunden" [ref=f507e30]:
+        - link "Personen" [ref=f507e31] [cursor=pointer]:
+          - /url: /work/person
+          - img [aria-hidden] [ref=f507e32]: group
+          - text: Personen
+        - link "Statistik" [ref=f507e33] [cursor=pointer]:
+          - /url: /work/statistics
+          - img [aria-hidden] [ref=f507e34]: donut_small
+          - text: Statistik

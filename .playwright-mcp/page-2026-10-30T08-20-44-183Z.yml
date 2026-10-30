@@ -1,0 +1,16 @@
+- generic [ref=f358e6]:
+  - banner [ref=f358e7]:
+    - button "Menü öffnen" [ref=f358e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f358e9]: menu
+    - heading "Export" [level=1] [ref=f358e10]
+    - button "Benutzerkonto" [ref=f358e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f358e12]: account_circle
+  - main [ref=f358e13]:
+    - generic [ref=f358e14]:
+      - paragraph [ref=f358e15]: Exportieren
+      - button "Ausgaben exportieren" [ref=f358e16] [cursor=pointer]:
+        - img [aria-hidden] [ref=f358e18]: receipt_long
+        - img [aria-hidden] [ref=f358e20]: download
+      - button "Personen/Arbeitszeiten exportieren" [ref=f358e21] [cursor=pointer]:
+        - img [aria-hidden] [ref=f358e23]: group
+        - img [aria-hidden] [ref=f358e25]: download

@@ -1,0 +1,64 @@
+- generic [ref=f69e6]:
+  - banner [ref=f69e7]:
+    - link "Zurück" [ref=f69e8] [cursor=pointer]:
+      - /url: /work/person
+      - img [aria-hidden] [ref=f69e9]: arrow_back
+    - heading "Arbeitszeiten hinzufügen" [level=1] [ref=f69e10]
+    - button "Benutzerkonto" [ref=f69e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f69e12]: account_circle
+  - main [ref=f69e13]:
+    - generic [ref=f69e15]:
+      - generic [ref=f69e18]:
+        - generic [ref=f69e19]:
+          - generic [ref=f69e20]:
+            - generic [ref=f69e21]: Personen *
+            - generic [ref=f69e22]:
+              - combobox "Personen" [ref=f69e23]:
+                - generic [ref=f69e24] [cursor=pointer]
+              - img [aria-hidden] [ref=f69e26]: expand_more
+          - generic [ref=f69e27]:
+            - generic [ref=f69e28]: Einzel-Select (Probe)
+            - generic [ref=f69e29]:
+              - combobox "Probe" [ref=f69e30]:
+                - generic [ref=f69e31] [cursor=pointer]: Wählen
+              - img [aria-hidden] [ref=f69e33]: expand_more
+            - generic [ref=f69e34]: "Wert:"
+          - generic [ref=f69e36]:
+            - generic [ref=f69e37]: Datum
+            - generic [ref=f69e38]:
+              - textbox "Datum Open calendar DD.MM.YYYY" [ref=f69e39]: 30.10.2026
+              - button "Open calendar" [ref=f69e41] [cursor=pointer]:
+                - img [aria-hidden] [ref=f69e43]: calendar_today
+            - generic [ref=f69e44]: DD.MM.YYYY
+          - generic [ref=f69e46]:
+            - generic [ref=f69e47]: Startzeit
+            - generic [ref=f69e48]:
+              - textbox "Startzeit" [ref=f69e49]: 07:00
+              - img [aria-hidden] [ref=f69e50]: schedule
+          - generic [ref=f69e52]:
+            - generic [ref=f69e53]: Endzeit
+            - generic [ref=f69e54]:
+              - textbox "Endzeit" [ref=f69e55]: 17:00
+              - img [aria-hidden] [ref=f69e56]: schedule
+          - generic [ref=f69e58]:
+            - generic [ref=f69e59]: Pause
+            - generic [ref=f69e60]:
+              - textbox "Pause" [ref=f69e61]: 01:00
+              - img [aria-hidden] [ref=f69e62]: schedule
+          - generic [ref=f69e63]: "Arbeitszeit netto: 09:00 h"
+          - generic [ref=f69e67]:
+            - textbox "Notizen" [ref=f69e68]
+            - generic: Notizen
+        - button [disabled] [ref=f69e73]:
+          - generic [ref=f69e74]:
+            - img [aria-hidden] [ref=f69e75]: save
+            - text: Speichern
+      - navigation "Stunden" [ref=f69e76]:
+        - link "Personen" [ref=f69e77] [cursor=pointer]:
+          - /url: /work/person
+          - img [aria-hidden] [ref=f69e78]: group
+          - text: Personen
+        - link "Statistik" [ref=f69e79] [cursor=pointer]:
+          - /url: /work/statistics
+          - img [aria-hidden] [ref=f69e80]: donut_small
+          - text: Statistik

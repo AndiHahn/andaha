@@ -1,0 +1,44 @@
+- generic [ref=f165e6]:
+  - banner [ref=f165e7]:
+    - button "Menü öffnen" [ref=f165e8] [cursor=pointer]:
+      - img [aria-hidden] [ref=f165e9]: menu
+    - heading "Statistik" [level=1] [ref=f165e10]
+    - button "Benutzerkonto" [ref=f165e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f165e12]: account_circle
+  - main [ref=f165e13]:
+    - generic [ref=f165e15]:
+      - generic [ref=f165e17]:
+        - generic [ref=f165e19]:
+          - radiogroup "Datumstyp" [ref=f165e20]:
+            - generic [ref=f165e21]:
+              - radio "Monat" [checked] [ref=f165e22] [cursor=pointer]
+              - generic [ref=f165e23]: Monat
+            - generic [ref=f165e24]:
+              - radio "Jahr" [ref=f165e25] [cursor=pointer]
+              - generic [ref=f165e26]: Jahr
+            - generic [ref=f165e27]:
+              - radio "Gesamt" [ref=f165e28] [cursor=pointer]
+              - generic [ref=f165e29]: Gesamt
+            - generic [ref=f165e30]:
+              - radio "Von – Bis" [ref=f165e31] [cursor=pointer]
+              - generic [ref=f165e32]: Von – Bis
+          - generic [ref=f165e33]:
+            - generic [ref=f165e34]: Monat
+            - generic [ref=f165e35]:
+              - combobox "Monat" [ref=f165e36]:
+                - generic [ref=f165e37] [cursor=pointer]: Oktober 2026
+              - img [aria-hidden] [ref=f165e40]: expand_more
+        - progressbar [ref=f165e42]
+      - navigation "Rechnungen" [ref=f165e45]:
+        - link "Rechnungen" [ref=f165e46] [cursor=pointer]:
+          - /url: /bill/list
+          - img [aria-hidden] [ref=f165e47]: list
+          - text: Rechnungen
+        - link "Hinzufügen" [ref=f165e48] [cursor=pointer]:
+          - /url: /bill/create
+          - img [aria-hidden] [ref=f165e49]: add_circle
+          - text: Hinzufügen
+        - link "Statistik" [ref=f165e50] [cursor=pointer]:
+          - /url: /bill/expenses
+          - img [aria-hidden] [ref=f165e51]: donut_small
+          - text: Statistik

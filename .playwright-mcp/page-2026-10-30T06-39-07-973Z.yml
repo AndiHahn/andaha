@@ -1,0 +1,57 @@
+- generic [ref=f218e6]:
+  - banner [ref=f218e7]:
+    - button "Menü öffnen" [ref=f218e85] [cursor=pointer]:
+      - img [aria-hidden] [ref=f218e86]: menu
+    - heading "Fixkosten" [level=1] [ref=f218e87]
+    - button "Benutzerkonto" [ref=f218e11] [cursor=pointer]:
+      - img [aria-hidden] [ref=f218e12]: account_circle
+  - main [ref=f218e13]:
+    - generic [ref=f218e15]:
+      - generic [ref=f218e89]:
+        - generic [ref=f218e90]:
+          - generic [ref=f218e91]:
+            - paragraph [ref=f218e92]: Wohnen
+            - link "Miete 980,00 € monatlich" [ref=f218e93] [cursor=pointer]:
+              - /url: /budgetplan/fixedcost/d1db550f-415b-4291-3f4c-08df36506acd
+              - generic [ref=f218e94]: Miete
+              - generic [ref=f218e95]:
+                - generic [ref=f218e96]: 980,00 €
+                - generic [ref=f218e97]: monatlich
+          - generic [ref=f218e98]:
+            - paragraph [ref=f218e99]: Auto
+            - link "Leasingrate für den Familienwagen mit Vollkasko 12.345,67 € jährlich" [ref=f218e100] [cursor=pointer]:
+              - /url: /budgetplan/fixedcost/ea1742f1-cd2a-484a-3f4d-08df36506acd
+              - generic [ref=f218e101]: Leasingrate für den Familienwagen mit Vollkasko
+              - generic [ref=f218e102]:
+                - generic [ref=f218e103]: 12.345,67 €
+                - generic [ref=f218e104]: jährlich
+          - generic [ref=f218e105]:
+            - paragraph [ref=f218e106]: Versicherung
+            - generic [ref=f218e107]: Keine Ausgaben.
+          - generic [ref=f218e108]:
+            - paragraph [ref=f218e109]: Sparen
+            - link "ETF-Sparplan 500,00 € monatlich" [ref=f218e110] [cursor=pointer]:
+              - /url: /budgetplan/fixedcost/5f856023-d844-4ad2-3f4e-08df36506acd
+              - generic [ref=f218e111]: ETF-Sparplan
+              - generic [ref=f218e112]:
+                - generic [ref=f218e113]: 500,00 €
+                - generic [ref=f218e114]: monatlich
+          - generic [ref=f218e115]:
+            - paragraph [ref=f218e116]: Andere
+            - generic [ref=f218e117]: Keine Ausgaben.
+        - link "Hinzufügen" [ref=f218e119] [cursor=pointer]:
+          - /url: /budgetplan/fixedcost/create
+          - img [aria-hidden] [ref=f218e120]: add
+      - navigation "Haushaltsplan" [ref=f218e27]:
+        - link "Haushaltsplan" [ref=f218e28] [cursor=pointer]:
+          - /url: /budgetplan/overview
+          - img [aria-hidden] [ref=f218e29]: account_balance_wallet
+          - text: Haushaltsplan
+        - link "Fixkosten" [ref=f218e30] [cursor=pointer]:
+          - /url: /budgetplan/fixedcost
+          - img [aria-hidden] [ref=f218e31]: north_east
+          - text: Fixkosten
+        - link "Einkommen" [ref=f218e32] [cursor=pointer]:
+          - /url: /budgetplan/income
+          - img [aria-hidden] [ref=f218e33]: south_west
+          - text: Einkommen
