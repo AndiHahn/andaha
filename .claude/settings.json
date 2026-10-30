@@ -9,5 +9,16 @@
       "Read(./src/**/images/**)",
       "Read(**/*.jwk)"
     ]
+  },
+  "extraKnownMarketplaces": {
+    "smp-plugins": {
+      "source": {
+        "source": "git",
+        "url": "https://dev.azure.com/dataformers/smartpoint.Templates/_git/Smartpoint.ClaudeCode.AgentFlow"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "agentflow@smp-plugins": true
   }
 }
