@@ -13,7 +13,7 @@ import { AnalyzedBillDataSource } from './AnalyzedBillDataSource';
 })
 export class AnalyzedBillListComponent implements OnInit, AfterViewInit, OnDestroy {
   billDataSource = new AnalyzedBillDataSource();
-  pixelHeightPerItem = 66;
+  pixelHeightPerItem = 60;
 
   totalCount?: number;
   loading: boolean = false;

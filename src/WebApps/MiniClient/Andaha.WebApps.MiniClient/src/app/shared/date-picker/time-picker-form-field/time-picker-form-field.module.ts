@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { TimePickerFormFieldComponent } from './time-picker-form-field.component';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
@@ -12,10 +11,8 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
   ],
   imports: [
     CommonModule,
-    MatFormFieldModule,
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
+    MatIconModule,
     NgxMatTimepickerModule.setLocale('de-DE')
   ],
   exports: [

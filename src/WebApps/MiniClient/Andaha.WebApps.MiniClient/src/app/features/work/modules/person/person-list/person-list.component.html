@@ -1,11 +1,5 @@
-<div class="items">
-  <div *ngFor="let person of persons">
-    <div class="list-item">
-      <mat-card class="mat-card" routerLink="{{person.id}}">
-        <span class="truncate-text">{{ person.name }}</span>
-        <span *ngIf="isPaymentRequired(person)"><mat-icon style="color: orange">warning</mat-icon></span>
-        <span class="truncate-text">{{ getTimeDisplayName(person.totalHours) }}</span>
-      </mat-card>
-    </div>
-  </div>
-</div>
+<a class="row" *ngFor="let person of persons" routerLink="{{person.id}}">
+  <span class="t">{{ person.name }}</span>
+  <span class="tag" *ngIf="isPaymentRequired(person)"><mat-icon aria-hidden="true">schedule</mat-icon>Zahlung offen</span>
+  <span class="amt">{{ getTimeDisplayName(person.totalHours) }}</span>
+</a>

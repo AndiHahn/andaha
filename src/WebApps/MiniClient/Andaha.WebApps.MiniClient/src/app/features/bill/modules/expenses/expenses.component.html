@@ -1,32 +1,21 @@
-<div class="timerange-container" *ngIf="availableTimeRange">
-  <app-timerange-selection [availableTimeRange]="availableTimeRange"
+<div class="page">
+  <app-timerange-selection *ngIf="availableTimeRange" [availableTimeRange]="availableTimeRange"
     (selectionChanged)="timeSelectionChanged($event)">
   </app-timerange-selection>
-</div>
-<div *ngIf="!availableTimeRange" class="action-container">
-  <mat-spinner diameter="40"></mat-spinner>
-</div>
+  <div *ngIf="!availableTimeRange" class="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
 
-<div class="action-container" *ngIf="!isLoading && expenses.length == 0">
-  Keine Daten vorhanden.
-</div>
+  <div class="empty" *ngIf="!isLoading && expenses.length == 0">
+    Keine Daten vorhanden.
+  </div>
 
-<div *ngIf="isLoading" class="action-container">
-  <mat-spinner diameter="40"></mat-spinner>
-</div>
+  <div *ngIf="isLoading" class="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
 
-<div *ngIf="!isLoading && expenses.length > 0 && categories.length > 0">
-  <app-chart [expenses]="expenses" [categories]="categories" [selectedTimeRange]="selectedTimeRange"></app-chart>
-</div>
-
-<div class="margin-20" *ngIf="!isLoading && expenses.length > 0">
-  <section>
-    <div class="label">Summe der Ausgaben:</div>
-    <div class="label-row text-big">{{ sum }} €</div>
-  </section>
-  <mat-divider></mat-divider>
-  <section *ngFor="let expense of expenses">
-    <div class="label">{{ expense?.category }}:</div>
-    <div class="label-row">{{ truncate(2, expense?.costs) }} €</div>
-  </section>
+  <!-- Ring, Summe und Legende (ersetzt die bisherige Summen-/Kategorienliste, umsetzung.md Statistik) -->
+  <app-chart *ngIf="!isLoading && expenses.length > 0 && categories.length > 0"
+    [expenses]="expenses" [categories]="categories" [selectedTimeRange]="selectedTimeRange" [sum]="sum">
+  </app-chart>
 </div>

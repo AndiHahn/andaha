@@ -1,57 +1,55 @@
-<div class="master-container">
-  <div class="row-1-container">
-    <div class="search-container">
-      <mat-chip-list> 
-        <mat-chip>
-          <mat-icon>search</mat-icon>
-          <input matInput type="text" 
-            class="search-box"
-            [readonly]="deactivate"
-            #searchTerm
-            [value]="inputFieldValue"
-            (keyup)="searchBoxKeyup.emit(searchTerm.value)"
-            (keydown)="searchBoxKeyDown($event)"
-            placeholder="Suche Rechnungen...">
-          <button *ngIf="searchTerm.value" matSuffix mat-icon-button
-            aria-label="Clear"
-            (click)="onClearSearch()">
-            <mat-icon>close</mat-icon>
-          </button>
-        </mat-chip>
-      </mat-chip-list>
-    </div>
+<div class="filter">
+  <div class="search-row">
+    <label class="field search-field">
+      <span class="field-box">
+        <mat-icon>search</mat-icon>
+        <input type="text"
+          [readonly]="deactivate"
+          #searchTerm
+          [value]="inputFieldValue"
+          (keyup)="searchBoxKeyup.emit(searchTerm.value)"
+          (keydown)="searchBoxKeyDown($event)"
+          placeholder="Suche Rechnungen..."
+          aria-label="Rechnungen durchsuchen">
+        <button type="button" *ngIf="searchTerm.value" class="icon-btn clear-btn"
+          aria-label="Clear"
+          (click)="onClearSearch()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </span>
+    </label>
 
-    <div class="filter-list-button">
-      <button mat-icon-button (click)="onFilterClick()" class="filter-icon-button">
-        <mat-icon>filter_list</mat-icon>
+    <button type="button" class="icon-btn filter-btn" (click)="onFilterClick()" aria-label="Datumfilter öffnen">
+      <mat-icon>filter_list</mat-icon>
+      <span class="badge" *ngIf="fromDateFilter || untilDateFilter"></span>
+    </button>
+  </div>
+
+  <div class="chips">
+    <button type="button" class="chip" *ngFor="let category of categories; index as i"
+      [class.on]="category.selected"
+      [attr.aria-pressed]="category.selected"
+      (click)="onChipClick(i)">
+      <mat-icon *ngIf="category.selected" aria-hidden="true">check</mat-icon>{{ category.displayName }}
+    </button>
+  </div>
+
+  <div *ngIf="fromDateFilter || untilDateFilter" class="chips date-chips">
+    <span class="chip date-chip" *ngIf="fromDateFilter">
+      <button type="button" class="date-chip-label" (click)="onFilterClick()">Von: {{ fromDateFilter | date:'dd.MM.yyyy' }}</button>
+      <button type="button" class="x" (click)="onFromDateFilterRemoveClick()" aria-label="Von-Datum entfernen">
+        <mat-icon>close</mat-icon>
       </button>
-    </div>
-  </div>
-  
-  <div class="row-2-container">
-    <mat-chip-list #chipList [multiple]="true" [selectable]="true">
-      <mat-chip *ngFor="let category of categories; index as i" #chip="matChip" [selectable]="true"  [selected]="category.selected"
-        (click)="onChipClick(chipList, chip, i)">
-        {{ category.displayName }}
-      </mat-chip>
-    </mat-chip-list>
+    </span>
+    <span class="chip date-chip" *ngIf="untilDateFilter">
+      <button type="button" class="date-chip-label" (click)="onFilterClick()">Bis: {{ untilDateFilter | date:'dd.MM.yyyy' }}</button>
+      <button type="button" class="x" (click)="onUntilDateFilterRemoveClick()" aria-label="Bis-Datum entfernen">
+        <mat-icon>close</mat-icon>
+      </button>
+    </span>
   </div>
 
-  <div *ngIf="fromDateFilter || untilDateFilter" class="row-3-container">
-    <mat-chip-list>
-      <mat-chip *ngIf="fromDateFilter" (click)="onFilterClick()">
-        Von: {{ fromDateFilter | date:'dd.MM.YYYY' }}
-        <button mat-icon-button (click)="onFromDateFilterRemoveClick()">
-          <mat-icon>cancel</mat-icon>
-        </button>
-      </mat-chip>
-      <mat-chip *ngIf="untilDateFilter" (click)="onFilterClick()">
-        Bis: {{ untilDateFilter | date:'dd.MM.YYYY' }}
-        <button mat-icon-button (click)="onUntilDateFilterRemoveClick()">
-          <mat-icon>cancel</mat-icon>
-        </button>
-      </mat-chip>
-    </mat-chip-list>
-  </div>
-
+  <button type="button" class="chip filter-chip" (click)="onFilterClick()">
+    <mat-icon aria-hidden="true">calendar_today</mat-icon>Datumfilter
+  </button>
 </div>

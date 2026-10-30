@@ -1,100 +1,138 @@
-<!--
-  BACK BUTTON
--->
+<div class="page">
+  <div class="body">
+    <!--
+      LESEMODUS: KOPF
+    -->
+    <div class="head" *ngIf="!isEditing">
+      <div class="shop">{{ bill.shopName }}</div>
+      <div class="big">{{ bill.price | number:'1.2-2':'de' }}<small>€</small></div>
+      <div class="when">{{ bill.date | date:'dd.MM.yyyy' }}</div>
+    </div>
 
-<button mat-icon-button routerLink="/bill/list" class="back-button">
-  <mat-icon>arrow_back</mat-icon>
-</button>
-
-<div class="image">
-  <app-bill-image [bill]="bill" [editing]="isEditing" [saving]="isSaving"
-      (imageSelected)="onImageSelected($event)">
-  </app-bill-image>
-</div>
-
-<!--
-  FORM
--->
-<div>
-  <form [formGroup]="form">
-    <div class="form-container">
-      <mat-form-field appearance="fill">
-        <mat-label>Shopname</mat-label>
-        <input matInput formControlName="shopName" required>
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Notizen</mat-label>
-        <textarea matInput formControlName="notes"></textarea>
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Preis</mat-label>
-        <input matInput formControlName="price" type="number" required autocomplete="off">
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Kategorie</mat-label>
-        <mat-select formControlName="category" required (selectionChange)="categorySelectionChanged($event)">
-          <mat-option *ngFor="let category of billCategories" [value]="category">
-            {{category?.name}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field appearance="fill" *ngIf="bill.subCategory || (billSubCategories && billSubCategories.length > 0)">
-        <mat-label>Unterkategorie</mat-label>
-        <mat-select formControlName="subCategory">
-          <mat-option></mat-option>
-          <mat-option *ngFor="let subCategory of billSubCategories" [value]="subCategory">
-            {{subCategory?.name}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Datum</mat-label>
-        <input matInput [matDatepicker]="picker" formControlName="date">
-        <mat-hint>DD.MM.YYYY</mat-hint>
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field>
+    <div class="photo-wrap">
+      <app-bill-image [bill]="bill" [editing]="isEditing" [saving]="isSaving"
+          (imageSelected)="onImageSelected($event)">
+      </app-bill-image>
     </div>
 
     <!--
-    BOTTOM BUTTONS
+      LESEMODUS: WERTEZEILEN
     -->
-
-    <div class="progressbar-placeholder"></div>
-
-    <mat-progress-bar *ngIf="isSaving || isDeleting || isLoading" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
-
-    <div class="button-placeholder"></div>
-
-    <div class="button-placeholder"></div>
-
-    <div class="floating-button edit-buttons">
-      <div *ngIf="!isEditing" style="flex: 1">
-        <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onEditClick()"
-            [disabled]="isDeleting || isLoading || isSaving">
-          <mat-icon>edit</mat-icon><span>Bearbeiten</span>
-        </button>
+    <ng-container *ngIf="!isEditing">
+      <div class="kv">
+        <span class="k">Kategorie</span>
+        <span class="v cat">
+          <span class="dot" [class.dot-light]="bill.category.color == 'white'" [style.background]="bill.category.color"></span>
+          {{ bill.category.name }}
+        </span>
       </div>
-      <div *ngIf="isEditing" style="display: flex; flex-direction: row; width: 100%">
-        <button mat-raised-button color="secondary" class="button-style button-with-icon" (click)="onCancelClick()">
-          <mat-icon>close</mat-icon><span>Abbrechen</span>
-        </button>
-        <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onSaveClick()"
-            [disabled]="isSaving">
-          <mat-icon>save</mat-icon><span>Speichern</span>
-        </button>
+      <div class="kv" *ngIf="bill.subCategory">
+        <span class="k">Unterkategorie</span>
+        <span class="v">{{ bill.subCategory.name }}</span>
       </div>
-    </div>
-
-    <div class="button-placeholder"></div>
-
-    <div class="floating-button delete-button">
-      <div style="flex: 1">
-        <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onDeleteClick()"
-            [disabled]="isExternal || isEditing || isDeleting || isLoading || isSaving">
-          <mat-icon>delete</mat-icon><span>Löschen</span>
-        </button>
+      <div class="notes" *ngIf="bill.notes">
+        <span class="k">Notizen</span>
+        <span class="notes-text">{{ bill.notes }}</span>
       </div>
-    </div>
-  </form>
+    </ng-container>
+
+    <!--
+      BEARBEITEN: FORMULAR
+    -->
+    <form *ngIf="isEditing" class="form" [formGroup]="form">
+      <label class="field" [class.invalid]="form.controls.shopName | showError">
+        <span class="field-label">Shopname</span>
+        <span class="field-box">
+          <input formControlName="shopName" required [attr.aria-invalid]="form.controls.shopName | showError">
+        </span>
+      </label>
+
+      <label class="field" [class.invalid]="form.controls.notes | showError">
+        <span class="field-label">Notizen</span>
+        <span class="field-box ta">
+          <textarea formControlName="notes" [attr.aria-invalid]="form.controls.notes | showError"></textarea>
+        </span>
+      </label>
+
+      <label class="field" [class.invalid]="form.controls.price | showError">
+        <span class="field-label">Preis</span>
+        <span class="field-box">
+          <input class="price" formControlName="price" type="number" required autocomplete="off" [attr.aria-invalid]="form.controls.price | showError">
+          <span class="suffix" aria-hidden="true">€</span>
+        </span>
+      </label>
+
+      <div class="field" [class.invalid]="form.controls.category | showError">
+        <span class="field-label">Kategorie</span>
+        <span class="field-box">
+          <mat-select formControlName="category" required aria-label="Kategorie" (selectionChange)="categorySelectionChanged($event)">
+            <mat-select-trigger>
+              <span class="trigger">
+                <span class="dot" [class.dot-light]="form.controls.category.value?.color == 'white'"
+                    [style.background]="form.controls.category.value?.color"></span>
+                {{ form.controls.category.value?.name }}
+              </span>
+            </mat-select-trigger>
+            <mat-option *ngFor="let category of billCategories" [value]="category">
+              {{category?.name}}
+            </mat-option>
+          </mat-select>
+          <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
+        </span>
+      </div>
+
+      <div class="field" *ngIf="bill.subCategory || (billSubCategories && billSubCategories.length > 0)">
+        <span class="field-label">Unterkategorie</span>
+        <span class="field-box">
+          <mat-select formControlName="subCategory" aria-label="Unterkategorie">
+            <mat-option></mat-option>
+            <mat-option *ngFor="let subCategory of billSubCategories" [value]="subCategory">
+              {{subCategory?.name}}
+            </mat-option>
+          </mat-select>
+          <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
+        </span>
+      </div>
+
+      <label class="field" [class.invalid]="form.controls.date | showError">
+        <span class="field-label">Datum</span>
+        <span class="field-box">
+          <input [matDatepicker]="picker" formControlName="date" aria-label="Datum" aria-describedby="bill-details-date-hint" [attr.aria-invalid]="form.controls.date | showError">
+          <mat-datepicker-toggle class="suffix" [for]="picker" [aria-label]="'Kalender öffnen'">
+            <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
+          </mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </span>
+        <span class="field-hint" id="bill-details-date-hint">DD.MM.YYYY</span>
+      </label>
+    </form>
+  </div>
+
+  <!--
+    AKTIONEN
+  -->
+  <div class="progress-slot">
+    <mat-progress-bar *ngIf="isDeleting || isLoading" mode="indeterminate" color="accent"></mat-progress-bar>
+  </div>
+
+  <div class="actions" *ngIf="!isEditing">
+    <button type="button" class="btn pri" (click)="onEditClick()" [disabled]="isDeleting || isLoading || isSaving">
+      <ng-container *ngIf="!isSaving"><mat-icon>edit</mat-icon><span>Bearbeiten</span></ng-container>
+      <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
+    </button>
+    <button type="button" class="btn del" (click)="onDeleteClick()"
+        [disabled]="isExternal || isEditing || isDeleting || isLoading || isSaving">
+      <mat-icon>delete</mat-icon><span>Löschen</span>
+    </button>
+  </div>
+
+  <div class="actions" *ngIf="isEditing">
+    <button type="button" class="btn sec2" (click)="onCancelClick()">
+      <mat-icon>close</mat-icon><span>Abbrechen</span>
+    </button>
+    <button type="button" class="btn pri" (click)="onSaveClick()" [disabled]="isSaving">
+      <ng-container *ngIf="!isSaving"><mat-icon>check</mat-icon><span>Speichern</span></ng-container>
+      <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
+    </button>
+  </div>
 </div>

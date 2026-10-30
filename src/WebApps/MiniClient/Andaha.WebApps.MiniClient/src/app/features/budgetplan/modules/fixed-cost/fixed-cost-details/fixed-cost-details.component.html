@@ -1,81 +1,64 @@
-<button mat-icon-button routerLink="/budgetplan/fixedcost" class="back-button">
-  <mat-icon>arrow_back</mat-icon>
-</button>
+<!-- Verlauf: Icon-Button in der Kopfzeile (PageTitleService.setAction, siehe ngOnInit) -->
+<div class="page">
+  <form class="form-body" [formGroup]="form">
+    <label class="field" [class.invalid]="form.controls.name | showError">
+      <span class="field-label">Name</span>
+      <span class="field-box">
+        <input formControlName="name" required [attr.aria-invalid]="form.controls.name | showError">
+      </span>
+    </label>
 
-<div class="history">
-  <button mat-icon-button (click)="onShowHistoryClick()">
-    <mat-icon class="history-icon">history</mat-icon>
-  </button>
-</div>
-
-<div>
-  <form [formGroup]="form">
-    <div class="form-container">
-
-      <mat-form-field appearance="fill">
-        <mat-label>Name</mat-label>
-        <input matInput formControlName="name" required>
-      </mat-form-field>
-
-      <mat-form-field appearance="fill">
-        <mat-label>Kategorie</mat-label>
-        <mat-select formControlName="category" required>
+    <div class="field" [class.invalid]="form.controls.category | showError">
+      <span class="field-label">Kategorie</span>
+      <span class="field-box">
+        <mat-select formControlName="category" required aria-label="Kategorie">
           <mat-option *ngFor="let category of costCategoryOptions" [value]="category">
             {{ costCategoryLabel.get(category) }}
           </mat-option>
         </mat-select>
-      </mat-form-field>
+        <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
+      </span>
+    </div>
 
-      <mat-form-field appearance="fill">
-        <mat-label>Intervall</mat-label>
-        <mat-select formControlName="duration" required>
+    <div class="field" [class.invalid]="form.controls.duration | showError">
+      <span class="field-label">Intervall</span>
+      <span class="field-box">
+        <mat-select formControlName="duration" required aria-label="Intervall">
           <mat-option *ngFor="let duration of durationOptions" [value]="duration">
             {{ durationLabel.get(duration) }}
           </mat-option>
         </mat-select>
-      </mat-form-field>
-
-      <mat-form-field appearance="fill">
-        <mat-label>Kosten</mat-label>
-        <input matInput formControlName="value" type="number" required>
-      </mat-form-field>
+        <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
+      </span>
     </div>
+
+    <label class="field" [class.invalid]="form.controls.value | showError">
+      <span class="field-label">Kosten</span>
+      <span class="field-box">
+        <input class="value" formControlName="value" type="number" required [attr.aria-invalid]="form.controls.value | showError">
+        <span class="suffix" aria-hidden="true">€</span>
+      </span>
+    </label>
   </form>
-</div>
 
-<div>
-  <div *ngIf="!isSaving" class="progressbar-placeholder"></div>
-
-  <mat-progress-bar *ngIf="isSaving" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
-  
-  <div class="button-placeholder"></div>
-  
-  <div class="floating-button edit-buttons">
-    <div *ngIf="!isEditing" style="flex: 1">
-      <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onEditClick()"
-          [disabled]="isDeleting || isLoading || isSaving">
-        <mat-icon>edit</mat-icon><span>Bearbeiten</span>
-      </button>
-    </div>
-    <div *ngIf="isEditing" style="display: flex; flex-direction: row; width: 100%">
-      <button mat-raised-button color="secondary" class="button-style button-with-icon" (click)="onCancelClick()">
-        <mat-icon>close</mat-icon><span>Abbrechen</span>
-      </button>
-      <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onSaveClick()"
-          [disabled]="isSaving">
-        <mat-icon>save</mat-icon><span>Speichern</span>
-      </button>
-    </div>
+  <div class="actions" *ngIf="!isEditing">
+    <button type="button" class="btn pri" (click)="onEditClick()" [disabled]="isDeleting || isLoading || isSaving">
+      <ng-container *ngIf="!isSaving"><mat-icon>edit</mat-icon><span>Bearbeiten</span></ng-container>
+      <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
+    </button>
+    <button type="button" class="btn del" (click)="onDeleteClick()"
+        [disabled]="isEditing || isDeleting || isLoading || isSaving">
+      <mat-icon>delete</mat-icon><span>Löschen</span>
+    </button>
   </div>
-  
-  <div class="button-placeholder"></div>
-  
-  <div class="floating-button delete-button">
-    <div style="flex: 1">
-      <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onDeleteClick()"
-          [disabled]="isEditing || isDeleting || isLoading || isSaving">
-        <mat-icon>delete</mat-icon><span>Löschen</span>
-      </button>
-    </div>
+
+  <div class="actions" *ngIf="isEditing">
+    <button type="button" class="btn sec2" (click)="onCancelClick()">
+      <mat-icon>close</mat-icon><span>Abbrechen</span>
+    </button>
+    <button type="button" class="btn pri" (click)="onSaveClick()" [disabled]="isSaving">
+      <ng-container *ngIf="!isSaving"><mat-icon>check</mat-icon><span>Speichern</span></ng-container>
+      <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
+    </button>
   </div>
 </div>

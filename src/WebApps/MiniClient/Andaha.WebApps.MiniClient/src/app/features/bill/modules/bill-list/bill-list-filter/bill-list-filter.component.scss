@@ -1,77 +1,142 @@
 :host {
   display: block;
-  overflow: hidden;
 }
 
-.master-container {
+.filter {
   display: flex;
   flex-direction: column;
 }
 
-.row-1-container {
-  margin: 5px 10px 5px 10px;
-
+// Suche + Datumfilter-Button (Mobile)
+.search-row {
   display: flex;
-  flex-direction: row;
+  gap: 8px;
+  padding: 8px 16px 12px;
 }
 
-.search-container {
+.search-field {
   flex: 1;
+  min-width: 0;
+
+  .field-box { padding-right: 4px; }
 }
 
-.filter-list-button {
-  flex: 40px 0 0;
-  text-align: center;
+.clear-btn {
+  width: 40px;
+  height: 40px;
+  color: var(--mut);
 }
 
-.filter-icon-button {
-  width: 32px !important;
-  height: 32px !important;
-  line-height: 32px !important;
+.filter-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  border: 1px solid var(--line3);
+  background: var(--surface);
 
-  .material-icons {
-     font-size: 24px !important;
+  .badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--pri);
   }
 }
 
-.mat-chip {
-  width: 100%;
+// Chip-Zeilen: eine Zeile, horizontal scrollbar
+.chips {
+  display: flex;
+  gap: 8px;
+  // 4 px oben (mit negativem Rand ausgeglichen): Platz fuer den Fokusring, sonst schneidet der Scroll-Container ihn ab
+  padding: 4px 16px 12px;
+  margin-top: -4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
 }
 
-.row-2-container {
-  margin: 0px 15px 5px 10px;
-  
-  .mat-chip-list .mat-chip {
-    width: auto;
-    min-width: 0;
-  }
-
-  ::ng-deep ::-webkit-scrollbar {
-    height: 0;
-  }
-  
-  ::ng-deep div.mat-chip-list-wrapper {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    white-space: nowrap;
-  
-    .mat-chip {
-      flex: 0 0 auto;
-    }
-  }
-}
-
-.row-3-container {
-  margin: 0px 15px 0px 10px;
+// Datums-Chip: Text oeffnet den Datumfilter, x entfernt das Datum
+.date-chip {
+  padding: 0 4px 0 14px;
+  background: var(--surface);
+  cursor: default;
+  gap: 4px;
 
   button {
-    display: flex;
-    width: 24px;
-    padding-left: 5px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    padding: 0;
+    cursor: pointer;
   }
 
-  .mat-chip-list .mat-chip {
-    width: auto;
-    min-width: 0;
+  .date-chip-label { height: 100%; }
+
+  .x {
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--mut);
+  }
+}
+
+.filter-chip {
+  display: none;
+}
+
+// Desktop (Mockup 07): eine umbrechende Zeile, Leiste immer offen
+@media (min-width: 1024px) {
+  .filter {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 0 16px;
+  }
+
+  .search-row {
+    flex: 1 1 280px;
+    max-width: 380px;
+    padding: 0;
+  }
+
+  .search-field .field-box {
+    height: 44px;
+    font-size: 15px;
+
+    input { font-size: 15px; }
+  }
+
+  .filter-btn {
+    display: none;
+  }
+
+  .chips {
+    display: contents;
+  }
+
+  .chip {
+    height: 36px;
+    border-radius: 18px;
+
+    .mat-icon { font-size: 15px; width: 15px; height: 15px; line-height: 15px; }
+  }
+
+  .date-chip {
+    padding: 0 4px 0 12px;
+
+    .x { width: 28px; height: 28px; border-radius: 14px; }
+  }
+
+  .filter-chip {
+    display: inline-flex;
+    gap: 6px;
   }
 }

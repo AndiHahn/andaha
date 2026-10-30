@@ -1,51 +1,48 @@
-<app-dialog>
-  <mat-dialog-content>
-    <h3>Zahlung hinzufügen:</h3>
+<app-dialog [title]="'Zahlung hinzufügen'">
+  <form class="dialog-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-dialog-content>
+      <div class="form">
+        <label class="field" [class.invalid]="form.controls.payedHours | showError">
+          <span class="field-label">Bezahlte Stunden</span>
+          <span class="field-box">
+            <input formControlName="payedHours" required autocomplete="off" [attr.aria-invalid]="form.controls.payedHours | showError">
+            <span class="suffix" aria-hidden="true">h</span>
+          </span>
+        </label>
 
-    <div>
-      <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <div class="form-container">
-    
-          <mat-form-field appearance="fill">
-            <mat-label>Bezahlte Stunden</mat-label>
-            <input matInput formControlName="payedHours" required autocomplete="off">
-            <span matSuffix>h</span>
-          </mat-form-field>
+        <!-- Betrag und Trinkgeld nebeneinander (Mockup 05, Zahlung) -->
+        <div class="pair">
+          <label class="field" [class.invalid]="form.controls.payedMoney | showError">
+            <span class="field-label">Bezahlter Betrag</span>
+            <span class="field-box">
+              <input formControlName="payedMoney" type="number" required autocomplete="off" [attr.aria-invalid]="form.controls.payedMoney | showError">
+              <span class="suffix" aria-hidden="true">€</span>
+            </span>
+          </label>
 
-          <mat-form-field appearance="fill">
-            <mat-label>Bezahlter Betrag</mat-label>
-            <input matInput formControlName="payedMoney" type="number" required autocomplete="off">
-            <span matSuffix>€</span>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill">
-            <mat-label>Trinkgeld</mat-label>
-            <input matInput formControlName="payedTip" type="number" required autocomplete="off">
-            <span matSuffix>€</span>
-          </mat-form-field>
-        
-          <mat-form-field appearance="fill">
-            <mat-label>Notizen</mat-label>
-            <textarea matInput formControlName="notes"></textarea>
-          </mat-form-field>
-    
+          <label class="field" [class.invalid]="form.controls.payedTip | showError">
+            <span class="field-label">Trinkgeld</span>
+            <span class="field-box">
+              <input formControlName="payedTip" type="number" required autocomplete="off" [attr.aria-invalid]="form.controls.payedTip | showError">
+              <span class="suffix" aria-hidden="true">€</span>
+            </span>
+          </label>
         </div>
-    
-        <div *ngIf="!isSaving" class="progressbar-placeholder"></div>
-    
-        <mat-progress-bar *ngIf="isSaving" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
-    
-        <div class="button-placeholder"></div>
-    
-        <div class="bottom-button">
-          <div style="flex: 1">
-            <button mat-raised-button color="primary" class="button-style" [disabled]="!form.valid">
-              <mat-icon>save</mat-icon><span>Speichern</span>
-            </button>
-          </div>
-        </div>
-    
-      </form>
+
+        <label class="field" [class.invalid]="form.controls.notes | showError">
+          <span class="field-label">Notizen</span>
+          <span class="field-box ta">
+            <textarea formControlName="notes" [attr.aria-invalid]="form.controls.notes | showError"></textarea>
+          </span>
+        </label>
+      </div>
+    </mat-dialog-content>
+
+    <div class="actions">
+      <button type="submit" class="btn pri" [disabled]="!form.valid || isSaving">
+        <ng-container *ngIf="!isSaving"><mat-icon>check</mat-icon><span>Speichern</span></ng-container>
+        <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
+      </button>
     </div>
-  </mat-dialog-content>
+  </form>
 </app-dialog>

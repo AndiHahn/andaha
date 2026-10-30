@@ -1,8 +1,7 @@
 <app-dialog>
-  <mat-dialog-content>    
-
+  <mat-dialog-content>
     <pinch-zoom *ngIf="imageSrc" style="width: 100%;">
-      <img [src]="imageSrc" /> 
+      <img [src]="imageSrc" alt="Rechnungsfoto" />
     </pinch-zoom>
 
     <div *ngIf="isLoading" class="action-container">
@@ -10,14 +9,14 @@
     </div>
   </mat-dialog-content>
 
-  <mat-dialog-actions>
-    <div style="flex: 1">
-      <mat-progress-bar *ngIf="isDeleting" mode="indeterminate" color="accent"></mat-progress-bar>
+  <div class="progress-slot">
+    <mat-progress-bar *ngIf="isDeleting" mode="indeterminate" color="accent"></mat-progress-bar>
+  </div>
 
-      <button mat-raised-button color="primary" class="button-style" [disabled]="isDeleting || isLoading || !imageSrc"
-          (click)="onDeleteImageClick()">
-        <mat-icon>delete</mat-icon><span>Löschen</span>
-      </button>
-    </div>
-  </mat-dialog-actions>
+  <div class="actions">
+    <button type="button" class="btn del" [disabled]="isDeleting || isLoading || !imageSrc"
+        (click)="onDeleteImageClick()">
+      <mat-icon>delete</mat-icon><span>Löschen</span>
+    </button>
+  </div>
 </app-dialog>

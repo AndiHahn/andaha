@@ -1,29 +1,84 @@
-.master-container {
-  padding: 7px 15px 7px 10px;
+:host {
+  display: block;
 }
 
-.flex-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+// Mobile: zweizeilige Listenzeile, feste Hoehe 64 px inkl. Linie (pixelHeightPerItem)
+.bill-row {
+  height: 64px;
+  min-height: 0;
 }
 
-.margin-left-small {
-  margin-left: 5px;
+.date-full,
+.origin-cell {
+  display: none;
 }
 
-.price-text {
-  font-weight: 500;
+.s .cat {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
-.date-text {
-  font-weight: lighter;
+.s .origin {
+  flex: none;
 }
 
-.vertical-center {
-  align-self: center;
-}
+// Desktop: Tabellenzeile (Datum | Shop | Kategorie | Herkunft | Preis), feste Hoehe 52 px inkl. Linie
+@media (min-width: 1024px) {
+  .bill-row {
+    display: grid;
+    grid-template-columns: 130px minmax(0, 1fr) minmax(0, 1fr) 60px 140px;
+    gap: 0;
+    height: 52px;
+    padding: 0;
+    font-size: 15px;
+  }
 
-.external-bill-chip {
-  background-color: chartreuse;
+  .bill-row > *,
+  .main > * {
+    padding: 0 16px;
+  }
+
+  .date {
+    display: none;
+  }
+
+  .date-full {
+    display: block;
+    color: var(--mut);
+    white-space: nowrap;
+  }
+
+  .main {
+    display: contents;
+  }
+
+  .t {
+    font-size: 15px;
+    font-weight: 400;
+  }
+
+  .s {
+    font-size: 15px;
+    color: var(--fg);
+    gap: 8px;
+
+    .origin { display: none; }
+    .sub { color: var(--mut); }
+  }
+
+  .origin-cell {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--mut);
+
+    .mat-icon { font-size: 16px; width: 16px; height: 16px; line-height: 16px; }
+  }
+
+  .amt {
+    font-size: 15px;
+
+    small { font-size: 15px; font-weight: 600; color: var(--fg); margin-left: 4px; }
+  }
 }

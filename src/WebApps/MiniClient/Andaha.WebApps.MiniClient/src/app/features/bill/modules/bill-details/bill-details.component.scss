@@ -1,56 +1,138 @@
-.back-button {
-  margin-left: 10px;
-  margin-top: 5px;
-}
-
-.image {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.form-container {
+// Seite im Flex-Fluss der .area: Inhalt scrollt, Aktionsleiste bleibt ueber der Bereichsnavigation
+:host {
   display: flex;
   flex-direction: column;
-  margin: 5px 15px 0px 15px;
 }
 
-.progressbar-placeholder {
-  height: 4px;
-}
-
-.progressbar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 157px;
-  z-index: 1000;
-}
-
-.floating-button {
-  position: fixed;
-  left: 0;
-  right: 0;
-  z-index: 1000;
+.page {
+  flex: 1;
+  min-height: 0;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
 }
 
-.edit-buttons {
-  bottom: 107px;
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
 }
 
-.delete-button {
-  bottom: 56px;
+// Lesemodus: Kopf (Shop 26/600, Betrag amount, Datum)
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 16px 28px;
+  border-bottom: 1px solid var(--line);
 }
 
-.button-placeholder {
-  height: 50px;
+.shop {
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -.015em;
+  overflow-wrap: anywhere;
 }
 
-.button-with-icon {
-  mat-icon {
-    margin-right: 10px;
+.when {
+  font-size: 14px;
+  color: var(--mut);
+}
+
+.photo-wrap {
+  padding: 16px;
+}
+
+.cat {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.v {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.notes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  font-size: 15px;
+}
+
+.notes-text {
+  line-height: 1.5;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+// Bearbeiten: Formular wie add-bill
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 16px 16px;
+}
+
+.price {
+  font-weight: 600;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// Fester Platz fuer den 3-px-Balken (Loeschen/Laden), damit nichts springt
+.progress-slot {
+  flex: none;
+  height: 3px;
+}
+
+.actions .btn.del {
+  flex: none;
+}
+
+// Desktop: Inhaltsspalte, Aktionen rechtsbuendig am Ende (DESIGN.md Layout)
+@media (min-width: 1024px) {
+  .page {
+    display: block;
+    overflow: auto;
+  }
+
+  .body,
+  .progress-slot,
+  .actions {
+    max-width: 560px;
+    margin: 0 40px;
+  }
+
+  .body {
+    overflow: visible;
+    padding-top: 8px;
+  }
+
+  .head,
+  .photo-wrap,
+  .kv,
+  .notes {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .form {
+    padding: 16px 0 8px;
+  }
+
+  .actions {
+    justify-content: flex-end;
+    padding: 16px 0 24px;
+    border-top: 0;
+    background: transparent;
+
+    .btn { flex: none; min-width: 160px; }
   }
 }

@@ -1,55 +1,98 @@
-.back-button {
-  margin-left: 10px;
-  margin-top: 5px;
-}
-
-.form-container {
+// Seite im Flex-Fluss der .area: Formular scrollt, Aktionsleiste bleibt ueber der Bereichsnavigation
+:host {
   display: flex;
   flex-direction: column;
-  margin: 15px 15px 0px 15px;
 }
 
-.person-search-input {
-  height: 50px;
-  padding-left: 15px;
-}
-
-input.mat-input-element {
-  width: auto !important;
-}
-
-.working-time-info {
-  padding-bottom: 20px;
-}
-
-.progressbar-placeholder {
-  height: 4px;
-}
-
-.button-placeholder {
-  height: 56px;
-}
-
-.bottom-button {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 56px;
-  z-index: 1000;
+.page {
+  flex: 1;
+  min-height: 0;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
 }
 
-.progressbar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 106px;
-  z-index: 1000;
+.form-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
 }
 
-button {
-  mat-icon {
-    margin-right: 10px;
+// Suchfeld oben im Personen-Panel (liegt im Overlay, traegt aber das Komponenten-Attribut)
+.person-search-input {
+  display: block;
+  width: 100%;
+  height: 48px;
+  margin: 0 0 6px;
+  padding: 0 16px;
+  border: 0;
+  border-bottom: 1px solid var(--line2);
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  font-size: 15px;
+
+  &::placeholder { color: var(--faint); }
+}
+
+// Start/Ende/Pause: drei gleich breite Spalten
+.times {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+
+  > * { min-width: 0; }
+}
+
+// Arbeitszeit netto als Wertezeile (Wert 22/600)
+.net {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.net-k {
+  font-size: 15px;
+  color: var(--mut);
+}
+
+.net-v {
+  font-size: 22px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+// Desktop: Formularspalte, Aktionen rechtsbuendig am Formularende (DESIGN.md Layout)
+@media (min-width: 1024px) {
+  .page {
+    display: block;
+    overflow: auto;
+  }
+
+  .form-body,
+  .actions {
+    max-width: 560px;
+    margin: 0 40px;
+  }
+
+  .form-body {
+    overflow: visible;
+    padding: 24px 0 8px;
+  }
+
+  .actions {
+    justify-content: flex-end;
+    padding: 16px 0 24px;
+    border-top: 0;
+    background: transparent;
+
+    .btn { flex: none; min-width: 160px; }
   }
 }

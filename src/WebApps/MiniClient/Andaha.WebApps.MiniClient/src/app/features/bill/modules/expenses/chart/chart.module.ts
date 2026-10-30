@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChartComponent } from './chart.component';
 import { NgChartsModule } from 'ng2-charts';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -9,7 +10,8 @@ import { NgChartsModule } from 'ng2-charts';
   ],
   imports: [
     CommonModule,
-    NgChartsModule
+    NgChartsModule,
+    MatIconModule
   ],
   exports: [
     ChartComponent

@@ -1,21 +1,13 @@
-<div class="label">
-  {{ costCategoryLabel.get(category) }}:
-</div>
+<p class="sec">{{ costCategoryLabel.get(category) }}</p>
 
-<div class="centered" *ngIf="fixedCosts.length == 0">
+<div class="empty" *ngIf="fixedCosts.length == 0">
   Keine Ausgaben.
 </div>
 
-<div class="items">
-  <div *ngFor="let fixedCost of fixedCosts">
-    <div class="list-item">
-      <mat-card class="mat-card" routerLink="{{fixedCost.id}}">
-        <span class="truncate-text">{{ fixedCost.name }}</span>
-        <div style="display: flex; flex-direction: column; align-items: flex-end;">
-          <span>{{ durationLabel.get(fixedCost.duration) }}</span>
-          <span>{{ fixedCost.value }} €</span>
-        </div>
-      </mat-card>
-    </div>
-  </div>
-</div>
+<a class="row" *ngFor="let fixedCost of fixedCosts" routerLink="{{fixedCost.id}}">
+  <span class="t">{{ fixedCost.name }}</span>
+  <span class="rc">
+    <span class="amt">{{ fixedCost.value | number:'1.2-2':'de' }} €</span>
+    <span class="per">{{ durationLabel.get(fixedCost.duration) }}</span>
+  </span>
+</a>

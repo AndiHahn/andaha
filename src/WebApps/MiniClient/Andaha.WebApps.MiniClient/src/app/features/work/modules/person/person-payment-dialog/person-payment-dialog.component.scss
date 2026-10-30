@@ -1,37 +1,26 @@
-.form-container {
+// Formular umschliesst Inhalt und Aktionen: reicht die Hoehenbegrenzung des Sheets weiter,
+// damit der Inhalt scrollt und der Speichern-Button am Sheet-Ende erreichbar bleibt
+.dialog-form {
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  margin: 15px 15px 0px 15px;
 }
 
-.progressbar-placeholder {
-  height: 4px;
-}
-
-.button-placeholder {
-  height: 56px;
-}
-
-.bottom-button {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0px;
-  z-index: 1000;
+.form {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.progressbar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 50px;
-  z-index: 1000;
+// Betrag und Trinkgeld nebeneinander
+.pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 
-button {
-  mat-icon {
-    margin-right: 10px;
-  }
+// Felder im Sheet heben sich vom Sheet-Grund ab (Mockup: .sheet .in { background: bg })
+.field-box {
+  background: var(--bg);
 }

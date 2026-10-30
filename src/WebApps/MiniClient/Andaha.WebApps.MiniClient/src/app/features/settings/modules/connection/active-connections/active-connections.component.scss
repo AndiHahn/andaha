@@ -1,26 +1,46 @@
+// Mockup 06: Zeile 56 px, 8 px Innenabstand
+.row {
+  gap: 12px;
+  min-height: 56px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.t {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+}
+
 .master-container {
-  display: flex;
-  justify-content: center;
-}
-
-.list-item {
-  padding: 5px 8px 0px 8px;
-}
-
-.mat-card {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  max-width: calc(100% - 20px);
-  padding: 10px;
-  height: 36px;
-}
-
-.truncate-text {
-  white-space: nowrap;
-  text-overflow: ellipsis;
   display: block;
-  overflow: hidden
+}
+
+:host {
+  display: block;
+}
+
+// Status: Punkt + Text, Farbe nach Status (Mockup 06)
+.st {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  .dot { width: 7px; height: 7px; background: currentColor; }
+}
+
+.ok { color: var(--pos); }
+.wait { color: var(--sec-text); }
+.no { color: var(--neg); }
+
+@media (min-width: 1024px) {
+  .row,
+  .empty {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }

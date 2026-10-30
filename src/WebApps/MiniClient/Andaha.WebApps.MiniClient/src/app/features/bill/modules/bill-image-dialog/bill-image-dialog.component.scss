@@ -1,15 +1,24 @@
 .action-container {
   display: flex;
   justify-content: center;
-  margin-top: 30px;
+  margin: 30px 0;
 }
 
-.button-with-icon {
-  mat-icon {
-    margin-right: 10px;
-  }
+pinch-zoom {
+  border-radius: 6px;
 }
 
-::ng-deep .ngxImageZoomContainer > img {
-  max-width: calc(100vw - 48px);
+// Bild ist projizierter Inhalt dieser Komponente: auf die Sheet-/Dialogbreite begrenzen
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+// Fester Platz fuer den 3-px-Balken beim Loeschen
+.progress-slot {
+  flex: none;
+  height: 3px;
+  margin: 0 16px;
 }

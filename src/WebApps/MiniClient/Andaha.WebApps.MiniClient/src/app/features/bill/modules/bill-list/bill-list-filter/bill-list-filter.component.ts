@@ -1,5 +1,4 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { MatChip, MatChipList } from '@angular/material/chips';
 import { distinctUntilChanged, debounceTime, tap } from 'rxjs/operators';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
@@ -111,29 +110,22 @@ export class BillListFilterComponent implements OnInit, AfterViewInit {
     ));
   }
 
-  onChipClick(chipList: MatChipList, chip: MatChip, index: number): void {
+  onChipClick(index: number): void {
     if (!this.categories) {
       return;
-    }
-
-    if (!this.categories[index].selected) {
-      chip.select();
     }
 
     this.categories[index].selected = true;
 
-    this.deselectAllExcept(chipList, index);
+    this.deselectAllExcept(index);
     
     this.triggerCategorySelection();
   }
 
-  private deselectAllExcept(chipList: MatChipList, index: number): void {
+  private deselectAllExcept(index: number): void {
     if (!this.categories) {
       return;
     }
-
-    const allChipsExceptGiven = chipList.chips.filter((_, idx) => idx != index);
-    allChipsExceptGiven.forEach(chip => chip.deselect());
 
     const allExceptGiven = this.categories.filter((_, idx) => idx != index);
     allExceptGiven.forEach(category => category.selected = false);

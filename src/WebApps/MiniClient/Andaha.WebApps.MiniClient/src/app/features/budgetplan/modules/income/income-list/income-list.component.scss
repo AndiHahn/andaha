@@ -1,38 +1,43 @@
-.label {
-  margin-left: 5px;
-  margin-top: 5px;
-  font-size: medium;
-  font-weight: 500;
-}
-
-.centered {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.items {
-  margin-bottom: 10px;
-}
-
-.list-item {
-  padding: 5px 8px 0px 8px;
-}
-
-.mat-card {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  max-width: calc(100% - 20px);
-  padding: 10px;
-  height: 36px;
-}
-
-.truncate-text {
-  white-space: nowrap;
-  text-overflow: ellipsis;
+:host {
   display: block;
-  overflow: hidden
+}
+
+// Erster Abschnitt direkt unter dem Kopf (Mockup 04, Fixkosten)
+:host(:first-of-type) .sec {
+  padding-top: 8px;
+}
+
+// Mockup 04: 10 px Innenabstand, Zeile 60 px mit zweizeiligem Betrag
+.row {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.t {
+  flex: 1;
+  min-width: 0;
+}
+
+// Betrag + Intervall rechts
+.rc {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.per {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--mut);
+}
+
+@media (min-width: 1024px) {
+  .sec,
+  .row,
+  .empty {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }

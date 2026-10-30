@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from './confirmation-dialog.component';
 import { ConfirmationDialogData } from './ConfirmationDialogData';
+import { getDialogBaseConfig } from "../dialog/dialog-functions";
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,6 @@ export class ConfirmationDialogService {
 
     const dialogComponent = Object.values(chunk)[0] as ComponentType<ConfirmationDialogComponent>;
 
-    return this.dialog.open(dialogComponent, { data: data });
+    return this.dialog.open(dialogComponent, { ...getDialogBaseConfig(), data: data });
   }
 }

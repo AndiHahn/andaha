@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PageTitleService } from 'src/app/core/page-title/page-title.service';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { CategoryUpdateDto } from 'src/app/api/shopping/dtos/CategoryUpdateDto';
 import { SubCategoryUpdateDto } from 'src/app/api/shopping/dtos/SubCategoryUpdateDto';
@@ -45,7 +46,8 @@ export class CategoryItemDetailsComponent implements OnInit {
     private router: Router,
     private snackbar: MatSnackBar,
     private confirmationDialog: ConfirmationDialogService,
-    private categoryContextService: BillCategoryContextService
+    private categoryContextService: BillCategoryContextService,
+    private pageTitleService: PageTitleService
   ) {
     const params = getParametersFromRouteRecursive(this.route.snapshot);
     this.categoryId = params["id"];
@@ -68,6 +70,8 @@ export class CategoryItemDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Kopfzeile: Kategoriename als Titel (Mockup 06, Kategorie bearbeiten)
+    this.pageTitleService.set(this.category.name);
   }
 
   onDeleteSubCategoryClick(index: number): void {
@@ -123,7 +127,10 @@ export class CategoryItemDetailsComponent implements OnInit {
 
     this.categoryContextService.updateCategory(this.categoryId, dto).subscribe(
       {
-        next: _ => this.isSaving = false,
+        next: _ => {
+          this.isSaving = false;
+          this.pageTitleService.set(dto.name);
+        },
         error: (err: HttpErrorResponse) => {
           this.isSaving = false;
           openErrorSnackbar("Kategorie konnte nicht gespeichert werden. (" + err.error + ")", this.snackbar);

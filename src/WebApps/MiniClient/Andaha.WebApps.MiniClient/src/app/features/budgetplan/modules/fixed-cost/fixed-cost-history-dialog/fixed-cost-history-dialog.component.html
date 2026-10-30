@@ -1,33 +1,18 @@
-<app-dialog>
+<app-dialog [title]="'Historie'">
   <mat-dialog-content>
-
-    <h3>Historie:</h3>
-
-    <div *ngIf="!historyEntries" class="action-container">
+    <div *ngIf="!historyEntries" class="loading">
       <mat-spinner diameter="40"></mat-spinner>
     </div>
 
-    <div class="items">
-      <div *ngFor="let history of historyEntries; index as i">
-        <div class="list-item">
-          <mat-card class="mat-card">
-            <div class="column-layout" style="align-items: flex-start;">
-              <span>Gültig von: {{ history.validFrom | date:'dd.MM.YYYY' }}</span>
-              <span *ngIf="i > 0">Gültig bis: {{ history.validTo | date:'dd.MM.YYYY' }}</span>
-            </div>
-            
-            <div class="column-layout" style="align-items: flex-end;">
-              <span class="truncate-text">{{ durationLabel.get(history.fixedCost.duration) }}</span>
-              <span>{{ history.fixedCost.value }} €</span>
-            </div>
-          </mat-card>
-        </div>
-      </div>
+    <div class="row" *ngFor="let history of historyEntries; index as i">
+      <span class="main">
+        <span class="t">Gültig von: {{ history.validFrom | date:'dd.MM.yyyy' }}</span>
+        <span class="s" *ngIf="i > 0">Gültig bis: {{ history.validTo | date:'dd.MM.yyyy' }}</span>
+      </span>
+      <span class="rc">
+        <span class="amt">{{ history.fixedCost.value | number:'1.2-2':'de' }} €</span>
+        <span class="per">{{ durationLabel.get(history.fixedCost.duration) }}</span>
+      </span>
     </div>
-
   </mat-dialog-content>
-
-  <mat-dialog-actions>
-
-  </mat-dialog-actions>
 </app-dialog>

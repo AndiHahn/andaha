@@ -1,0 +1,41 @@
+Baseline vor Task 1: npm run build (Exit 0), verbatim Ausgabe (Warnungen + Bundle-Zusammenfassung)
+Anzahl Warnungen: 10
+
+Warning: C:/Dev/Andi/andaha/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/src/app/features/bill/modules/add-bill-image-dialog/add-bill-image-dialog.module.ts is part of the TypeScript compilation but it's unused.
+Add only entry points to the 'files' or 'include' properties in your tsconfig.
+
+Warning: C:/Dev/Andi/andaha/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/src/app/features/bill/modules/bill-image-dialog/bill-image-dialog.module.ts is part of the TypeScript compilation but it's unused.
+Add only entry points to the 'files' or 'include' properties in your tsconfig.
+
+Warning: C:/Dev/Andi/andaha/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/src/app/features/bill/modules/bill-list/bill-list-filter/bill-list-filter-dialog/bill-list-filter-dialog.module.ts is part of the TypeScript compilation but it's unused.
+Add only entry points to the 'files' or 'include' properties in your tsconfig.
+
+Warning: C:/Dev/Andi/andaha/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/src/app/features/budgetplan/modules/fixed-cost/fixed-cost-history-dialog/fixed-cost-history-dialog.module.ts is part of the TypeScript compilation but it's unused.
+Add only entry points to the 'files' or 'include' properties in your tsconfig.
+
+Warning: C:/Dev/Andi/andaha/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/src/app/features/budgetplan/modules/income/income-history-dialog/income-history-dialog.module.ts is part of the TypeScript compilation but it's unused.
+Add only entry points to the 'files' or 'include' properties in your tsconfig.
+
+Warning: C:/Dev/Andi/andaha/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/src/app/features/settings/modules/connection/add-connection-dialog/add-connection-dialog.module.ts is part of the TypeScript compilation but it's unused.
+Add only entry points to the 'files' or 'include' properties in your tsconfig.
+
+Warning: C:/Dev/Andi/andaha/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/src/app/features/work/modules/person/person-payment-dialog/person-payment-dialog.module.ts is part of the TypeScript compilation but it's unused.
+Add only entry points to the 'files' or 'include' properties in your tsconfig.
+
+Warning: C:/Dev/Andi/andaha/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/src/app/shared/confirmation-dialog/confirmation-dialog.module.ts is part of the TypeScript compilation but it's unused.
+Add only entry points to the 'files' or 'include' properties in your tsconfig.
+
+Warning: C:\Dev\Andi\andaha\src\WebApps\MiniClient\Andaha.WebApps.MiniClient\node_modules\angular-oauth2-oidc\fesm2020\angular-oauth2-oidc.mjs depends on 'fast-sha256'. CommonJS or AMD dependencies can cause optimization bailouts.
+For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies
+
+Warning: C:\Dev\Andi\andaha\src\WebApps\MiniClient\Andaha.WebApps.MiniClient\src\app\features\bill\modules\expenses\timerange-selection\timerange-selection.component.ts depends on 'moment'. CommonJS or AMD dependencies can cause optimization bailouts.
+For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies
+
+
+
+--- Bundle (Auszug) ---
+main.948a381b371ed0a4.js      | main                                                            |   1.19 MB |               252.27 kB
+styles.ef4b8864bb088970.css   | styles                                                          | 159.47 kB |                 8.50 kB
+polyfills.a46d39aca2f8e410.js | polyfills                                                       |  33.11 kB |                10.65 kB
+runtime.b76bad6e71109e9c.js   | runtime                                                         |   4.44 kB |                 2.12 kB
+| Initial Total                                                   |   1.39 MB |               273.54 kB

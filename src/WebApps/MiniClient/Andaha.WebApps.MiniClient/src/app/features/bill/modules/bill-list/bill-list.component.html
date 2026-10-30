@@ -1,4 +1,4 @@
-<div *ngIf="showFilterBar" #filterBar class="filter-container dark-bg-color">
+<div #filterBar class="filter-container" [class.collapsed]="!showFilterBar" (transitionend)="viewport.checkViewportSize()">
   <app-bill-list-filter [deactivate]="loading"
       [initialSearchText]="initialSearchValue"
       [initialCategoryFilters]="initialCategoryFilters"
@@ -6,31 +6,29 @@
       (searchTextChanged)="onSearchInput($event)"
       (categoryFilterChanged)="onCategoryFilterChanged($event)"
       (dateFilterChanged)="onDateFilterChanged($event)" >
-  </app-bill-list-filter>    
+  </app-bill-list-filter>
 </div>
 
-<div [class.filter-placeholder] = "showFilterBar == true && !dateFilterEnabled"
-     [class.filter-placeholder-with-date] = "showFilterBar == true && dateFilterEnabled"
-     [class.filter-placeholder-none] = "showFilterBar == false"></div>
+<div class="progress-slot">
+  <mat-progress-bar *ngIf="loading" mode="indeterminate" color="accent"></mat-progress-bar>
+</div>
 
-<mat-progress-bar *ngIf="loading" mode="indeterminate" color="accent" class="progressbar"
-    [class.progressbar-top] = "showFilterBar == false"
-    [class.progressbar-below-filter] = "showFilterBar == true && !dateFilterEnabled"
-    [class.progressbar-below-date-filter] = "showFilterBar == true && dateFilterEnabled"></mat-progress-bar>
+<div class="table-head" aria-hidden="true">
+  <span>Datum</span>
+  <span>Shop</span>
+  <span>Kategorie</span>
+  <span></span>
+  <span class="r">Preis</span>
+</div>
 
-<div class="action-container" *ngIf="!loading && totalCount === 0">
+<div class="empty" *ngIf="!loading && totalCount === 0">
   Keine Rechnungen verfügbar.
 </div>
 
-<cdk-virtual-scroll-viewport [itemSize]="pixelHeightPerItem"
-    [class.cdk-list-container-full] = "showFilterBar == false"
-    [class.cdk-list-container-with-filterbar] = "showFilterBar == true && !dateFilterEnabled"
-    [class.cdk-list-container-with-datefilterbar] = "showFilterBar == true && dateFilterEnabled">
-  <div *cdkVirtualFor="let bill of billDataSource">
-    <div class="cdk-item" routerLink="/bill/{{bill.id}}">
-      <app-bill-list-item [bill]="bill"></app-bill-list-item>
-    </div>
-  </div>
+<cdk-virtual-scroll-viewport #viewport class="list" [itemSize]="pixelHeightPerItem">
+  <a *cdkVirtualFor="let bill of billDataSource" class="bill-link" routerLink="/bill/{{bill.id}}">
+    <app-bill-list-item [bill]="bill"></app-bill-list-item>
+  </a>
 </cdk-virtual-scroll-viewport>
 
 <div style="display: none;">

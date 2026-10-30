@@ -1,35 +1,22 @@
-<div *ngIf="!persons" class="action-container">
-  <mat-spinner diameter="40"></mat-spinner>
-</div>
-
-<div *ngIf="persons?.length == 0" class="action-container">
-  <div >
-    Keine Personen vorhanden.
-  </div>
-</div>
-
-<div *ngIf="persons">
-  <app-person-list [persons]="persons"></app-person-list>
-</div>
-
-<div>
-  <div class="button-placeholder"></div>
-  
-  <div class="floating-button add-working-entries-button">
-    <div style="flex: 1">
-      <button mat-raised-button color="primary" class="button-style" routerLink="create-working-entry">
-        <mat-icon>add_circle</mat-icon><span>Arbeitszeiten hinzufügen</span>
-      </button>
+<div class="page">
+  <div class="body">
+    <div *ngIf="!persons" class="loading">
+      <mat-spinner diameter="40"></mat-spinner>
     </div>
-  </div>
-  
-  <div class="button-placeholder"></div>
-  
-  <div class="floating-button add-person-button">
-    <div style="flex: 1">
-      <button mat-raised-button color="primary" class="button-style" routerLink="create">
-        <mat-icon>add_circle</mat-icon><span>Person hinzufügen</span>
-      </button>
+
+    <div *ngIf="persons?.length == 0" class="empty">
+      Keine Personen vorhanden.
     </div>
+
+    <app-person-list *ngIf="persons" [persons]="persons"></app-person-list>
+  </div>
+
+  <div class="actions">
+    <a class="btn pri" routerLink="create-working-entry">
+      <mat-icon>schedule</mat-icon><span>Arbeitszeiten hinzufügen</span>
+    </a>
+    <a class="btn sec2" routerLink="create">
+      <mat-icon>add</mat-icon><span>Person hinzufügen</span>
+    </a>
   </div>
 </div>

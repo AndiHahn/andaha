@@ -1,104 +1,159 @@
-.action-container {
+// Seite im Flex-Fluss der .area: Liste scrollt, Aktionsleiste bleibt ueber der Bereichsnavigation
+:host {
+  display: flex;
+  flex-direction: column;
+}
+
+.page {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.loading {
   display: flex;
   justify-content: center;
-  margin-top: 30px;
+  padding-top: 30px;
 }
 
-.help-text {
-  padding: 10px 5px 0px 5px;
+// Mockup 06: Liste beginnt mit einer Linie unter dem Kopf
+.list {
+  border-top: 1px solid var(--line);
 }
 
-.list-item {
-  padding: 5px 8px 0px 8px;
-}
-
-.mat-card {
+// Zeile = Drag-Element; Linie liegt hier, damit Griff und Link eine Zeile bilden
+.drag-item {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
   align-items: center;
-  width: 100%;
-  max-width: calc(100% - 20px);
-  padding: 10px;
-  height: 36px;
+  border-bottom: 1px solid var(--line2);
 }
 
-.truncate-text {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  display: block;
-  overflow: hidden
+// Mockup 06: Zeile 56 px, 8 px Innenabstand, 12 px Abstand
+.row {
+  flex: 1;
+  min-width: 0;
+  gap: 12px;
+  min-height: 56px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  border-bottom: 0;
 }
 
-.color-item {
-  width: 70px;
-  height: 35px;
+.grip + .row {
+  padding-left: 0;
 }
 
-.progressbar-placeholder {
-  height: 4px;
+.t {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
 }
 
-.progressbar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 106px;
-  z-index: 1000;
+// Musterfeld 20 px mit Innenring (DESIGN.md: Kategorie-Farben)
+.sw {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  flex: none;
+  box-shadow: inset 0 0 0 1px var(--ring-sw);
 }
 
-.floating-button {
-  position: fixed;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  display: flex;
-  flex-direction: row;
+.chev {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  line-height: 16px;
+  color: var(--dim);
 }
 
-.edit-buttons {
-  bottom: 107px;
+// Drag-Griff (Mockup 06): 36 x 44, Farbe dim
+.grip {
+  flex: none;
+  width: 36px;
+  height: 44px;
+  margin-left: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dim);
+  cursor: grab;
+  touch-action: none;
 }
 
-.add-button {
-  bottom: 56px;
-}
+// Aktionen untereinander (Mockup 06), im Bearbeiten-Modus Abbrechen | Speichern nebeneinander
+.actions {
+  flex-direction: column;
 
-.button-placeholder {
-  height: 50px;
-}
-
-button {
-  mat-icon {
-    margin-right: 10px;
+  // globales .actions .btn { flex: 1 } wuerde die Hoehe in der Spalte auf 0 setzen
+  > .btn {
+    flex: none;
   }
 }
 
-.drag-item {
-  background-color: #303030;
-  cursor: move;
+.edit-row {
+  display: flex;
+  gap: 10px;
+
+  .btn {
+    flex: 1;
+  }
 }
 
-.cdk-drag-preview {
-  box-sizing: border-box;
-  border-radius: 4px;
-  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
-              0 8px 10px 1px rgba(0, 0, 0, 0.14),
-              0 3px 14px 2px rgba(0, 0, 0, 0.12);
-}
+// Desktop: Inhaltsspalte, Aktionen rechtsbuendig am Ende (DESIGN.md Layout)
+@media (min-width: 1024px) {
+  .page {
+    display: block;
+    overflow: auto;
+  }
 
-.cdk-drag-placeholder {
-  opacity: 0;
-}
+  .body,
+  .actions {
+    max-width: 560px;
+    margin: 0 40px;
+  }
 
-.cdk-drag-animating {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-}
+  .body {
+    overflow: visible;
+    padding-top: 8px;
+  }
 
-.example-box:last-child {
-  border: none;
-}
+  // Tabs bringen schon eine Linie mit
+  .list {
+    border-top: 0;
+  }
 
-.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  .row {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .grip {
+    margin-left: 0;
+  }
+
+  .actions {
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 16px 0 24px;
+    border-top: 0;
+    background: transparent;
+
+    .btn {
+      flex: none;
+      min-width: 160px;
+    }
+
+    // Primaeraktion rechts
+    .add.pri {
+      order: 1;
+    }
+  }
 }

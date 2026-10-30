@@ -1,29 +1,17 @@
-<div class="top-placeholder"></div>
+<p class="sec">Verbindungen</p>
 
-<div class="connections-container">
+<app-active-connections></app-active-connections>
 
-  <h3 class="title">Verbindungen</h3>
-
-  <app-active-connections></app-active-connections>
-
-  <div class="spacer"></div>
-
-  <button mat-raised-button color="primary" class="button-style" (click)="onAddConnectionClick()">
-    Verbindung herstellen
+<div class="connect">
+  <button type="button" class="btn sec2" (click)="onAddConnectionClick()">
+    <mat-icon>link</mat-icon><span>Verbindung herstellen</span>
   </button>
-
-  <mat-divider></mat-divider>
-
-  <h3 class="title">Eingehende Verbindungsanfragen</h3>
-  
-  <app-incoming-connection-requests></app-incoming-connection-requests>
-
-  <div class="spacer"></div>
-
-  <mat-divider></mat-divider>
-
-  <h3 class="title">Ausgehende Verbindungsanfragen</h3>
-
-  <app-outgoing-connection-requests></app-outgoing-connection-requests>
-
 </div>
+
+<p class="sec">Eingehende Verbindungsanfragen</p>
+
+<app-incoming-connection-requests></app-incoming-connection-requests>
+
+<p class="sec">Ausgehende Verbindungsanfragen</p>
+
+<app-outgoing-connection-requests></app-outgoing-connection-requests>

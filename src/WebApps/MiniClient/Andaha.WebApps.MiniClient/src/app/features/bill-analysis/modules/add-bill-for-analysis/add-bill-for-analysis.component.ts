@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { blobToDataUrl } from 'src/app/shared/utils/file-utils';
 
 @Component({
   selector: 'app-add-bill-for-analysis',
@@ -10,6 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class AddBillForAnalysisComponent {
   selectedFile?: File;
   uploading: boolean = false;
+  previewUrl?: string;
 
   constructor(private billApi: BillApiService, private snack: MatSnackBar) {}
 
@@ -17,6 +19,12 @@ export class AddBillForAnalysisComponent {
     const file = event.target.files?.[0] as File | undefined;
     if (file) {
       this.selectedFile = file;
+      this.previewUrl = undefined;
+      blobToDataUrl(file).then(url => {
+        if (this.selectedFile === file) {
+          this.previewUrl = url;
+        }
+      });
     }
   }
 

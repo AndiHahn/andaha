@@ -1,13 +1,24 @@
-.close-container {
+// Formular umschliesst Inhalt und Aktionen: reicht die Hoehenbegrenzung des Sheets weiter,
+// damit der Inhalt scrollt und der Button am Sheet-Ende erreichbar bleibt
+.dialog-form {
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
 }
 
-.full-width {
-  width: 100%;
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.button-container {
-  margin-top: 10px;
-  margin-bottom: 10px;
+// Felder im Sheet heben sich vom Sheet-Grund ab (Mockup: .sheet .in { background: bg })
+.field-box {
+  background: var(--bg);
+}
+
+// Server-Fehlertext kann lange Zeichenketten enthalten (Stacktrace): umbrechen statt horizontal scrollen
+.form > .field-error {
+  overflow-wrap: anywhere;
 }

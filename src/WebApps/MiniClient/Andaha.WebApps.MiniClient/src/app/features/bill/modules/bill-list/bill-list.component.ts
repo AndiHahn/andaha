@@ -1,3 +1,4 @@
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { CdkScrollable, ScrollDispatcher } from '@angular/cdk/scrolling';
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { filter, takeUntil } from 'rxjs/operators';
@@ -16,7 +17,7 @@ import { BillListDateFilter } from './bill-list-filter/BillListDateFilter';
 export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   billDataSource = new BillDataSource();
-  pixelHeightPerItem = 66;
+  pixelHeightPerItem = 64;
 
   totalCount?: number;
   loading: boolean = false;
@@ -36,7 +37,8 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private scrollDispatcher: ScrollDispatcher,
-    private billContextService: BillContextService) {
+    private billContextService: BillContextService,
+    private breakpointObserver: BreakpointObserver) {
       const searchText = this.billContextService.getSearchText();
       if (searchText.length > 0) {
         this.initialSearchValue = searchText;
@@ -61,6 +63,7 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   
   ngOnInit(): void {
     this.initSubscriptions();
+    this.initItemSize();
   }
 
   ngOnDestroy(): void {
@@ -131,6 +134,15 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.dateFilterEnabled = true;
     }
+  }
+
+  // Zeilenhoehe je Breakpoint: Mobile 64 px (Listenzeile), Desktop 52 px (Tabellenzeile, Mockup 07)
+  private initItemSize(): void {
+    this.breakpointObserver.observe('(min-width: 1024px)').pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: state => this.pixelHeightPerItem = state.matches ? 52 : 64
+      }
+    );
   }
 
   private initSubscriptions(): void {

@@ -1,28 +1,79 @@
-.top-placeholder {
-  height: 20px;
+:host {
+  display: block;
 }
 
-mat-divider {
-  height: 2px;
-  margin-top: 15px;
-  margin-bottom: 15px;
-  background-color: white;
+// Mockup 06 (Export): Abschnittskopf direkt unter dem Kopf
+:host > .sec:first-child {
+  padding-top: 8px;
 }
 
-.spacer {
-  height: 5px;
-}
-
-.title {
-  text-align: center;
-}
-
-button {
-  margin: 10px 0px;
-}
-
-.action-container {
+// Zeilen-Button: Icon-Kachel | Text | Download-Icon bzw. Spinner
+.ex {
   display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 18px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--line2);
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: .5;
+    cursor: default;
+  }
+
+  // Zeile reicht bis an den Rand des Scroll-Containers: Fokusring nach innen, sonst abgeschnitten
+  &:focus-visible { outline-offset: -2px; }
+}
+
+.ic {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--raised);
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
-  margin-top: 30px;
+  color: var(--pri-text);
+  flex: none;
+}
+
+.tx {
+  flex: 1;
+  min-width: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.dl-icon {
+  color: var(--mut);
+  flex: none;
+}
+
+.mat-progress-spinner {
+  flex: none;
+}
+
+// Desktop: Inhaltsspalte wie Verbindungen (max. 560 px, 40 px Rand)
+@media (min-width: 1024px) {
+  :host {
+    max-width: 560px;
+    margin: 0 40px;
+    padding-bottom: 24px;
+  }
+
+  .sec {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .ex {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }

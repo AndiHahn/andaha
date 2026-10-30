@@ -1,34 +1,66 @@
-.items {
-  margin-bottom: 10px;
+:host {
+  display: block;
 }
 
-.list-item {
-  padding: 5px 8px 0px 8px;
-}
-
-.mat-card {
-  align-items: center;
-  width: 100%;
-  max-width: calc(100% - 20px);
-  padding: 10px;
-  height: 36px;
-  user-select: none;
-}
-
-.row-layout {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.column-layout {
+// Arbeitszeit-Zeile (Mockup 05 Person): Datum | von – bis | Dauer, Notiz darunter
+.we {
   display: flex;
   flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--line2);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+
+  // Zeile reicht bis an den Rand des Scroll-Containers: Fokusring nach innen, sonst abgeschnitten
+  &:focus-visible { outline-offset: -2px; }
 }
 
-.truncate-text {
+.l {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 15px;
+}
+
+.d {
+  width: 86px;
+  flex: none;
+  font-weight: 500;
+}
+
+.tm {
+  flex: 1;
+  min-width: 0;
+  color: var(--fg2);
   white-space: nowrap;
+}
+
+b {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.n {
+  max-width: 100%;
+  padding-left: 98px;
+  font-size: 13px;
+  color: var(--mut);
+  white-space: nowrap;
+  overflow: hidden;
   text-overflow: ellipsis;
-  display: block;
-  overflow: hidden
+}
+
+@media (min-width: 1024px) {
+  .we {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }

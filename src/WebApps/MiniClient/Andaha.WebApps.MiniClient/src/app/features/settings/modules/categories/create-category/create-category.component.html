@@ -1,60 +1,52 @@
-<!--
-  BACK BUTTON
--->
+<div class="page">
+  <!--
+    FORM
+  -->
+  <form class="form-body" [formGroup]="form">
+    <label class="field" [class.invalid]="form.controls.name | showError">
+      <span class="field-label">Name der Kategorie</span>
+      <span class="field-box">
+        <input formControlName="name" required [attr.aria-invalid]="form.controls.name | showError">
+      </span>
+    </label>
 
-<button mat-icon-button routerLink="/settings/categories" class="back-button">
-  <mat-icon>arrow_back</mat-icon>
-</button>
-
-<!--
-  FORM
--->
-<div>
-  <form [formGroup]="form">
-    <div class="form-container">
-      <mat-form-field appearance="fill">
-        <mat-label>Name der Kategorie</mat-label>
-        <input matInput formControlName="name" required>
-      </mat-form-field>
-    </div>
-
-    <div class="form-container">
-      <mat-form-field appearance="fill">
-        <mat-label>Farbe</mat-label>
-        <mat-select-trigger *ngIf="selectedColor">
-          <app-color-item [color]="selectedColor"></app-color-item>
-        </mat-select-trigger>
-        <mat-select [(ngModel)]="selectedColor" name="color" [formControl]="form.controls.color">
+    <div class="field" [class.invalid]="form.controls.color | showError">
+      <span class="field-label">Farbe</span>
+      <span class="field-box">
+        <mat-select [(ngModel)]="selectedColor" name="color" [formControl]="form.controls.color" aria-label="Farbe">
+          <mat-select-trigger *ngIf="selectedColor">
+            <span class="color-opt">
+              <app-color-item [color]="selectedColor"></app-color-item>
+              <span class="color-name">{{ selectedColor }}</span>
+            </span>
+          </mat-select-trigger>
           <mat-option *ngFor="let color of colors" [value]="color">
-            <app-color-item [color]="color"></app-color-item>
+            <span class="color-opt">
+              <app-color-item [color]="color"></app-color-item>
+              <span class="color-name">{{ color }}</span>
+            </span>
           </mat-option>
         </mat-select>
-      </mat-form-field>
+        <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
+      </span>
     </div>
 
-    <div class="form-container">
+    <div class="cb">
       <mat-checkbox
+          class="andaha-checkbox"
           [checked]="includeToStatisticsCheckbox"
           (change)="updateIncludeToStatistics()">Aufnehmen in Statistik</mat-checkbox>
     </div>
   </form>
-</div>
 
-<!--
-BOTTOM BUTTONS
--->
-
-<div class="progressbar-placeholder"></div>
-
-<mat-progress-bar *ngIf="isSaving" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
-
-<div class="button-placeholder"></div>
-
-<div class="floating-button add-button">
-  <div style="flex: 1">
-    <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onSaveClick()"
+  <!--
+    AKTIONEN
+  -->
+  <div class="actions">
+    <button type="button" class="btn pri" (click)="onSaveClick()"
         [disabled]="isSaving" [disabled]="!form.valid">
-      <mat-icon>save</mat-icon><span>Speichern</span>
+      <ng-container *ngIf="!isSaving"><mat-icon>check</mat-icon><span>Speichern</span></ng-container>
+      <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
     </button>
   </div>
 </div>

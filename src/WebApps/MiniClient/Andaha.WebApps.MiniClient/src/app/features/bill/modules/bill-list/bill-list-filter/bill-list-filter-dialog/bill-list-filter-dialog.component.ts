@@ -2,37 +2,13 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BillListFilterDialogData } from './BillListFilterDialogData';
 import {FormControl} from '@angular/forms';
-import {MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS} from '@angular/material-moment-adapter';
-import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
-
-export const MY_FORMATS = {
-  parse: {
-    dateInput: 'L',
-  },
-  display: {
-    dateInput: 'DD.MM.YYYY',
-    monthYearLabel: 'MMMM YYYY',
-    dateA11yLabel: 'DD.MM.YYYY',
-    monthYearA11yLabel: 'MMMM YYYY'
-  },
-};
+import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-providers';
 
 @Component({
   selector: 'app-bill-list-filter-dialog',
   templateUrl: './bill-list-filter-dialog.component.html',
   styleUrls: ['./bill-list-filter-dialog.component.scss'],
-  providers: [
-    // `MomentDateAdapter` can be automatically provided by importing `MomentDateModule` in your
-    // application's root module. We provide it at the component level here, due to limitations of
-    // our example generation script.
-    {
-      provide: DateAdapter,
-      useClass: MomentDateAdapter,
-      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
-    },
-
-    {provide: MAT_DATE_FORMATS, useValue: MY_FORMATS},
-  ],
+  providers: GERMAN_DATE_PROVIDERS,
 })
 export class BillListFilterDialogComponent implements OnInit {
 

@@ -2,6 +2,7 @@ import { ComponentType } from '@angular/cdk/portal';
 import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AddConnectionDialogComponent } from './add-connection-dialog.component';
+import { getDialogBaseConfig } from "src/app/shared/dialog/dialog-functions";
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,6 @@ export class AddConnectionDialogService {
 
     const dialogComponent = Object.values(chunk)[0] as ComponentType<AddConnectionDialogComponent>;
 
-    return this.dialog.open(dialogComponent);
+    return this.dialog.open(dialogComponent, { ...getDialogBaseConfig() });
   }
 }

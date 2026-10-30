@@ -2,15 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CategoriesComponent } from './categories.component';
 import { RouterModule, Routes } from '@angular/router';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatOptionModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -23,10 +16,12 @@ const routes: Routes = [
   },
   {
     path: 'create',
+    data: { title: 'Kategorie hinzufügen', back: '/settings/categories' },
     loadChildren: () => import('./create-category/create-category.module').then(m => m.CreateCategoryModule)
   },
   {
     path: ':id',
+    data: { title: 'Kategorie', back: '/settings/categories' },
     loadChildren: () => import('./category-item-details/category-item-details.module').then(m => m.CategoryItemDetailsModule)
   }
 ];
@@ -38,16 +33,9 @@ const routes: Routes = [
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
-    MatFormFieldModule,
-    MatInputModule,
-    MatOptionModule,
-    MatSelectModule,
     MatIconModule,
-    MatCardModule,
-    MatButtonModule,
     FormsModule,
     ReactiveFormsModule,
-    MatProgressBarModule,
     MatProgressSpinnerModule,
     DragDropModule
   ],

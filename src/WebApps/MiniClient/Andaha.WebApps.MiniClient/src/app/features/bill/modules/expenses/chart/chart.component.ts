@@ -26,6 +26,10 @@ export class ChartComponent implements OnInit, OnChanges {
   @Input()
   selectedTimeRange?: TimeRange;
 
+  // Summe aus ExpensesComponent (unveraendert berechnet), nur zur Anzeige in der Ringmitte und fuer die Anteile der Legende
+  @Input()
+  sum: number = 0;
+
   //CHART DATA
   chartLabels: string[] = [];
   chartData: number[] = [];
@@ -35,9 +39,24 @@ export class ChartComponent implements OnInit, OnChanges {
       backgroundColor: [ 'red' ]
     }
   ];
-  chartOptions: ChartOptions = {
+  // Ringdiagramm (umsetzung.md, Statistik): Luecken zwischen den Segmenten in der Hintergrundfarbe (Token --bg zur Laufzeit),
+  // eigene Legende im Template statt der Chart.js-Legende
+  chartOptions: ChartOptions<'doughnut'> = {
     responsive: true,
-  }; 
+    cutout: '78%',
+    elements: {
+      arc: {
+        borderWidth: 3,
+        borderColor: ChartComponent.readBackgroundToken(),
+        hoverBorderColor: ChartComponent.readBackgroundToken()
+      }
+    },
+    plugins: {
+      legend: {
+        display: false
+      }
+    }
+  };
   chartColors = [{
     backgroundColor: [],
     borderColor: []
@@ -104,5 +123,10 @@ export class ChartComponent implements OnInit, OnChanges {
     this.chartLabels = [];
     this.chartDatasets[0].data = [];
     this.chartColors = [];
+  }
+
+  // Chart.js zeichnet auf Canvas und kennt keine CSS-Variablen: Wert des Tokens --bg zur Laufzeit lesen
+  private static readBackgroundToken(): string {
+    return getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
   }
 }

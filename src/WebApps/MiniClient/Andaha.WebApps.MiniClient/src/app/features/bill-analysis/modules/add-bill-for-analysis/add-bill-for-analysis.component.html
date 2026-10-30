@@ -1,12 +1,29 @@
-<div class="upload-container">
-  <input type="file" accept="image/*" capture="environment" (change)="onFileSelected($event)" />
-  <div style="margin-top:12px">
-    <button mat-raised-button color="primary" (click)="upload()" [disabled]="!selectedFile || uploading">
-      <mat-icon>cloud_upload</mat-icon>
-      Hochladen
-    </button>
+<div class="page">
+  <div class="body">
+    <label class="well">
+      <span class="preview" *ngIf="previewUrl" aria-hidden="true">
+        <img [src]="previewUrl" alt="">
+      </span>
+      <span class="ic" *ngIf="!previewUrl" aria-hidden="true"><mat-icon>photo_camera</mat-icon></span>
+      <span class="info">
+        <span class="name" *ngIf="selectedFile">{{ selectedFile.name }}</span>
+        <span class="hint" *ngIf="selectedFile">Tippen, um ein anderes Foto zu wählen</span>
+        <span class="name" *ngIf="!selectedFile">Foto der Rechnung</span>
+        <span class="hint" *ngIf="!selectedFile">Tippen, um ein Foto aufzunehmen oder auszuwählen</span>
+      </span>
+      <input class="cdk-visually-hidden" type="file" accept="image/*" capture="environment"
+          aria-label="Foto der Rechnung aufnehmen oder auswählen" (change)="onFileSelected($event)" />
+    </label>
   </div>
-  <div *ngIf="uploading" style="margin-top:8px">
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+
+  <div class="progress-slot">
+    <mat-progress-bar *ngIf="uploading" mode="indeterminate" color="accent"></mat-progress-bar>
+  </div>
+
+  <div class="actions">
+    <button type="button" class="btn pri" (click)="upload()" [disabled]="!selectedFile || uploading">
+      <ng-container *ngIf="!uploading"><mat-icon>cloud_upload</mat-icon><span>Hochladen</span></ng-container>
+      <ng-container *ngIf="uploading"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Hochladen</span></ng-container>
+    </button>
   </div>
 </div>

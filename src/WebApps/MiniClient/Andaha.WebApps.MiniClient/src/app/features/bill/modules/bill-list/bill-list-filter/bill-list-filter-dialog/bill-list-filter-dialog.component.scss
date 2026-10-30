@@ -1,3 +1,21 @@
-.gap {
-  height: 20px;
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.box-row {
+  display: flex;
+  gap: 8px;
+
+  .field-box { flex: 1; min-width: 0; }
+}
+
+.clear-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  border: 1px solid var(--line3);
+  background: var(--surface);
+  color: var(--neg);
 }

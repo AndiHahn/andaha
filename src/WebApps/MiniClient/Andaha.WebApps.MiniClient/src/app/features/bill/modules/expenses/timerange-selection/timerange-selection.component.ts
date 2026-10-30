@@ -1,13 +1,15 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { TimeRange } from '../../../../../shared/models/TimeRange';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { DateType, DateTypeLabelMapping } from './DateType';
+import { DATE_TYPE_SEGMENT_LABELS, DateType, DateTypeLabelMapping } from './DateType';
 import * as moment from 'moment';
+import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-providers';
 
 @Component({
   selector: 'app-timerange-selection',
   templateUrl: './timerange-selection.component.html',
-  styleUrls: ['./timerange-selection.component.scss']
+  styleUrls: ['./timerange-selection.component.scss'],
+  providers: GERMAN_DATE_PROVIDERS
 })
 export class TimerangeSelectionComponent implements OnInit, OnChanges {
 
@@ -20,6 +22,7 @@ export class TimerangeSelectionComponent implements OnInit, OnChanges {
   form: UntypedFormGroup;
   
   dateTypeLabelMapping = DateTypeLabelMapping;
+  dateTypeSegmentLabels = DATE_TYPE_SEGMENT_LABELS;
   dateType = DateType;
   dateTypeOptions = Object.values(DateType);
   selectedDateType: DateType;
@@ -41,8 +44,8 @@ export class TimerangeSelectionComponent implements OnInit, OnChanges {
       dateType: DateType['Month'],
       monthSelection: '',
       yearSelection: '',
-      fromDate: new Date(),
-      toDate: new Date()
+      fromDate: moment(),
+      toDate: moment()
     });
   }
 

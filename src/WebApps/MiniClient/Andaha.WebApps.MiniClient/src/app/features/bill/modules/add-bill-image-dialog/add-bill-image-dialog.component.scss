@@ -1,23 +1,37 @@
-.radio-button {
-  margin: 10px;
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
 }
 
-.radio-group {
-  margin-top: 10px;
-  margin-bottom: 15px;
+.radio-button {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
 }
 
 .webcam-container {
   display: flex;
   flex-direction: column;
+  gap: 12px;
 }
 
 .webcam {
   width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: 6px;
 }
 
-button {
-  mat-icon {
-    margin-right: 10px;
-  }
+.full {
+  width: 100%;
+}
+
+// Vorschau des gewaehlten Fotos (Breite kommt als Attribut, hier auf die Sheet-Breite begrenzt)
+.preview img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
 }

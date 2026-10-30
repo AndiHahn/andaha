@@ -1,35 +1,23 @@
-.timerange-container {
-  margin-top: 10px;
+// Host scrollt als Kind von .area (styles.scss)
+.page {
+  padding-bottom: 16px;
 }
 
-.action-container {
+.loading {
   display: flex;
   justify-content: center;
   margin-top: 30px;
 }
 
-section {
-  display: table;
-  margin: 8px;
+.empty {
+  margin-top: 12px;
 }
 
-.label {
-  display: table-cell;
-  font-size: 15px;
-  margin-left: 8px;
-  min-width: 180px;
-  font-weight: bold;
-}
-
-.label-row {
-  display: table-cell;
-  margin: 10px;
-}
-
-.text-big {
-  font-weight: bolder;
-}
-
-.margin-20 {
-  margin: 20px;
+// Desktop: Inhaltsspalte (DESIGN.md Layout). 24 px Rand + 16 px Innenabstand der Bausteine = Text auf 40 px wie der Seitentitel
+@media (min-width: 1024px) {
+  .page {
+    max-width: 592px;
+    margin: 0 24px;
+    padding-top: 8px;
+  }
 }

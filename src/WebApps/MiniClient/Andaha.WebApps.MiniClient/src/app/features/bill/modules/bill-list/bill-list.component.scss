@@ -1,105 +1,108 @@
-$toolbar-height: 64px;
-$toolbar-height-mobile: 56px;
-$toolbar-bottom-height: 64px;
-$toolbar-bottom-height-mobile: 56px;
-$filterbar-height: 79px;
-$filterbar-withdate-height: 111px;
-
-.filter-placeholder {
-  height: $filterbar-height;
-}
-
-.filter-placeholder-with-date {
-  height: $filterbar-withdate-height;
-}
-
-.filter-placeholder-none {
-  height: 0px;
-}
-
-.filter-container {
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: $toolbar-height;
-  z-index: 1000;
-  padding-bottom: 5px;
-}
-
-.progressbar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-}
-
-.progressbar-top {
-  top: $toolbar-height;
-}
-
-.progressbar-below-filter {
-  top: $toolbar-height + $filterbar-height;
-}
-
-.progressbar-below-date-filter {
-  // +5px padding
-  top: $toolbar-height + $filterbar-withdate-height + 5px;
-}
-
-.action-container {
+// Seite im Flex-Fluss der .area: Filter, Ladebalken und Kopfzeile fest, die Liste fuellt den Rest und scrollt
+:host {
   display: flex;
-  justify-content: center;
-  margin-top: 30px;
+  flex-direction: column;
 }
 
-.paginator {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 56px;
-  z-index: 1000;
-  width: 100%;
+// Filterleiste: wird beim Runterscrollen eingeklappt (showFilterBar), bleibt aber im DOM
+.filter-container {
+  flex: none;
+  overflow: hidden;
+  max-height: 240px;
+  transition: max-height .2s ease, visibility 0s linear 0s;
+
+  app-bill-list-filter {
+    transition: transform .2s ease;
+  }
+
+  &.collapsed {
+    max-height: 0;
+    visibility: hidden;
+    transition: max-height .2s ease, visibility 0s linear .2s;
+
+    app-bill-list-filter { transform: translateY(-100%); }
+  }
 }
 
-.cdk-list-container-full {
-  height: calc(100% - #{$toolbar-bottom-height});
+// Fester Platz fuer den 3-px-Ladebalken, damit die Liste beim Laden nicht springt
+.progress-slot {
+  flex: none;
+  height: 3px;
 }
 
-.cdk-list-container-with-filterbar {
-  height: calc(100% - #{$toolbar-bottom-height} - #{$filterbar-height});
+.table-head {
+  display: none;
 }
 
-.cdk-list-container-with-datefilterbar {
-  height: calc(100% - #{$toolbar-bottom-height} - #{$filterbar-withdate-height});
+.empty {
+  flex: none;
 }
 
-@media only screen and (max-width: 600px) {
-  .filter-container {
-    top: $toolbar-height-mobile;
+.list {
+  flex: 1 1 auto;
+  min-height: 0;
+  border-top: 1px solid var(--line);
+}
+
+// contain: inline-size, damit lange Shopnamen den (absolut positionierten) Inhalts-Wrapper des Viewports
+// nicht verbreitern: die Zeile ist immer so breit wie die Liste, der Name wird per Ellipsis gekuerzt
+.bill-link {
+  display: block;
+  contain: inline-size;
+  color: inherit;
+  text-decoration: none;
+
+  // Zeile reicht bis an den Rand des Viewports: Fokusring nach innen, sonst abgeschnitten
+  &:focus-visible { outline-offset: -2px; }
+}
+
+// Desktop (Mockup 07): Leiste immer offen, Liste als Tabelle mit Kopfzeile ausserhalb des Viewports
+@media (min-width: 1024px) {
+  .filter-container,
+  .filter-container.collapsed {
+    max-height: none;
+    visibility: visible;
+    overflow: visible;
+
+    app-bill-list-filter { transform: none; }
   }
 
-  .progressbar-top {
-    top: $toolbar-height-mobile;
-  }
-  
-  .progressbar-below-filter {
-    top: $toolbar-height-mobile + $filterbar-height;
-  }
-  
-  .progressbar-below-date-filter {
-    // +5px padding
-    top: $toolbar-height-mobile + $filterbar-withdate-height + 5px;
+  .filter-container,
+  .progress-slot,
+  .table-head,
+  .empty,
+  .list {
+    margin: 0 40px;
+    max-width: 1040px;
   }
 
-  .cdk-list-container-full {
-    height: calc(100% - #{$toolbar-bottom-height-mobile});
+  // Kopfzeile und Liste reservieren dieselbe Scrollbar-Spalte, damit die Spalten buendig bleiben
+  .list {
+    border-top: 0;
+    margin-bottom: 24px;
+    scrollbar-gutter: stable;
   }
-  
-  .cdk-list-container-with-filterbar {
-    height: calc(100% - #{$toolbar-bottom-height-mobile} - #{$filterbar-height});
+
+  .table-head {
+    flex: none;
+    overflow-y: hidden;
+    scrollbar-gutter: stable;
+    display: grid;
+    grid-template-columns: 130px minmax(0, 1fr) minmax(0, 1fr) 60px 140px;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--mut);
+
+    span {
+      padding: 10px 16px;
+      white-space: nowrap;
+    }
+
+    .r { text-align: right; }
   }
-  
-  .cdk-list-container-with-datefilterbar {
-    height: calc(100% - #{$toolbar-bottom-height-mobile} - #{$filterbar-withdate-height});
+
+  .bill-link:hover {
+    background: var(--hover-row);
   }
 }

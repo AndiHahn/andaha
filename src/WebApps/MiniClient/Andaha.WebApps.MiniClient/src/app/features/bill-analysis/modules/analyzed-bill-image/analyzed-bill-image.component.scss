@@ -1,1 +1,40 @@
-.mat-icon-button { width: 40px; height: 40px }
+:host {
+  display: block;
+}
+
+// Dekorativer Beleg als Schaltflaeche, oeffnet das Bild (Mockup 03)
+.receipt-btn {
+  all: unset;
+  display: block;
+  width: 200px;
+  max-width: 100%;
+  cursor: pointer;
+  transform: rotate(1.5deg);
+  border-radius: 4px;
+
+  &:focus-visible {
+    outline: 2px solid var(--pri);
+    outline-offset: 4px;
+  }
+}
+
+.receipt {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 18px 16px 22px;
+  border-radius: 4px;
+  background: var(--paper);
+  box-shadow: 0 10px 24px -10px var(--sh7);
+
+  .b {
+    display: block;
+    height: 5px;
+    border-radius: 2px;
+    background: var(--paper-bar);
+  }
+
+  .w70 { width: 70%; }
+  .w50 { width: 50%; align-self: center; }
+  .w40 { width: 40%; }
+}

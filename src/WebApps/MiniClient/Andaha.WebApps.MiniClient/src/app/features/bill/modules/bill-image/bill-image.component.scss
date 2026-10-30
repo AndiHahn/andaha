@@ -1,7 +1,88 @@
-.margin-10 {
-  margin: 10px;
+:host {
+  display: block;
 }
 
-mat-icon {
-  transform: scale(1.5);
+// Foto-Zeile (Mockup 01 · Hinzufuegen / Details)
+.photo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 68px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px dashed var(--grab);
+  background: var(--well);
+  color: var(--fg2);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+    opacity: .55;
+  }
+}
+
+.photo.show {
+  border-style: solid;
+  border-color: var(--line);
+}
+
+.ic {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 10px;
+  background: var(--raised);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pri-text);
+
+  .mat-icon { font-size: 22px; width: 22px; height: 22px; line-height: 22px; }
+}
+
+.txt {
+  flex: 1;
+  min-width: 0;
+}
+
+.hint {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--faint);
+}
+
+// Beleg-Miniatur (dekorativ)
+.thumb {
+  width: 44px;
+  height: 56px;
+  flex: none;
+  border-radius: 6px;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 9px 7px;
+
+  span {
+    display: block;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--paper-bar);
+  }
+
+  .w70 { width: 70%; }
+  .w55 { width: 55%; }
+  .w40 { width: 40%; }
+}
+
+.chev {
+  flex: none;
+  color: var(--faint);
 }

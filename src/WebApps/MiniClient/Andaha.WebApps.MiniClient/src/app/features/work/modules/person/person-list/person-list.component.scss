@@ -1,32 +1,22 @@
-.label {
-  margin-left: 5px;
-  margin-top: 5px;
-  font-size: medium;
-  font-weight: 500;
-}
-
-.items {
-  margin-bottom: 10px;
-}
-
-.list-item {
-  padding: 5px 8px 0px 8px;
-}
-
-.mat-card {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  max-width: calc(100% - 20px);
-  padding: 10px;
-  height: 36px;
-}
-
-.truncate-text {
-  white-space: nowrap;
-  text-overflow: ellipsis;
+:host {
   display: block;
-  overflow: hidden
+}
+
+// Mockup 05 Personen: Name | Tag | Stunden, 10 px Innenabstand, 12 px Abstand
+.row {
+  gap: 12px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.t {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .row {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }

@@ -1,17 +1,15 @@
-<div class="top-placeholder"></div>
+<p class="sec">Exportieren</p>
 
-<h3 class="title">Exportieren:</h3>
-
-<button mat-raised-button color="primary" class="button-style"
-  (click)="onExportExpensesClick()" [disabled]="isExporting">
-  Ausgaben exportieren
+<button type="button" class="ex" (click)="onExportExpensesClick()" [disabled]="isExporting">
+  <span class="ic"><mat-icon aria-hidden="true">receipt_long</mat-icon></span>
+  <span class="tx">Ausgaben exportieren</span>
+  <mat-spinner *ngIf="isExporting" [diameter]="20" aria-label="Export läuft"></mat-spinner>
+  <mat-icon *ngIf="!isExporting" class="dl-icon" aria-hidden="true">download</mat-icon>
 </button>
 
-<button mat-raised-button color="primary" class="button-style"
-  (click)="onExportWorkInformationClick()" [disabled]="isExporting">
-  Personen/Arbeitszeiten exportieren
+<button type="button" class="ex" (click)="onExportWorkInformationClick()" [disabled]="isExporting">
+  <span class="ic"><mat-icon aria-hidden="true">group</mat-icon></span>
+  <span class="tx">Personen/Arbeitszeiten exportieren</span>
+  <mat-spinner *ngIf="isExporting" [diameter]="20" aria-label="Export läuft"></mat-spinner>
+  <mat-icon *ngIf="!isExporting" class="dl-icon" aria-hidden="true">download</mat-icon>
 </button>
-
-<div *ngIf="isExporting" class="action-container">
-  <mat-spinner diameter="40"></mat-spinner>
-</div>

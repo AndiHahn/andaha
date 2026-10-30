@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from './core/auth.service';
 import { BillContextService } from './features/bill/services/bill-context.service';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
-import { filter } from 'rxjs/operators';
+import { filter, map, shareReplay } from 'rxjs/operators';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { Observable } from 'rxjs';
+import { HeaderAction, PageTitleService } from './core/page-title/page-title.service';
 
 @Component({
   selector: 'app-root',
@@ -18,10 +21,23 @@ export class AppComponent implements OnInit {
   isLoggedIn: boolean = false;
   syncActive: boolean = true;
 
+  readonly isDesktop$: Observable<boolean>;
+  readonly title$: Observable<string>;
+  readonly back$: Observable<string | null>;
+  readonly action$: Observable<HeaderAction | null>;
+
   constructor(
     private serviceWorkerUpdate: SwUpdate,
     private authService: AuthService,
-    private billContextService: BillContextService) {
+    private billContextService: BillContextService,
+    private breakpointObserver: BreakpointObserver,
+    pageTitleService: PageTitleService) {
+    this.isDesktop$ = this.breakpointObserver.observe('(min-width: 1024px)').pipe(
+      map(state => state.matches),
+      shareReplay({ bufferSize: 1, refCount: true }));
+    this.title$ = pageTitleService.title$;
+    this.back$ = pageTitleService.back$;
+    this.action$ = pageTitleService.action$;
     this.initSubscriptions();
   }
 

@@ -1,28 +1,14 @@
-<ng-container>
+<div class="area">
   <router-outlet></router-outlet>
-  <div class="bottom-navigation-placeholder"></div>
-  <div class="bottom-navigation">
-    <mat-toolbar>  
-      <mat-toolbar-row class="toolbar">
-        <div class="menu-item">
-          <button mat-icon-button routerLink="bill/list" routerLinkActive #rl1="routerLinkActive" class="small-icon-button">
-            <mat-icon [ngClass]="{ 'primary-fg-color': rl1.isActive}">list</mat-icon>
-          </button>
-          <div class="menu-title" [ngClass]="{ 'primary-fg-color': rl1.isActive}">Rechnungen</div>
-        </div>
-        <div class="menu-item">
-          <button mat-icon-button routerLink="bill/create" routerLinkActive #rl2="routerLinkActive" class="small-icon-button">
-            <mat-icon [ngClass]="{ 'primary-fg-color': rl2.isActive}">add_circle</mat-icon>
-          </button>
-          <div class="menu-title" [ngClass]="{ 'primary-fg-color': rl2.isActive}">Hinzufügen</div>
-        </div>
-        <div class="menu-item">
-          <button mat-icon-button routerLink="bill/expenses" routerLinkActive #rl3="routerLinkActive" class="small-icon-button">
-            <mat-icon [ngClass]="{ 'primary-fg-color': rl3.isActive}">donut_small</mat-icon>
-          </button>
-          <div class="menu-title" [ngClass]="{ 'primary-fg-color': rl3.isActive}">Statistik</div>
-        </div>
-      </mat-toolbar-row>
-    </mat-toolbar>
-  </div>
-</ng-container>
+  <nav class="bottom-nav" aria-label="Rechnungen">
+    <a routerLink="bill/list" routerLinkActive="on" #rla0="routerLinkActive" [attr.aria-current]="rla0.isActive ? 'page' : null">
+      <mat-icon>list</mat-icon>Rechnungen
+    </a>
+    <a routerLink="bill/create" routerLinkActive="on" #rla1="routerLinkActive" [attr.aria-current]="rla1.isActive ? 'page' : null">
+      <mat-icon>add_circle</mat-icon>Hinzufügen
+    </a>
+    <a routerLink="bill/expenses" routerLinkActive="on" #rla2="routerLinkActive" [attr.aria-current]="rla2.isActive ? 'page' : null">
+      <mat-icon>donut_small</mat-icon>Statistik
+    </a>
+  </nav>
+</div>

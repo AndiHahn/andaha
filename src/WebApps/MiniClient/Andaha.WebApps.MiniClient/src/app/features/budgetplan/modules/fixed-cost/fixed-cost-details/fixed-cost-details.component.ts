@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PageTitleService } from 'src/app/core/page-title/page-title.service';
 import { CostCategory, CostCategoryLabel } from 'src/app/api/budgetplan/dtos/CostCategory';
 import { Duration, DurationLabel } from 'src/app/api/budgetplan/dtos/Duration';
 import { FixedCostDto } from 'src/app/api/budgetplan/dtos/FixedCostDto';
@@ -20,7 +21,7 @@ import { FixedCostForm } from '../functions/fixed-cost-form-functions';
   templateUrl: './fixed-cost-details.component.html',
   styleUrls: ['./fixed-cost-details.component.scss']
 })
-export class FixedCostDetailsComponent implements OnInit {
+export class FixedCostDetailsComponent implements OnInit, OnDestroy {
 
   form: FormGroup<FixedCostForm>;
 
@@ -43,7 +44,8 @@ export class FixedCostDetailsComponent implements OnInit {
     private snackbar: MatSnackBar,
     private confirmationDialog: ConfirmationDialogService,
     private fixedCostContextService: FixedCostContextService,
-    private fixedCostHistoryDialogService: FixedCostHistoryDialogService
+    private fixedCostHistoryDialogService: FixedCostHistoryDialogService,
+    private pageTitleService: PageTitleService
   ) {
     const params = getParametersFromRouteRecursive(this.route.snapshot);
     const fixedCostId = params["id"];
@@ -62,6 +64,13 @@ export class FixedCostDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Kopfzeile: Name als Titel, Verlauf als Icon-Button (Mockup 04, Fixkosten bearbeiten)
+    this.pageTitleService.set(this.fixedCost.name);
+    this.pageTitleService.setAction({ icon: 'history', label: 'Verlauf anzeigen', run: () => this.onShowHistoryClick() });
+  }
+
+  ngOnDestroy(): void {
+    this.pageTitleService.setAction(null);
   }
 
   onShowHistoryClick(): void {
@@ -96,7 +105,10 @@ export class FixedCostDetailsComponent implements OnInit {
 
     this.fixedCostContextService.updateFixedCost(this.fixedCost.id, dto).subscribe(
       {
-        next: _ => this.isSaving = false,
+        next: _ => {
+          this.isSaving = false;
+          this.pageTitleService.set(dto.name);
+        },
         error: _ => {
           this.isSaving = false;
           openErrorSnackbar("Eintrag konnte nicht gespeichert werden.", this.snackbar);

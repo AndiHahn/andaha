@@ -28,13 +28,30 @@ export class OverviewComponent implements OnInit {
     this.initSubscriptions();
   }
 
+  // Nur Anzeige: Balkenbreiten aus denselben Prozentwerten wie der frühere mat-progress-bar, auf 0–100 % begrenzt
+  get expensesBarWidth(): number {
+    return this.clampPercent(this.monthlyExpensesPercent);
+  }
+
+  get surplusBarWidth(): number {
+    return this.clampPercent(this.monthlySurplusPercent);
+  }
+
+  private clampPercent(value: number): number {
+    if (!Number.isFinite(value)) {
+      return 0;
+    }
+
+    return Math.min(100, Math.max(0, value));
+  }
+
   private calculateSurplus(): void {
     if (!this.budgetPlan) {
       return;
     }
 
     const totalIncome = this.budgetPlan.income;
-    const totalCategoryExpenses = this.budgetPlan.expenses.map(item => item.value).reduce((prev, next) => prev + next);
+    const totalCategoryExpenses = this.budgetPlan.expenses.map(item => item.value).reduce((prev, next) => prev + next, 0);
     const totalExpenses = totalCategoryExpenses + this.livingCosts;
     const surplus = totalIncome - totalExpenses;
     

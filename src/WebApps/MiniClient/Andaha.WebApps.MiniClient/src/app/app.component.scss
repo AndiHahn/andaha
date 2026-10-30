@@ -1,55 +1,100 @@
-.toolbar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  z-index: 1000;
+.shell {
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg);
 }
 
-$toolbar-height: 56px;
+// Hauptspalte
+.shell-main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
-.toolbar-placeholder {
-  height: $toolbar-height;
+.top {
+  height: 56px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 6px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+
+.top-title {
+  margin: 0 0 0 6px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sync-info {
+  display: inline-flex;
+  align-items: center;
+  color: var(--pri-text);
+  margin-right: 4px;
+}
+
+.top-desktop {
+  flex: none;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 18px 40px 0;
+}
+
+.top-desktop-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  flex: 1;
+}
+
+.sync-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--mut);
+
+  .mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    line-height: 16px;
+    color: var(--pri-text);
+  }
+}
+
+.user-info {
+  font-size: 14px;
+  color: var(--fg2);
+  margin-right: -8px;
+}
+
+.content {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .wait-login-container {
+  flex: 1;
   display: flex;
-  height: 100%;
   justify-content: center;
   align-items: center;
 }
 
-.spacer {
-  flex: 1 1 auto;
-}
-
-.user-info {
-  font-size: small;
-  font-weight: lighter;
-}
-
-.sync-info {
-  display: flex;
-  margin-right: 15px;
-}
-
-.sidenav-container {
-  height: calc(100% - $toolbar-height);
-}
-
-.menu-icon {
-  margin-right: 10px;
-}
-
-.nav-wrapper {
-  height: 100%; 
-}
-
-::ng-deep .mat-drawer-inner-container {
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-.text {
-  color: white;
+.wait-login {
+  font-size: 15px;
+  color: var(--mut);
 }

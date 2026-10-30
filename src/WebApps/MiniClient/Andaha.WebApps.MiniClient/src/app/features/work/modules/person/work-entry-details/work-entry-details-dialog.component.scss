@@ -1,28 +1,42 @@
-.form-container {
+.form {
   display: flex;
   flex-direction: column;
-  margin: 5px 15px 0px 15px;
+  gap: 16px;
 }
 
-.button-with-icon {
-  mat-icon {
-    margin-right: 10px;
-  }
+// Start/Ende/Pause: drei gleich breite Spalten
+.times {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+
+  > * { min-width: 0; }
 }
 
-.button-container {
+// Arbeitszeit netto als Wertezeile (Wert 22/600)
+.net {
   display: flex;
-  flex-direction: column;
-  width: 100%;
-  
-  margin-top: 10px;
-  margin-bottom: 10px;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line-sheet);
+  border-bottom: 1px solid var(--line-sheet);
 }
 
-mat-dialog-actions {
-  height: 105px;
+.net-k {
+  font-size: 15px;
+  color: var(--mut);
 }
 
-mat-dialog-actions {
-  margin-left: 0px !important;
+.net-v {
+  font-size: 22px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+// Fester Platz fuer den 3-px-Balken (Loeschen), damit nichts springt
+.progress-slot {
+  flex: none;
+  height: 3px;
 }

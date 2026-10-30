@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BudgetplanComponent } from './budgetplan.component';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
@@ -18,6 +16,7 @@ const routes: Routes = [
     children: [
       {
         path: 'overview',
+        data: { title: 'Haushaltsplan' },
         loadChildren: () => import('./modules/overview/overview.module').then(m => m.OverviewModule)
       },
       {
@@ -39,9 +38,7 @@ const routes: Routes = [
   imports: [
     RouterModule.forChild(routes),
     CommonModule,
-    MatIconModule,
-    MatButtonModule,
-    MatToolbarModule
+    MatIconModule
   ]
 })
 export class BudgetplanModule { }

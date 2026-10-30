@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PageTitleService } from 'src/app/core/page-title/page-title.service';
 import { Duration, DurationLabel } from 'src/app/api/budgetplan/dtos/Duration';
 import { IncomeDto } from 'src/app/api/budgetplan/dtos/IncomeDto';
 import { IncomeUpdateDto } from 'src/app/api/budgetplan/dtos/IncomeUpdateDto';
@@ -19,7 +20,7 @@ import { IncomeForm } from '../functions/income-form-functions';
   templateUrl: './income-details.component.html',
   styleUrls: ['./income-details.component.scss']
 })
-export class IncomeDetailsComponent implements OnInit {
+export class IncomeDetailsComponent implements OnInit, OnDestroy {
 
   form: FormGroup<IncomeForm>;
 
@@ -39,7 +40,8 @@ export class IncomeDetailsComponent implements OnInit {
     private snackbar: MatSnackBar,
     private confirmationDialog: ConfirmationDialogService,
     private incomeContextService: IncomeContextService,
-    private incomeHistoryDialogService: IncomeHistoryDialogService
+    private incomeHistoryDialogService: IncomeHistoryDialogService,
+    private pageTitleService: PageTitleService
   ) {
     const params = getParametersFromRouteRecursive(this.route.snapshot);
     const incomeId = params["id"];
@@ -58,6 +60,13 @@ export class IncomeDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Kopfzeile: Name als Titel, Verlauf als Icon-Button (Mockup 04, Fixkosten bearbeiten)
+    this.pageTitleService.set(this.income.name);
+    this.pageTitleService.setAction({ icon: 'history', label: 'Verlauf anzeigen', run: () => this.onShowHistoryClick() });
+  }
+
+  ngOnDestroy(): void {
+    this.pageTitleService.setAction(null);
   }
 
   onShowHistoryClick(): void {
@@ -92,7 +101,10 @@ export class IncomeDetailsComponent implements OnInit {
 
     this.incomeContextService.updateIncome(this.income.id, dto).subscribe(
       {
-        next: _ => this.isSaving = false,
+        next: _ => {
+          this.isSaving = false;
+          this.pageTitleService.set(dto.name);
+        },
         error: _ => {
           this.isSaving = false;
           openErrorSnackbar("Eintrag konnte nicht gespeichert werden.", this.snackbar);

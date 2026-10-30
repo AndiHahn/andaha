@@ -1,15 +1,15 @@
-<div class="container"> 
-	<mat-form-field appearance="fill">
-		<mat-label>{{ label }}</mat-label>
-		<input
-			matInput
-			[ngxMatTimepicker]="picker"
-			[format]="format"
-			[value]="defaultTime"
-			[disabled]="disabled" />
-		<ngx-mat-timepicker
-			#picker
-			[minutesGap]="minutesGap"
-			(timeSet)="ngxTimeSet($event)"></ngx-mat-timepicker>
-	</mat-form-field>
-</div>
+<label class="field">
+  <span class="field-label">{{ label }}</span>
+  <span class="field-box">
+    <input
+      [ngxMatTimepicker]="picker"
+      [format]="format"
+      [value]="defaultTime"
+      [disabled]="disabled" />
+    <mat-icon class="suffix" aria-hidden="true">schedule</mat-icon>
+    <ngx-mat-timepicker
+      #picker
+      [minutesGap]="minutesGap"
+      (timeSet)="ngxTimeSet($event)"></ngx-mat-timepicker>
+  </span>
+</label>

@@ -1,25 +1,39 @@
-section {
-  display: table;
-  margin: 8px;
+// Zeilen laufen bis an den Sheet-Rand (Inhalt hat global 16 px Innenabstand)
+.head,
+.kv,
+.empty {
+  margin: 0 -16px;
 }
 
-.label {
-  display: table-cell;
-  font-size: 15px;
-  margin-left: 8px;
-  min-width: 200px;
-  font-weight: bold;
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 16px 20px;
+  border-bottom: 1px solid var(--line-sheet);
 }
 
-.label-row {
-  display: table-cell;
-  margin: 10px;
+.head-label {
+  font-size: 13px;
+  color: var(--mut);
 }
 
-.text-big {
-  font-weight: bolder;
+.kv {
+  border-bottom-color: var(--line-sheet);
+
+  &:last-child { border-bottom: 0; }
 }
 
-.margin-top-20 {
-  margin-top: 20px;
+.k {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.v {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.empty {
+  border-bottom: 0;
 }

@@ -1,5 +1,5 @@
 <app-dialog>
-  <mat-dialog-content>    
+  <mat-dialog-content>
     <mat-radio-group (change)="onRadioButtonChange($event)" class="radio-group">
       <mat-radio-button class="radio-button"
           [checked]="selectedOption == uploadSelection.TakePicture"
@@ -18,35 +18,30 @@
         <webcam class="webcam" [trigger]="triggerObservable" (imageCapture)="handleImage($event)"
           (imageClick)="onCameraClick()" [width]="maxVideoWidth" [height]="maxVideoHeight">
         </webcam>
-      
-        <div style="flex: 1">
-          <button mat-raised-button color="primary" class="button-style" [disabled]="image"
-              (click)="triggerSnapshot()">
-            Foto aufnehmen
-          </button>
-        </div>
+
+        <button type="button" class="btn sec2" [disabled]="image"
+            (click)="triggerSnapshot()">
+          <mat-icon>photo_camera</mat-icon><span>Foto aufnehmen</span>
+        </button>
       </div>
     </div>
 
     <div *ngIf="selectedOption == uploadSelection.UploadFromGallery">
-      <button *ngIf="!image" mat-raised-button color="primary" class="button-style" (click)="hiddenImageInput.click()">
-        Foto auswählen
+      <button *ngIf="!image" type="button" class="btn sec2 full" (click)="hiddenImageInput.click()">
+        <mat-icon>upload</mat-icon><span>Foto auswählen</span>
         <input style="display: none" #hiddenImageInput type="file" accept="image/*" (change)="onChooseFile(hiddenImageInput)">
       </button>
     </div>
 
-    <div *ngIf="image">
-      <img src="{{ image.src }}" [width]="maxVideoWidth" alt="image">
+    <div *ngIf="image" class="preview">
+      <img src="{{ image.src }}" [width]="maxVideoWidth" alt="Rechnungsfoto">
     </div>
-    
   </mat-dialog-content>
 
-  <mat-dialog-actions>
-    <div style="flex: 1">
-      <button mat-raised-button color="primary" class="button-style" [disabled]="!image"
-          (click)="onChooseImageClick()">
-        Übernehmen
-      </button>
-    </div>
-  </mat-dialog-actions>
+  <div class="actions">
+    <button type="button" class="btn pri" [disabled]="!image"
+        (click)="onChooseImageClick()">
+      Übernehmen
+    </button>
+  </div>
 </app-dialog>

@@ -1,1 +1,136 @@
-.upload-container { padding: 16px }
+// Seite im Flex-Fluss der .area: Upload-Flaeche fuellt den Rest, Aktionsleiste bleibt ueber der Bereichsnavigation
+:host {
+  display: flex;
+  flex-direction: column;
+}
+
+.page {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px 16px;
+}
+
+// Upload-Flaeche (Mockup 03): gestricheltes well; das Datei-Input liegt visuell versteckt, aber erreichbar darin
+.well {
+  position: relative;
+  flex: 1;
+  min-height: 200px;
+  border-radius: 16px;
+  border: 1px dashed var(--grab);
+  background: var(--well);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 24px;
+  cursor: pointer;
+  text-align: center;
+
+  &:focus-within {
+    outline: 2px solid var(--pri);
+    outline-offset: 2px;
+  }
+}
+
+.preview {
+  display: block;
+  max-width: 100%;
+  min-height: 0;
+  flex: 0 1 auto;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--paper);
+  box-shadow: 0 10px 24px -10px var(--sh7);
+  transform: rotate(-2deg);
+
+  img {
+    display: block;
+    max-width: 100%;
+    max-height: 46vh;
+    object-fit: contain;
+  }
+}
+
+.ic {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: var(--raised);
+  color: var(--pri-text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  .mat-icon { font-size: 30px; width: 30px; height: 30px; line-height: 30px; }
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+}
+
+.name {
+  font-size: 15px;
+  font-weight: 600;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--mut);
+}
+
+// Fester Platz fuer den 3-px-Balken beim Hochladen
+.progress-slot {
+  flex: none;
+  height: 3px;
+}
+
+@media (min-width: 1024px) {
+  .body,
+  .progress-slot,
+  .actions {
+    max-width: 560px;
+    margin: 0 40px;
+  }
+
+  .body {
+    flex: none;
+    overflow: visible;
+    padding: 16px 0;
+  }
+
+  .well {
+    flex: none;
+    min-height: 320px;
+  }
+
+  .actions {
+    justify-content: flex-end;
+    padding: 16px 0 24px;
+    border-top: 0;
+    background: transparent;
+
+    .btn { flex: none; min-width: 160px; }
+  }
+
+  .page {
+    display: block;
+    overflow: auto;
+  }
+}

@@ -1,2 +1,14 @@
-.mat-dialog-content { display:flex; justify-content:center }
-.mat-progress-spinner { margin: 24px }
+.action-container {
+  display: flex;
+  justify-content: center;
+  margin: 30px 0;
+}
+
+// Bild ist projizierter Inhalt dieser Komponente: auf die Sheet-/Dialogbreite begrenzen
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 6px;
+}

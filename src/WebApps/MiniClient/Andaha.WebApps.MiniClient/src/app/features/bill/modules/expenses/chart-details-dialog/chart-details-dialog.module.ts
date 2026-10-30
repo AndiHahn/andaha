@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChartDetailsDialogComponent } from './chart-details-dialog.component';
-import { MatDividerModule } from '@angular/material/divider';
 import { DialogModule } from 'src/app/shared/dialog/dialog.module';
 import { MatDialogModule } from '@angular/material/dialog';
 
@@ -11,7 +10,6 @@ import { MatDialogModule } from '@angular/material/dialog';
   ],
   imports: [
     CommonModule,
-    MatDividerModule,
     DialogModule,
     MatDialogModule
   ],

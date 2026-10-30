@@ -1,43 +1,43 @@
-<app-dialog>
+<app-dialog [title]="'Datumfilter'">
   <mat-dialog-content>
+    <div class="form">
+      <div class="field">
+        <label class="field-label" for="bill-filter-from">Von</label>
+        <div class="box-row">
+          <span class="field-box">
+            <input id="bill-filter-from" [matDatepicker]="dpFrom" [formControl]="dateFrom" aria-describedby="bill-filter-from-hint">
+            <mat-datepicker-toggle class="suffix" [for]="dpFrom" [aria-label]="'Kalender öffnen'">
+              <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
+            </mat-datepicker-toggle>
+            <mat-datepicker #dpFrom></mat-datepicker>
+          </span>
+          <button type="button" class="icon-btn clear-btn" (click)="onClearFromDateClick()" aria-label="Von-Datum leeren">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <span class="field-hint" id="bill-filter-from-hint">DD.MM.YYYY</span>
+      </div>
 
-    <h3>Datumfilter:</h3>
-
-    <div>
-      <mat-form-field appearance="fill">
-        <mat-label>Von</mat-label>
-        <input matInput [matDatepicker]="dpFrom" [formControl]="dateFrom">
-        <mat-hint>DD.MM.YYYY</mat-hint>
-        <mat-datepicker-toggle matSuffix [for]="dpFrom"></mat-datepicker-toggle>
-        <mat-datepicker #dpFrom></mat-datepicker>
-      </mat-form-field>
-  
-      <button mat-icon-button (click)="onClearFromDateClick()">
-        <mat-icon style="color: red;">close</mat-icon>
-      </button>
+      <div class="field">
+        <label class="field-label" for="bill-filter-until">Bis</label>
+        <div class="box-row">
+          <span class="field-box">
+            <input id="bill-filter-until" [matDatepicker]="dpUntil" [formControl]="dateUntil" aria-describedby="bill-filter-until-hint">
+            <mat-datepicker-toggle class="suffix" [for]="dpUntil" [aria-label]="'Kalender öffnen'">
+              <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
+            </mat-datepicker-toggle>
+            <mat-datepicker #dpUntil></mat-datepicker>
+          </span>
+          <button type="button" class="icon-btn clear-btn" (click)="onClearUntilDateClick()" aria-label="Bis-Datum leeren">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <span class="field-hint" id="bill-filter-until-hint">DD.MM.YYYY</span>
+      </div>
     </div>
-
-    <div class="gap"></div>
-    
-    <div>
-      <mat-form-field appearance="fill">
-        <mat-label>Bis</mat-label>
-        <input matInput [matDatepicker]="dpUntil" [formControl]="dateUntil">
-        <mat-hint>DD.MM.YYYY</mat-hint>
-        <mat-datepicker-toggle matSuffix [for]="dpUntil"></mat-datepicker-toggle>
-        <mat-datepicker #dpUntil></mat-datepicker>
-      </mat-form-field>
-  
-      <button mat-icon-button (click)="onClearUntilDateClick()">
-        <mat-icon style="color: red;">close</mat-icon>
-      </button>
-    </div>
-
   </mat-dialog-content>
 
-  <mat-dialog-actions>
-    <button mat-raised-button color="primary" class="button-style" (click)="onTakeOverClick()">
-      <span>Übernehmen</span>
-    </button>
-  </mat-dialog-actions>
+  <div class="actions">
+    <button type="button" class="btn pri" (click)="onTakeOverClick()">Übernehmen</button>
+  </div>
 </app-dialog>

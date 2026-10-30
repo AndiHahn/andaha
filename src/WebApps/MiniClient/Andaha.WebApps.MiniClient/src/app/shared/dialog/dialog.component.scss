@@ -1,4 +1,36 @@
-.close-container {
+:host {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  min-height: 0;
+  max-height: inherit;
+}
+
+.grab {
+  display: none;
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--grab);
+  margin: 10px auto 2px;
+  flex: none;
+}
+
+.sh {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px 0 16px;
+
+  h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
+}
+
+.close-btn { margin-left: auto; }
+
+@media (max-width: 599.98px) {
+  .grab { display: block; }
 }

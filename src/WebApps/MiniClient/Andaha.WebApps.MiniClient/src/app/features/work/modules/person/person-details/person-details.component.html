@@ -1,112 +1,112 @@
-<!--
-  BACK BUTTON
--->
-
-<button mat-icon-button routerLink="/work/person" class="back-button">
-  <mat-icon>arrow_back</mat-icon>
-</button>
-
-<!--
-  FORM
--->
-<div>
-  <form [formGroup]="form">
-    <div class="form-container">
-      <mat-form-field appearance="fill">
-        <mat-label>Name</mat-label>
-        <input matInput formControlName="name" required>
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Stundensatz</mat-label>
-        <input matInput formControlName="hourlyRate" type="number" required autocomplete="off">
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Notizen</mat-label>
-        <textarea matInput formControlName="notes"></textarea>
-      </mat-form-field>
-    </div>
-
-    <div class="info-box">
-      <div class="label">Gesamtstunden: </div>
-      <div class="value">{{ getTimeDisplayName(person.totalHours) }}</div>
-    </div>
-
-    <div *ngIf="form.controls.hourlyRate.value > 0">
-      <div class="info-box">
-        <div class="label">Bezahlte Stunden: </div>
-        <div class="value">{{ getTimeDisplayName(person.payedHours) }}</div>
+<!-- Name als Titel in der Kopfzeile (PageTitleService.set, siehe ngOnInit) -->
+<div class="page">
+  <div class="body">
+    <!--
+      KENNZAHL-ZEILE (Bezahlt/Offen nur bei Stundensatz > 0, wie bisher)
+    -->
+    <div class="tri">
+      <div>
+        <span>Gesamtstunden</span>
+        <b>{{ getTimeDisplayName(person.totalHours) }}</b>
       </div>
-  
-      <div class="info-box">
-        <div class="label">Offene Stunden: </div>
-        <div class="value">{{ getTimeDisplayName(calculateTimeDifference(person.totalHours, person.payedHours)) }}</div>
-      </div>
-    </div>
-
-    <mat-divider></mat-divider>
-
-    <h3 style="margin-left: 15px; margin-top: 20px;">Arbeitszeiten:</h3>
-
-    <div style="margin-left: 15px; margin-right: 15px;" *ngIf="workingEntries && workingEntries.length <= 0">
-      Es sind noch keine Arbeitszeiten vorhanden.
-    </div>
-
-    <div *ngIf="!workingEntries || isLoading" class="action-container">
-      <mat-spinner diameter="40"></mat-spinner>
-    </div>
-
-    <div *ngIf="workingEntries && !isLoading">
-      <app-work-entry-list [workEntries]="workingEntries!"></app-work-entry-list>
+      <ng-container *ngIf="form.controls.hourlyRate.value > 0">
+        <div>
+          <span>Bezahlte Stunden</span>
+          <b>{{ getTimeDisplayName(person.payedHours) }}</b>
+        </div>
+        <div>
+          <span>Offene Stunden</span>
+          <b class="open">{{ getTimeDisplayName(calculateTimeDifference(person.totalHours, person.payedHours)) }}</b>
+        </div>
+      </ng-container>
     </div>
 
     <!--
-    BOTTOM BUTTONS
+      LESEMODUS: WERTEZEILEN (Werte aus dem Formular, wie bisher angezeigt)
     -->
-
-    <div class="progressbar-placeholder"></div>
-
-    <mat-progress-bar *ngIf="isSaving || isDeleting" class="progressbar" mode="indeterminate" color="accent"></mat-progress-bar>
-
-    <div class="button-placeholder"></div>
-
-    <div class="floating-button payment-button">
-      <div *ngIf="!isEditing && form.controls.hourlyRate.value > 0" style="flex: 1">
-        <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onAddPaymentClick()"
-            [disabled]="isDeleting || isLoading || isSaving">
-          <mat-icon>paid</mat-icon><span>Zahlung</span>
-        </button>
+    <ng-container *ngIf="!isEditing">
+      <div class="kv">
+        <span class="k">Stundensatz</span>
+        <span class="v">{{ form.controls.hourlyRate.value | number:'1.2-2':'de' }} €</span>
       </div>
+      <div class="notes" *ngIf="form.controls.notes.value">
+        <span class="k">Notizen</span>
+        <span class="notes-text">{{ form.controls.notes.value }}</span>
+      </div>
+    </ng-container>
+
+    <!--
+      BEARBEITEN: FORMULAR
+    -->
+    <form *ngIf="isEditing" class="form" [formGroup]="form">
+      <label class="field" [class.invalid]="form.controls.name | showError">
+        <span class="field-label">Name</span>
+        <span class="field-box">
+          <input formControlName="name" required [attr.aria-invalid]="form.controls.name | showError">
+        </span>
+      </label>
+
+      <label class="field" [class.invalid]="form.controls.hourlyRate | showError">
+        <span class="field-label">Stundensatz</span>
+        <span class="field-box">
+          <input formControlName="hourlyRate" type="number" required autocomplete="off" [attr.aria-invalid]="form.controls.hourlyRate | showError">
+          <span class="suffix" aria-hidden="true">€</span>
+        </span>
+      </label>
+
+      <label class="field" [class.invalid]="form.controls.notes | showError">
+        <span class="field-label">Notizen</span>
+        <span class="field-box ta">
+          <textarea formControlName="notes" [attr.aria-invalid]="form.controls.notes | showError"></textarea>
+        </span>
+      </label>
+    </form>
+
+    <!--
+      ARBEITSZEITEN
+    -->
+    <p class="sec">Arbeitszeiten</p>
+
+    <div class="empty" *ngIf="workingEntries && workingEntries.length <= 0">
+      Es sind noch keine Arbeitszeiten vorhanden.
     </div>
 
-    <div class="button-placeholder"></div>
-
-    <div class="floating-button edit-buttons">
-      <div *ngIf="!isEditing" style="flex: 1">
-        <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onEditClick()"
-            [disabled]="isDeleting || isLoading || isSaving">
-          <mat-icon>edit</mat-icon><span>Bearbeiten</span>
-        </button>
-      </div>
-      <div *ngIf="isEditing" style="display: flex; flex-direction: row; width: 100%">
-        <button mat-raised-button color="secondary" class="button-style button-with-icon" (click)="onCancelClick()">
-          <mat-icon>close</mat-icon><span>Abbrechen</span>
-        </button>
-        <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onSaveClick()"
-            [disabled]="isSaving">
-          <mat-icon>save</mat-icon><span>Speichern</span>
-        </button>
-      </div>
+    <div *ngIf="!workingEntries || isLoading" class="loading">
+      <mat-spinner diameter="40"></mat-spinner>
     </div>
 
-    <div class="button-placeholder"></div>
+    <app-work-entry-list *ngIf="workingEntries && !isLoading" [workEntries]="workingEntries!"></app-work-entry-list>
+  </div>
 
-    <div class="floating-button delete-button">
-      <div style="flex: 1">
-        <button mat-raised-button color="primary" class="button-style button-with-icon" (click)="onDeleteClick()"
-            [disabled]="isEditing || isDeleting || isLoading || isSaving">
-          <mat-icon>delete</mat-icon><span>Löschen</span>
-        </button>
-      </div>
-    </div>
-  </form>
+  <!--
+    AKTIONEN
+  -->
+  <div class="progress-slot">
+    <mat-progress-bar *ngIf="isDeleting" mode="indeterminate" color="accent"></mat-progress-bar>
+  </div>
+
+  <div class="actions" *ngIf="!isEditing">
+    <button *ngIf="!isEditing && form.controls.hourlyRate.value > 0" type="button" class="btn sec2"
+        (click)="onAddPaymentClick()" [disabled]="isDeleting || isLoading || isSaving">
+      <mat-icon>payments</mat-icon><span>Zahlung</span>
+    </button>
+    <button type="button" class="btn pri" (click)="onEditClick()" [disabled]="isDeleting || isLoading || isSaving">
+      <ng-container *ngIf="!isSaving"><mat-icon>edit</mat-icon><span>Bearbeiten</span></ng-container>
+      <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
+    </button>
+    <button type="button" class="btn del sq" aria-label="Löschen" (click)="onDeleteClick()"
+        [disabled]="isEditing || isDeleting || isLoading || isSaving">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+
+  <div class="actions" *ngIf="isEditing">
+    <button type="button" class="btn sec2" (click)="onCancelClick()">
+      <mat-icon>close</mat-icon><span>Abbrechen</span>
+    </button>
+    <button type="button" class="btn pri" (click)="onSaveClick()" [disabled]="isSaving">
+      <ng-container *ngIf="!isSaving"><mat-icon>check</mat-icon><span>Speichern</span></ng-container>
+      <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
+    </button>
+  </div>
 </div>

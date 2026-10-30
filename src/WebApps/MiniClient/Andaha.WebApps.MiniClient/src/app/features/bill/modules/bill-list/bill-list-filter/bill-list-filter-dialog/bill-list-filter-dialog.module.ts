@@ -5,11 +5,8 @@ import { DialogModule } from 'src/app/shared/dialog/dialog.module';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -21,12 +18,9 @@ import { MatButtonModule } from '@angular/material/button';
     MatDialogModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatFormFieldModule,
-    MatInputModule,
     FormsModule,
     ReactiveFormsModule,
-    MatIconModule,
-    MatButtonModule
+    MatIconModule
   ]
 })
 export class BillListFilterDialogModule { }

@@ -1,11 +1,17 @@
-<mat-form-field appearance="fill">
-  <mat-label>{{ label }}</mat-label>
-  <input
-    matInput
-    [matDatepicker]="picker"
-    [formControl]="control"
-    ngDefaultControl>
-  <mat-hint>DD.MM.YYYY</mat-hint>
-  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-  <mat-datepicker #picker></mat-datepicker>
-</mat-form-field> 
+<label class="field" [class.invalid]="control | showError">
+  <span class="field-label">{{ label }}</span>
+  <span class="field-box">
+    <input
+      [matDatepicker]="picker"
+      [formControl]="control"
+      ngDefaultControl
+      [attr.aria-label]="label"
+      [attr.aria-invalid]="control | showError"
+      [attr.aria-describedby]="'date-picker-hint-' + label">
+    <mat-datepicker-toggle class="suffix" [for]="picker" [aria-label]="'Kalender öffnen'">
+      <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
+    </mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </span>
+  <span class="field-hint" [id]="'date-picker-hint-' + label">DD.MM.YYYY</span>
+</label>

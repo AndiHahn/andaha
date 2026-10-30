@@ -1,44 +1,53 @@
+// Mockup 06: Zeile 56 px, 8 px Innenabstand
+.row {
+  gap: 12px;
+  min-height: 56px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.t {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+}
+
 .master-container {
-  display: flex;
-  justify-content: center;
-}
-
-.list-item {
-  padding: 5px 8px 0px 8px;
-}
-
-.mat-card {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  max-width: calc(100% - 20px);
-  padding: 10px;
-  height: 36px;
-}
-
-.truncate-text {
-  white-space: nowrap;
-  text-overflow: ellipsis;
   display: block;
-  overflow: hidden
 }
 
-.email-field {
-  display: flex;
+:host {
+  display: block;
+}
+
+// 44-px-Buttons Annehmen/Ablehnen (Mockup 06, .mini)
+.mini {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 10px;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
 }
 
-.accept-button {
-  color: green;
-  min-width: 40px;
-  padding: 0px;
+.accept {
+  background: var(--pos-bg);
+  color: var(--pos);
 }
 
-.decline-button {
-  margin-left: 10px;
-  color: red;
-  min-width: 40px;
-  padding: 0px;
+.decline {
+  background: var(--neg-bg);
+  color: var(--neg);
+}
+
+@media (min-width: 1024px) {
+  .row,
+  .empty {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }

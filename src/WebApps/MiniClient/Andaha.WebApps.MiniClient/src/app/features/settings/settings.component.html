@@ -1,22 +1,11 @@
-<ng-container>
+<div class="area">
   <router-outlet></router-outlet>
-  <div class="bottom-navigation-placeholder"></div>
-  <div class="bottom-navigation">
-    <mat-toolbar>  
-      <mat-toolbar-row class="toolbar">
-        <div class="menu-item">
-          <button mat-icon-button routerLink="connections" routerLinkActive #rl1="routerLinkActive" class="small-icon-button">
-            <mat-icon [ngClass]="{ 'primary-fg-color': rl1.isActive}">link</mat-icon>
-          </button>
-          <div class="menu-title" [ngClass]="{ 'primary-fg-color': rl1.isActive}">Verbindungen</div>
-        </div>
-        <div class="menu-item">
-          <button mat-icon-button routerLink="categories" routerLinkActive #rl2="routerLinkActive" class="small-icon-button">
-            <mat-icon [ngClass]="{ 'primary-fg-color': rl2.isActive}">category</mat-icon>
-          </button>
-          <div class="menu-title" [ngClass]="{ 'primary-fg-color': rl2.isActive}">Kategorien</div>
-        </div>
-      </mat-toolbar-row>
-    </mat-toolbar>
-  </div>
-</ng-container>
+  <nav class="bottom-nav" aria-label="Einstellungen">
+    <a routerLink="connections" routerLinkActive="on" #rla0="routerLinkActive" [attr.aria-current]="rla0.isActive ? 'page' : null">
+      <mat-icon>link</mat-icon>Verbindungen
+    </a>
+    <a routerLink="categories" routerLinkActive="on" #rla1="routerLinkActive" [attr.aria-current]="rla1.isActive ? 'page' : null">
+      <mat-icon>category</mat-icon>Kategorien
+    </a>
+  </nav>
+</div>

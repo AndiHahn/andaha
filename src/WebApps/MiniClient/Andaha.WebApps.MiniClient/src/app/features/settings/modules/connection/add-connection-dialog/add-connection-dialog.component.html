@@ -1,24 +1,28 @@
-<div class="close-container">
-  <button mat-icon-button [mat-dialog-close]="undefined">
-    <mat-icon class="close-icon">close</mat-icon>
-  </button>
-</div>
+<app-dialog [title]="'Verbindung zu Benutzer anfordern:'">
+  <form class="dialog-form" [formGroup]="formGroup" (ngSubmit)="onSubmitClick()" #formDirective="ngForm">
+    <mat-dialog-content>
+      <div class="form">
+        <label class="field" [class.invalid]="formGroup.controls['emailAddress'] | showError: formDirective">
+          <span class="field-label">Email Adresse</span>
+          <span class="field-box">
+            <input formControlName="emailAddress" email autocomplete="off"
+                   [attr.aria-invalid]="formGroup.controls['emailAddress'] | showError: formDirective"
+                   [attr.aria-describedby]="(formGroup.controls['emailAddress'] | showError: formDirective) ? 'add-connection-email-error' : null">
+          </span>
+          <span class="field-error" id="add-connection-email-error" *ngIf="formGroup.controls['emailAddress'] | showError: formDirective">
+            Keine gültige email Adresse.
+          </span>
+        </label>
 
-<h3>Verbindung zu Benutzer anfordern:</h3>
+        <span class="field-error" role="alert" *ngIf="errorMessage">{{ errorMessage }}</span>
+      </div>
+    </mat-dialog-content>
 
-<form [formGroup]="formGroup" (ngSubmit)="onSubmitClick()">
-  <mat-form-field class="full-width" appearance="fill">
-    <mat-label>Email Adresse</mat-label>
-    <input matInput formControlName="emailAddress" email>
-    <mat-error *ngIf="formGroup.controls['emailAddress'].invalid" [ngClass]="'error'">
-      Keine gültige email Adresse.
-    </mat-error>
-  </mat-form-field>
-
-  <div class="button-container">
-    <mat-progress-bar *ngIf="isSaving" mode="indeterminate" color="accent"></mat-progress-bar>
-    <button mat-raised-button color="primary" class="button-style" [disabled]="isSaving">Verbindung anfordern</button>
-  </div>
-  
-  <mat-error *ngIf="errorMessage">{{ errorMessage }}</mat-error>
-</form>
+    <div class="actions">
+      <button type="submit" class="btn pri" [disabled]="isSaving">
+        <ng-container *ngIf="!isSaving"><span>Verbindung anfordern</span></ng-container>
+        <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
+      </button>
+    </div>
+  </form>
+</app-dialog>

@@ -1,12 +1,8 @@
-<div mat-dialog-content>
-  <div *ngIf="isLoading">
-    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
-  </div>
-  <div *ngIf="!isLoading && imageSrc">
-    <img [src]="imageSrc" style="max-width:100%; height:auto" />
-  </div>
-</div>
-
-<div mat-dialog-actions>
-  <button mat-button mat-dialog-close>Schließen</button>
-</div>
+<app-dialog>
+  <mat-dialog-content>
+    <div class="action-container" *ngIf="isLoading">
+      <mat-progress-spinner mode="indeterminate" [diameter]="40"></mat-progress-spinner>
+    </div>
+    <img *ngIf="!isLoading && imageSrc" [src]="imageSrc" alt="Rechnungsfoto" />
+  </mat-dialog-content>
+</app-dialog>

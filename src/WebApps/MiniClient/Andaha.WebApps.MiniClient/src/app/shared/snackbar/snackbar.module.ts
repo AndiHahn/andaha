@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ErrorSnackbarComponent } from './error-snackbar/error-snackbar.component';
 import { InformationSnackbarComponent } from './information-snackbar/information-snackbar.component';
@@ -12,8 +11,7 @@ import { InformationSnackbarComponent } from './information-snackbar/information
   ],
   imports: [
     CommonModule,
-    MatIconModule,
-    MatButtonModule
+    MatIconModule
   ]
 })
 export class AppSnackbarModule {}

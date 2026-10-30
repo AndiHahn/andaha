@@ -1,22 +1,52 @@
-.bill-list-container {
-    padding-bottom: 80px
+// Seite im Flex-Fluss der .area: Ladebalken fest, die Liste fuellt den Rest und scrollt
+:host {
+  display: flex;
+  flex-direction: column;
 }
 
-.viewport {
-    height: calc(100vh - 140px)
+// Fester Platz fuer den 3-px-Ladebalken, damit die Liste beim Laden nicht springt
+.progress-slot {
+  flex: none;
+  height: 3px;
 }
 
-.bill-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 12px;
-    border-bottom: 1px solid #eee
+.empty {
+  flex: none;
 }
 
-.bill-title {
-    font-weight: 600
+.list {
+  flex: 1 1 auto;
+  min-height: 0;
+  border-top: 1px solid var(--line);
 }
 
-.bill-sub {
-    color: rgba(0, 0, 0, 0.6)
+// contain: inline-size, damit lange Shopnamen den (absolut positionierten) Inhalts-Wrapper des Viewports
+// nicht verbreitern: die Zeile ist immer so breit wie die Liste, der Name wird per Ellipsis gekuerzt
+.bill-link {
+  display: block;
+  contain: inline-size;
+  color: inherit;
+  text-decoration: none;
+
+  // Zeile reicht bis an den Rand des Viewports: Fokusring nach innen, sonst abgeschnitten
+  &:focus-visible { outline-offset: -2px; }
+}
+
+@media (min-width: 1024px) {
+  .progress-slot,
+  .empty,
+  .list {
+    margin: 0 40px;
+    max-width: 1040px;
+  }
+
+  .list {
+    margin-top: 8px;
+    margin-bottom: 24px;
+    scrollbar-gutter: stable;
+  }
+
+  .bill-link:hover {
+    background: var(--hover-row);
+  }
 }

@@ -1,29 +1,33 @@
-.master-container {
-  padding: 7px 15px 7px 10px;
+:host {
+  display: block;
 }
 
-.flex-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+// Zeile ohne Metazeile, feste Hoehe 60 px inkl. Linie (pixelHeightPerItem)
+.analyzed-row {
+  height: 60px;
+  min-height: 0;
 }
 
-.margin-left-small {
-  margin-left: 5px;
+.t {
+  flex: 1;
+  min-width: 0;
 }
 
-.price-text {
-  font-weight: 500;
+.date-full {
+  display: none;
 }
 
-.date-text {
-  font-weight: lighter;
-}
+// Desktop: Datum ausgeschrieben statt Tag/Monat-Block
+@media (min-width: 1024px) {
+  .date {
+    display: none;
+  }
 
-.vertical-center {
-  align-self: center;
-}
-
-.external-bill-chip {
-  background-color: chartreuse;
+  .date-full {
+    display: block;
+    width: 110px;
+    flex: none;
+    color: var(--mut);
+    white-space: nowrap;
+  }
 }

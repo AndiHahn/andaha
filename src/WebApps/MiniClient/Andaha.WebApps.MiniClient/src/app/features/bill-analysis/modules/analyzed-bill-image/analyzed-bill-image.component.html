@@ -1,5 +1,12 @@
 <div *ngIf="billId">
-  <button mat-icon-button (click)="onShowImageClick()">
-    <mat-icon>receipt_long</mat-icon>
+  <button type="button" class="receipt-btn" aria-label="Rechnungsfoto vergrößern" (click)="onShowImageClick()">
+    <span class="receipt" aria-hidden="true">
+      <span class="b w50"></span>
+      <span class="b"></span>
+      <span class="b w70"></span>
+      <span class="b"></span>
+      <span class="b w40"></span>
+      <span class="b"></span>
+    </span>
   </button>
 </div>

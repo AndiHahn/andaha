@@ -24,18 +24,22 @@ const routes: Routes = [
   },
   {
     path: 'export',
+    data: { title: 'Export' },
     loadChildren: () => import('./features/export/export.module').then(m => m.ExportModule)
   },
   {
     path: 'data-protection',
+    data: { title: 'Datenschutzerklärung' },
     loadChildren: () => import('./features/data-protection/data-protection/data-protection.module').then(m => m.DataProtectionModule)
   },
   {
     path: 'agb',
+    data: { title: 'AGB' },
     loadChildren: () => import('./features/data-protection/agb/agb.module').then(m => m.AgbModule)
   },
   {
     path: 'user-data',
+    data: { title: 'Benutzerdaten' },
     loadChildren: () => import('./features/data-protection/user-data/user-data.module').then(m => m.UserDataModule)
   }
 ];

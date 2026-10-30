@@ -1,17 +1,37 @@
-<div class="details-container">
-  <div class="header">
-    <h2>{{ bill.shopName }}</h2>
-    <div class="meta">{{ bill.date | date:'dd.MM.yyyy' }} — {{ bill.price | currency:'EUR' }}</div>
-  </div>
+<div class="page">
+  <div class="body">
+    <div class="info">
+      <div class="head">
+        <div class="shop">{{ bill.shopName }}</div>
+        <div class="big">{{ bill.price | number:'1.2-2':'de' }}<small>€</small></div>
+        <div class="when">{{ bill.date | date:'dd.MM.yyyy' }}</div>
+      </div>
 
-  <div class="content">
-    <div class="left">
-      <div><strong>Kategorie:</strong> {{ bill.category?.name }}</div>
-      <div *ngIf="bill.subCategory"><strong>Unterkategorie:</strong> {{ bill.subCategory.name }}</div>
-      <div *ngIf="bill.notes"><strong>Notizen:</strong><div class="notes">{{ bill.notes }}</div></div>
-      <div><strong>Analyse-Konfidenz:</strong> {{ bill.analysisConfidence | percent:'1.0-0' }}</div>
+      <div class="kv">
+        <span class="k">Kategorie</span>
+        <span class="v cat">
+          <span class="dot" [class.dot-light]="bill.category?.color == 'white'" [style.background]="bill.category?.color"></span>
+          {{ bill.category?.name }}
+        </span>
+      </div>
+      <div class="kv" *ngIf="bill.subCategory">
+        <span class="k">Unterkategorie</span>
+        <span class="v">{{ bill.subCategory.name }}</span>
+      </div>
+      <div class="kv">
+        <span class="k">Analyse-Konfidenz</span>
+        <span class="v conf">
+          <span class="bar" aria-hidden="true"><span class="fill" [style.width.%]="bill.analysisConfidence * 100"></span></span>
+          {{ bill.analysisConfidence | percent:'1.0-0' }}
+        </span>
+      </div>
+      <div class="notes" *ngIf="bill.notes">
+        <span class="k">Notizen</span>
+        <span class="notes-text">{{ bill.notes }}</span>
+      </div>
     </div>
-    <div class="right">
+
+    <div class="photo-well">
       <app-analyzed-bill-image [billId]="bill.id"></app-analyzed-bill-image>
     </div>
   </div>

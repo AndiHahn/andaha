@@ -4,21 +4,21 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatButtonModule } from '@angular/material/button'
-import { MatToolbarModule } from '@angular/material/toolbar'
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, registerLocaleData } from '@angular/common';
 import { ErrorHttpInterceptor } from './core/error-http-interceptor.service';
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { AuthService } from './core/auth.service';
 import { environment } from 'src/environments/environment';
 import { ServiceWorkerModule } from '@angular/service-worker';
-import { MatIconModule } from '@angular/material/icon';
+import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
+import localeDe from '@angular/common/locales/de';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+
+registerLocaleData(localeDe);
 
 function storageFactory() : OAuthStorage {
   return localStorage
@@ -55,11 +55,8 @@ async function initApp(authService: AuthService): Promise<void> {
     BrowserAnimationsModule,
     CommonModule,
     HttpClientModule,
-    MatButtonModule,
-    MatToolbarModule,
     MatIconModule,
     MatMenuModule,
-    MatListModule,
     MatSidenavModule,
     MatSnackBarModule,
     MatDialogModule,
@@ -91,4 +88,8 @@ async function initApp(authService: AuthService): Promise<void> {
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+  constructor(iconRegistry: MatIconRegistry) {
+    iconRegistry.setDefaultFontSetClass('material-symbols-outlined');
+  }
+}

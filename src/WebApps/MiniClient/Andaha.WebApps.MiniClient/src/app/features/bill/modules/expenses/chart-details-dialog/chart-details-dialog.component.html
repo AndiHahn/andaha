@@ -1,18 +1,17 @@
-<app-dialog>
+<app-dialog [title]="categoryName">
   <mat-dialog-content>
-    <div class="margin-top-20">
-      <section>
-        <div class="label">Ausgaben für {{ categoryName }}:</div>
-        <div class="label-row text-big">{{ truncate(2, sum) }} €</div>
-      </section>
-      <mat-divider></mat-divider>
-      <div *ngIf="subCategoryExpenses.length == 0" class="margin-top-20">
-        Keine Kosten von Subkategorien verfügbar.
-      </div>
-      <section *ngFor="let expense of subCategoryExpenses">
-        <div class="label">{{ expense?.subCategory }}:</div>
-        <div class="label-row">{{ truncate(2, expense?.costs) }} €</div>
-      </section>
+    <!-- Kopf: Kategorie-Summe (Mockup 02, Kategorie-Details) -->
+    <div class="head">
+      <span class="head-label">Ausgaben für {{ categoryName }}</span>
+      <span class="big">{{ truncate(2, sum) | number:'1.2-2':'de' }}<small>€</small></span>
+    </div>
+
+    <div *ngIf="subCategoryExpenses.length == 0" class="empty">
+      Keine Kosten von Subkategorien verfügbar.
+    </div>
+    <div class="kv" *ngFor="let expense of subCategoryExpenses">
+      <span class="k">{{ expense?.subCategory }}</span>
+      <span class="v">{{ truncate(2, expense?.costs) | number:'1.2-2':'de' }} €</span>
     </div>
   </mat-dialog-content>
 </app-dialog>

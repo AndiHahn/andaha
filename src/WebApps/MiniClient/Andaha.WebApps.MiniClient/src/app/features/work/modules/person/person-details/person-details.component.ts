@@ -17,6 +17,7 @@ import { Time } from '@angular/common';
 import { addTimes, calculateTimeDifference, createTimeDisplayName } from '../../../functions/date-time-functions';
 import { PersonPaymentDialogService } from '../person-payment-dialog/person-payment-dialog.service';
 import { getHoursFromTimeString, getMinutesFromTimeString } from 'src/app/api/functions/api-utils';
+import { PageTitleService } from 'src/app/core/page-title/page-title.service';
 
 @Component({
   selector: 'app-person-details',
@@ -45,7 +46,8 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
     private contextService: PersonContextService, 
     private confirmationDialog: ConfirmationDialogService,
     private personPaymentDialogService: PersonPaymentDialogService,
-    private workingEntryContextService: WorkingEntriesContextService
+    private workingEntryContextService: WorkingEntriesContextService,
+    private pageTitleService: PageTitleService
   ) {
     const params = getParametersFromRouteRecursive(this.route.snapshot);
     const personId = params["id"];
@@ -64,6 +66,8 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Kopfzeile: Name der Person als Titel (Mockup 05, Person)
+    this.pageTitleService.set(this.person.name);
     this.initSubscriptions();
   }
 
@@ -90,6 +94,10 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
       })
       .then(dialogRef => dialogRef.afterClosed().subscribe({
         next: payedHours => {
+          if (!payedHours) {
+            return;
+          }
+
           const payedNow = {
             hours: getHoursFromTimeString(payedHours!),
             minutes: getMinutesFromTimeString(payedHours!)
@@ -113,7 +121,10 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
 
     this.contextService.updatePerson(this.person.id, dto).subscribe(
       {
-        next: _ => this.isSaving = false,
+        next: _ => {
+          this.isSaving = false;
+          this.pageTitleService.set(dto.name);
+        },
         error: _ => {
           this.isSaving = false;
           openErrorSnackbar("Person konnte nicht gespeichert werden.", this.snackbar);

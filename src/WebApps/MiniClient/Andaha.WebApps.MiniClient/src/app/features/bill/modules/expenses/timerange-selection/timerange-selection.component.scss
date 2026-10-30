@@ -1,9 +1,16 @@
+// Segment und Felder untereinander (Mockup 02: padding 4px 16px 0, gap 12px)
 .form-container {
   display: flex;
   flex-direction: column;
-  margin: 0px 15px;
+  gap: 12px;
+  padding: 4px 16px 0;
 }
 
-mat-form-field {
-  width: 100%;
+// Von – Bis nebeneinander
+.range {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+
+  .field { min-width: 0; }
 }

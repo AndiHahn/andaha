@@ -4,7 +4,6 @@ import { FixedCostHistoryDialogComponent } from './fixed-cost-history-dialog.com
 import { DialogModule } from 'src/app/shared/dialog/dialog.module';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   declarations: [
@@ -14,8 +13,7 @@ import { MatCardModule } from '@angular/material/card';
     CommonModule,
     DialogModule,
     MatDialogModule,
-    MatProgressSpinnerModule,
-    MatCardModule
+    MatProgressSpinnerModule
   ]
 })
 export class FixedCostHistoryDialogModule { }

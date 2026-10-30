@@ -1,14 +1,30 @@
-<div class="chart-container">
-  <div class="chart">
-    <canvas
-      baseChart
-      [type]="'pie'"
-      [datasets]="chartDatasets"
-      [labels]="chartLabels"
-      [options]="chartOptions"
-      [legend]="true"
-      (chartClick)="chartClicked($event)">
-    </canvas>
+<!-- Ring mit Summe in der Mitte (Mockup 02) -->
+<div class="ring">
+  <canvas
+    baseChart
+    aria-hidden="true"
+    [type]="'doughnut'"
+    [datasets]="chartDatasets"
+    [labels]="chartLabels"
+    [options]="chartOptions"
+    [legend]="false"
+    (chartClick)="chartClicked($event)">
+  </canvas>
+  <div class="ring-center">
+    <span class="ring-label">Summe der Ausgaben</span>
+    <span class="ring-sum">{{ sum | number:'1.2-2':'de' }} €</span>
   </div>
 </div>
 
+<!-- Eigene Legende: ein Tipp ruft denselben Handler wie der Klick ins Diagramm, mit demselben Index (= Kategorie) -->
+<div class="legend">
+  <button type="button" class="lg" *ngFor="let expense of expenses; let i = index"
+          (click)="chartClicked({ active: [{ index: i }] })">
+    <span class="dot" [class.dot-light]="chartDatasets[0].backgroundColor[i] == 'white'"
+          [style.background]="chartDatasets[0].backgroundColor[i]"></span>
+    <span class="n">{{ expense?.category }}</span>
+    <span class="p">{{ (sum ? expense.costs / sum * 100 : 0) | number:'1.0-0':'de' }} %</span>
+    <span class="a">{{ expense?.costs | number:'1.2-2':'de' }} €</span>
+    <mat-icon class="chev" aria-hidden="true">chevron_right</mat-icon>
+  </button>
+</div>

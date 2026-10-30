@@ -1,22 +1,11 @@
-<ng-container>
+<div class="area">
   <router-outlet></router-outlet>
-  <div class="bottom-navigation-placeholder"></div>
-  <div class="bottom-navigation">
-    <mat-toolbar>
-      <mat-toolbar-row class="toolbar">
-        <div class="menu-item">
-          <button mat-icon-button routerLink="analyzed/list" routerLinkActive #rl1="routerLinkActive" class="small-icon-button">
-            <mat-icon [ngClass]="{ 'primary-fg-color': rl1.isActive}">list</mat-icon>
-          </button>
-          <div class="menu-title" [ngClass]="{ 'primary-fg-color': rl1.isActive}">Analysiert</div>
-        </div>
-        <div class="menu-item">
-          <button mat-icon-button routerLink="analyzed/create" routerLinkActive #rl2="routerLinkActive" class="small-icon-button">
-            <mat-icon [ngClass]="{ 'primary-fg-color': rl2.isActive}">add_circle</mat-icon>
-          </button>
-          <div class="menu-title" [ngClass]="{ 'primary-fg-color': rl2.isActive}">Rechnung hochladen</div>
-        </div>
-      </mat-toolbar-row>
-    </mat-toolbar>
-  </div>
-</ng-container>
+  <nav class="bottom-nav" aria-label="Analyse">
+    <a routerLink="/analyzed/list" routerLinkActive="on" #rla0="routerLinkActive" [attr.aria-current]="rla0.isActive ? 'page' : null">
+      <mat-icon>list</mat-icon>Analysiert
+    </a>
+    <a routerLink="/analyzed/create" routerLinkActive="on" #rla1="routerLinkActive" [attr.aria-current]="rla1.isActive ? 'page' : null">
+      <mat-icon>upload</mat-icon>Rechnung hochladen
+    </a>
+  </nav>
+</div>

@@ -33,9 +33,7 @@
               "src/staticwebapp.config.json"
             ],
             "styles": [
-              "src/styles.scss",
-              "./node_modules/@angular/material/prebuilt-themes/purple-green.css",
-              "src/themes/custom-theme.scss"
+              "src/styles.scss"
             ],
             "scripts": [],
             "stylePreprocessorOptions": {
@@ -132,7 +130,6 @@
               "src/manifest.webmanifest"
             ],
             "styles": [
-              "./node_modules/@angular/material/prebuilt-themes/purple-green.css",
               "src/styles.scss"
             ],
             "scripts": []

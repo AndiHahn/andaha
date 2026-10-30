@@ -1,58 +1,79 @@
-<div>
-  <form [formGroup]="form" #formDirective="ngForm" (ngSubmit)="onSubmit(formDirective)">
-    <div class="form-container">
-      <div class="image">
-        <app-bill-image [editing]="true" [saving]="false" [onlyUpload]="true"
-            (imageSelected)="onImageSelected($event)">
-        </app-bill-image>
-      </div>
+<form class="page" [formGroup]="form" #formDirective="ngForm" (ngSubmit)="onSubmit(formDirective)">
+  <div class="form-body">
+    <app-bill-image [editing]="true" [saving]="false" [onlyUpload]="true"
+        (imageSelected)="onImageSelected($event)">
+    </app-bill-image>
 
-      <mat-form-field appearance="fill">
-        <mat-label>Shopname</mat-label>
-        <input matInput formControlName="shopName" required>
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Notizen</mat-label>
-        <textarea matInput formControlName="notes"></textarea>
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Preis</mat-label>
-        <input matInput formControlName="price" type="number" required autocomplete="off">
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Kategorie</mat-label>
-        <mat-select formControlName="category" required (selectionChange)="categorySelectionChanged($event)">
+    <label class="field" [class.invalid]="form.controls.shopName | showError: formDirective">
+      <span class="field-label">Shopname</span>
+      <span class="field-box">
+        <input formControlName="shopName" required [attr.aria-invalid]="form.controls.shopName | showError: formDirective">
+      </span>
+    </label>
+
+    <label class="field" [class.invalid]="form.controls.notes | showError: formDirective">
+      <span class="field-label">Notizen</span>
+      <span class="field-box ta">
+        <textarea formControlName="notes" [attr.aria-invalid]="form.controls.notes | showError: formDirective"></textarea>
+      </span>
+    </label>
+
+    <label class="field" [class.invalid]="form.controls.price | showError: formDirective">
+      <span class="field-label">Preis</span>
+      <span class="field-box">
+        <input class="price" formControlName="price" type="number" required autocomplete="off" [attr.aria-invalid]="form.controls.price | showError: formDirective">
+        <span class="suffix" aria-hidden="true">€</span>
+      </span>
+    </label>
+
+    <div class="field" [class.invalid]="form.controls.category | showError: formDirective">
+      <span class="field-label">Kategorie</span>
+      <span class="field-box">
+        <mat-select formControlName="category" required aria-label="Kategorie" (selectionChange)="categorySelectionChanged($event)">
+          <mat-select-trigger>
+            <span class="trigger">
+              <span class="dot" [class.dot-light]="form.controls.category.value?.color == 'white'"
+                  [style.background]="form.controls.category.value?.color"></span>
+              {{ form.controls.category.value?.name }}
+            </span>
+          </mat-select-trigger>
           <mat-option *ngFor="let category of billCategories" [value]="category">
             {{category?.name}}
           </mat-option>
         </mat-select>
-      </mat-form-field>
-      <mat-form-field appearance="fill" *ngIf="billSubCategories && billSubCategories.length > 0">
-        <mat-label>Unterkategorie</mat-label>
-        <mat-select formControlName="subCategory">
+        <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
+      </span>
+    </div>
+
+    <div class="field" *ngIf="billSubCategories && billSubCategories.length > 0">
+      <span class="field-label">Unterkategorie</span>
+      <span class="field-box">
+        <mat-select formControlName="subCategory" aria-label="Unterkategorie">
           <mat-option></mat-option>
           <mat-option *ngFor="let subCategory of billSubCategories" [value]="subCategory">
             {{subCategory?.name}}
           </mat-option>
         </mat-select>
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Datum</mat-label>
-        <input matInput [matDatepicker]="picker" formControlName="date">
-        <mat-hint>DD.MM.YYYY</mat-hint>
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
+      </span>
+    </div>
+
+    <label class="field" [class.invalid]="form.controls.date | showError: formDirective">
+      <span class="field-label">Datum</span>
+      <span class="field-box">
+        <input [matDatepicker]="picker" formControlName="date" aria-label="Datum" aria-describedby="add-bill-date-hint" [attr.aria-invalid]="form.controls.date | showError: formDirective">
+        <mat-datepicker-toggle class="suffix" [for]="picker" [aria-label]="'Kalender öffnen'">
+          <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
+        </mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field>      
-    </div>
+      </span>
+      <span class="field-hint" id="add-bill-date-hint">DD.MM.YYYY</span>
+    </label>
+  </div>
 
-    <div class="button-placeholder"></div>
-
-    <div class="bottom-button">
-      <div style="flex: 1">
-        <button mat-raised-button color="primary" class="button-style" [disabled]="!form.valid">
-          <mat-icon>save</mat-icon><span>Speichern</span>
-        </button>
-      </div>
-    </div>
-  </form>
-</div>
+  <div class="actions">
+    <button type="submit" class="btn pri" [disabled]="!form.valid">
+      <mat-icon>check</mat-icon><span>Speichern</span>
+    </button>
+  </div>
+</form>

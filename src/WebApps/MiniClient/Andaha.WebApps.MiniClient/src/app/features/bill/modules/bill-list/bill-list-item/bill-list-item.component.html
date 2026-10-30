@@ -1,23 +1,24 @@
-<div class="master-container">
-  <div matLine>
-    <div class="flex-container">
-      <span class="margin-left-small">{{ bill.shopName }}</span>
-      <span class="price-text">{{ bill.price }} €</span>
+<div class="row bill-row">
+  <div class="date">
+    <b>{{ bill.date | date:'dd':undefined:'de' }}</b>
+    <span>{{ bill.date | date:'LLL':undefined:'de' }}</span>
+  </div>
+  <div class="date-full">{{ bill.date | date:'dd.MM.yyyy':undefined:'de' }}</div>
+  <div class="main">
+    <div class="t">{{ bill.shopName }}</div>
+    <div class="s">
+      <span class="dot" [class.dot-light]="bill.category.color == 'white'" [style.background]="bill.category.color"></span>
+      <span class="cat">{{ bill.category.name }}<span class="sub" *ngIf="bill.subCategory"> · {{ bill.subCategory.name }}</span></span>
+      <ng-container *ngTemplateOutlet="origin"></ng-container>
     </div>
   </div>
-  <div matLine>
-    <div class="flex-container">
-      <mat-chip-list>
-        <mat-chip [ngStyle]="{'background-color': bill.category.color, 'color': bill.category.color == 'white' ? 'black' : 'white' }" selected>
-          {{ bill.category.name }} <div *ngIf="bill.subCategory" style="white-space: pre"> {{ '(' + bill.subCategory.name + ')' }}</div>
-        </mat-chip>
-          <mat-icon *ngIf="bill.isExternal" style="color: limegreen">link</mat-icon>
-          <mat-icon *ngIf="bill.fromAnalysis" style="color: limegreen">receipt_long</mat-icon>
-      </mat-chip-list>
-      <div class="vertical-center">  
-        <span class="date-text"> {{ bill.date | date:'dd.MM.YYYY' }} </span>
-      </div>
-    </div>
+  <div class="origin-cell">
+    <ng-container *ngTemplateOutlet="origin"></ng-container>
   </div>
+  <div class="amt">{{ bill.price | number:'1.2-2':'de' }}<small>€</small></div>
 </div>
-<mat-divider></mat-divider>
+
+<ng-template #origin>
+  <mat-icon *ngIf="bill.isExternal" class="origin" role="img" aria-label="Von verbundenem Konto">link</mat-icon>
+  <mat-icon *ngIf="bill.fromAnalysis" class="origin" role="img" aria-label="Aus Analyse übernommen">receipt_long</mat-icon>
+</ng-template>

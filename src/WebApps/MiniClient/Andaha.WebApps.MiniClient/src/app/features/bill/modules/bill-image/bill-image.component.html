@@ -1,10 +1,9 @@
-<div *ngIf="!bill?.imageAvailable">
-  <button mat-icon-button [disabled]="!editing" (click)="onAddImageClick()">
-    <mat-icon>add_a_photo</mat-icon>
-  </button>
-</div>
-<div *ngIf="bill?.imageAvailable && !onlyUpload">
-  <button mat-icon-button [disabled]="saving" (click)="onShowImageClick()">
-    <mat-icon>receipt_long</mat-icon>
-  </button>
-</div>
+<button *ngIf="!bill?.imageAvailable" type="button" class="photo add" [disabled]="!editing" (click)="onAddImageClick()">
+  <span class="ic" aria-hidden="true"><mat-icon>photo_camera</mat-icon></span>
+  <span class="txt">Foto der Rechnung<span class="hint">Optional</span></span>
+</button>
+<button *ngIf="bill?.imageAvailable && !onlyUpload" type="button" class="photo show" [disabled]="saving" (click)="onShowImageClick()">
+  <span class="thumb" aria-hidden="true"><span class="w70"></span><span></span><span class="w55"></span><span></span><span class="w40"></span></span>
+  <span class="txt">Rechnungsfoto<span class="hint">Tippen zum Vergrößern</span></span>
+  <mat-icon class="chev" aria-hidden="true">chevron_right</mat-icon>
+</button>

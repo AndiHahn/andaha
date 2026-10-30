@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { PersonComponent } from './person.component';
 import { PersonListComponent } from './person-list/person-list.component';
 import { RouterModule, Routes } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
@@ -15,14 +13,17 @@ const routes: Routes = [
   },
   {
     path: 'create',
+    data: { title: 'Person hinzufügen', back: '/work/person' },
     loadChildren: () => import('./add-person/add-person.module').then(m => m.AddPersonModule)
   },
   {
     path: 'create-working-entry',
+    data: { title: 'Arbeitszeiten hinzufügen', back: '/work/person' },
     loadChildren: () => import('./add-working-entry/add-working-entry.module').then(m => m.AddWorkingEntryModule)
   },
   {
     path: ':id',
+    data: { title: 'Person', back: '/work/person' },
     loadChildren: () => import('./person-details/person-details.module').then(m => m.PersonDetailsModule)
   }
 ];
@@ -35,8 +36,6 @@ const routes: Routes = [
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
-    MatCardModule,
-    MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule
   ]

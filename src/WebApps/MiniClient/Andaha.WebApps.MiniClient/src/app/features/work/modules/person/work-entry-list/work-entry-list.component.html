@@ -1,22 +1,8 @@
-<div class="items">
-  <div *ngFor="let workEntry of workEntries">
-    <div class="list-item">
-      <mat-card class="mat-card" (click)="onOpenWorkEntryDetails(workEntry)">
-        <div class="column-layout">
-          <div class="row-layout">
-            <span class="truncate-text">{{ workEntry.from | date:'dd.MM.YYYY' }}</span>
-            <div style="display: flex;">
-              <span class="truncate-text">{{ workEntry.from | date:'HH:mm' }}</span>
-              <span style="padding-left: 4px; padding-right: 4px">-</span>
-              <span class="truncate-text">{{ workEntry.until | date:'HH:mm' }}</span>
-            </div>
-            <span class="truncate-text">{{ getTotalWorkingTime(workEntry) }}</span>
-          </div>
-          <div>
-            <span class="truncate-text">{{ workEntry.notes }}</span>
-          </div>
-        </div>
-      </mat-card>
-    </div>
-  </div>
-</div>
+<button type="button" class="we" *ngFor="let workEntry of workEntries" (click)="onOpenWorkEntryDetails(workEntry)">
+  <span class="l">
+    <span class="d">{{ workEntry.from | date:'dd.MM.yyyy' }}</span>
+    <span class="tm">{{ workEntry.from | date:'HH:mm' }} – {{ workEntry.until | date:'HH:mm' }}</span>
+    <b>{{ getTotalWorkingTime(workEntry) }}</b>
+  </span>
+  <span class="n" *ngIf="workEntry.notes">{{ workEntry.notes }}</span>
+</button>
