@@ -16,6 +16,7 @@
 
   <!-- Ring, Summe und Legende (ersetzt die bisherige Summen-/Kategorienliste, umsetzung.md Statistik) -->
   <app-chart *ngIf="!isLoading && expenses.length > 0 && categories.length > 0"
-    [expenses]="expenses" [categories]="categories" [selectedTimeRange]="selectedTimeRange" [sum]="sum">
+    [expenses]="expenses" [categories]="categories" [selectedTimeRange]="selectedTimeRange" [sum]="sum"
+    [hiddenCategories]="hiddenCategories" (visibilityToggled)="toggleCategory($event)">
   </app-chart>
 </div>

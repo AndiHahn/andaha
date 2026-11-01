@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, OnInit, SimpleChanges } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ChartOptions } from 'chart.js';
@@ -26,17 +26,26 @@ export class ChartComponent implements OnInit, OnChanges {
   @Input()
   selectedTimeRange?: TimeRange;
 
-  // Summe aus ExpensesComponent (unveraendert berechnet), nur zur Anzeige in der Ringmitte und fuer die Anteile der Legende
+  // Summe der sichtbaren Kategorien, berechnet von ExpensesComponent; fuer Ringmitte und Legendenanteile
   @Input()
   sum: number = 0;
+
+  // Namen der ausgeblendeten Kategorien (Zustand liegt in ExpensesComponent)
+  @Input()
+  hiddenCategories: string[] = [];
+
+  @Output()
+  visibilityToggled = new EventEmitter<string>();
+
+  visibleExpenses: ExpenseDto[] = [];
 
   //CHART DATA
   chartLabels: string[] = [];
   chartData: number[] = [];
-  chartDatasets = [
+  chartDatasets: { data: number[]; backgroundColor: string[] }[] = [
     {
-      data: [ 1 ],
-      backgroundColor: [ 'red' ]
+      data: [],
+      backgroundColor: []
     }
   ];
   // Ringdiagramm (umsetzung.md, Statistik): Luecken zwischen den Segmenten in der Hintergrundfarbe (Token --bg zur Laufzeit),
@@ -57,10 +66,6 @@ export class ChartComponent implements OnInit, OnChanges {
       }
     }
   };
-  chartColors = [{
-    backgroundColor: [],
-    borderColor: []
-  }];
 
   constructor(
     private matDialog: MatDialog) {}
@@ -76,53 +81,56 @@ export class ChartComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes?.['expenses']) {
+    if (changes?.['expenses'] || changes?.['hiddenCategories']) {
       this.refreshChart();
     }
   }
 
+  // Index bezieht sich auf das Diagramm und damit auf die sichtbaren Kategorien
   public chartClicked(event: any): void {
     if (event.active.length > 0) {
-      const index = event.active[0].index;
-      
-      const data: ChartDetailsDialogData = {
-        expense: this.expenses[index]
+      const expense = this.visibleExpenses[event.active[0].index];
+      if (expense) {
+        this.openDetails(expense);
       }
-
-      const config = getDialogBaseConfig();
-      config.data = data;
-
-      this.matDialog.open(ChartDetailsDialogComponent, config).afterClosed().subscribe();
     }
   }
 
+  openDetails(expense: ExpenseDto): void {
+    const data: ChartDetailsDialogData = {
+      expense: expense
+    }
+
+    const config = getDialogBaseConfig();
+    config.data = data;
+
+    this.matDialog.open(ChartDetailsDialogComponent, config).afterClosed().subscribe();
+  }
+
+  colorOf(expense: ExpenseDto): string {
+    return expense.color || this.categories.find(c => c.name == expense.category)?.color || 'grey';
+  }
+
+  isHidden(expense: ExpenseDto): boolean {
+    return this.hiddenCategories.includes(expense.category);
+  }
+
+  percentOf(expense: ExpenseDto): number | null {
+    return this.isHidden(expense) || !this.sum ? null : expense.costs / this.sum * 100;
+  }
+
   refreshChart() {
-    const labels: string[] = [];
-    const data: number[] = [];
-    const colors: string[] = [];
+    this.visibleExpenses = this.expenses.filter(e => !this.isHidden(e));
 
-    this.expenses.forEach(e => {
-      labels.push(e.category);
-      data.push(e.costs);
-      colors.push(this.categories.find(c => c.name == e.category)!.color);
-    });
-
-    this.clearChart();
-
+    // neues Array zuweisen, damit ng2-charts neu zeichnet
     this.chartDatasets = [
       {
-        data: data,
-        backgroundColor: colors
+        data: this.visibleExpenses.map(e => e.costs),
+        backgroundColor: this.visibleExpenses.map(e => this.colorOf(e))
       }
     ];
 
-    this.chartLabels = labels;
-  }
-
-  clearChart() {
-    this.chartLabels = [];
-    this.chartDatasets[0].data = [];
-    this.chartColors = [];
+    this.chartLabels = this.visibleExpenses.map(e => e.category);
   }
 
   // Chart.js zeichnet auf Canvas und kennt keine CSS-Variablen: Wert des Tokens --bg zur Laufzeit lesen

@@ -18,6 +18,8 @@ export class ExpensesComponent implements OnInit {
   categories: CategoryDto[] = [];
   isLoading: boolean = false;
 
+  hiddenCategories: string[] = [];
+
   sum: number = 0.0;
 
   selectedTimeRange?: TimeRange;
@@ -36,6 +38,13 @@ export class ExpensesComponent implements OnInit {
     this.expenseContextService.loadExpenses(timeRange);
   }
 
+  toggleCategory(name: string): void {
+    this.hiddenCategories = this.hiddenCategories.includes(name)
+      ? this.hiddenCategories.filter(c => c !== name)
+      : [...this.hiddenCategories, name];
+    this.calculateSum(this.expenses);
+  }
+
   truncate(decimals: number, value?: number): number {
     if (value) {
       return Number(value.toFixed(decimals));
@@ -46,9 +55,11 @@ export class ExpensesComponent implements OnInit {
 
   private calculateSum(expenses: ExpenseDto[]) {
     let sum = 0.0;
-    expenses.forEach(e => {
-      sum += e.costs
-    });
+    expenses
+      .filter(e => !this.hiddenCategories.includes(e.category))
+      .forEach(e => {
+        sum += e.costs
+      });
 
     this.sum = Number(sum.toFixed(2));
   }

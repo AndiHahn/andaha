@@ -39,6 +39,7 @@ internal class GetExpensesQueryHandler : IRequestHandler<GetExpensesQuery, IResu
             .GroupBy(bill => bill.Category.Name)
             .Select(group => new ExpenseDto(
                 group.Key,
+                group.Min(b => b.Category.Color) ?? "grey",
                 group.Sum(b => b.Price),
                 group
                     .Where(bill => bill.SubCategory != null)
@@ -49,6 +50,25 @@ internal class GetExpensesQueryHandler : IRequestHandler<GetExpensesQuery, IResu
                     .ToArray()))
             .ToListAsync(cancellationToken);
 
-        return Results.Ok(result.OrderByDescending(expense => expense.Costs));
+        var ownCategoryColors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var ownCategories = await dbContext.BillCategory
+            .AsNoTracking()
+            .Where(category => category.UserId == userId)
+            .OrderBy(category => category.Order)
+            .ThenBy(category => category.Id)
+            .Select(category => new { category.Name, category.Color })
+            .ToListAsync(cancellationToken);
+
+        foreach (var category in ownCategories)
+        {
+            ownCategoryColors.TryAdd(category.Name, category.Color);
+        }
+
+        return Results.Ok(result
+            .Select(expense => expense with
+            {
+                Color = ownCategoryColors.TryGetValue(expense.Category, out var ownColor) ? ownColor : expense.Color
+            })
+            .OrderByDescending(expense => expense.Costs));
     }
 }
