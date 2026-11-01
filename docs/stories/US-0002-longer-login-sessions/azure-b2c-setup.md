@@ -8,9 +8,10 @@ Diese Einstellungen werden **einmalig im Azure-Portal** gemacht (nicht per Code)
 
 ## Schritte
 
-1. **Identity-Provider-Claim aktivieren (Pflicht)**
-   - *Application claims* öffnen, "Identity Provider" anhaken (nicht zu verwechseln mit "Identity Provider Access Token"), **Save**.
-   - Ohne diesen Claim fehlt `idp` im ID-Token. Die App kann sich den Anbieter (z. B. `google.com`) dann nicht merken und verhält sich wie bisher.
+1. **Prüfen, ob der `idp`-Claim schon im Token steht (Pflicht)**
+   - Im Portal gibt es unter *Application claims* (Stand 2026-11-01) **keinen** eigenen Eintrag "Identity Provider", nur "Identity Provider Access Token". **"Identity Provider Access Token" NICHT aktivieren**: Er reicht Googles Access-Token ins Token durch und wird hier nicht gebraucht.
+   - Vermutlich liefert der User Flow `idp` bei Google-Logins automatisch mit (noch offen). Prüfen: in der App mit Google angemeldet, DevTools -> Application -> Local Storage -> `id_token_claims_obj` -> nach `"idp"` suchen.
+   - Fehlt `idp`, kann sich die App den Anbieter (z. B. `google.com`) nicht merken und verhält sich wie bisher. Dann braucht US-0002 einen anderen Weg (offen).
 
 2. **Session-Dauer**
    - *Properties -> Session behavior*:

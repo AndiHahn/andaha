@@ -45,6 +45,10 @@ Als Nutzer:in des MiniClients (hauptsächlich als PWA am Handy, selten im Browse
 - Migration weg von Azure AD B2C
 - Änderungen am Aussehen der App
 
+## Offene Punkte
+
+- **`idp`-Claim ungeklärt (2026-11-01):** Im Portal gibt es keinen Application Claim "Identity Provider" (nur "Identity Provider Access Token", der nicht gebraucht wird). Ob der User Flow `idp` bei Google-Logins von selbst mitliefert, prüft der Nutzer später (`id_token_claims_obj` im Local Storage). Ohne `idp` greift AC2/AC3 nicht. Siehe [azure-b2c-setup.md](./azure-b2c-setup.md), Schritt 1.
+
 ## UI Verification
 
 **2026-11-01 – PASSED** (Playwright MCP, `ng serve` lokal, ohne Backend und ohne Credentials; echte B2C-/Google-Endpunkte):
