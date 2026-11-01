@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { CreatePersonDto } from 'src/app/api/work/dtos/CreatePersonDto';
 import { PayPersonDto } from 'src/app/api/work/dtos/PayPersonDto';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
@@ -132,7 +132,7 @@ export class PersonContextService {
   }
 
   downloadPersonInformations(): Observable<void> {
-    const returnSubject = new Subject<void>();
+    const returnSubject = new ReplaySubject<void>(1);
 
     this.personApiService
       .export()

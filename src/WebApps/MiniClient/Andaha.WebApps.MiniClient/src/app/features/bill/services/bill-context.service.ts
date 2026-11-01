@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, skip } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, Subscription, finalize, skip } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { ContextService } from 'src/app/core/context.service';
@@ -24,6 +24,9 @@ export class BillContextService {
   private categoryFilter?: string[];
   private fromDateFilter?: Date;
   private untilDateFilter?: Date;
+
+  private queryGeneration: number = 0;
+  private pendingRequests: Set<Subscription> = new Set<Subscription>();
 
   constructor(
     private billApiService: BillApiService,
@@ -72,6 +75,7 @@ export class BillContextService {
 
   setPageSize(size: number): void {
     if (size != this.pageSize$.value) {
+      this.startNewQueryGeneration();
       this.pageSize$.next(size);
     }
   }
@@ -83,6 +87,7 @@ export class BillContextService {
   }
 
   searchBills(): void {
+    this.startNewQueryGeneration();
     this.bills$.next([]);
     this.pageIndex$.next(0);
   }
@@ -226,10 +231,21 @@ export class BillContextService {
     return returnSubject.asObservable();
   }
 
+  private startNewQueryGeneration(): void {
+    this.queryGeneration++;
+    const superseded = Array.from(this.pendingRequests);
+    this.pendingRequests.clear();
+    superseded.forEach(subscription => subscription.unsubscribe());
+  }
+
   private fetchBills() {
+    const generation = this.queryGeneration;
     this.loading$.next(true);
 
-    this.billApiService
+    const request = new Subscription();
+    this.pendingRequests.add(request);
+
+    request.add(this.billApiService
       .searchBills(
         {
           pageIndex: this.pageIndex$.value,
@@ -239,16 +255,31 @@ export class BillContextService {
           fromDateFilter: this.fromDateFilter,
           untilDateFilter: this.untilDateFilter
         })
+      .pipe(
+        finalize(() => {
+          if (generation !== this.queryGeneration) {
+            return;
+          }
+
+          this.pendingRequests.delete(request);
+          if (this.pendingRequests.size === 0) {
+            this.loading$.next(false);
+          }
+        })
+      )
       .subscribe(
         {
           next: result => {
-            this.loading$.next(false);
+            if (generation !== this.queryGeneration) {
+              return;
+            }
+
             this.updateBillList(result.values);
             this.totalResults$.next(result.totalCount);
           },
-          error: _ => this.loading$.next(false)
+          error: _ => { }
         }
-    );
+    ));
   }
 
   private updateBillList(newBills: BillDto[]) {

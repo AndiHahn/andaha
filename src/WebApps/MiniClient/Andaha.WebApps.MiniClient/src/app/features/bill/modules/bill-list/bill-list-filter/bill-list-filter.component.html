@@ -4,10 +4,12 @@
       <span class="field-box">
         <mat-icon>search</mat-icon>
         <input type="text"
+          enterkeyhint="search"
           [readonly]="deactivate"
           #searchTerm
           [value]="inputFieldValue"
-          (keyup)="searchBoxKeyup.emit(searchTerm.value)"
+          (input)="onSearchInput(searchTerm.value)"
+          (keyup.enter)="onSearchEnter(searchTerm.value)"
           (keydown)="searchBoxKeyDown($event)"
           placeholder="Suche Rechnungen..."
           aria-label="Rechnungen durchsuchen">

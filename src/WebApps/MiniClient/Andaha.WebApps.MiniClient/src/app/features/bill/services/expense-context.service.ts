@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { ExpenseDto } from '../../../api/shopping/dtos/ExpenseDto';
 import { TimeRangeDto, TimeRangeDtoRaw } from '../../../api/common-dtos/TimeRangeDto';
 import { ExpenseApiService } from '../../../api/shopping/expense-api.service';
@@ -35,9 +36,9 @@ export class ExpenseContextService {
   }
 
   downloadExpenses(): Observable<void> {
-    const returnSubject = new Subject<void>();
+    const returnSubject = new ReplaySubject<void>(1);
 
-    this.availableTimeRange().subscribe(
+    this.availableTimeRange().pipe(take(1)).subscribe(
       {
         next: timeRange => {
           if (!timeRange) {

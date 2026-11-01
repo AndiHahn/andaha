@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { finalize, take } from 'rxjs/operators';
 import { ExpenseContextService } from '../bill/services/expense-context.service';
 import { PersonContextService } from '../work/services/person-context.service';
 
@@ -9,7 +10,7 @@ import { PersonContextService } from '../work/services/person-context.service';
 })
 export class ExportComponent implements OnInit {
 
-  isExporting: boolean = false;
+  exporting: 'expenses' | 'work' | null = null;
 
   constructor(
     private expenseContextService: ExpenseContextService,
@@ -19,24 +20,18 @@ export class ExportComponent implements OnInit {
   }
 
   onExportExpensesClick() {
-    this.isExporting = true;
+    this.exporting = 'expenses';
 
-    this.expenseContextService.downloadExpenses().subscribe(
-      {
-        next: _ => this.isExporting = false,
-        error: _ => this.isExporting = false
-      }
-    );
+    this.expenseContextService.downloadExpenses()
+      .pipe(take(1), finalize(() => this.exporting = null))
+      .subscribe({ error: _ => { } });
   }
-  
-  onExportWorkInformationClick() {
-    this.isExporting = true;
 
-    this.personContextService.downloadPersonInformations().subscribe(
-      {
-        next: _ => this.isExporting = false,
-        error: _ => this.isExporting = false
-      }
-    );
+  onExportWorkInformationClick() {
+    this.exporting = 'work';
+
+    this.personContextService.downloadPersonInformations()
+      .pipe(take(1), finalize(() => this.exporting = null))
+      .subscribe({ error: _ => { } });
   }
 }

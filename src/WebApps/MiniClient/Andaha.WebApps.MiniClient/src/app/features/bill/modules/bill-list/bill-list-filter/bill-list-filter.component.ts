@@ -1,5 +1,6 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { distinctUntilChanged, debounceTime, tap } from 'rxjs/operators';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { merge, of, Subject, timer } from 'rxjs';
+import { distinctUntilChanged, map, skip, startWith, switchMap, takeUntil } from 'rxjs/operators';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { BillListFilterDialogService } from './bill-list-filter-dialog/bill-list-filter-dialog.service';
@@ -17,7 +18,7 @@ interface CategorySelection {
   templateUrl: './bill-list-filter.component.html',
   styleUrls: ['./bill-list-filter.component.scss']
 })
-export class BillListFilterComponent implements OnInit, AfterViewInit {
+export class BillListFilterComponent implements OnInit, OnDestroy {
   @ViewChild('searchTerm') searchInput!: ElementRef;
   
   @Input()
@@ -42,7 +43,11 @@ export class BillListFilterComponent implements OnInit, AfterViewInit {
   dateFilterChanged = new EventEmitter<BillListDateFilter>();
 
   isLoading: boolean = false;
-  searchBoxKeyup = new EventEmitter<string>();
+
+  readonly searchDebounceMs = 600;
+  private readonly typedSearch = new Subject<string>();
+  private readonly immediateSearch = new Subject<string>();
+  private readonly destroyed = new Subject<void>();
 
   inputFieldValue: string = '';
 
@@ -64,14 +69,33 @@ export class BillListFilterComponent implements OnInit, AfterViewInit {
     this.untilDateFilter = this.initialDateFilter?.untilDate;
 
     this.loadBillCategories();
+
+    // A newer event (typed, enter, clear) cancels a pending delayed search.
+    merge(
+      this.typedSearch.pipe(map(value => ({ value, immediate: value === '' }))),
+      this.immediateSearch.pipe(map(value => ({ value, immediate: true })))
+    ).pipe(
+      switchMap(event => event.immediate
+        ? of(event.value)
+        : timer(this.searchDebounceMs).pipe(map(() => event.value))),
+      startWith(this.initialSearchText?.trim() ?? ''),
+      distinctUntilChanged(),
+      skip(1),
+      takeUntil(this.destroyed)
+    ).subscribe(searchText => this.searchTextChanged.emit(searchText));
   }
 
-  ngAfterViewInit(): void {
-    this.searchBoxKeyup.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      tap((searchText) => this.searchTextChanged.next(searchText))
-    ).subscribe();
+  ngOnDestroy(): void {
+    this.destroyed.next();
+    this.destroyed.complete();
+  }
+
+  onSearchInput(value: string): void {
+    this.typedSearch.next(value.trim());
+  }
+
+  onSearchEnter(value: string): void {
+    this.immediateSearch.next(value.trim());
   }
 
   searchBoxKeyDown(event: any) {
@@ -80,7 +104,7 @@ export class BillListFilterComponent implements OnInit, AfterViewInit {
 
   onClearSearch(): void {
     this.searchInput.nativeElement.value = '';
-    this.searchTextChanged.next('');
+    this.immediateSearch.next('');
   }
 
   onFilterClick(): void {
