@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, Subscription, finalize, skip } from 'rxjs';
+import { Injectable, OnDestroy } from '@angular/core';
+import { BehaviorSubject, Observable, Subject, Subscription, catchError, finalize, firstValueFrom, of, skip, timeout } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { ContextService } from 'src/app/core/context.service';
@@ -9,10 +9,13 @@ import { BillCacheService } from './bill-cache.service';
 import { BillCategoryDto } from '../../../api/shopping/dtos/BillCategoryDto';
 import { BillSubCategoryDto } from '../../../api/shopping/dtos/BillSubCategoryDto';
 
+// Ein haengender Request darf den Sync nicht dauerhaft blockieren; CreateBill ist idempotent
+const SYNC_REQUEST_TIMEOUT_MS = 60000;
+
 @Injectable({
   providedIn: 'root'
 })
-export class BillContextService {
+export class BillContextService implements OnDestroy {
   private bills$: BehaviorSubject<BillDto[]> = new BehaviorSubject<BillDto[]>([]);
   private totalResults$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   private pageIndex$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
@@ -28,13 +31,30 @@ export class BillContextService {
   private queryGeneration: number = 0;
   private pendingRequests: Set<Subscription> = new Set<Subscription>();
 
+  private syncRunning: boolean = false;
+  private syncAgain: boolean = false;
+
+  private readonly onOnline = () => void this.syncNewBills();
+  private readonly onVisibilityChange = () => {
+    if (document.visibilityState === 'visible') {
+      this.syncNewBills();
+    }
+  };
+
   constructor(
     private billApiService: BillApiService,
     private contextService: ContextService,
     private billCacheService: BillCacheService
   ) {
     this.initSubscriptions();
+    window.addEventListener('online', this.onOnline);
+    document.addEventListener('visibilitychange', this.onVisibilityChange);
     this.fetchBills();
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('online', this.onOnline);
+    document.removeEventListener('visibilitychange', this.onVisibilityChange);
   }
 
   bills(): Observable<BillDto[]> {
@@ -117,11 +137,17 @@ export class BillContextService {
     this.fetchBills();
   }
 
-  addBill(dto: BillCreateDto, category: BillCategoryDto, subCategory?: BillSubCategoryDto): void {
+  async addBill(dto: BillCreateDto, category: BillCategoryDto, subCategory?: BillSubCategoryDto): Promise<void> {
     const billDto = billCreateDtoToBillDto(dto, category, subCategory);
     this.addNewBillToList(billDto);
 
-    this.billCacheService.saveNewBillLocal(dto);
+    try {
+      await this.billCacheService.saveNewBillLocal(dto);
+    } catch (error) {
+      this.bills$.next(this.bills$.value.filter(bill => bill.id != dto.id));
+      this.totalResults$.next(this.totalResults$.value - 1);
+      throw error;
+    }
   }
 
   updateBill(
@@ -133,6 +159,15 @@ export class BillContextService {
     const returnSubject = new Subject<void>();
 
     const bill = this.bills$.value.find(bill => bill.id == id);
+    const previous = bill ? {
+      shopName: bill.shopName,
+      notes: bill.notes,
+      price: bill.price,
+      date: bill.date,
+      category: bill.category,
+      subCategory: bill.subCategory,
+      imageAvailable: bill.imageAvailable
+    } : undefined;
     if (bill) {
       bill.shopName = updateDto.shopName;
       bill.notes = updateDto.notes;
@@ -149,6 +184,9 @@ export class BillContextService {
           returnSubject.next();
         } ,
         error: error => {
+          if (bill && previous) {
+            Object.assign(bill, previous);
+          }
           this.fetchBills();
           returnSubject.error(error);
         } 
@@ -184,6 +222,15 @@ export class BillContextService {
     return this.bills$.value.find(bill => bill.id == id);
   }
 
+  loadBillById(id: string): Observable<BillDto | undefined> {
+    const known = this.getBillById(id);
+    if (known) {
+      return of(known);
+    }
+
+    return this.billApiService.getBill(id).pipe(catchError(() => of(undefined)));
+  }
+
   private initSubscriptions(): void {
     this.contextService.backendReady().subscribe(
       {
@@ -213,22 +260,6 @@ export class BillContextService {
         next: _ => this.syncNewBills()
       }
     );
-  }
-
-  addBillInternal(dto: BillCreateDto): Observable<void> {
-    const returnSubject = new Subject<void>();
-
-    this.billApiService.addBill(dto).subscribe(
-      {
-        next: result => {
-          this.billCacheService.removeBillLocal(result.id);
-          returnSubject.next();
-        },
-        error: error => returnSubject.error(error)
-      }
-    );
-
-    return returnSubject.asObservable();
   }
 
   private startNewQueryGeneration(): void {
@@ -314,33 +345,53 @@ export class BillContextService {
     this.totalResults$.next(this.totalResults$.value + 1);
   }
 
-  private syncNewBills(): void {
-    const newBillsLocal = this.billCacheService.getBillsToSync();
-    
-    const nrOfBillsToSync = newBillsLocal.length;
-    let syncedBills = 0;
-
-    const addBillObservables: Observable<void>[] = [];
-
-    if (newBillsLocal.length > 0) {
-      this.syncing$.next(true);
-
-      newBillsLocal.forEach(bill => {
-        addBillObservables.push(this.addBillInternal(bill));
-      });
+  private async syncNewBills(): Promise<void> {
+    if (this.syncRunning) {
+      this.syncAgain = true;
+      return;
     }
 
-    addBillObservables.forEach(observable => observable.subscribe(
-      {
-        next: _ => {
-          syncedBills++;
-          if (syncedBills >= nrOfBillsToSync) {
-            this.syncing$.next(false);
-            this.fetchBills();
-          }
-        } 
+    this.syncRunning = true;
+    let anySynced = false;
+    try {
+      const newBillsLocal = await this.billCacheService.getBillsToSync();
+      if (newBillsLocal.length > 0) {
+        this.syncing$.next(true);
+        const results = await Promise.all(newBillsLocal.map(bill => this.syncBill(bill)));
+        anySynced = results.some(synced => synced);
       }
-    ));
+    } catch (error) {
+      console.error('Syncing bills failed', error);
+    } finally {
+      this.syncing$.next(false);
+      this.syncRunning = false;
+    }
+
+    if (anySynced) {
+      this.fetchBills();
+    }
+
+    if (this.syncAgain) {
+      this.syncAgain = false;
+      void this.syncNewBills();
+    }
+  }
+
+  private async syncBill(dto: BillCreateDto): Promise<boolean> {
+    try {
+      await firstValueFrom(this.billApiService.addBill(dto).pipe(timeout(SYNC_REQUEST_TIMEOUT_MS)));
+    } catch (error) {
+      console.error('Syncing bill failed, keeping it locally', error);
+      return false;
+    }
+
+    try {
+      await this.billCacheService.removeBillLocal(dto.id);
+    } catch (error) {
+      console.error('Removing synced bill failed', error);
+    }
+
+    return true;
   }
 
   private billCompareDateDescending(left: BillDto, right: BillDto): number {

@@ -23,7 +23,6 @@ export class CreateCategoryComponent implements OnInit {
   includeToStatisticsCheckbox: boolean;
 
   colors: string[];
-  selectedColor: string = '';
   
   constructor(
     private router: Router,
@@ -60,6 +59,7 @@ export class CreateCategoryComponent implements OnInit {
         },
         error: (err: HttpErrorResponse) => {
           this.isSaving = false;
+          this.form.enable();
           openErrorSnackbar("Kategorie konnte nicht erstellt werden. (" + err.error + ")", this.snackbar);
         } 
       }

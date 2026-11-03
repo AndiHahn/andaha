@@ -2,15 +2,25 @@
   display: block;
 }
 
-// Zeile ohne Metazeile, feste Hoehe 60 px inkl. Linie (pixelHeightPerItem)
+// Zweizeilige Listenzeile, feste Hoehe 64 px inkl. Linie (pixelHeightPerItem)
 .analyzed-row {
-  height: 60px;
+  height: 64px;
   min-height: 0;
 }
 
-.t {
+.main {
   flex: 1;
   min-width: 0;
+}
+
+.s .cat {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.s .sub {
+  color: var(--mut);
 }
 
 .date-full {

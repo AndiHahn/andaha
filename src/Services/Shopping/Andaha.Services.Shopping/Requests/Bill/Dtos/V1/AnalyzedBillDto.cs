@@ -7,4 +7,7 @@ public record AnalyzedBillDto(
     string? ShopName,
     double? Price,
     DateTime? Date,
-    IReadOnlyCollection<AnalyzedBillLineItemDto> LineItems);
+    IReadOnlyCollection<AnalyzedBillLineItemDto> LineItems,
+    double? Confidence,
+    double? TotalAmountConfidence,
+    bool ImageAvailable);

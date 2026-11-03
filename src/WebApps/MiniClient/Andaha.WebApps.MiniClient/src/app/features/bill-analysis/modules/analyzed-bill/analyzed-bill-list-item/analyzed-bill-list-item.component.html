@@ -1,9 +1,19 @@
 <div class="row analyzed-row">
   <div class="date">
-    <b>{{ bill.date | date:'dd':undefined:'de' }}</b>
-    <span>{{ bill.date | date:'LLL':undefined:'de' }}</span>
+    <ng-container *ngIf="bill.date; else noDate">
+      <b>{{ bill.date | date:'dd':undefined:'de' }}</b>
+      <span>{{ bill.date | date:'LLL':undefined:'de' }}</span>
+    </ng-container>
   </div>
-  <div class="date-full">{{ bill.date | date:'dd.MM.yyyy':undefined:'de' }}</div>
-  <div class="t">{{ bill.shopName }}</div>
+  <div class="date-full">{{ bill.date ? (bill.date | date:'dd.MM.yyyy':undefined:'de') : '–' }}</div>
+  <div class="main">
+    <div class="t">{{ bill.shopName }}</div>
+    <div class="s">
+      <span class="dot" [class.dot-light]="category?.color == 'white'" [style.background]="category?.color || 'grey'"></span>
+      <span class="cat">{{ category?.name || 'Keine Kategorie' }}<span class="sub" *ngIf="subCategory"> · {{ subCategory.name }}</span><span class="sub" *ngIf="confidence !== null"> · {{ confidence }} %</span></span>
+    </div>
+  </div>
   <div class="amt">{{ bill.price | number:'1.2-2':'de' }}<small>€</small></div>
 </div>
+
+<ng-template #noDate><b>–</b></ng-template>

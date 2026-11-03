@@ -9,7 +9,7 @@ import { constructPath, constructVersionedPath } from '../functions/functions';
 import { BillCreateDto } from './dtos/BillCreateDto';
 import { BillDto, BillDtoRaw, mapBillDtoRaw, mapPagedBillDtoResultRaw } from './dtos/BillDto';
 import { BillUpdateDto } from './dtos/BillUpdateDto';
-import { BillAnalyzedDto, BillAnalyzedDtoRaw, mapBillAnalyzedDtoRaw, BillAnalyzedResponseDto, BillAnalyzedResponseDtoRaw, mapBillAnalyzedResponseDtoRaw } from './dtos/BillAnalyzedDto';
+import { BillAnalyzedDto, BillAnalyzedDtoRaw, mapBillAnalyzedDtoRaw } from './dtos/BillAnalyzedDto';
 import { getSearchBillsHttpParams, SearchBillsParameters } from './dtos/SearchBillsParameters';
 
 @Injectable({
@@ -36,6 +36,13 @@ export class BillApiService {
 
     return this.httpClient.get<PagedResultDto<BillDtoRaw>>(url, { params: httpParameters})
       .pipe(map(mapPagedBillDtoResultRaw));
+  }
+
+  getBill(id: string): Observable<BillDto> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
+
+    return this.httpClient.get<BillDtoRaw>(url)
+      .pipe(map(mapBillDtoRaw));
   }
 
   addBill(dto: BillCreateDto): Observable<BillDto> {
@@ -91,14 +98,19 @@ export class BillApiService {
     return this.httpClient.delete<void>(url);
   }
 
-  uploadForAnalysis(file: File): Observable<BillAnalyzedResponseDto> {
-    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'analyze');
+  uploadForAnalysis(file: File): Observable<void> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'upload-for-analysis');
 
     const formData = new FormData();
     formData.set('file', file);
 
-    return this.httpClient.post<BillAnalyzedResponseDtoRaw>(url, formData)
-      .pipe(map(mapBillAnalyzedResponseDtoRaw));
+    return this.httpClient.post<void>(url, formData);
+  }
+
+  downloadAnalyzedBillImage(id: string) {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'analyzed', id, 'image');
+
+    return this.httpClient.get(url, { responseType: 'blob' as 'blob' });
   }
 
   getAnalyzedBills(parameters?: SearchBillsParameters): Observable<BillAnalyzedDto[]> {

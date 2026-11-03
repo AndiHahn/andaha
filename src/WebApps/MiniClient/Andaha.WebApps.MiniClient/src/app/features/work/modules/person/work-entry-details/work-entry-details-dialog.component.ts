@@ -39,19 +39,25 @@ export class WorkEntryDetailsDialogComponent implements OnInit {
   ) {
     this.workingEntry = data.workEntry;
 
-    this.form = getWorkingEntryForm(data.workEntry);
+    this.form = this.createForm();
+    this.form.disable();
+  }
+
+  private createForm(): FormGroup<WorkingEntryForm> {
+    const form = getWorkingEntryForm(this.workingEntry);
 
     // set placeholder person in order to re-use the WorkEntryForm.
     // the person is not required in this context and not shown in the UI
-    this.form.controls.selectedPersons.setValue([ {
+    form.controls.selectedPersons.setValue([ {
       id: 'placeholder-id',
       name: 'placeholder-name',
       hourlyRate: 0,
       totalHours: { hours: 0, minutes: 0},
-      payedHours: { hours: 0, minutes: 0}
+      payedHours: { hours: 0, minutes: 0},
+      payments: []
     }]);
 
-    this.form.disable();
+    return form;
   }
 
   ngOnInit(): void {
@@ -97,7 +103,7 @@ export class WorkEntryDetailsDialogComponent implements OnInit {
 
   onCancelClick(): void {
     this.isEditing = false;
-    this.form = getWorkingEntryForm(this.workingEntry);
+    this.form = this.createForm();
     this.form.disable();
   }
 
@@ -120,7 +126,9 @@ export class WorkEntryDetailsDialogComponent implements OnInit {
         },
         error: _ => {
           this.isSaving = false;
-          openErrorSnackbar("Person konnte nicht gespeichert werden.", this.snackbar);
+          this.isEditing = true;
+          this.form.enable();
+          openErrorSnackbar("Arbeitszeit konnte nicht gespeichert werden.", this.snackbar);
         } 
       }
     );

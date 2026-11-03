@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
+import { afterFirstLoad } from '../shared/utils/load-state';
 import { BillCategoryApiService } from '../api/shopping/bill-category-api.service';
 import { CategoryDto } from '../api/shopping/dtos/CategoryDto';
 import { CategoryUpdateDto } from '../api/shopping/dtos/CategoryUpdateDto';
@@ -14,6 +15,8 @@ import { CategoryOrderDto } from '../api/shopping/dtos/CategoryOrderDto';
 export class BillCategoryContextService {
   
   private categories$: BehaviorSubject<CategoryDto[]> = new BehaviorSubject<CategoryDto[]>([]);
+  private loadState$ = new ReplaySubject<'loaded' | 'failed'>(1);
+  private backendIsReady: boolean = false;
 
   constructor(
     private contextService: ContextService,
@@ -71,6 +74,10 @@ export class BillCategoryContextService {
     return this.categories$.value.find(category => category.id == id);
   }
 
+  categoryById(id: string): Observable<CategoryDto | undefined> {
+    return afterFirstLoad(this.loadState$, () => this.getCategoryById(id));
+  }
+
   deleteCategory(id: string): Observable<void> {
     const returnSubject = new Subject<void>();
 
@@ -97,6 +104,7 @@ export class BillCategoryContextService {
     this.contextService.backendReady().subscribe(
       {
         next: ready => {
+          this.backendIsReady = ready;
           if (ready) {
             this.fetchBillCategories();
           }
@@ -105,10 +113,20 @@ export class BillCategoryContextService {
     );
   }
 
-  private fetchBillCategories(): void {
+  private fetchBillCategories(onDone?: () => void): void {
     this.billCategoryApiService.getAll().subscribe(
       {
-        next: categories => this.categories$.next(categories)
+        next: categories => {
+          this.categories$.next(categories);
+          this.loadState$.next('loaded');
+          onDone?.();
+        },
+        error: _ => {
+          if (this.backendIsReady) {
+            this.loadState$.next('failed');
+          }
+          onDone?.();
+        }
       }
     );
   }
@@ -119,9 +137,9 @@ export class BillCategoryContextService {
     this.billCategoryApiService.update(id, category).subscribe(
       {
         next: _ => {
-          this.fetchBillCategories();
+          // Erst nach dem Neuladen melden, damit Aufrufer den gespeicherten Stand (inkl. Server-IDs) lesen koennen.
+          this.fetchBillCategories(() => returnSubject.next());
           this.billContextService.refreshBills();
-          returnSubject.next();
         },
         error: error => {
           returnSubject.error(error);

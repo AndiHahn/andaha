@@ -18,3 +18,20 @@
   flex: 1;
   min-width: 0;
 }
+
+.snack-action {
+  flex: none;
+  min-height: 40px;
+  padding: 0 12px;
+  margin: -8px -8px -8px 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--sec-text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover { background: var(--sec-soft); }
+  &:focus-visible { outline: 2px solid var(--sec-text); outline-offset: 1px; }
+}

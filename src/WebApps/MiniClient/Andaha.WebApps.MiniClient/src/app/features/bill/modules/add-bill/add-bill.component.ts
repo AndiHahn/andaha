@@ -11,6 +11,8 @@ import { ImageSnippet } from '../add-bill-image-dialog/add-bill-image-dialog.com
 import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
 import { BillSubCategoryDto } from 'src/app/api/shopping/dtos/BillSubCategoryDto';
 import { MatSelectChange } from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 
 @Component({
   selector: 'app-add-bill',
@@ -28,10 +30,13 @@ export class AddBillComponent implements OnInit {
   billSubCategories?: BillSubCategoryDto[];
 
   image?: ImageSnippet;
+
+  isSaving: boolean = false;
   
   constructor(
     private billContextService: BillContextService,
-    private billCategoryContextService: BillCategoryContextService
+    private billCategoryContextService: BillCategoryContextService,
+    private snackbar: MatSnackBar
     ) {
     this.form = getEmptyBillForm();
   }
@@ -49,8 +54,8 @@ export class AddBillComponent implements OnInit {
     }
   }
 
-  onSubmit(formDirective: FormGroupDirective) {
-    if (!this.form.valid) {
+  async onSubmit(formDirective: FormGroupDirective): Promise<void> {
+    if (!this.form.valid || this.isSaving) {
       return;
     }
 
@@ -58,8 +63,17 @@ export class AddBillComponent implements OnInit {
     const category = this.getCategoryFromForm();
     const subCategory = this.getSubCategoryFromForm();
 
-    this.billContextService.addBill(dto, category, subCategory);
-    
+    this.isSaving = true;
+    try {
+      await this.billContextService.addBill(dto, category, subCategory);
+    } catch (error) {
+      console.error('Saving bill failed', error);
+      openErrorSnackbar('Rechnung konnte nicht gespeichert werden.', this.snackbar);
+      return;
+    } finally {
+      this.isSaving = false;
+    }
+
     formDirective.resetForm();
     this.form.reset();
     this.form.controls.date.setValue(new Date());

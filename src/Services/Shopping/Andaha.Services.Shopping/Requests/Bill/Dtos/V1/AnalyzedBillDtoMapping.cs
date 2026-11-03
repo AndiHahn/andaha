@@ -13,5 +13,8 @@ internal static class AnalyzedBillDtoMapping
             bill.ShopName,
             bill.Price,
             bill.Date,
-            AnalyzedBillLineItemDtoMapping.EntityToDto.Invoke(bill.LineItems));
+            AnalyzedBillLineItemDtoMapping.EntityToDto.Invoke(bill.LineItems),
+            bill.Confidence,
+            bill.TotalAmountConfidence,
+            bill.Images.Any());
 }

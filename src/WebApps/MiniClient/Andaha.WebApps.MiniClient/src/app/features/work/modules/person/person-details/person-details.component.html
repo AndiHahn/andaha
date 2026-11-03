@@ -1,6 +1,6 @@
 <!-- Name als Titel in der Kopfzeile (PageTitleService.set, siehe ngOnInit) -->
 <div class="page">
-  <div class="body">
+  <div class="body" *ngIf="person">
     <!--
       KENNZAHL-ZEILE (Bezahlt/Offen nur bei Stundensatz > 0, wie bisher)
     -->
@@ -32,6 +32,16 @@
       <div class="notes" *ngIf="form.controls.notes.value">
         <span class="k">Notizen</span>
         <span class="notes-text">{{ form.controls.notes.value }}</span>
+      </div>
+
+      <p class="sec">Zahlungen</p>
+      <div class="empty" *ngIf="person.payments.length <= 0">Noch keine Zahlungen.</div>
+      <div class="kv" *ngFor="let payment of person.payments">
+        <span class="k">{{ payment.payedAt | date:'dd.MM.yyyy':undefined:'de' }} · {{ getTimeDisplayName(payment.payedHours) }} h</span>
+        <span class="v">
+          {{ payment.payedMoney | number:'1.2-2':'de' }} €
+          <small class="tip" *ngIf="payment.payedTip > 0">davon {{ payment.payedTip | number:'1.2-2':'de' }} € Trinkgeld</small>
+        </span>
       </div>
     </ng-container>
 
@@ -82,10 +92,10 @@
     AKTIONEN
   -->
   <div class="progress-slot">
-    <mat-progress-bar *ngIf="isDeleting" mode="indeterminate" color="accent"></mat-progress-bar>
+    <mat-progress-bar *ngIf="isDeleting || !person" mode="indeterminate" color="accent"></mat-progress-bar>
   </div>
 
-  <div class="actions" *ngIf="!isEditing">
+  <div class="actions" *ngIf="person && !isEditing">
     <button *ngIf="!isEditing && form.controls.hourlyRate.value > 0" type="button" class="btn sec2"
         (click)="onAddPaymentClick()" [disabled]="isDeleting || isLoading || isSaving">
       <mat-icon>payments</mat-icon><span>Zahlung</span>
@@ -100,7 +110,7 @@
     </button>
   </div>
 
-  <div class="actions" *ngIf="isEditing">
+  <div class="actions" *ngIf="person && isEditing">
     <button type="button" class="btn sec2" (click)="onCancelClick()">
       <mat-icon>close</mat-icon><span>Abbrechen</span>
     </button>

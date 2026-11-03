@@ -59,6 +59,13 @@
   overflow-wrap: anywhere;
 }
 
+.tip {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--mut);
+}
+
 .notes {
   display: flex;
   flex-direction: column;

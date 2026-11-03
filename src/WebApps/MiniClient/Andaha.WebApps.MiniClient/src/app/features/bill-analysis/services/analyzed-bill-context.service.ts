@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
+import { afterFirstLoad } from 'src/app/shared/utils/load-state';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillAnalyzedDto } from 'src/app/api/shopping/dtos/BillAnalyzedDto';
 import { ContextService } from 'src/app/core/context.service';
@@ -12,6 +13,9 @@ export class AnalyzedBillContextService {
   private pageIndex$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   private pageSize$: BehaviorSubject<number> = new BehaviorSubject<number>(50);
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+  private loadState$ = new ReplaySubject<'loaded' | 'failed'>(1);
+  private backendIsReady: boolean = false;
 
   private searchText: string = '';
 
@@ -38,6 +42,7 @@ export class AnalyzedBillContextService {
         {
           next: ready =>
           {
+            this.backendIsReady = ready;
             if (ready)
             {
               this.fetchAnalyzedBills();
@@ -62,8 +67,14 @@ export class AnalyzedBillContextService {
         this.loading$.next(false);
         this.bills$.next(result);
         this.totalResults$.next(result.length);
+        this.loadState$.next('loaded');
       },
-      error: _ => this.loading$.next(false)
+      error: _ => {
+        this.loading$.next(false);
+        if (this.backendIsReady) {
+          this.loadState$.next('failed');
+        }
+      }
     });
   }
 
@@ -77,5 +88,9 @@ export class AnalyzedBillContextService {
 
   getBillById(id: string): BillAnalyzedDto | undefined {
     return this.bills$.value.find(b => b.id == id);
+  }
+
+  byId(id: string): Observable<BillAnalyzedDto | undefined> {
+    return afterFirstLoad(this.loadState$, () => this.getBillById(id));
   }
 }

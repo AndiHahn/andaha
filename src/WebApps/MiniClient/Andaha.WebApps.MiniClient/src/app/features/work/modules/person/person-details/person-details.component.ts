@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
-import { getParametersFromRouteRecursive } from 'src/app/shared/utils/routing-helper';
+import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
 import { PersonContextService } from '../../../services/person-context.service';
 import { FormGroup } from '@angular/forms';
 import { PersonForm, getPersonForm } from '../../../functions/person-form-functions';
@@ -14,9 +14,8 @@ import { Subject, takeUntil } from 'rxjs';
 import { WorkingEntriesContextService } from '../../../services/working-entries-context.service';
 import { WorkingEntryDto } from 'src/app/api/work/dtos/WorkingEntryDto';
 import { Time } from '@angular/common';
-import { addTimes, calculateTimeDifference, createTimeDisplayName } from '../../../functions/date-time-functions';
+import { calculateTimeDifference, createTimeDisplayName } from '../../../functions/date-time-functions';
 import { PersonPaymentDialogService } from '../person-payment-dialog/person-payment-dialog.service';
-import { getHoursFromTimeString, getMinutesFromTimeString } from 'src/app/api/functions/api-utils';
 import { PageTitleService } from 'src/app/core/page-title/page-title.service';
 
 @Component({
@@ -27,9 +26,9 @@ import { PageTitleService } from 'src/app/core/page-title/page-title.service';
 })
 export class PersonDetailsComponent implements OnInit, OnDestroy {
 
-  form: FormGroup<PersonForm>;
+  form!: FormGroup<PersonForm>;
   
-  person: PersonDto;
+  person?: PersonDto;
   workingEntries?: WorkingEntryDto[];
 
   isSaving: boolean = false;
@@ -49,26 +48,31 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
     private workingEntryContextService: WorkingEntriesContextService,
     private pageTitleService: PageTitleService
   ) {
-    const params = getParametersFromRouteRecursive(this.route.snapshot);
-    const personId = params["id"];
-    if (!personId) {
-      throw new Error("No personId available.");
-    }
-
-    const person = this.contextService.getById(personId);
-    if (!person) {
-      throw new Error("Person with id: " + personId + " is not available.");
-    }
-
-    this.person = person;
-    this.form = getPersonForm(person);
-    this.form.disable();
   }
 
   ngOnInit(): void {
-    // Kopfzeile: Name der Person als Titel (Mockup 05, Person)
-    this.pageTitleService.set(this.person.name);
-    this.initSubscriptions();
+    const personId = getParametersFromRouteRecursive(this.route.snapshot)["id"];
+    if (!personId) {
+      leaveDetailNotFound(this.router, this.snackbar, '/work/person');
+      return;
+    }
+
+    this.contextService.byId(personId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: person => {
+        if (!person) {
+          leaveDetailNotFound(this.router, this.snackbar, '/work/person');
+          return;
+        }
+
+        this.person = person;
+        this.form = getPersonForm(person);
+        this.form.disable();
+
+        // Kopfzeile: Name der Person als Titel (Mockup 05, Person)
+        this.pageTitleService.set(person.name);
+        this.initSubscriptions();
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -82,30 +86,16 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
 
   onCancelClick(): void {
     this.isEditing = false;
-    this.form = getPersonForm(this.person);
+    this.form = getPersonForm(this.person!);
     this.form.disable();
   }
 
   onAddPaymentClick(): void {
     this.personPaymentDialogService
       .openDialog({
-        personId: this.person.id,
-        openHours: calculateTimeDifference(this.person.totalHours, this.person.payedHours)
-      })
-      .then(dialogRef => dialogRef.afterClosed().subscribe({
-        next: payedHours => {
-          if (!payedHours) {
-            return;
-          }
-
-          const payedNow = {
-            hours: getHoursFromTimeString(payedHours!),
-            minutes: getMinutesFromTimeString(payedHours!)
-          }
-
-          this.person.payedHours = addTimes(this.person.payedHours, payedNow);
-        }
-      }));
+        personId: this.person!.id,
+        openHours: calculateTimeDifference(this.person!.totalHours, this.person!.payedHours)
+      });
   }
 
   onSaveClick(): void {
@@ -119,14 +109,17 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
 
     const dto = this.createUpdateDtoFromForm();
 
-    this.contextService.updatePerson(this.person.id, dto).subscribe(
+    this.contextService.updatePerson(this.person!.id, dto).subscribe(
       {
         next: _ => {
           this.isSaving = false;
+          this.person = { ...this.person!, ...dto };
           this.pageTitleService.set(dto.name);
         },
         error: _ => {
           this.isSaving = false;
+          this.isEditing = true;
+          this.form.enable();
           openErrorSnackbar("Person konnte nicht gespeichert werden.", this.snackbar);
         } 
       }
@@ -160,7 +153,7 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
   private delete(): void {
     this.isDeleting = true;
 
-    this.contextService.deletePerson(this.person.id).subscribe(
+    this.contextService.deletePerson(this.person!.id).subscribe(
       {
         next: _ => {
           this.isDeleting = false;
@@ -175,6 +168,21 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
   }
     
   private initSubscriptions(): void {
+    this.contextService.persons().pipe(takeUntil(this.destroy$)).subscribe({
+      next: persons => {
+        const updated = persons?.find(p => p.id == this.person?.id);
+        if (!updated) {
+          return;
+        }
+
+        this.person = updated;
+        if (!this.isEditing && !this.isSaving) {
+          this.form = getPersonForm(updated);
+          this.form.disable();
+        }
+      }
+    });
+
     this.workingEntryContextService.workingEntries().pipe(takeUntil(this.destroy$)).subscribe({
       next: entries => {
         this.workingEntries = entries;

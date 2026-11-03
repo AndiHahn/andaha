@@ -1,5 +1,5 @@
 <div class="page">
-  <div class="body">
+  <div class="body" *ngIf="category">
     <!--
       FORM
     -->
@@ -86,10 +86,10 @@
     AKTIONEN
   -->
   <div class="progress-slot">
-    <mat-progress-bar *ngIf="isDeleting || isLoading" mode="indeterminate" color="accent"></mat-progress-bar>
+    <mat-progress-bar *ngIf="isDeleting || isLoading || !category" mode="indeterminate" color="accent"></mat-progress-bar>
   </div>
 
-  <div class="actions" *ngIf="!isEditing">
+  <div class="actions" *ngIf="category && !isEditing">
     <button type="button" class="btn pri" (click)="onEditClick()" [disabled]="isDeleting || isLoading || isSaving">
       <ng-container *ngIf="!isSaving"><mat-icon>edit</mat-icon><span>Bearbeiten</span></ng-container>
       <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
@@ -100,7 +100,7 @@
     </button>
   </div>
 
-  <div class="actions" *ngIf="isEditing">
+  <div class="actions" *ngIf="category && isEditing">
     <button type="button" class="btn sec2" (click)="onCancelClick()">
       <mat-icon>close</mat-icon><span>Abbrechen</span>
     </button>

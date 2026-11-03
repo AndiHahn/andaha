@@ -1,6 +1,10 @@
 <!-- Verlauf: Icon-Button in der Kopfzeile (PageTitleService.setAction, siehe ngOnInit) -->
 <div class="page">
-  <form class="form-body" [formGroup]="form">
+  <div class="progress-slot">
+    <mat-progress-bar *ngIf="!income" mode="indeterminate" color="accent"></mat-progress-bar>
+  </div>
+
+  <form *ngIf="income" class="form-body" [formGroup]="form">
     <label class="field" [class.invalid]="form.controls.name | showError">
       <span class="field-label">Name</span>
       <span class="field-box">
@@ -29,7 +33,7 @@
     </label>
   </form>
 
-  <div class="actions" *ngIf="!isEditing">
+  <div class="actions" *ngIf="income && !isEditing">
     <button type="button" class="btn pri" (click)="onEditClick()" [disabled]="isDeleting || isLoading || isSaving">
       <ng-container *ngIf="!isSaving"><mat-icon>edit</mat-icon><span>Bearbeiten</span></ng-container>
       <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
@@ -40,7 +44,7 @@
     </button>
   </div>
 
-  <div class="actions" *ngIf="isEditing">
+  <div class="actions" *ngIf="income && isEditing">
     <button type="button" class="btn sec2" (click)="onCancelClick()">
       <mat-icon>close</mat-icon><span>Abbrechen</span>
     </button>

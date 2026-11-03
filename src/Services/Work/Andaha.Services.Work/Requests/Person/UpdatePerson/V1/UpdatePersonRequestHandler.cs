@@ -4,6 +4,7 @@ using Andaha.Services.Work.Infrastructure.Proxies;
 using Andaha.Services.Work.Requests.Person.Dtos.V1;
 using LinqKit;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Andaha.Services.Work.Requests.Person.UpdatePerson.V1;
 
@@ -25,7 +26,10 @@ internal class UpdatePersonRequestHandler : IRequestHandler<UpdatePersonRequest,
 
     public async Task<IResult> Handle(UpdatePersonRequest request, CancellationToken cancellationToken)
     {
-        var person = await this.dbContext.Person.FindByIdAsync(request.Id, cancellationToken);
+        var person = await this.dbContext.Person
+            .Include(p => p.Payments)
+            .Include(p => p.WorkingEntries)
+            .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
         if (person is null)
         {
             return Results.NotFound($"Person with id '{request.Id}' not found.");

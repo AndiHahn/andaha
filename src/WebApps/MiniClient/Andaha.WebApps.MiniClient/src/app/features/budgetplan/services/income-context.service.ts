@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
+import { afterFirstLoad } from 'src/app/shared/utils/load-state';
 import { IncomeCreateDto } from 'src/app/api/budgetplan/dtos/IncomeCreateDto';
 import { IncomeDto } from 'src/app/api/budgetplan/dtos/IncomeDto';
 import { IncomeUpdateDto } from 'src/app/api/budgetplan/dtos/IncomeUpdateDto';
@@ -12,7 +13,9 @@ import { ContextService } from 'src/app/core/context.service';
 export class IncomeContextService {
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private incomes$: BehaviorSubject<IncomeDto[] | undefined> = new BehaviorSubject<IncomeDto[] | undefined>(undefined);
-  
+  private loadState$ = new ReplaySubject<'loaded' | 'failed'>(1);
+  private backendIsReady: boolean = false;
+
   constructor(
     private contextService: ContextService,
     private incomeApiService: IncomeApiService
@@ -31,6 +34,10 @@ export class IncomeContextService {
 
   getById(id: string): IncomeDto | undefined {
     return this.incomes$.value?.find(cost => cost.id == id);
+  }
+
+  byId(id: string): Observable<IncomeDto | undefined> {
+    return afterFirstLoad(this.loadState$, () => this.getById(id));
   }
 
   createIncome(dto: IncomeCreateDto): Observable<void> {
@@ -95,8 +102,14 @@ export class IncomeContextService {
           next: result => {
             this.loading$.next(false);
             this.incomes$.next(result);
+            this.loadState$.next('loaded');
           },
-          error: _ => this.loading$.next(false)
+          error: _ => {
+            this.loading$.next(false);
+            if (this.backendIsReady) {
+              this.loadState$.next('failed');
+            }
+          }
         }
     );
   }
@@ -105,6 +118,7 @@ export class IncomeContextService {
     this.contextService.backendReady().subscribe(
       {
         next: ready => {
+          this.backendIsReady = ready;
           if (ready) {
             this.fetchIncomes();
           }

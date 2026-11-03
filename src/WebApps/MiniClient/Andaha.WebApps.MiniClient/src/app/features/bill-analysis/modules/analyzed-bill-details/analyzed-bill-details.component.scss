@@ -10,6 +10,11 @@
   overflow: auto;
 }
 
+.progress-slot {
+  flex: none;
+  height: 3px;
+}
+
 .body {
   display: flex;
   flex-direction: column;

@@ -7,6 +7,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppSnackbarModule } from 'src/app/shared/snackbar/snackbar.module';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ShowErrorModule } from 'src/app/shared/form-field/show-error.module';
 
@@ -31,6 +32,7 @@ const routes: Routes = [
     MatSnackBarModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatProgressBarModule,
     ShowErrorModule
   ]
 })

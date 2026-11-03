@@ -1,4 +1,6 @@
-import { ActivatedRouteSnapshot } from "@angular/router";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { ActivatedRouteSnapshot, Router } from "@angular/router";
+import { openInformationSnackbar } from "../snackbar/snackbar-functions";
 
 export interface RouteParameterLike {
   [key: string]: any;
@@ -20,4 +22,9 @@ export function getParametersFromRouteRecursive<T extends RouteParameterLike>(
     }
   }
   return parameters as any;
+}
+
+export function leaveDetailNotFound(router: Router, snackbar: MatSnackBar, listUrl: string): void {
+  openInformationSnackbar('Eintrag wurde nicht gefunden.', snackbar);
+  router.navigateByUrl(listUrl);
 }

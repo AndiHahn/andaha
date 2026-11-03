@@ -36,6 +36,6 @@ public class CreateBillCommandValidator : AbstractValidator<CreateBillCommand>
             .AnyAsync(
                 category => category.UserId == userId &&
                             category.Id == command.CategoryId &&
-                            (command.SubCategoryId == null || category.SubCategories.Any(subCategory => subCategory.Id == command.CategoryId)));
+                            (command.SubCategoryId == null || category.SubCategories.Any(subCategory => subCategory.Id == command.SubCategoryId)));
     }
 }

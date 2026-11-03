@@ -1,48 +1,36 @@
 import { PagedResultDto } from "../../common-dtos/PagedResultDto";
-import { BillCategoryDto } from "./BillCategoryDto";
-import { BillSubCategoryDto } from "./BillSubCategoryDto";
 
 export interface BillAnalyzedDto extends BillAnalyzedDtoBase {
-  date: Date;
+  date?: Date;
 }
 
 export interface BillAnalyzedDtoRaw extends BillAnalyzedDtoBase {
-  date: string;
+  date?: string | null;
+}
+
+export interface AnalyzedBillLineItemDto {
+  description?: string;
+  totalPrice?: number;
+  quantity?: number;
+  unitPrice?: number;
 }
 
 interface BillAnalyzedDtoBase {
   id: string;
-  category?: BillCategoryDto;
-  subCategory?: BillSubCategoryDto;
+  categoryId?: string;
+  subCategoryId?: string;
   shopName?: string;
   price?: number;
-  notes?: string;
-  analysisConfidence: number;
+  confidence?: number | null;
+  totalAmountConfidence?: number | null;
   imageAvailable: boolean;
-}
-
-export interface BillAnalyzedResponseDto extends BillAnalyzedResponseBase {
-  date: Date;
-}
-
-export interface BillAnalyzedResponseDtoRaw extends BillAnalyzedResponseBase {
-  date: string;
-}
-
-interface BillAnalyzedResponseBase {
-  id: string;
-  categoryId: string;
-  subCategoryId?: string;
-  shopName: string;
-  price: number;
-  notes?: string;
-  analysisConfidence: number;
+  lineItems: AnalyzedBillLineItemDto[];
 }
 
 export function mapBillAnalyzedDtoRaw(raw: BillAnalyzedDtoRaw): BillAnalyzedDto {
   return {
     ...raw,
-    date: new Date(raw.date)
+    date: raw.date ? new Date(raw.date) : undefined
   }
 }
 
@@ -50,12 +38,5 @@ export function mapPagedBillAnalyzedDtoResultRaw(raw: PagedResultDto<BillAnalyze
   return {
     ...raw,
     values: raw.values.map(mapBillAnalyzedDtoRaw)
-  }
-}
-
-export function mapBillAnalyzedResponseDtoRaw(raw: BillAnalyzedResponseDtoRaw): BillAnalyzedResponseDto {
-  return {
-    ...raw,
-    date: new Date(raw.date)
   }
 }

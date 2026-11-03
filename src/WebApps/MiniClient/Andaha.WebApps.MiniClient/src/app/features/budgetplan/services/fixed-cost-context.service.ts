@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
+import { afterFirstLoad } from 'src/app/shared/utils/load-state';
 import { FixedCostCreateDto } from 'src/app/api/budgetplan/dtos/FixedCostCreateDto';
 import { FixedCostDto } from 'src/app/api/budgetplan/dtos/FixedCostDto';
 import { FixedCostUpdateDto } from 'src/app/api/budgetplan/dtos/FixedCostUpdateDto';
@@ -12,7 +13,9 @@ import { ContextService } from 'src/app/core/context.service';
 export class FixedCostContextService {
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private fixedCosts$: BehaviorSubject<FixedCostDto[] | undefined> = new BehaviorSubject<FixedCostDto[] | undefined>(undefined);
-  
+  private loadState$ = new ReplaySubject<'loaded' | 'failed'>(1);
+  private backendIsReady: boolean = false;
+
   constructor(
     private contextService: ContextService,
     private fixedCostApiService: FixedCostApiService
@@ -31,6 +34,10 @@ export class FixedCostContextService {
 
   getById(id: string): FixedCostDto | undefined {
     return this.fixedCosts$.value?.find(cost => cost.id == id);
+  }
+
+  byId(id: string): Observable<FixedCostDto | undefined> {
+    return afterFirstLoad(this.loadState$, () => this.getById(id));
   }
 
   createFixedCost(dto: FixedCostCreateDto): Observable<void> {
@@ -95,8 +102,14 @@ export class FixedCostContextService {
           next: result => {
             this.loading$.next(false);
             this.fixedCosts$.next(result);
+            this.loadState$.next('loaded');
           },
-          error: _ => this.loading$.next(false)
+          error: _ => {
+            this.loading$.next(false);
+            if (this.backendIsReady) {
+              this.loadState$.next('failed');
+            }
+          }
         }
     );
   }
@@ -105,6 +118,7 @@ export class FixedCostContextService {
     this.contextService.backendReady().subscribe(
       {
         next: ready => {
+          this.backendIsReady = ready;
           if (ready) {
             this.fetchFixedCosts();
           }

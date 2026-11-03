@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 import { PageTitleService } from 'src/app/core/page-title/page-title.service';
 import { CostCategory, CostCategoryLabel } from 'src/app/api/budgetplan/dtos/CostCategory';
 import { Duration, DurationLabel } from 'src/app/api/budgetplan/dtos/Duration';
@@ -10,7 +11,7 @@ import { FixedCostUpdateDto } from 'src/app/api/budgetplan/dtos/FixedCostUpdateD
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/ConfirmationDialogData';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
-import { getParametersFromRouteRecursive } from 'src/app/shared/utils/routing-helper';
+import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
 import { FixedCostContextService } from '../../../services/fixed-cost-context.service';
 import { FixedCostHistoryDialogService } from '../fixed-cost-history-dialog/fixed-cost-history-dialog.service';
 import { FixedCostHistoryDialogData } from '../fixed-cost-history-dialog/FixedCostHistoryDialogData';
@@ -23,14 +24,16 @@ import { FixedCostForm } from '../functions/fixed-cost-form-functions';
 })
 export class FixedCostDetailsComponent implements OnInit, OnDestroy {
 
-  form: FormGroup<FixedCostForm>;
+  form!: FormGroup<FixedCostForm>;
 
-  fixedCost: FixedCostDto;
+  fixedCost?: FixedCostDto;
   
   isSaving: boolean = false;
   isDeleting: boolean = false;
   isEditing: boolean = false;
   isLoading: boolean = false;
+
+  private destroy$: Subject<void> = new Subject<void>();
 
   costCategoryOptions = Object.values(CostCategory);
   costCategoryLabel = CostCategoryLabel;
@@ -47,35 +50,41 @@ export class FixedCostDetailsComponent implements OnInit, OnDestroy {
     private fixedCostHistoryDialogService: FixedCostHistoryDialogService,
     private pageTitleService: PageTitleService
   ) {
-    const params = getParametersFromRouteRecursive(this.route.snapshot);
-    const fixedCostId = params["id"];
-    if (!fixedCostId) {
-      throw new Error("No fixedCostId available.");
-    }
-
-    const fixedCost = this.fixedCostContextService.getById(fixedCostId);
-    if (!fixedCost) {
-      throw new Error("FixedCost with id: " + fixedCostId + " is not available.");
-    }
-
-    this.fixedCost = fixedCost;
-    this.form = this.getFormFromDto(fixedCost);
-    this.form.disable();
   }
 
   ngOnInit(): void {
-    // Kopfzeile: Name als Titel, Verlauf als Icon-Button (Mockup 04, Fixkosten bearbeiten)
-    this.pageTitleService.set(this.fixedCost.name);
-    this.pageTitleService.setAction({ icon: 'history', label: 'Verlauf anzeigen', run: () => this.onShowHistoryClick() });
+    const fixedCostId = getParametersFromRouteRecursive(this.route.snapshot)["id"];
+    if (!fixedCostId) {
+      leaveDetailNotFound(this.router, this.snackbar, '/budgetplan/fixedcost');
+      return;
+    }
+
+    this.fixedCostContextService.byId(fixedCostId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: fixedCost => {
+        if (!fixedCost) {
+          leaveDetailNotFound(this.router, this.snackbar, '/budgetplan/fixedcost');
+          return;
+        }
+
+        this.fixedCost = fixedCost;
+        this.form = this.getFormFromDto(fixedCost);
+        this.form.disable();
+
+        // Kopfzeile: Name als Titel, Verlauf als Icon-Button (Mockup 04, Fixkosten bearbeiten)
+        this.pageTitleService.set(fixedCost.name);
+        this.pageTitleService.setAction({ icon: 'history', label: 'Verlauf anzeigen', run: () => this.onShowHistoryClick() });
+      }
+    });
   }
 
   ngOnDestroy(): void {
+    this.destroy$.next();
     this.pageTitleService.setAction(null);
   }
 
   onShowHistoryClick(): void {
     const data: FixedCostHistoryDialogData = {
-      fixedCostId: this.fixedCost.id
+      fixedCostId: this.fixedCost!.id
     }
 
     this.fixedCostHistoryDialogService.openDialog(data).then(dialogRef => dialogRef.afterClosed().subscribe());
@@ -88,7 +97,7 @@ export class FixedCostDetailsComponent implements OnInit, OnDestroy {
 
   onCancelClick(): void {
     this.isEditing = false;
-    this.form = this.getFormFromDto(this.fixedCost);
+    this.form = this.getFormFromDto(this.fixedCost!);
     this.form.disable();
   }
 
@@ -103,14 +112,17 @@ export class FixedCostDetailsComponent implements OnInit, OnDestroy {
 
     const dto = this.createDtoFromForm();
 
-    this.fixedCostContextService.updateFixedCost(this.fixedCost.id, dto).subscribe(
+    this.fixedCostContextService.updateFixedCost(this.fixedCost!.id, dto).subscribe(
       {
         next: _ => {
           this.isSaving = false;
+          this.fixedCost = { ...this.fixedCost!, ...dto };
           this.pageTitleService.set(dto.name);
         },
         error: _ => {
           this.isSaving = false;
+          this.isEditing = true;
+          this.form.enable();
           openErrorSnackbar("Eintrag konnte nicht gespeichert werden.", this.snackbar);
         } 
       }
@@ -136,7 +148,7 @@ export class FixedCostDetailsComponent implements OnInit, OnDestroy {
   private delete(): void {
     this.isDeleting = true;
 
-    this.fixedCostContextService.deleteFixedCost(this.fixedCost.id).subscribe(
+    this.fixedCostContextService.deleteFixedCost(this.fixedCost!.id).subscribe(
       {
         next: _ => {
           this.isDeleting = false;

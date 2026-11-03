@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from './core/auth.service';
 import { BillContextService } from './features/bill/services/bill-context.service';
-import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
-import { filter, map, shareReplay } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { HeaderAction, PageTitleService } from './core/page-title/page-title.service';
+import { AppUpdateService } from './core/app-update.service';
 
 @Component({
   selector: 'app-root',
@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
   readonly action$: Observable<HeaderAction | null>;
 
   constructor(
-    private serviceWorkerUpdate: SwUpdate,
+    private appUpdateService: AppUpdateService,
     private authService: AuthService,
     private billContextService: BillContextService,
     private breakpointObserver: BreakpointObserver,
@@ -42,13 +42,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.serviceWorkerUpdate.versionUpdates
-      .pipe(filter((event): event is VersionReadyEvent => event.type === 'VERSION_READY'))
-      .subscribe(
-        {
-          next: _ => this.serviceWorkerUpdate.activateUpdate().then(_ => document.location.reload())
-        }
-      );
+    this.appUpdateService.init();
   }
 
   logout(): void {

@@ -2,6 +2,7 @@
 using Andaha.Services.Shopping.Infrastructure;
 using Andaha.Services.Shopping.Requests.Bill.UploadBillImage.V1;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Andaha.Services.Shopping.Requests.Bill.CreateBill.V1;
 
@@ -24,6 +25,30 @@ internal class CreateBillCommandHandler : IRequestHandler<CreateBillCommand, IRe
     public async Task<IResult> Handle(CreateBillCommand request, CancellationToken cancellationToken)
     {
         Guid userId = identityService.GetUserId();
+
+        if (request.Id is Guid requestedId)
+        {
+            var existing = await dbContext.Bill
+                .Include(b => b.Images)
+                .SingleOrDefaultAsync(b => b.Id == requestedId, cancellationToken);
+
+            if (existing is not null)
+            {
+                if (!existing.HasCreated(userId))
+                {
+                    return Results.Conflict();
+                }
+
+                if (request.Image is not null && !existing.Images.Any())
+                {
+                    await sender.Send(new UploadBillImageCommand(existing.Id, request.Image), cancellationToken);
+                }
+
+                var existingDto = await dbContext.FindBillDtoByIdAsync(existing.Id, userId, cancellationToken);
+
+                return Results.Ok(existingDto);
+            }
+        }
 
         var newBill = dbContext.Bill.Add(
             new Core.Bill(

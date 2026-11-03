@@ -28,6 +28,7 @@ internal static class BillEndpointExtensions
         app.MapUploadForAnalysis(groupBuilder);
         app.MapAnalyzeNasImage(groupBuilder);
         app.MapGetAnalyzedBills(groupBuilder);
+        app.MapGetAnalyzedBillImage(groupBuilder);
         app.MapAnalyzeBillSubscription(groupBuilder);
 
         return app;
@@ -258,6 +259,20 @@ internal static class BillEndpointExtensions
             .Produces<IEnumerable<Dtos.V1.AnalyzedBillDto>>()
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
             .WithDescription("Returns analyzed bills for the current user.");
+
+        return app;
+    }
+
+    private static WebApplication MapGetAnalyzedBillImage(
+        this WebApplication app,
+        RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediateGet<GetAnalyzedBillImage.V1.GetAnalyzedBillImageQuery>("analyzed/{id}/image")
+            .Produces<FileStreamResult>()
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<ProblemDetails>(StatusCodes.Status404NotFound)
+            .WithDescription("Returns the image of an analyzed bill of the current user.");
 
         return app;
     }

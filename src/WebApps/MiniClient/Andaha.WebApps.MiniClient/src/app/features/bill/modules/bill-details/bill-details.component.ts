@@ -12,7 +12,7 @@ import { BillContextService } from 'src/app/features/bill/services/bill-context.
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/ConfirmationDialogData';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
-import { getParametersFromRouteRecursive } from 'src/app/shared/utils/routing-helper';
+import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
 import { BillForm, getBillForm } from '../../functions/bill-form-functions';
 import { ImageSnippet } from '../add-bill-image-dialog/add-bill-image-dialog.component';
 import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
@@ -27,11 +27,11 @@ import { MatSelectChange } from '@angular/material/select';
 })
 export class BillDetailsComponent implements OnInit, OnDestroy {
 
-  form: FormGroup<BillForm>;
+  form!: FormGroup<BillForm>;
 
   allCategories?: CategoryDto[];
 
-  bill: BillDto;
+  bill?: BillDto;
   billCategories?: BillCategoryDto[];
   billSubCategories?: BillSubCategoryDto[];
   image?: ImageSnippet;
@@ -52,24 +52,28 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
     private billContextService: BillContextService,
     private billCategoryContextService: BillCategoryContextService
   ) {
-    const params = getParametersFromRouteRecursive(this.route.snapshot);
-    const billId = params["id"];
-    if (!billId) {
-      throw new Error("No billId available.");
-    }
-
-    const bill = this.billContextService.getBillById(billId);
-    if (!bill) {
-      throw new Error("Bill with id: " + billId + " is not available.");
-    }
-
-    this.bill = bill;
-    this.form = getBillForm(bill);
-    this.form.disable();
   }
 
   ngOnInit(): void {
-    this.initSubscriptions();
+    const billId = getParametersFromRouteRecursive(this.route.snapshot)["id"];
+    if (!billId) {
+      leaveDetailNotFound(this.router, this.snackbar, '/bill/list');
+      return;
+    }
+
+    this.billContextService.loadBillById(billId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: bill => {
+        if (!bill) {
+          leaveDetailNotFound(this.router, this.snackbar, '/bill/list');
+          return;
+        }
+
+        this.bill = bill;
+        this.form = getBillForm(bill);
+        this.form.disable();
+        this.initSubscriptions();
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -90,7 +94,7 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
 
   onCancelClick(): void {
     this.isEditing = false;
-    this.form = getBillForm(this.bill);
+    this.form = getBillForm(this.bill!);
     this.updateCategory();
     this.form.disable();
   }
@@ -108,11 +112,25 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
     const category = this.getCategoryFromForm();
     const subCategory = this.getSubCategoryFromForm();
 
-    this.billContextService.updateBill(this.bill.id, dto, this.bill.imageAvailable, category, subCategory).subscribe(
+    this.billContextService.updateBill(this.bill!.id, dto, this.bill!.imageAvailable, category, subCategory).subscribe(
       {
-        next: _ => this.isSaving = false,
+        next: _ => {
+          this.isSaving = false;
+          // Rechnung kann ausserhalb der geladenen Liste liegen (GET bill/{id}); dann den Stand hier nachziehen.
+          Object.assign(this.bill!, {
+            shopName: dto.shopName,
+            notes: dto.notes,
+            price: dto.price,
+            date: dto.date,
+            category,
+            subCategory,
+            imageAvailable: dto.image != undefined || this.bill!.imageAvailable
+          });
+        },
         error: _ => {
           this.isSaving = false;
+          this.isEditing = true;
+          this.form.enable();
           openErrorSnackbar("Rechnung konnte nicht gespeichert werden.", this.snackbar);
         } 
       }
@@ -142,7 +160,7 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
   private delete(): void {
     this.isDeleting = true;
 
-    this.billContextService.deleteBill(this.bill.id).subscribe(
+    this.billContextService.deleteBill(this.bill!.id).subscribe(
       {
         next: _ => {
           this.isDeleting = false;
@@ -157,16 +175,21 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
   }
 
   private updateCategory(): void {
+    const bill = this.bill;
+    if (!bill) {
+      return;
+    }
+
     this.updateCategories();
 
-    const category = this.billCategories?.find(category => category.id == this.bill.category.id);
+    const category = this.billCategories?.find(category => category.id == bill.category.id);
     if (category) {
       this.form.controls.category.setValue(category);
 
       const categoryWithSubCategories = this.allCategories?.find(c => c.id == category.id);
       this.billSubCategories = categoryWithSubCategories?.subCategories;
 
-      const subCategory = this.billSubCategories?.find(c => c.id == this.bill.subCategory?.id);
+      const subCategory = this.billSubCategories?.find(c => c.id == bill.subCategory?.id);
       if (subCategory) {
         this.form.controls.subCategory.setValue(subCategory);
       }
@@ -174,22 +197,23 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
   }
 
   private updateCategories(): void {
-    if (!this.billCategories || !this.bill) {
+    const bill = this.bill;
+    if (!this.billCategories || !bill) {
       return;
     }
     
-    const containsCategory = this.billCategories.some(category => category.id == this.bill.category.id);
+    const containsCategory = this.billCategories.some(category => category.id == bill.category.id);
     if (!containsCategory) {
-      const categoryWithSameName = this.billCategories.find(category => category.name == this.bill.category.name);
+      const categoryWithSameName = this.billCategories.find(category => category.name == bill.category.name);
       if (categoryWithSameName) {
-        categoryWithSameName.id = this.bill.category.id;
-        categoryWithSameName.color = this.bill.category.color;
+        categoryWithSameName.id = bill.category.id;
+        categoryWithSameName.color = bill.category.color;
       } else {
         this.billCategories.push({
-          id: this.bill.category.id,
-          name: this.bill.category.name,
-          color: this.bill.category.color,
-          order: this.bill.category.order
+          id: bill.category.id,
+          name: bill.category.name,
+          color: bill.category.color,
+          order: bill.category.order
         });
       }
     }

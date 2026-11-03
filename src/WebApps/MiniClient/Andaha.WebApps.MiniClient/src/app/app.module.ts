@@ -15,6 +15,7 @@ import localeDe from '@angular/common/locales/de';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { AppSnackbarModule } from './shared/snackbar/snackbar.module';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 
@@ -59,6 +60,7 @@ async function initApp(authService: AuthService): Promise<void> {
     MatMenuModule,
     MatSidenavModule,
     MatSnackBarModule,
+    AppSnackbarModule,
     MatDialogModule,
     MatDatepickerModule,
     ServiceWorkerModule.register('ngsw-worker.js', {

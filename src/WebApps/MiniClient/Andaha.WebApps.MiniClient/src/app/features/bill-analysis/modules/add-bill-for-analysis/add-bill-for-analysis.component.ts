@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { blobToDataUrl } from 'src/app/shared/utils/file-utils';
+import { compressImage } from 'src/app/shared/utils/image-utils';
+import { openErrorSnackbar, openInformationSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 
 @Component({
   selector: 'app-add-bill-for-analysis',
@@ -28,17 +30,20 @@ export class AddBillForAnalysisComponent {
     }
   }
 
-  upload() {
+  async upload() {
     if (!this.selectedFile) { return; }
     this.uploading = true;
-    this.billApi.uploadForAnalysis(this.selectedFile).subscribe({
+    const compressed = await compressImage(this.selectedFile);
+    this.billApi.uploadForAnalysis(compressed).subscribe({
       next: _ => {
         this.uploading = false;
-        this.snack.open('Upload erfolgreich', undefined, { duration: 2000 });
+        openInformationSnackbar('Foto wird analysiert. Das Ergebnis erscheint in wenigen Minuten unter Rechnungen oder Analyse.', this.snack, { duration: 6000 });
+        this.selectedFile = undefined;
+        this.previewUrl = undefined;
       },
       error: _ => {
         this.uploading = false;
-        this.snack.open('Upload fehlgeschlagen', undefined, { duration: 2000 });
+        openErrorSnackbar('Foto konnte nicht hochgeladen werden.', this.snack);
       }
     });
   }

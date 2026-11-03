@@ -9,7 +9,17 @@ internal static class PersonDtoMapping
             person.Id,
             person.Name,
             person.HourlyRate,
-            string.Join("\n", person.Payments.Select(payment => $"{payment.PayedAt.ToShortDateString()} {Math.Round(new TimeSpan(payment.PayedHoursTicks).TotalHours, 2)}h ({payment.PayedMoney}€ + {payment.PayedTip}€)")),
+            person.Notes,
             new TimeSpan(person.WorkingEntries.Sum(entry => entry.WorkDurationTicks)),
-            new TimeSpan(person.Payments.Sum(payment => payment.PayedHoursTicks)));
+            new TimeSpan(person.Payments.Sum(payment => payment.PayedHoursTicks)),
+            person.Payments
+                .OrderByDescending(payment => payment.PayedAt)
+                .Select(payment => new PaymentDto(
+                    payment.Id,
+                    payment.PayedAt,
+                    new TimeSpan(payment.PayedHoursTicks),
+                    payment.PayedMoney,
+                    payment.PayedTip,
+                    payment.Notes))
+                .ToList());
 }

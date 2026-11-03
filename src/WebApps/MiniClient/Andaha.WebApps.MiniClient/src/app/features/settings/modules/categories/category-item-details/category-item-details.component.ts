@@ -1,9 +1,10 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 import { PageTitleService } from 'src/app/core/page-title/page-title.service';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { CategoryUpdateDto } from 'src/app/api/shopping/dtos/CategoryUpdateDto';
@@ -12,7 +13,7 @@ import { BillCategoryContextService } from 'src/app/services/bill-category-conte
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/ConfirmationDialogData';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
-import { getParametersFromRouteRecursive } from 'src/app/shared/utils/routing-helper';
+import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
 import { getAllColors } from '../functions/category-functions';
 import { CategoryForm, createSubCategoryForm, createCategoryForm, SubCategoryForm } from '../functions/form-functions';
 
@@ -21,21 +22,22 @@ import { CategoryForm, createSubCategoryForm, createCategoryForm, SubCategoryFor
   templateUrl: './category-item-details.component.html',
   styleUrls: ['./category-item-details.component.scss']
 })
-export class CategoryItemDetailsComponent implements OnInit {
+export class CategoryItemDetailsComponent implements OnInit, OnDestroy {
 
-  form: FormGroup<CategoryForm>;
+  form!: FormGroup<CategoryForm>;
   
   isSaving: boolean = false;
   isDeleting: boolean = false;
   isEditing: boolean = false;
   isLoading: boolean = false;
 
-  categoryId: string;
-  category: CategoryDto;
-  includeToStatisticsCheckbox: boolean;
+  category?: CategoryDto;
+  includeToStatisticsCheckbox: boolean = false;
 
   colors: string[];
   selectedColor: string = '';
+
+  private destroy$: Subject<void> = new Subject<void>();
 
   get subCategoryForms(): FormArray<FormGroup<SubCategoryForm>> {
     return this.form.controls.subCategories;
@@ -49,29 +51,37 @@ export class CategoryItemDetailsComponent implements OnInit {
     private categoryContextService: BillCategoryContextService,
     private pageTitleService: PageTitleService
   ) {
-    const params = getParametersFromRouteRecursive(this.route.snapshot);
-    this.categoryId = params["id"];
-    if (!this.categoryId) {
-      throw new Error("No categoryId available.");
-    }
-
-    const category = this.categoryContextService.getCategoryById(this.categoryId);
-    if (!category) {
-      throw new Error("Category with id: " + this.categoryId + " is not available.");
-    }
-
-    this.category = category;
-    this.selectedColor = category.color;
-    this.includeToStatisticsCheckbox = category.includeToStatistics;
-    this.form = createCategoryForm(category);
-    this.form.disable();
-
     this.colors = getAllColors();
   }
 
   ngOnInit(): void {
-    // Kopfzeile: Kategoriename als Titel (Mockup 06, Kategorie bearbeiten)
-    this.pageTitleService.set(this.category.name);
+    const categoryId = getParametersFromRouteRecursive(this.route.snapshot)["id"];
+    if (!categoryId) {
+      leaveDetailNotFound(this.router, this.snackbar, '/settings/categories');
+      return;
+    }
+
+    this.categoryContextService.categoryById(categoryId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: category => {
+        if (!category) {
+          leaveDetailNotFound(this.router, this.snackbar, '/settings/categories');
+          return;
+        }
+
+        this.category = category;
+        this.selectedColor = category.color;
+        this.includeToStatisticsCheckbox = category.includeToStatistics;
+        this.form = createCategoryForm(category);
+        this.form.disable();
+
+        // Kopfzeile: Kategoriename als Titel (Mockup 06, Kategorie bearbeiten)
+        this.pageTitleService.set(category.name);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
   }
 
   onDeleteSubCategoryClick(index: number): void {
@@ -108,10 +118,10 @@ export class CategoryItemDetailsComponent implements OnInit {
 
   onCancelClick(): void {
     this.isEditing = false;
-    this.form = createCategoryForm(this.category);
+    this.form = createCategoryForm(this.category!);
     this.form.disable();
     this.subCategoryForms.disable();
-    this.includeToStatisticsCheckbox = this.category.includeToStatistics;
+    this.includeToStatisticsCheckbox = this.category!.includeToStatistics;
   }
 
   onSaveClick(): void {
@@ -125,14 +135,32 @@ export class CategoryItemDetailsComponent implements OnInit {
 
     const dto = this.createModelFromForm();
 
-    this.categoryContextService.updateCategory(this.categoryId, dto).subscribe(
+    this.categoryContextService.updateCategory(this.category!.id, dto).subscribe(
       {
         next: _ => {
           this.isSaving = false;
+          const saved = this.categoryContextService.getCategoryById(this.category!.id);
+          this.category = saved ?? {
+            ...this.category!,
+            name: dto.name,
+            color: dto.color,
+            includeToStatistics: dto.includeToStatistics,
+            subCategories: this.subCategoryForms.controls.map((f, order) => ({
+              id: f.controls.id.value ?? '',
+              name: f.controls.name.value,
+              order
+            }))
+          };
+          this.selectedColor = this.category.color;
+          this.includeToStatisticsCheckbox = this.category.includeToStatistics;
+          this.form = createCategoryForm(this.category);
+          this.form.disable();
           this.pageTitleService.set(dto.name);
         },
         error: (err: HttpErrorResponse) => {
           this.isSaving = false;
+          this.isEditing = true;
+          this.form.enable();
           openErrorSnackbar("Kategorie konnte nicht gespeichert werden. (" + err.error + ")", this.snackbar);
         } 
       }
@@ -158,7 +186,7 @@ export class CategoryItemDetailsComponent implements OnInit {
   private delete(): void {
     this.isDeleting = true;
 
-    this.categoryContextService.deleteCategory(this.category.id).subscribe(
+    this.categoryContextService.deleteCategory(this.category!.id).subscribe(
       {
         next: _ => {
           this.isDeleting = false;
@@ -181,7 +209,7 @@ export class CategoryItemDetailsComponent implements OnInit {
       const subCategoryControls = this.subCategoryForms.at(index).controls;
 
       subCategories.push({
-        id: subCategoryControls.id.value ?? undefined,
+        id: subCategoryControls.id.value || undefined,
         name: subCategoryControls.name.value,
         order: index
       })

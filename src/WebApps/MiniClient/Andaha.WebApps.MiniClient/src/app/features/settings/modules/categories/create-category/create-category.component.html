@@ -13,11 +13,11 @@
     <div class="field" [class.invalid]="form.controls.color | showError">
       <span class="field-label">Farbe</span>
       <span class="field-box">
-        <mat-select [(ngModel)]="selectedColor" name="color" [formControl]="form.controls.color" aria-label="Farbe">
-          <mat-select-trigger *ngIf="selectedColor">
+        <mat-select [formControl]="form.controls.color" aria-label="Farbe">
+          <mat-select-trigger *ngIf="form.controls.color.value">
             <span class="color-opt">
-              <app-color-item [color]="selectedColor"></app-color-item>
-              <span class="color-name">{{ selectedColor }}</span>
+              <app-color-item [color]="form.controls.color.value"></app-color-item>
+              <span class="color-name">{{ form.controls.color.value }}</span>
             </span>
           </mat-select-trigger>
           <mat-option *ngFor="let color of colors" [value]="color">
@@ -44,7 +44,7 @@
   -->
   <div class="actions">
     <button type="button" class="btn pri" (click)="onSaveClick()"
-        [disabled]="isSaving" [disabled]="!form.valid">
+        [disabled]="isSaving || !form.valid">
       <ng-container *ngIf="!isSaving"><mat-icon>check</mat-icon><span>Speichern</span></ng-container>
       <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
     </button>

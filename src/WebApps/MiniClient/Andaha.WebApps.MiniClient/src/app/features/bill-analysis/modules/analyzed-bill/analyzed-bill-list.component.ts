@@ -5,6 +5,8 @@ import { PageEvent } from '@angular/material/paginator';
 import { AnalyzedBillContextService } from '../../services/analyzed-bill-context.service';
 import { CdkScrollable, ScrollDispatcher } from '@angular/cdk/scrolling';
 import { AnalyzedBillDataSource } from './AnalyzedBillDataSource';
+import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
+import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 
 @Component({
   selector: 'app-analyzed-bill-list',
@@ -13,7 +15,8 @@ import { AnalyzedBillDataSource } from './AnalyzedBillDataSource';
 })
 export class AnalyzedBillListComponent implements OnInit, AfterViewInit, OnDestroy {
   billDataSource = new AnalyzedBillDataSource();
-  pixelHeightPerItem = 60;
+  pixelHeightPerItem = 64;
+  categories: CategoryDto[] = [];
 
   totalCount?: number;
   loading: boolean = false;
@@ -28,7 +31,8 @@ export class AnalyzedBillListComponent implements OnInit, AfterViewInit, OnDestr
 
   constructor(
     private scrollDispatcher: ScrollDispatcher,
-    private analyzedBillContextService: AnalyzedBillContextService) {
+    private analyzedBillContextService: AnalyzedBillContextService,
+    private categoryContext: BillCategoryContextService) {
   }
 
   ngOnInit(): void {
@@ -83,6 +87,8 @@ export class AnalyzedBillListComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   private initSubscriptions(): void {
+    this.categoryContext.categories().pipe(takeUntil(this.destroy$)).subscribe(categories => this.categories = categories);
+
     this.analyzedBillContextService.bills().pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: result => {

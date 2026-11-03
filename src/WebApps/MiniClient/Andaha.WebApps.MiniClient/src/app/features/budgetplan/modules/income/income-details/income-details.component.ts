@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 import { PageTitleService } from 'src/app/core/page-title/page-title.service';
 import { Duration, DurationLabel } from 'src/app/api/budgetplan/dtos/Duration';
 import { IncomeDto } from 'src/app/api/budgetplan/dtos/IncomeDto';
@@ -9,7 +10,7 @@ import { IncomeUpdateDto } from 'src/app/api/budgetplan/dtos/IncomeUpdateDto';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/ConfirmationDialogData';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
-import { getParametersFromRouteRecursive } from 'src/app/shared/utils/routing-helper';
+import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
 import { IncomeContextService } from '../../../services/income-context.service';
 import { IncomeHistoryDialogService } from '../income-history-dialog/income-history-dialog.service';
 import { IncomeHistoryDialogData } from '../income-history-dialog/IncomeHistoryDialogData';
@@ -22,14 +23,16 @@ import { IncomeForm } from '../functions/income-form-functions';
 })
 export class IncomeDetailsComponent implements OnInit, OnDestroy {
 
-  form: FormGroup<IncomeForm>;
+  form!: FormGroup<IncomeForm>;
 
-  income: IncomeDto;
+  income?: IncomeDto;
   
   isSaving: boolean = false;
   isDeleting: boolean = false;
   isEditing: boolean = false;
   isLoading: boolean = false;
+
+  private destroy$: Subject<void> = new Subject<void>();
 
   durationOptions = Object.values(Duration);
   durationLabel = DurationLabel;
@@ -43,35 +46,41 @@ export class IncomeDetailsComponent implements OnInit, OnDestroy {
     private incomeHistoryDialogService: IncomeHistoryDialogService,
     private pageTitleService: PageTitleService
   ) {
-    const params = getParametersFromRouteRecursive(this.route.snapshot);
-    const incomeId = params["id"];
-    if (!incomeId) {
-      throw new Error("No incomeId available.");
-    }
-
-    const income = this.incomeContextService.getById(incomeId);
-    if (!income) {
-      throw new Error("Income with id: " + incomeId + " is not available.");
-    }
-
-    this.income = income;
-    this.form = this.getFormFromDto(income);
-    this.form.disable();
   }
 
   ngOnInit(): void {
-    // Kopfzeile: Name als Titel, Verlauf als Icon-Button (Mockup 04, Fixkosten bearbeiten)
-    this.pageTitleService.set(this.income.name);
-    this.pageTitleService.setAction({ icon: 'history', label: 'Verlauf anzeigen', run: () => this.onShowHistoryClick() });
+    const incomeId = getParametersFromRouteRecursive(this.route.snapshot)["id"];
+    if (!incomeId) {
+      leaveDetailNotFound(this.router, this.snackbar, '/budgetplan/income');
+      return;
+    }
+
+    this.incomeContextService.byId(incomeId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: income => {
+        if (!income) {
+          leaveDetailNotFound(this.router, this.snackbar, '/budgetplan/income');
+          return;
+        }
+
+        this.income = income;
+        this.form = this.getFormFromDto(income);
+        this.form.disable();
+
+        // Kopfzeile: Name als Titel, Verlauf als Icon-Button (Mockup 04, Fixkosten bearbeiten)
+        this.pageTitleService.set(income.name);
+        this.pageTitleService.setAction({ icon: 'history', label: 'Verlauf anzeigen', run: () => this.onShowHistoryClick() });
+      }
+    });
   }
 
   ngOnDestroy(): void {
+    this.destroy$.next();
     this.pageTitleService.setAction(null);
   }
 
   onShowHistoryClick(): void {
     const data: IncomeHistoryDialogData = {
-      incomeId: this.income.id
+      incomeId: this.income!.id
     }
 
     this.incomeHistoryDialogService.openDialog(data).then(dialogRef => dialogRef.afterClosed().subscribe());
@@ -84,7 +93,7 @@ export class IncomeDetailsComponent implements OnInit, OnDestroy {
 
   onCancelClick(): void {
     this.isEditing = false;
-    this.form = this.getFormFromDto(this.income);
+    this.form = this.getFormFromDto(this.income!);
     this.form.disable();
   }
 
@@ -99,14 +108,17 @@ export class IncomeDetailsComponent implements OnInit, OnDestroy {
 
     const dto = this.createDtoFromForm();
 
-    this.incomeContextService.updateIncome(this.income.id, dto).subscribe(
+    this.incomeContextService.updateIncome(this.income!.id, dto).subscribe(
       {
         next: _ => {
           this.isSaving = false;
+          this.income = { ...this.income!, ...dto };
           this.pageTitleService.set(dto.name);
         },
         error: _ => {
           this.isSaving = false;
+          this.isEditing = true;
+          this.form.enable();
           openErrorSnackbar("Eintrag konnte nicht gespeichert werden.", this.snackbar);
         } 
       }
@@ -132,7 +144,7 @@ export class IncomeDetailsComponent implements OnInit, OnDestroy {
   private delete(): void {
     this.isDeleting = true;
 
-    this.incomeContextService.deleteIncome(this.income.id).subscribe(
+    this.incomeContextService.deleteIncome(this.income!.id).subscribe(
       {
         next: _ => {
           this.isDeleting = false;
@@ -140,7 +152,7 @@ export class IncomeDetailsComponent implements OnInit, OnDestroy {
         },
         error: _ => {
           this.isDeleting = false;
-          openErrorSnackbar("Fixkostenpunkt konnte nicht gelöscht werden.", this.snackbar);
+          openErrorSnackbar("Einkommen konnte nicht gelöscht werden.", this.snackbar);
         }
       }
     );

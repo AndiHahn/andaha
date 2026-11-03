@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { BillCreateCacheItem, BillCreateDto } from '../../../api/shopping/dtos/BillCreateDto';
-import { blobToDataUrl, dataUrlToBase64, fileDataUriToBlob, imageBlobToFile } from '../../../shared/utils/file-utils';
+import { dataUrlToBase64, fileDataUriToBlob, imageBlobToFile } from '../../../shared/utils/file-utils';
+import { compressImage } from '../../../shared/utils/image-utils';
+import { PendingBillStore } from './pending-bill-store.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,105 +11,63 @@ import { blobToDataUrl, dataUrlToBase64, fileDataUriToBlob, imageBlobToFile } fr
 export class BillCacheService {
   private billAdded$: Subject<void> = new Subject();
 
-  private NEW_BILLS_CACHE_KEY: string = 'Bills|New';
+  private LEGACY_BILLS_CACHE_KEY: string = 'Bills|New';
 
-  private currentlySyncing: BillCreateCacheItem[] = [];
+  private migration: Promise<void>;
+
+  constructor(private pendingBillStore: PendingBillStore) {
+    this.migration = this.migrateLegacyBills();
+  }
 
   public billAdded(): Observable<void> {
     return this.billAdded$.asObservable();
   }
 
-  public saveNewBillLocal(bill: BillCreateDto): void {
-    this.saveBill(bill);
+  public async saveNewBillLocal(bill: BillCreateDto): Promise<void> {
+    const image = bill.image ? await compressImage(bill.image) : undefined;
+
+    await this.pendingBillStore.put({ ...bill, image });
+
+    this.billAdded$.next();
   }
 
-  public removeBillLocal(billId: string): void {
-    const bill = this.currentlySyncing.find(syncingBill => syncingBill.id == billId);
-    if (bill) {
-      const index = this.currentlySyncing.indexOf(bill);
-      this.currentlySyncing.splice(index, 1);
-    }
-
-    this.removeBill(billId);
+  public removeBillLocal(billId: string): Promise<void> {
+    return this.pendingBillStore.delete(billId);
   }
 
-  public getBillsToSync(): BillCreateDto[] {
-    const billsToSync = this.getSavedBills();
+  public async getBillsToSync(): Promise<BillCreateDto[]> {
+    await this.migration;
 
-    this.currentlySyncing.forEach(syncingBill => {
-      const bill = billsToSync.find(bill => bill.id == syncingBill.id);
-      if (bill) {
-        const index = billsToSync.indexOf(bill);
-        billsToSync.splice(index, 1);
+    return this.pendingBillStore.getAll();
+  }
+
+  public async migrateLegacyBills(): Promise<void> {
+    try {
+      const billsJson = localStorage.getItem(this.LEGACY_BILLS_CACHE_KEY);
+      if (!billsJson) {
+        return;
       }
-    });
 
-    this.currentlySyncing = this.currentlySyncing.concat(billsToSync);
-
-    const billCreateDtos: BillCreateDto[] = [];
-    billsToSync.forEach(bill => billCreateDtos.push(this.cacheItemToDto(bill)));
-
-    return billCreateDtos;
-  }
-
-  private removeBill(billId: string): void {
-    const allBills = this.getSavedBills();
-    const bill = allBills.find(bill => bill.id == billId);
-    if (bill) {
-      const index = allBills.indexOf(bill);
-      allBills.splice(index, 1);
-
-      if (allBills.length > 0) {
-        localStorage.setItem(this.NEW_BILLS_CACHE_KEY, JSON.stringify(allBills));
-      } else {
-        localStorage.removeItem(this.NEW_BILLS_CACHE_KEY);
-      }
-    }
-  }
-
-  private saveBill(bill: BillCreateDto): void {
-    const allBills = this.getSavedBills();
-
-    this.dtoToCacheItem(bill).then(billToCache => {
-      allBills.push(billToCache);
-
-      localStorage.setItem(this.NEW_BILLS_CACHE_KEY, JSON.stringify(allBills));
-
-      this.billAdded$.next();
-    });
-  }
-  
-  private getSavedBills(): BillCreateCacheItem[] {
-    const billsJson = localStorage.getItem(this.NEW_BILLS_CACHE_KEY);
-    if (!billsJson) {
-      return [];
-    }
-
-    const cachedBills: BillCreateCacheItem[] = JSON.parse(billsJson);
-
-    return cachedBills;
-  }
-
-  private dtoToCacheItem(bill: BillCreateDto): Promise<BillCreateCacheItem> {
-    const cacheItem: BillCreateCacheItem = {
-      id: bill.id,
-      shopName: bill.shopName,
-      categoryId: bill.categoryId,
-      subCategoryId: bill.subCategoryId,
-      date: bill.date,
-      price: bill.price,
-      notes: bill.notes
-    }
-
-    return new Promise((resolve, _) => {
-      blobToDataUrl(bill.image).then(dataUrl => {
-        if (dataUrl) {
-          cacheItem.image = dataUrl;
+      const legacyBills: BillCreateCacheItem[] = JSON.parse(billsJson);
+      const failed: BillCreateCacheItem[] = [];
+      for (const legacyBill of legacyBills) {
+        try {
+          await this.pendingBillStore.put(this.cacheItemToDto(legacyBill));
+        } catch (error) {
+          failed.push(legacyBill);
+          console.error('Migration of a legacy bill failed', error);
         }
+      }
 
-        resolve(cacheItem);
-      })
-    });
+      if (failed.length === 0) {
+        localStorage.removeItem(this.LEGACY_BILLS_CACHE_KEY);
+      } else {
+        // Keep only the failed entries so migrated ones are not re-imported on the next start.
+        localStorage.setItem(this.LEGACY_BILLS_CACHE_KEY, JSON.stringify(failed));
+      }
+    } catch (error) {
+      console.error('Migration of legacy bills failed, keeping them in localStorage', error);
+    }
   }
 
   private cacheItemToDto(bill: BillCreateCacheItem): BillCreateDto {
@@ -121,7 +81,7 @@ export class BillCacheService {
     return {
       id: bill.id,
       shopName: bill.shopName,
-      date: bill.date,
+      date: new Date(bill.date),
       categoryId: bill.categoryId,
       subCategoryId: bill.subCategoryId,
       price: bill.price,

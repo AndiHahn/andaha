@@ -27,7 +27,7 @@ export class AnalyzedBillImageDialogComponent {
 
   private fetchImage(): void {
     this.isLoading = true;
-    this.billApiService.downloadImage(this.billId).subscribe({
+    this.billApiService.downloadAnalyzedBillImage(this.billId).subscribe({
       next: async blob => {
         this.imageSrc = await blobToDataUrl(blob);
         this.isLoading = false;

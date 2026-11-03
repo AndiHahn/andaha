@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
+import { afterFirstLoad } from 'src/app/shared/utils/load-state';
 import { CreatePersonDto } from 'src/app/api/work/dtos/CreatePersonDto';
 import { PayPersonDto } from 'src/app/api/work/dtos/PayPersonDto';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
 import { UpdatePersonDto } from 'src/app/api/work/dtos/PersonUpdateDto';
 import { PersonApiService } from 'src/app/api/work/person-api.service';
 import { ContextService } from 'src/app/core/context.service';
-import { addTimes } from '../functions/date-time-functions';
-import { getHoursFromTimeString, getMinutesFromTimeString } from 'src/app/api/functions/api-utils';
-import { Time } from '@angular/common';
 import { downloadFile, getFileName } from 'src/app/shared/utils/file-utils';
 
 @Injectable({
@@ -17,7 +15,9 @@ import { downloadFile, getFileName } from 'src/app/shared/utils/file-utils';
 export class PersonContextService {
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private persons$: BehaviorSubject<PersonDto[] | undefined> = new BehaviorSubject<PersonDto[] | undefined>(undefined);
-  
+  private loadState$ = new ReplaySubject<'loaded' | 'failed'>(1);
+  private backendIsReady: boolean = false;
+
   constructor(
     private contextService: ContextService,
     private personApiService: PersonApiService
@@ -40,6 +40,10 @@ export class PersonContextService {
 
   getById(id: string): PersonDto | undefined {
     return this.persons$.value?.find(person => person.id == id);
+  }
+
+  byId(id: string): Observable<PersonDto | undefined> {
+    return afterFirstLoad(this.loadState$, () => this.getById(id));
   }
 
   createPerson(dto: CreatePersonDto): Observable<void> {
@@ -106,23 +110,26 @@ export class PersonContextService {
   }
 
   addPayment(personId: string, dto: PayPersonDto): Observable<void> {
-    const returnSubject = new Subject<void>();
+    const returnSubject = new ReplaySubject<void>(1);
 
     this.personApiService.payPerson(personId, dto).subscribe(
       {
         next: _ => {
-          const person = this.getById(personId);
-          
-          const payedHoursTime: Time = {
-            hours: getHoursFromTimeString(dto.payedHours),
-            minutes: getMinutesFromTimeString(dto.payedHours)
-          }
-
-          if (person) {
-            person.payedHours = addTimes(person.payedHours, payedHoursTime);
-          }
-
-          returnSubject.next();
+          // Zahlungen und bezahlte Stunden kommen vom Backend, keine lokale Addition
+          this.fetchPersons().subscribe(
+            {
+              next: () => {
+                returnSubject.next();
+                returnSubject.complete();
+              },
+              error: error => {
+                // Zahlung ist gespeichert; ein fehlgeschlagener Refetch darf keinen zweiten Versuch ausloesen
+                console.error('Refetching persons after payment failed', error);
+                returnSubject.next();
+                returnSubject.complete();
+              }
+            }
+          );
         },
         error: error => returnSubject.error(error)
       }
@@ -159,7 +166,8 @@ export class PersonContextService {
     return returnSubject;
   }
 
-  private fetchPersons() {
+  private fetchPersons(): Observable<void> {
+    const result$ = new ReplaySubject<void>(1);
     this.loading$.next(true);
 
     this.personApiService
@@ -169,16 +177,28 @@ export class PersonContextService {
           next: result => {
             this.loading$.next(false);
             this.persons$.next(result);
+            this.loadState$.next('loaded');
+            result$.next();
+            result$.complete();
           },
-          error: _ => this.loading$.next(false)
+          error: error => {
+            this.loading$.next(false);
+            if (this.backendIsReady) {
+              this.loadState$.next('failed');
+            }
+            result$.error(error);
+          }
         }
     );
+
+    return result$.asObservable();
   }
 
   private initSubscriptions(): void {
     this.contextService.backendReady().subscribe(
       {
         next: ready => {
+          this.backendIsReady = ready;
           if (ready) {
             this.fetchPersons();
           }

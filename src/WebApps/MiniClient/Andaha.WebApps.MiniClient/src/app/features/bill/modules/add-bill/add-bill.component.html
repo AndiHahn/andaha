@@ -72,7 +72,7 @@
   </div>
 
   <div class="actions">
-    <button type="submit" class="btn pri" [disabled]="!form.valid">
+    <button type="submit" class="btn pri" [disabled]="!form.valid || isSaving">
       <mat-icon>check</mat-icon><span>Speichern</span>
     </button>
   </div>
