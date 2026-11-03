@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Andaha · Haushaltsplan</title>
+</head>
+<body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;display=swap">
+<style>
+.th{--board:#E6DFD3;--bg:#F8F4EC;--well:#F0EADF;--side:#F1EBE1;--hover-row:#F1EBE1;--surface:#FFFDF8;--menu:#FFFDF8;--raised:#EFE8DC;--line:#E0D8CA;--line2:#EAE3D7;--line-sheet:#E6DED1;--act:#ECE3D4;--seg-on:#FFFDF8;--line3:#D6CDBD;--raised-line:#D6CDBD;--grab:#CFC5B4;--fg:#1E1913;--fg2:#3B332A;--mut:#685F52;--faint:#72685B;--dim:#A0968A;--pos:#2E7443;--pos-bg:#DFEEDB;--neg:#B63A3A;--neg-bg:#F7DEDA;--neg-line:#E8C3BE;--neg-bar:#D27466;--neg-text:#A33A33;--paper:#FFFFFF;--paper-bar:#D9D0C0;--paper-ink:#2B241B;--scrim:rgba(40,30,18,.38);--sh4:rgba(60,40,20,.14);--sh5:rgba(60,40,20,.18);--sh6:rgba(60,40,20,.16);--sh7:rgba(60,40,20,.22);--ring-sw:rgba(0,0,0,.12);--pri:#2E4FA8;--on-pri:#FFFFFF;--pri-text:#2E4FA8;--pri-ring:rgba(46,79,168,.2);--pri-soft:#E3E9F8;--pri-line:#9DB0E0;--pri-chip:#24418F;--sec:#B8692F;--sec-soft:#F6E4D3;--sec-text:#9A5220}
+body{margin:0;background:#E6DFD3}
+*{box-sizing:border-box}
+::selection{background:var(--pri);color:var(--on-pri)}
+.board{padding:40px;display:flex;gap:40px;align-items:flex-start;background:var(--board);font-family:'Hanken Grotesk',system-ui,sans-serif;color:var(--fg);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.shot{display:flex;flex-direction:column;gap:12px;flex:none}
+.cap{margin:0;font-size:13px;font-weight:500;color:var(--mut);line-height:20px}
+.phone{position:relative;width:390px;height:844px;padding:12px 0 8px;background:var(--bg);border-radius:28px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 0 1px var(--line),0 24px 48px -24px var(--sh6)}
+.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.top{height:56px;flex:none;display:flex;align-items:center;gap:2px;padding:0 6px}
+.top h1{margin:0 0 0 6px;font-size:18px;font-weight:600;letter-spacing:-.01em;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ib{width:44px;height:44px;border:0;background:transparent;color:var(--fg);border-radius:12px;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;flex:none;position:relative}
+.body{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column}
+.nav{flex:none;height:64px;display:flex;border-top:1px solid var(--line);background:var(--bg)}
+.nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--faint);text-decoration:none;font-size:12px;font-weight:500;position:relative}
+.nav a.on{color:var(--fg)}
+.nav a.on .i{color:var(--pri-text)}
+.nav a.on::before{content:"";position:absolute;top:-1px;left:calc(50% - 14px);width:28px;height:2px;background:var(--pri);border-radius:0 0 2px 2px}
+.sec{margin:0;padding:20px 16px 8px;font-size:13px;font-weight:600;color:var(--mut);border-bottom:1px solid var(--line)}
+.row{display:flex;align-items:center;gap:14px;padding:10px 16px;border-bottom:1px solid var(--line2);min-height:60px;text-decoration:none;color:inherit;flex:none}
+.t{flex:1;min-width:0;font-size:16px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rc{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.amt{font-size:16px;font-weight:600;white-space:nowrap;text-align:right}
+.per{font-size:12px;color:var(--mut)}
+.kv{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:13px 16px;border-bottom:1px solid var(--line2);font-size:15px}
+.k{color:var(--mut)}
+.v{font-weight:600;text-align:right}
+.pos{color:var(--pos)}
+.neg{color:var(--neg)}
+.empty{padding:14px 16px;font-size:14px;color:var(--faint);border-bottom:1px solid var(--line2)}
+.btn{height:52px;border-radius:12px;border:0;font:inherit;font-size:16px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 20px;cursor:pointer;white-space:nowrap}
+.btn .i{width:20px;height:20px}
+.pri{background:var(--pri);color:var(--on-pri)}
+.sec2{background:var(--raised);color:var(--fg);box-shadow:inset 0 0 0 1px var(--raised-line)}
+.actions{flex:none;display:flex;gap:10px;padding:12px 16px;border-top:1px solid var(--line);background:var(--bg)}
+.grow{flex:1}
+.form{display:flex;flex-direction:column;gap:16px;padding:16px}
+.f{display:flex;flex-direction:column;gap:6px}
+.f>label,.lbl{font-size:13px;font-weight:500;color:var(--mut)}
+.in{height:48px;border-radius:10px;background:var(--surface);border:1px solid var(--line3);color:var(--fg);font:inherit;font-size:16px;padding:0 12px 0 14px;display:flex;align-items:center;gap:8px;width:100%;text-align:left;cursor:pointer}
+.in input{all:unset;flex:1;min-width:0;font-size:16px;color:var(--fg)}
+.in .val{flex:1}
+.in .i{color:var(--mut);width:20px;height:20px}
+.in.on{border-color:var(--pri-text);box-shadow:0 0 0 3px var(--pri-ring)}
+.sfx{color:var(--mut)}
+.big{font-size:44px;font-weight:600;letter-spacing:-.025em;line-height:1}
+.big small{font-size:22px;font-weight:500;color:var(--mut);margin-left:6px;letter-spacing:0}
+.bar{display:flex;height:10px;border-radius:5px;overflow:hidden;gap:3px}
+.spin{width:18px;height:18px;border-radius:50%;border:2px solid currentColor;border-top-color:transparent;flex:none}
+</style>
+<div class="board th" style="width: 1760px; height: 964px">
+
+<!-- ============ 1 · ÜBERSICHT ============ -->
+<div class="shot">
+<p class="cap">Haushaltsplan · Überschuss zuerst, darunter die Rechnung</p>
+<div class="phone">
+<header class="top">
+<button class="ib" aria-label="Menü öffnen"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+<h1>Haushaltsplan</h1>
+<button class="ib" aria-label="Benutzerkonto"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.2 18.4a7 7 0 0 1 11.6 0"/></svg></button>
+</header>
+<div class="body">
+<div style="padding: 12px 16px 24px; display: flex; flex-direction: column; gap: 14px">
+<span style="font-size: 14px; color: var(--mut)">Monatlicher Überschuss</span>
+<span class="big pos">+1.298,60<small>€</small></span>
+<div style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px">
+<div class="bar" role="img" aria-label="Ausgaben 73 Prozent, Überschuss 27 Prozent"><span style="width: 73%; background: var(--neg-bar)"></span><span style="flex: 1; background: var(--pos)"></span></div>
+<div style="display: flex; justify-content: space-between; font-size: 13px"><span style="color:var(--neg-text)">Ausgaben 73 %</span><span class="pos">Überschuss 27 %</span></div>
+</div>
+</div>
+<p class="sec">Einnahmen</p>
+<div class="kv"><span class="k" style="color:var(--fg)">Einkommen</span><span class="v">4.850,00 €</span></div>
+<p class="sec">Ausgaben</p>
+<div class="kv"><span class="k">Lebenserhaltungskosten</span><span class="v">1.120,00 €</span></div>
+<div class="kv"><span class="k">Wohnen</span><span class="v">1.240,00 €</span></div>
+<div class="kv"><span class="k">Auto</span><span class="v">310,00 €</span></div>
+<div class="kv"><span class="k">Versicherung</span><span class="v">186,50 €</span></div>
+<div class="kv"><span class="k">Sparen</span><span class="v">600,00 €</span></div>
+<div class="kv"><span class="k">Andere</span><span class="v">94,90 €</span></div>
+</div>
+<nav class="nav" aria-label="Haushaltsplan">
+<a class="on" href="#" aria-current="page"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a1 1 0 0 1-1-1z"/><path d="M4 7l11-3v3"/><path d="M16 13.5h.01"/></svg>Haushaltsplan</a>
+<a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>Fixkosten</a>
+<a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 7 7 17M15 17H7V9"/></svg>Einkommen</a>
+</nav>
+</div>
+</div>
+
+<!-- ============ 2 · FIXKOSTEN ============ -->
+<div class="shot">
+<p class="cap">Fixkosten · gruppiert nach Kategorie, Leerzustand inklusive</p>
+<div class="phone">
+<header class="top">
+<button class="ib" aria-label="Menü öffnen"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+<h1>Fixkosten</h1>
+<button class="ib" aria-label="Benutzerkonto"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.2 18.4a7 7 0 0 1 11.6 0"/></svg></button>
+</header>
+<div class="body">
+<p class="sec" style="padding-top: 8px">Wohnen</p>
+<a class="row" href="#"><span class="t">Miete</span><span class="rc"><span class="amt">980,00 €</span><span class="per">monatlich</span></span></a>
+<a class="row" href="#"><span class="t">Strom &amp; Gas</span><span class="rc"><span class="amt">145,00 €</span><span class="per">monatlich</span></span></a>
+<a class="row" href="#"><span class="t">Internet</span><span class="rc"><span class="amt">39,90 €</span><span class="per">monatlich</span></span></a>
+<p class="sec">Auto</p>
+<a class="row" href="#"><span class="t">Leasingrate</span><span class="rc"><span class="amt">249,00 €</span><span class="per">monatlich</span></span></a>
+<a class="row" href="#"><span class="t">Service &amp; Pickerl</span><span class="rc"><span class="amt">320,00 €</span><span class="per">jährlich</span></span></a>
+<p class="sec">Versicherung</p>
+<a class="row" href="#"><span class="t">Haushaltsversicherung</span><span class="rc"><span class="amt">279,00 €</span><span class="per">halbjährlich</span></span></a>
+<p class="sec">Sparen</p>
+<a class="row" href="#"><span class="t">ETF-Sparplan</span><span class="rc"><span class="amt">500,00 €</span><span class="per">monatlich</span></span></a>
+<p class="sec">Andere</p>
+<div class="empty">Keine Ausgaben.</div>
+</div>
+<div class="actions"><button class="btn pri grow"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Hinzufügen</button></div>
+<nav class="nav" aria-label="Haushaltsplan">
+<a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a1 1 0 0 1-1-1z"/><path d="M4 7l11-3v3"/><path d="M16 13.5h.01"/></svg>Haushaltsplan</a>
+<a class="on" href="#" aria-current="page"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>Fixkosten</a>
+<a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 7 7 17M15 17H7V9"/></svg>Einkommen</a>
+</nav>
+</div>
+</div>
+
+<!-- ============ 3 · FIXKOSTEN BEARBEITEN ============ -->
+<div class="shot">
+<p class="cap">Fixkosten bearbeiten · Verlauf oben rechts, Speichern läuft</p>
+<div class="phone">
+<header class="top">
+<button class="ib" aria-label="Zurück zu Fixkosten"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+<h1>Miete</h1>
+<button class="ib" aria-label="Verlauf anzeigen"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1L3.5 8.5"/><path d="M3.5 4v4.5H8M12 7.5V12l3 2"/></svg></button>
+</header>
+<div class="body">
+<div class="form">
+<div class="f"><label for="fc-name">Name</label><div class="in"><input id="fc-name" value="Miete"></div></div>
+<div class="f"><span class="lbl" id="fc-cat">Kategorie</span><button class="in" aria-labelledby="fc-cat"><span class="val">Wohnen</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div>
+<div class="f"><span class="lbl" id="fc-int">Intervall</span><button class="in" aria-labelledby="fc-int"><span class="val">monatlich</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div>
+<div class="f"><label for="fc-val">Kosten</label><div class="in on"><input id="fc-val" value="1.010,00" inputmode="decimal" style="font-weight:600"><span class="sfx">€</span></div></div>
+</div>
+</div>
+<div class="actions">
+<button class="btn sec2 grow">Abbrechen</button>
+<button class="btn pri grow" disabled aria-busy="true" style="opacity: .85; cursor: progress"><span class="spin" aria-hidden="true"></span>Speichert …</button>
+</div>
+<nav class="nav" aria-label="Haushaltsplan">
+<a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a1 1 0 0 1-1-1z"/><path d="M4 7l11-3v3"/><path d="M16 13.5h.01"/></svg>Haushaltsplan</a>
+<a class="on" href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>Fixkosten</a>
+<a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 7 7 17M15 17H7V9"/></svg>Einkommen</a>
+</nav>
+</div>
+</div>
+
+<!-- ============ 4 · EINKOMMEN ============ -->
+<div class="shot">
+<p class="cap">Einkommen · gleiche Zeile wie Fixkosten</p>
+<div class="phone">
+<header class="top">
+<button class="ib" aria-label="Menü öffnen"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+<h1>Einkommen</h1>
+<button class="ib" aria-label="Benutzerkonto"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.2 18.4a7 7 0 0 1 11.6 0"/></svg></button>
+</header>
+<div class="body">
+<p class="sec" style="padding-top: 8px">Einkommen</p>
+<a class="row" href="#"><span class="t">Gehalt</span><span class="rc"><span class="amt">3.250,00 €</span><span class="per">monatlich</span></span></a>
+<a class="row" href="#"><span class="t">Teilzeit</span><span class="rc"><span class="amt">1.400,00 €</span><span class="per">monatlich</span></span></a>
+<a class="row" href="#"><span class="t">Familienbeihilfe</span><span class="rc"><span class="amt">200,00 €</span><span class="per">monatlich</span></span></a>
+<a class="row" href="#"><span class="t">Urlaubsgeld</span><span class="rc"><span class="amt">3.250,00 €</span><span class="per">jährlich</span></span></a>
+</div>
+<div class="actions"><button class="btn pri grow"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Hinzufügen</button></div>
+<nav class="nav" aria-label="Haushaltsplan">
+<a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a1 1 0 0 1-1-1z"/><path d="M4 7l11-3v3"/><path d="M16 13.5h.01"/></svg>Haushaltsplan</a>
+<a href="#"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>Fixkosten</a>
+<a class="on" href="#" aria-current="page"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 7 7 17M15 17H7V9"/></svg>Einkommen</a>
+</nav>
+</div>
+</div>
+
+</div>
+</body>
+</html>

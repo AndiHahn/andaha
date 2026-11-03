@@ -1,0 +1,91 @@
+# US-0006 Design: Angular-Upgrade des MiniClients von 14 auf 22
+
+Stand: 2026-11-03. Story: [story.md](./story.md).
+
+## Ziel und Warum
+
+Der MiniClient (`src/WebApps/MiniClient/Andaha.WebApps.MiniClient`) läuft auf Angular 14. US-0007 und US-0008 bauen viel neue Oberfläche. Entsteht sie auf 14, muss sie später mitmigriert werden, vor allem durch den MDC-Umbau von Angular Material. Deshalb kommt das Upgrade zuerst.
+
+**Erfolg:** Die App läuft auf Angular 22.x, sieht aus und verhält sich wie vorher, und neue Komponenten können direkt als Standalone-Komponenten mit aktueller Syntax geschrieben werden.
+
+**Anti-Ziel:** sichtbare Änderungen am Design v1, neue Funktionen oder ein halb migrierter Zustand (z. B. Legacy-Material-Imports, Mischbetrieb von NgModules und Standalone ohne Grund).
+
+## Ausgangslage
+
+| Bereich | Heute |
+|---|---|
+| Angular, CDK, Material | 14.2, Material mit Legacy-(Nicht-MDC-)Komponenten |
+| TypeScript / RxJS / zone.js | 4.8 / 7.4 / 0.11 |
+| Build | `@angular-devkit/build-angular:browser` (webpack), `polyfills.ts`, `stylePreprocessorOptions.includePaths: ["src/themes"]`, Service Worker (`ngsw-config.json`), Konfigurationen `production`, `local-pwa`, `development` |
+| Tests | Karma + Jasmine, 21 Spec-Dateien, davon 12 mit Jasmine-Spies (`createSpyObj` 30×, `createSpy` 5×, `jasmine.clock` 5×) |
+| Struktur | 59 NgModules, keine Standalone-Komponenten |
+| Theme | `src/themes/andaha-theme.scss` mit `mat.define-palette`, `mat.define-light-theme`, `mat.core`, `mat.all-component-themes`; Tokens in `src/themes/_andaha-tokens.scss`; `src/styles.scss` (783 Zeilen) per `@import` |
+| Material im Einsatz | Icon, ProgressSpinner, Dialog, Select/Option, SnackBar, ProgressBar, Datepicker + NativeDate, Paginator, Checkbox, Radio, Sidenav, Menu, Input; CDK DragDrop |
+| Eigene Overrides auf Material-Klassen | u. a. `.mat-dialog-container`, `.mat-progress-bar-*`, `.mat-checkbox-*`, `.mat-radio-*`, `.mat-select-*`, `.mat-option*`, `.mat-menu-*`, `.mat-snack-bar-container`, `.mat-calendar-body-selected`, `.mat-datepicker-*`, `.mat-drawer*`, `.mat-icon-button`. `mat-form-field` wird nicht verwendet, Felder sind eigene Komponenten aus dem Redesign v1 |
+| Node | lokal 24.15; Dockerfile `FROM node:latest`, `npm run build --prod` |
+
+## Entscheidungen
+
+### 1. Upgrade-Weg
+- `ng update` Major für Major: 15, 16, 17, 18, 19, 20, 21, 22, jeweils `@angular/core @angular/cli` und `@angular/material @angular/cdk` zusammen, mit allen angebotenen Migrationen.
+- Nach jedem Major: `npm install` ohne `--force`/`--legacy-peer-deps` als Dauerlösung, `ng build` (Produktion) muss laufen. Tests laufen spätestens nach dem Test-Runner-Umstieg (Entscheidung 4) wieder bei jedem Schritt.
+- Fremdbibliotheken, die einen Schritt blockieren, werden in dem Schritt gehoben, in dem sie blockieren (siehe 3). Übergangsweise ist `--force` beim Install nur innerhalb eines Schritts erlaubt, das Ergebnis jedes Schritts installiert sauber.
+- TypeScript, RxJS und zone.js folgen den Vorgaben der jeweiligen Angular-Version. Endstand laut npm: Angular 22.2.x, Material/CDK 22.2.x, zone.js 0.15 oder 0.16, RxJS 7.x.
+
+### 2. Material: MDC und Theme
+- Die MDC-Migration (`ng generate @angular/material:mdc-migration` in v15) wird für alle Komponenten ausgeführt. Kein Legacy-Import bleibt übrig, spätestens v17 verlangt das ohnehin.
+- **Theme bleibt Material 2:** Umstellung auf die M2-Sass-API (`mat.m2-define-palette`, `mat.m2-define-light-theme`, `mat.m2-define-typography-config`, `mat.core`/`mat.all-component-themes` bzw. die in 22 gültigen Entsprechungen; Quelle: Angular Components Guide „material-2“, per Context7 geprüft). Material 3 würde Farben, Formen und Abstände ändern und ist deshalb ausgeschlossen.
+- `@import` in `styles.scss` und im Theme werden auf `@use`/`@forward` umgestellt, soweit Dart Sass sonst warnt oder bricht.
+- **Eigene Overrides** auf die alten Klassen werden auf die MDC-Struktur umgeschrieben. Vorzug haben, in dieser Reihenfolge: Theme-Werte, Material-Override-Mixins bzw. Design-Tokens der Komponenten (`mat.<component>-overrides(...)`, in 22 verfügbar), zuletzt Selektoren auf MDC-Klassen. Maßstab ist die Baseline der aktuellen App (siehe Prüfung), ergänzend `docs/design/DESIGN.md`.
+- Dialoge erscheinen auf Mobile weiterhin als Bottom Sheet (eigene Panel-Klasse aus v1), auf Desktop zentriert, wie heute.
+
+### 3. Fremdbibliotheken
+
+| Bibliothek | Entscheidung |
+|---|---|
+| `angular-oauth2-oidc` 13 | auf 22.x heben (peer `@angular/core >=22`). Unterwegs die zur jeweiligen Angular-Version passende Major wählen. Konfiguration (Refresh-Token, `domain_hint`, US-0002) unverändert lassen; API-Änderungen per Context7/Changelog prüfen |
+| `ngx-mat-timepicker` 14 | auf 22.1.x heben, bei Zwischenschritten passende Major |
+| `ng2-charts` 4 / `chart.js` 3 | `ng2-charts` 11, `chart.js` 4.x. Diagramm-Konfiguration auf chart.js 4 anpassen (Ring in der Statistik, ggf. weitere). Umstellung auf `provideCharts(withDefaultRegisterables())` bzw. was ng2-charts 11 vorgibt (Context7) |
+| `@angular/material-moment-adapter` | **entfernen**, wird nirgends verwendet (Datepicker nutzt `MatNativeDateModule` mit `shared/date-picker/german-date-providers.ts`). *(Entscheidung des Designers nach Builder-Check.)* |
+| `moment` | bleibt, auf aktuelle 2.x |
+| `@olafvv/ngx-pinch-zoom` 14/16 (peer nur `^14`) | ersetzen durch `@meddv/ngx-pinch-zoom` 20 (Fork derselben Bibliothek, peer `>=19`). Erst ab dem Schritt auf 19 möglich; bis dahin bleibt die alte Bibliothek (ggf. mit `--force` im Zwischenschritt). Verhalten im Foto-Dialog muss gleich bleiben (Pinch, Doppeltipp, Grenzen) |
+| `ngx-webcam` 0.4 (ungepflegt) | **entfernen**. Der Foto-Dialog (`features/bill/modules/add-bill-image-dialog/`) bietet statt der Live-Kamera eine Option, die `<input type="file" accept="image/*" capture="environment">` öffnet. Die Galerie-/Datei-Option bleibt. Ergebnis wie bisher als Bild an den Aufrufer; Verkleinerung über das vorhandene `shared/utils/image-utils.ts`. Sonst kein Umbau des Ablaufs (der kommt in US-0007) |
+
+Wird eine dieser Versionen beim Umsetzen nicht mit 22.2 kompatibel gefunden, ist die Ersatzlösung: nächste kompatible Version, sonst minimaler eigener Ersatz mit gleichem Verhalten; die Abweichung kommt in den Abschnitt „Abweichungen“ unten.
+
+### 4. Build und Tests
+- **Build:** Umstieg auf `@angular/build:application` (Migration `use-application-builder` aus `ng update` bzw. Schematic). **Ausgabe bleibt flach:** `outputPath: { "base": "dist/andaha.web-apps.mini-client", "browser": "" }`, damit die Dateien wie bisher direkt in `dist/andaha.web-apps.mini-client/` liegen und nicht unter `browser/`. So bleiben Dockerfile und CD-Pipeline (`CopyFiles` aus genau diesem Ordner) unverändert. Die CD-Pipeline ersetzt nach dem Build `#{…}#`-Tokens in `drop/*.js` (Werte aus `environment.prod.ts`). Prüfen: Nach `npm run build:prod` stehen die Tokens (`#{monolithApiBaseUrl}#`, `#{authClientId}#` usw.) unverändert in einer `.js`-Datei direkt im Ausgabeordner. Service Worker, Assets, `fileReplacements` und alle drei Konfigurationen bleiben erhalten. `polyfills.ts` wird zu `polyfills: ["zone.js"]`, sofern nichts anderes darin steht.
+- Budgets: bestehende Werte behalten. Wird ein Budget durch das Upgrade überschritten, Werte begründet anheben und im Abschnitt „Abweichungen“ vermerken.
+- **Tests: Umstieg auf Vitest** über den Builder `@angular/build:unit-test` (Runner `vitest`) **im Browser-Modus** (Chromium über Playwright, headless). Grund: `shared/utils/image-utils.spec.ts` zeichnet auf ein echtes Canvas, jsdom hat keins. Tests laufen lokal; die Pipelines führen wie bisher keine Tests aus. *(Entscheidung des Designers nach Builder-Check.)* Karma, `karma.conf.js`, `src/test.ts` und Jasmine-Abhängigkeiten entfallen. Specs werden umgeschrieben: `jasmine.createSpyObj` → Objekte mit `vi.fn()`, `jasmine.SpyObj<T>` → passender Typ (z. B. `Mocked<T>`), `spyOn` → `vi.spyOn`, `jasmine.clock()` → `vi.useFakeTimers()`, `and.returnValue` → `mockReturnValue`. Gibt es in 22 ein offizielles Refactor-Schematic für Jasmine → Vitest, wird es zuerst verwendet. Alle 21 Spec-Dateien laufen grün; keine Tests werden gelöscht, um grün zu werden.
+- Der Umstieg auf Vitest erfolgt **nach** dem Major, der den Unit-Test-Builder stabil anbietet (spätestens am Ende bei 22). Bis dahin laufen die Tests mit Karma weiter.
+
+### 5. Code-Modernisierung (nur automatisch)
+- **Standalone:** offizielle Schematic `ng generate @angular/core:standalone` in ihren drei Schritten (Komponenten standalone machen, unnötige NgModules entfernen, auf `bootstrapApplication` umstellen). Lazy Routes werden zu `loadComponent`/`loadChildren` mit Routen-Dateien. App-weite Provider (HTTP mit Interceptoren, OAuth, Service Worker, Animations, Datum-Locale/Adapter, Charts) wandern nach `app.config.ts`.
+- Automatische Migrationen **Control Flow** (`@if`, `@for` mit `track`), **`inject()`** und ggf. **Self-closing Tags** werden ausgeführt.
+- Nicht Teil der Story: Signals, Signal-Inputs, zoneless, OnPush-Umbau, manuelles Refactoring über die Schematics hinaus. Was eine Schematic nicht schafft, wird minimal von Hand nachgezogen, nur damit es baut und läuft.
+
+### 6. Infrastruktur
+- Dockerfile: `FROM node:24-alpine` (LTS) statt `node:latest`, `npm ci` statt `npm install`, Build-Befehl `npm run build` (Produktion ist Standard). Kopierpfad bleibt `dist/andaha.web-apps.mini-client` (flache Ausgabe, siehe 4).
+- Pipelines `src/WebApps/MiniClient/pipeline/ci-pipeline.yml` und `cd-pipeline.yml` (Azure DevOps, Deploy auf Azure Static Web Apps): vor dem Install einen `NodeTool@0`-Schritt mit `versionSpec: '24.x'` einfügen. `install --force` durch `ci` ersetzen, sobald der Lockfile sauber installiert. Der Schritt „install typescript“ im Repo-Root wird entfernt, falls er für den Build nicht nötig ist (prüfen). `CopyFiles`-Pfad und `replacetokens` bleiben.
+- README des MiniClients: Node-Version und Befehle (`npm test` mit Vitest) nachziehen.
+- `package.json`: `engines` mit der von Angular 22 verlangten Node-Range.
+
+## Prüfung
+
+- Nach jedem Major: Produktions-Build grün.
+- Ende: `ng build` (alle drei Konfigurationen), `ng test` (Vitest) grün, Docker-Image baut.
+- **Referenz ist die aktuelle App, nicht v1.** Vor dem ersten `ng update` wird eine **Baseline** der laufenden Angular-14-App aufgenommen: Screenshots bei 390 × 844 und 1440 × 900 für jede Ansicht aus AC10, abgelegt in `ui-testing/baseline/`. Die v1-Screenshots decken nur 7 Ansichten ab und sind seit US-0003/US-0004 teils überholt; sie dienen nur als zweite Orientierung. *(Mit dem Nutzer abgestimmt.)*
+- **UI-Regression mit Playwright** (ui-verification) bei 390 × 844 und 1440 × 900 gegen die Baseline, Bereiche wie in AC10: Rechnungen (Liste, Filter-Sheet, Hinzufügen inkl. Foto über Datei-Upload, Details, Foto mit Pinch-Zoom), Statistik (Ring, Kategorie-Sheet), Analyse, Haushaltsplan (Übersicht, Fixkosten, Einkommen, Bearbeiten), Stunden (Personen, Person, Arbeitszeit mit Zeitauswahl, Zahlung, Statistik), Einstellungen (Kategorien inkl. Drag & Drop, Verbindungen), Export, Rechtliches, Drawer. Konsole ohne Fehler.
+- Login, Refresh-Token und Abmelden lokal (Setup siehe Memory „Local run setup“ bzw. README).
+- PWA: Service Worker registriert, Update-Hinweis erscheint bei neuer Version, Offline-Rechnung wird nach Rückkehr online synchronisiert.
+
+## Dem Umsetzer überlassen
+
+- Reihenfolge der Bibliotheks-Upgrades innerhalb eines Major-Schritts.
+- Ob die Standalone-Schematic vor oder nach dem Schritt auf 22 läuft (empfohlen: nach 22, damit Migrationen zusammenpassen).
+- Konkrete Sass-Struktur der Overrides, solange das Aussehen stimmt.
+- Commit-Schnitt: mindestens ein Commit pro Major-Schritt, je einer für Standalone, Vitest und Infrastruktur.
+
+## Abweichungen
+
+(Wird während der Umsetzung gefüllt, wenn eine Entscheidung oben nicht haltbar ist.)
