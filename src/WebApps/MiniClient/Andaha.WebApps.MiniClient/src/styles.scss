@@ -589,8 +589,6 @@ body .cdk-drag-preview.andaha-drag-item {
     background: transparent;
   }
 
-  // Webcam-Video (ngx-webcam setzt Breite als Attribut aus window.innerWidth) auf die Sheet-/Dialogbreite begrenzen
-  webcam video { max-width: 100%; height: auto; }
 }
 
 .cdk-overlay-container .andaha-sheet {

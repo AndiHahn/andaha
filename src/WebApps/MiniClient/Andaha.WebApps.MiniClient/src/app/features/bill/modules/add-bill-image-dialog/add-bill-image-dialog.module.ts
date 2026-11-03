@@ -4,7 +4,6 @@ import { AddBillImageDialogComponent } from './add-bill-image-dialog.component';
 import { DialogModule } from 'src/app/shared/dialog/dialog.module';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatRadioModule } from '@angular/material/radio'
-import { WebcamModule } from 'ngx-webcam';
 import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
@@ -16,7 +15,6 @@ import { MatIconModule } from '@angular/material/icon';
     DialogModule,
     MatDialogModule,
     MatRadioModule,
-    WebcamModule,
     MatIconModule
   ]
 })

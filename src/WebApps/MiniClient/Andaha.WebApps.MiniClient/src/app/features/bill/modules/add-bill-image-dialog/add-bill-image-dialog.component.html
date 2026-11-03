@@ -14,16 +14,10 @@
     </mat-radio-group>
 
     <div *ngIf="selectedOption == uploadSelection.TakePicture">
-      <div *ngIf="!image" class="webcam-container">
-        <webcam class="webcam" [trigger]="triggerObservable" (imageCapture)="handleImage($event)"
-          (imageClick)="onCameraClick()" [width]="maxVideoWidth" [height]="maxVideoHeight">
-        </webcam>
-
-        <button type="button" class="btn sec2" [disabled]="image"
-            (click)="triggerSnapshot()">
-          <mat-icon>photo_camera</mat-icon><span>Foto aufnehmen</span>
-        </button>
-      </div>
+      <button *ngIf="!image" type="button" class="btn sec2 full" (click)="cameraInput.click()">
+        <mat-icon>photo_camera</mat-icon><span>Foto aufnehmen</span>
+        <input style="display: none" #cameraInput type="file" accept="image/*" capture="environment" (change)="onChooseFile(cameraInput)">
+      </button>
     </div>
 
     <div *ngIf="selectedOption == uploadSelection.UploadFromGallery">
@@ -34,7 +28,7 @@
     </div>
 
     <div *ngIf="image" class="preview">
-      <img src="{{ image.src }}" [width]="maxVideoWidth" alt="Rechnungsfoto">
+      <img src="{{ image.src }}" [width]="maxPreviewWidth" alt="Rechnungsfoto">
     </div>
   </mat-dialog-content>
 
