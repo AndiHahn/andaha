@@ -11,6 +11,24 @@
         ],
         "createdAt": "2026-10-30T00:47:36.114Z",
         "reason": "agent: src is an Angular property binding [src]=imageSrc guarded by *ngIf=imageSrc (unchanged from pre-redesign template), not an empty src"
+      },
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          "docs/design/v2/mockups/01-start-und-hinzufuegen.html"
+        ],
+        "createdAt": "2026-11-03T21:21:48.161Z",
+        "reason": "Palette is the committed Andaha design system (docs/design/DESIGN.md, Tinte & Kupfer) from the approved v1 redesign"
+      },
+      {
+        "rule": "nested-cards",
+        "value": "*",
+        "files": [
+          "docs/design/v2/mockups/01-start-und-hinzufuegen.html"
+        ],
+        "createdAt": "2026-11-03T21:21:48.392Z",
+        "reason": "Selection wrapper around phone frames on the presentation board, not product UI"
       }
     ]
   }
