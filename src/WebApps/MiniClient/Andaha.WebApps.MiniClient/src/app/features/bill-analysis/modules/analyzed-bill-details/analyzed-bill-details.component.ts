@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatIcon } from '@angular/material/icon';
 import { Subject, firstValueFrom, takeUntil } from 'rxjs';
@@ -9,7 +10,7 @@ import { BillAnalyzedDto } from 'src/app/api/shopping/dtos/BillAnalyzedDto';
 import { AnalyzedBillContextService } from '../../services/analyzed-bill-context.service';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { SubCategoryDto } from 'src/app/api/shopping/dtos/SubCategoryDto';
-import { BillCreatePrefill } from 'src/app/features/bill/models/bill-create-prefill';
+import { BillCreatePrefill, TAKE_OVER_OFFLINE } from 'src/app/features/bill/models/bill-create-prefill';
 import { toDayKey } from 'src/app/features/bill/quick-entry/logic/quick-entry-state';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
@@ -39,6 +40,7 @@ const IMAGE_FAILED = 'Foto konnte nicht geladen werden.';
 export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private historyTrail = inject(HistoryTrailService);
   private snackbar = inject(MatSnackBar);
   private billApi = inject(BillApiService);
   private confirmationDialog = inject(ConfirmationDialogService);
@@ -57,13 +59,13 @@ export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const billId = getParametersFromRouteRecursive(this.route.snapshot)['id'];
     if (!billId) {
-      leaveDetailNotFound(this.router, this.snackbar, '/bill/analysis');
+      leaveDetailNotFound(this.historyTrail, this.snackbar, '/bill/analysis');
       return;
     }
 
     this.analyzedContext.byId(billId).pipe(takeUntil(this.destroy$)).subscribe(bill => {
       if (!bill) {
-        leaveDetailNotFound(this.router, this.snackbar, '/bill/analysis');
+        leaveDetailNotFound(this.historyTrail, this.snackbar, '/bill/analysis');
         return;
       }
 
@@ -86,6 +88,12 @@ export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
   async onTakeOverClick(): Promise<void> {
     const bill = this.bill;
     if (!bill || this.busy) {
+      return;
+    }
+
+    // design.md §5.2: die Übernahme speichert direkt beim Server
+    if (!navigator.onLine) {
+      openErrorSnackbar(TAKE_OVER_OFFLINE, this.snackbar);
       return;
     }
 
@@ -134,7 +142,8 @@ export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
 
     this.analyzedContext.remove(bill.id);
     this.busy = false;
-    void this.router.navigateByUrl('/bill/analysis');
+    // zurück zur Analyse-Liste; Zurück führt danach nicht auf den verworfenen Eintrag (I1)
+    this.historyTrail.leaveTo('/bill/analysis');
   }
 
   private prefillOf(bill: BillAnalyzedDto): BillCreatePrefill {
@@ -167,6 +176,10 @@ export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
       }
     } catch (error) {
       console.error('Loading analyzed bill image failed', error);
+      if (error instanceof HttpErrorResponse && error.status === 0) {
+        openErrorSnackbar(TAKE_OVER_OFFLINE, this.snackbar);
+        return undefined;
+      }
     }
     openErrorSnackbar(IMAGE_FAILED, this.snackbar);
     return undefined;

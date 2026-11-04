@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router, provideRouter } from '@angular/router';
@@ -5,6 +6,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillAnalyzedDto } from 'src/app/api/shopping/dtos/BillAnalyzedDto';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
+import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { BillImageDialogService } from 'src/app/features/bill/modules/bill-image-dialog/bill-image-dialog.service';
 import { BillCreatePrefill } from 'src/app/features/bill/models/bill-create-prefill';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
@@ -35,7 +37,7 @@ const bill: BillAnalyzedDto = {
 };
 
 interface SetupOptions {
-  bill?: BillAnalyzedDto;
+  bill?: BillAnalyzedDto | null;
   confirmed?: boolean;
   deleteAnalyzedBill?: () => Observable<void>;
   downloadImage?: () => Observable<Blob>;
@@ -50,11 +52,12 @@ describe('AnalyzedBillDetailsComponent', () => {
   let openConfirmation: ReturnType<typeof vi.fn>;
   let openImageDialog: ReturnType<typeof vi.fn>;
   let navigate: ReturnType<typeof vi.spyOn>;
-  let navigateByUrl: ReturnType<typeof vi.spyOn>;
+  let leaveTo: ReturnType<typeof vi.fn>;
   let openSnackbar: ReturnType<typeof vi.spyOn>;
 
   async function setup(options: SetupOptions = {}): Promise<void> {
-    const shown = options.bill ?? bill;
+    const shown = options.bill === null ? undefined : options.bill ?? bill;
+    leaveTo = vi.fn();
     deleteAnalyzedBill = vi.fn(options.deleteAnalyzedBill ?? (() => of(undefined)));
     downloadImage = vi.fn(options.downloadImage ?? (() => of(new Blob(['jpg'], { type: 'image/jpeg' }))));
     remove = vi.fn();
@@ -65,17 +68,17 @@ describe('AnalyzedBillDetailsComponent', () => {
       imports: [AnalyzedBillDetailsComponent],
       providers: [
         provideRouter([]),
-        { provide: ActivatedRoute, useValue: { snapshot: { params: { id: shown.id }, children: [], parent: null } } },
+        { provide: ActivatedRoute, useValue: { snapshot: { params: { id: shown?.id ?? 'gone' }, children: [], parent: null } } },
         { provide: AnalyzedBillContextService, useValue: { byId: () => of(shown), remove } },
         { provide: BillCategoryContextService, useValue: { categories: () => of(categories) } },
         { provide: BillApiService, useValue: { deleteAnalyzedBill, downloadAnalyzedBillImage: downloadImage } },
         { provide: ConfirmationDialogService, useValue: { openDialog: openConfirmation } },
-        { provide: BillImageDialogService, useValue: { openDialog: openImageDialog } }
+        { provide: BillImageDialogService, useValue: { openDialog: openImageDialog } },
+        { provide: HistoryTrailService, useValue: { leaveTo } }
       ]
     });
 
     navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
-    navigateByUrl = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
     openSnackbar = vi.spyOn(TestBed.inject(MatSnackBar), 'openFromComponent').mockReturnValue(undefined as never);
 
     fixture = TestBed.createComponent(AnalyzedBillDetailsComponent);
@@ -135,7 +138,8 @@ describe('AnalyzedBillDetailsComponent', () => {
     expect(openConfirmation).toHaveBeenCalledTimes(1);
     expect(deleteAnalyzedBill).toHaveBeenCalledWith('a1');
     expect(remove).toHaveBeenCalledWith('a1');
-    expect(navigateByUrl).toHaveBeenCalledWith('/bill/analysis');
+    // I1: zurück zur Analyse-Liste statt neuem Eintrag über dem gelöschten
+    expect(leaveTo).toHaveBeenCalledWith('/bill/analysis');
   });
 
   it('„Verwerfen“ abgelehnt: nichts passiert', async () => {
@@ -146,7 +150,7 @@ describe('AnalyzedBillDetailsComponent', () => {
 
     expect(deleteAnalyzedBill).not.toHaveBeenCalled();
     expect(remove).not.toHaveBeenCalled();
-    expect(navigateByUrl).not.toHaveBeenCalled();
+    expect(leaveTo).not.toHaveBeenCalled();
   });
 
   it('„Verwerfen“ fehlgeschlagen: Fehlermeldung, Eintrag bleibt', async () => {
@@ -157,7 +161,7 @@ describe('AnalyzedBillDetailsComponent', () => {
 
     expect(openSnackbar).toHaveBeenCalled();
     expect(remove).not.toHaveBeenCalled();
-    expect(navigateByUrl).not.toHaveBeenCalled();
+    expect(leaveTo).not.toHaveBeenCalled();
   });
 
   it('„Als Rechnung übernehmen“ öffnet das Formular mit Vorbelegung, Analyse-ID und geladenem Foto (AC33)', async () => {
@@ -200,5 +204,36 @@ describe('AnalyzedBillDetailsComponent', () => {
 
     expect(openSnackbar).toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalled();
+  });
+
+  // M1 (design.md §5.2): ohne Netz die Übernahme-Meldung, nicht „Foto konnte nicht geladen werden.“
+  it('„Als Rechnung übernehmen“ ohne Netz: Verbindungs-Hinweis, kein Laden, keine Navigation', async () => {
+    await setup();
+    vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
+
+    button('Als Rechnung übernehmen').click();
+    await settle();
+
+    expect(downloadImage).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
+    expect(openSnackbar).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: 'Zum Übernehmen wird eine Verbindung gebraucht' }));
+  });
+
+  it('„Als Rechnung übernehmen“: Verbindung beim Laden des Fotos verloren → Verbindungs-Hinweis', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    await setup({ downloadImage: () => throwError(() => new HttpErrorResponse({ status: 0 })) });
+
+    button('Als Rechnung übernehmen').click();
+    await settle();
+
+    expect(navigate).not.toHaveBeenCalled();
+    expect(openSnackbar).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: 'Zum Übernehmen wird eine Verbindung gebraucht' }));
+  });
+
+  it('nicht (mehr) vorhanden: Hinweis und zurück zur Analyse-Liste', async () => {
+    await setup({ bill: null });
+
+    expect(leaveTo).toHaveBeenCalledWith('/bill/analysis');
+    expect(openSnackbar).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: expect.objectContaining({ message: 'Eintrag wurde nicht gefunden.' }) }));
   });
 });

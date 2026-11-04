@@ -3,7 +3,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { Router } from '@angular/router';
 import { MatAutocomplete, MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatSelect, MatSelectTrigger } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
@@ -16,6 +15,7 @@ import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
 import { BillCreateDto } from 'src/app/api/shopping/dtos/BillCreateDto';
 import { BillSubCategoryDto } from 'src/app/api/shopping/dtos/BillSubCategoryDto';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
+import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { AnalyzedBillContextService } from 'src/app/features/bill-analysis/services/analyzed-bill-context.service';
 import { BillContextService } from 'src/app/features/bill/services/bill-context.service';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
@@ -24,7 +24,7 @@ import { vibrate } from 'src/app/shared/utils/haptics';
 import { compressImage } from 'src/app/shared/utils/image-utils';
 import { ShowErrorPipe } from '../../../../shared/form-field/show-error.pipe';
 import { CreateBillForm, getCreateBillForm } from '../../functions/bill-form-functions';
-import { BillCreatePrefill } from '../../models/bill-create-prefill';
+import { BillCreatePrefill, TAKE_OVER_OFFLINE } from '../../models/bill-create-prefill';
 import { formatAmount, parseAmount } from '../../quick-entry/logic/amount-input';
 import { fromDayKey, toDayKey } from '../../quick-entry/logic/quick-entry-state';
 import { QuickDateRowComponent } from '../../quick-entry/quick-date-row/quick-date-row.component';
@@ -37,7 +37,6 @@ const DESKTOP = '(min-width: 1024px)';
 const MAX_SHOP_OPTIONS = 6;
 
 const SAVE_FAILED = 'Rechnung konnte nicht gespeichert werden.';
-const TAKE_OVER_OFFLINE = 'Zum Übernehmen wird eine Verbindung gebraucht';
 const ANALYSIS_KEPT = 'Rechnung gespeichert, die Analyse konnte aber nicht entfernt werden.';
 
 /** Vorbelegung aus dem Router-State (`router.navigate(['/bill/create'], { state: { prefill } })`) */
@@ -69,11 +68,16 @@ export class AddBillComponent implements OnInit {
   private shopStats = inject(ShopStatsContextService);
   private draftService = inject(QuickEntryDraftService);
   private snackbar = inject(MatSnackBar);
-  private router = inject(Router);
+  private historyTrail = inject(HistoryTrailService);
   private destroyRef = inject(DestroyRef);
 
   readonly form: FormGroup<CreateBillForm> = getCreateBillForm();
   readonly prefill = readPrefill();
+  /**
+   * Einmal pro Formular (M2): ein zweiter Versuch nach verlorener Antwort legt keine zweite Rechnung an,
+   * das Anlegen ist pro ID idempotent (CreateBillCommandHandler liefert die vorhandene zurück).
+   */
+  private readonly billId = generateGuid();
   /** Datepicker als Dialog (mobil) statt Popup */
   readonly touchUi = !inject(BreakpointObserver).isMatched(DESKTOP);
 
@@ -162,7 +166,7 @@ export class AddBillComponent implements OnInit {
     const subCategory = controls.subCategory.value ?? undefined;
     const shopName = controls.shopName.value.trim();
     const dto: BillCreateDto = {
-      id: generateGuid(),
+      id: this.billId,
       categoryId: category.id,
       subCategoryId: subCategory?.id,
       shopName,
@@ -194,10 +198,22 @@ export class AddBillComponent implements OnInit {
         openSuccessSnackbar(`Gespeichert · ${shopName} ${formatAmount(price)} €`, this.snackbar);
       }
       vibrate(30);
-      // ersetzt das Formular in der History: Zurück führt nicht noch einmal in die Vorbelegung
-      void this.router.navigate(['/bill/list'], { replaceUrl: true });
+      this.leave();
     } finally {
       this.isSaving = false;
+    }
+  }
+
+  /**
+   * Zurück, woher das Formular kam (I2, design.md §9 „Zurück-Regeln“): Liste darunter → per Zurück
+   * dorthin, sonst ersetzt die Liste das Formular. Übernahme: zur Analyse-Liste, über den nun
+   * gelöschten Analyse-Eintrag hinweg (zwei Einträge zurück).
+   */
+  private leave(): void {
+    if (this.prefill.analyzedBillId) {
+      this.historyTrail.leaveTo('/bill/analysis', 2);
+    } else {
+      this.historyTrail.leaveTo('/bill/list');
     }
   }
 

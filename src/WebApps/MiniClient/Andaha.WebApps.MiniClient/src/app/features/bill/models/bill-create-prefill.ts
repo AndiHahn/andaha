@@ -19,3 +19,6 @@ export interface BillCreatePrefill {
   /** Aus „Alle Felder“ der Schnellerfassung: nach dem Speichern wird deren Entwurf verworfen */
   fromQuickEntry?: boolean;
 }
+
+/** „Als Rechnung übernehmen“ ohne Netz (design.md §5.2), im Formular und in der Analyse-Detailansicht */
+export const TAKE_OVER_OFFLINE = 'Zum Übernehmen wird eine Verbindung gebraucht';

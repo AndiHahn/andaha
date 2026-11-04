@@ -1,11 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router, provideRouter } from '@angular/router';
+import { provideRouter } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillCreateDto } from 'src/app/api/shopping/dtos/BillCreateDto';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
+import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { OverlayBackService } from 'src/app/core/overlay/overlay-back.service';
 import { AnalyzedBillContextService } from 'src/app/features/bill-analysis/services/analyzed-bill-context.service';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
@@ -59,7 +60,7 @@ describe('AddBillComponent', () => {
   let refreshAnalyzed: ReturnType<typeof vi.fn>;
   let recordLocal: ReturnType<typeof vi.fn>;
   let clearDraft: ReturnType<typeof vi.fn>;
-  let navigate: ReturnType<typeof vi.spyOn>;
+  let leaveTo: ReturnType<typeof vi.fn>;
   let openSnackbar: ReturnType<typeof vi.spyOn>;
   let vibrate: ReturnType<typeof vi.spyOn>;
 
@@ -73,6 +74,7 @@ describe('AddBillComponent', () => {
     refreshAnalyzed = vi.fn();
     recordLocal = vi.fn();
     clearDraft = vi.fn();
+    leaveTo = vi.fn();
 
     TestBed.configureTestingModule({
       imports: [AddBillComponent],
@@ -91,11 +93,11 @@ describe('AddBillComponent', () => {
         { provide: BillApiService, useValue: { addBill: apiAddBill, deleteAnalyzedBill } },
         { provide: AnalyzedBillContextService, useValue: { refresh: refreshAnalyzed } },
         { provide: QuickEntryDraftService, useValue: { clear: clearDraft } },
-        { provide: OverlayBackService, useValue: { register: () => () => undefined } }
+        { provide: OverlayBackService, useValue: { register: () => () => undefined } },
+        { provide: HistoryTrailService, useValue: { leaveTo } }
       ]
     });
 
-    navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     // keine echten Snackbars: deren Zeitgeber halten whenStable() sonst 4–5 s auf
     openSnackbar = vi.spyOn(TestBed.inject(MatSnackBar), 'openFromComponent').mockReturnValue(undefined as never);
     vibrate = vi.spyOn(navigator, 'vibrate').mockImplementation(() => true);
@@ -135,7 +137,7 @@ describe('AddBillComponent', () => {
   async function save(): Promise<void> {
     saveButton().click();
     await settle();
-    await vi.waitFor(() => expect(navigate.mock.calls.length + openSnackbar.mock.calls.length).toBeGreaterThan(0));
+    await vi.waitFor(() => expect(leaveTo.mock.calls.length + openSnackbar.mock.calls.length).toBeGreaterThan(0));
     await settle();
   }
 
@@ -274,7 +276,8 @@ describe('AddBillComponent', () => {
       expect.objectContaining({ id: 's1' }));
     expect(openSnackbar).toHaveBeenCalledWith(SuccessSnackbarComponent, expect.objectContaining({ data: 'Gespeichert · Billa 12,50 €' }));
     expect(vibrate).toHaveBeenCalledWith(30);
-    expect(navigate).toHaveBeenCalledWith(['/bill/list'], { replaceUrl: true });
+    // I2: zurück zur Liste, von der das Formular geöffnet wurde (genau ein Listen-Eintrag)
+    expect(leaveTo).toHaveBeenCalledWith('/bill/list');
     expect(recordLocal).toHaveBeenCalledWith('Billa', 'c1', 's1', expect.any(Date));
     expect(clearDraft).not.toHaveBeenCalled();
   });
@@ -297,8 +300,22 @@ describe('AddBillComponent', () => {
     await save();
 
     expect(clearDraft).not.toHaveBeenCalled();
-    expect(navigate).not.toHaveBeenCalled();
+    expect(leaveTo).not.toHaveBeenCalled();
     expect(openSnackbar).toHaveBeenCalledWith(ErrorSnackbarComponent, expect.objectContaining({ data: 'Rechnung konnte nicht gespeichert werden.' }));
+  });
+
+  it('keeps the bill id of the form for a second attempt', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    await setup();
+    addBill.mockRejectedValueOnce(new Error('kaputt'));
+
+    await fillValid();
+    await save();
+    openSnackbar.mockClear();
+    await save();
+
+    expect(addBill).toHaveBeenCalledTimes(2);
+    expect((addBill.mock.calls[1][0] as BillCreateDto).id).toBe((addBill.mock.calls[0][0] as BillCreateDto).id);
   });
 
   describe('taking over an analyzed bill', () => {
@@ -316,7 +333,8 @@ describe('AddBillComponent', () => {
       expect(refreshAnalyzed).toHaveBeenCalled();
       expect(showAddedBill).toHaveBeenCalled();
       expect(openSnackbar).toHaveBeenCalledWith(SuccessSnackbarComponent, expect.objectContaining({ data: 'Gespeichert · Billa 9,90 €' }));
-      expect(navigate).toHaveBeenCalledWith(['/bill/list'], { replaceUrl: true });
+      // I1/I2: zurück zur Analyse-Liste, über den gelöschten Analyse-Eintrag hinweg
+      expect(leaveTo).toHaveBeenCalledWith('/bill/analysis', 2);
     });
 
     it('does not delete the analyzed entry when saving fails', async () => {
@@ -326,7 +344,7 @@ describe('AddBillComponent', () => {
       await save();
 
       expect(deleteAnalyzedBill).not.toHaveBeenCalled();
-      expect(navigate).not.toHaveBeenCalled();
+      expect(leaveTo).not.toHaveBeenCalled();
       expect(openSnackbar).toHaveBeenCalledWith(ErrorSnackbarComponent, expect.objectContaining({ data: 'Rechnung konnte nicht gespeichert werden.' }));
     });
 
@@ -351,13 +369,30 @@ describe('AddBillComponent', () => {
       expect(openSnackbar).toHaveBeenCalledWith(ErrorSnackbarComponent, expect.objectContaining({ data: 'Zum Übernehmen wird eine Verbindung gebraucht' }));
     });
 
+    // M2: ging die Antwort verloren (Status 0), legt der zweite Versuch keine zweite Rechnung an
+    it('sends the same bill id when saving is retried', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined);
+      let calls = 0;
+      await setup({ prefill, apiAddBill: () => ++calls === 1 ? throwError(() => new HttpErrorResponse({ status: 0 })) : of({}) });
+
+      await save();
+      openSnackbar.mockClear();
+      await save();
+
+      expect(apiAddBill).toHaveBeenCalledTimes(2);
+      const [first, second] = apiAddBill.mock.calls.map(call => (call[0] as BillCreateDto).id);
+      expect(first).toEqual(expect.any(String));
+      expect(second).toBe(first);
+      expect(deleteAnalyzedBill).toHaveBeenCalledTimes(1);
+    });
+
     it('keeps the saved bill when deleting the analyzed entry fails', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined);
       await setup({ prefill, deleteAnalyzedBill: () => throwError(() => new HttpErrorResponse({ status: 500 })) });
 
       await save();
 
-      expect(navigate).toHaveBeenCalledWith(['/bill/list'], { replaceUrl: true });
+      expect(leaveTo).toHaveBeenCalledWith('/bill/analysis', 2);
       expect(refreshAnalyzed).toHaveBeenCalled();
       expect(openSnackbar).toHaveBeenCalledWith(ErrorSnackbarComponent,
         expect.objectContaining({ data: 'Rechnung gespeichert, die Analyse konnte aber nicht entfernt werden.' }));
