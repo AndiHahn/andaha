@@ -8,6 +8,7 @@ import { MatSelect, MatOption } from '@angular/material/select';
 import { MatIcon } from '@angular/material/icon';
 import { MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker } from '@angular/material/datepicker';
 import { DatePipe } from '@angular/common';
+import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 
 @Component({
     selector: 'app-timerange-selection',
@@ -15,7 +16,7 @@ import { DatePipe } from '@angular/common';
     styleUrls: ['./timerange-selection.component.scss'],
     providers: GERMAN_DATE_PROVIDERS,
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [FormsModule, ReactiveFormsModule, MatSelect, MatOption, MatIcon, MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker, DatePipe]
+    imports: [PanelBackDirective, FormsModule, ReactiveFormsModule, MatSelect, MatOption, MatIcon, MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker, DatePipe]
 })
 export class TimerangeSelectionComponent implements OnInit, OnChanges {
   private fb = inject(UntypedFormBuilder);

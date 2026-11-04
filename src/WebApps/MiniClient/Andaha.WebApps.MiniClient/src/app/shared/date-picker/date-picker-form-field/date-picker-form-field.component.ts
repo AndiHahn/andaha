@@ -4,6 +4,7 @@ import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-pr
 import { MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker } from '@angular/material/datepicker';
 import { MatIcon } from '@angular/material/icon';
 import { ShowErrorPipe } from '../../form-field/show-error.pipe';
+import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 
 @Component({
     selector: 'app-date-picker-form-field',
@@ -11,7 +12,7 @@ import { ShowErrorPipe } from '../../form-field/show-error.pipe';
     styleUrls: ['./date-picker-form-field.component.scss'],
     providers: GERMAN_DATE_PROVIDERS,
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [MatDatepickerInput, FormsModule, ReactiveFormsModule, MatDatepickerToggle, MatIcon, MatDatepickerToggleIcon, MatDatepicker, ShowErrorPipe]
+    imports: [PanelBackDirective, MatDatepickerInput, FormsModule, ReactiveFormsModule, MatDatepickerToggle, MatIcon, MatDatepickerToggleIcon, MatDatepicker, ShowErrorPipe]
 })
 export class DatePickerFormFieldComponent implements OnInit {
 

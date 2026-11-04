@@ -24,13 +24,14 @@ import { MatCheckbox } from '@angular/material/checkbox';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe';
+import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 
 @Component({
     selector: 'app-category-item-details',
     templateUrl: './category-item-details.component.html',
     styleUrls: ['./category-item-details.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, ColorItemComponent, MatOption, MatIcon, MatCheckbox, CdkDropList, CdkDrag, CdkDragHandle, MatProgressBar, MatProgressSpinner, ShowErrorPipe]
+    imports: [PanelBackDirective, FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, ColorItemComponent, MatOption, MatIcon, MatCheckbox, CdkDropList, CdkDrag, CdkDragHandle, MatProgressBar, MatProgressSpinner, ShowErrorPipe]
 })
 export class CategoryItemDetailsComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);

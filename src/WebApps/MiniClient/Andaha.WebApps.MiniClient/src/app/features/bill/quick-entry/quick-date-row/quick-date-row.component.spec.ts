@@ -22,11 +22,13 @@ class FieldHostComponent {
 describe('QuickDateRowComponent', () => {
   let fixture: ComponentFixture<FieldHostComponent>;
   let host: HTMLElement;
+  let register: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
+    register = vi.fn(() => () => undefined);
     TestBed.configureTestingModule({
       imports: [FieldHostComponent],
-      providers: [{ provide: OverlayBackService, useValue: { register: () => () => undefined } }]
+      providers: [{ provide: OverlayBackService, useValue: { register } }]
     });
     fixture = TestBed.createComponent(FieldHostComponent);
     host = fixture.nativeElement;
@@ -60,6 +62,19 @@ describe('QuickDateRowComponent', () => {
     // Popup hängt am Anker (darunter oder, wenn kein Platz, darüber), horizontal ab dessen linker Kante
     expect(Math.min(Math.abs(pane.top - anchor.bottom), Math.abs(pane.bottom - anchor.top))).toBeLessThanOrEqual(2);
     expect(Math.abs(pane.left - anchor.left)).toBeLessThanOrEqual(2);
+  });
+
+  // I3: Zurück schließt nur den Kalender (im Sheet nicht das ganze Sheet, im Formular bleibt die Eingabe)
+  it('registers the open datepicker with the back handling', async () => {
+    const row = fixture.debugElement.query(el => el.componentInstance instanceof QuickDateRowComponent);
+    (row.componentInstance as QuickDateRowComponent).pickDate();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(document.querySelector('.mat-datepicker-content')).toBeTruthy();
+    expect(register).toHaveBeenCalledTimes(1);
+
+    (register.mock.calls[0][0] as () => void)();
+    await vi.waitFor(() => expect(document.querySelector('.mat-datepicker-content')).toBeNull());
   });
 
   it('shows the date only once and hides „Alle Felder“ on request', () => {

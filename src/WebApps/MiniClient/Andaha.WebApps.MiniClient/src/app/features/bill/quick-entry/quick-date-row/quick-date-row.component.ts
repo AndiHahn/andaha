@@ -7,6 +7,7 @@ import { MatDatepicker, MatDatepickerInput, MatDatepickerInputEvent } from '@ang
 import { MenuBackDirective } from 'src/app/core/overlay/menu-back.directive';
 import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-providers';
 import { toDayKey } from '../logic/quick-entry-state';
+import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 
 /**
  * Datumszeile des Schnell-Sheets (v2, AC14/AC15): „Heute, 03.11.2026“ mit Menü Heute · Gestern ·
@@ -18,7 +19,7 @@ import { toDayKey } from '../logic/quick-entry-state';
   styleUrls: ['./quick-date-row.component.scss'],
   providers: GERMAN_DATE_PROVIDERS,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [MatIcon, MatMenu, MatMenuItem, MatMenuTrigger, MenuBackDirective, MatDatepicker, MatDatepickerInput]
+  imports: [PanelBackDirective, MatIcon, MatMenu, MatMenuItem, MatMenuTrigger, MenuBackDirective, MatDatepicker, MatDatepickerInput]
 })
 export class QuickDateRowComponent {
   @Input({ required: true }) date!: Date;

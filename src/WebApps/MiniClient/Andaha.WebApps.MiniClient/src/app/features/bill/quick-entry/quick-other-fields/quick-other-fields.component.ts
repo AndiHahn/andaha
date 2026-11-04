@@ -4,6 +4,7 @@ import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { MatAutocomplete, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
+import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 
 /**
  * „Andere …“ im Schnell-Sheet (v2 d, AC13): Shopname mit Vorschlägen aus bisherigen Shops, Kategorie,
@@ -14,7 +15,7 @@ import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
   templateUrl: './quick-other-fields.component.html',
   styleUrls: ['./quick-other-fields.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [MatIcon, MatSelect, MatOption, MatAutocompleteTrigger]
+  imports: [PanelBackDirective, MatIcon, MatSelect, MatOption, MatAutocompleteTrigger]
 })
 export class QuickOtherFieldsComponent {
   @Input() categories: CategoryDto[] = [];

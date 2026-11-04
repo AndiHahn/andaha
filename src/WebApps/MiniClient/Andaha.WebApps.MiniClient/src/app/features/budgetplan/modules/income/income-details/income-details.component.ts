@@ -21,13 +21,14 @@ import { MatSelect, MatOption } from '@angular/material/select';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe';
+import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 
 @Component({
     selector: 'app-income-details',
     templateUrl: './income-details.component.html',
     styleUrls: ['./income-details.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [MatProgressBar, FormsModule, ReactiveFormsModule, MatSelect, MatOption, MatIcon, MatProgressSpinner, ShowErrorPipe]
+    imports: [PanelBackDirective, MatProgressBar, FormsModule, ReactiveFormsModule, MatSelect, MatOption, MatIcon, MatProgressSpinner, ShowErrorPipe]
 })
 export class IncomeDetailsComponent implements OnInit, OnDestroy {
   private historyTrail = inject(HistoryTrailService);

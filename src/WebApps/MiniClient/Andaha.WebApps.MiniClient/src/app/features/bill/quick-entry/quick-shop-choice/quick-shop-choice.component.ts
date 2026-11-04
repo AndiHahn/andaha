@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { MatAutocomplete, MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 
 /**
  * Shop-Auswahl bei Vorlagen ohne festen Shop (v2 c, AC12): Fläche well, häufigste Shops als Chips,
@@ -11,7 +12,7 @@ import { MatAutocomplete, MatAutocompleteTrigger } from '@angular/material/autoc
   templateUrl: './quick-shop-choice.component.html',
   styleUrls: ['./quick-shop-choice.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [MatIcon, MatAutocompleteTrigger]
+  imports: [PanelBackDirective, MatIcon, MatAutocompleteTrigger]
 })
 export class QuickShopChoiceComponent {
   @Input() shops: string[] = [];

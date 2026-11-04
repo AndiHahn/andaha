@@ -7,6 +7,7 @@ import { DialogComponent } from '../../../../../../shared/dialog/dialog.componen
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker } from '@angular/material/datepicker';
 import { MatIcon } from '@angular/material/icon';
+import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 
 @Component({
     selector: 'app-bill-list-filter-dialog',
@@ -14,7 +15,7 @@ import { MatIcon } from '@angular/material/icon';
     styleUrls: ['./bill-list-filter-dialog.component.scss'],
     providers: GERMAN_DATE_PROVIDERS,
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [DialogComponent, CdkScrollable, MatDialogContent, MatDatepickerInput, FormsModule, ReactiveFormsModule, MatDatepickerToggle, MatIcon, MatDatepickerToggleIcon, MatDatepicker]
+    imports: [PanelBackDirective, DialogComponent, CdkScrollable, MatDialogContent, MatDatepickerInput, FormsModule, ReactiveFormsModule, MatDatepickerToggle, MatIcon, MatDatepickerToggleIcon, MatDatepicker]
 })
 export class BillListFilterDialogComponent implements OnInit {
   private dialogRef = inject<MatDialogRef<BillListFilterDialogComponent>>(MatDialogRef);

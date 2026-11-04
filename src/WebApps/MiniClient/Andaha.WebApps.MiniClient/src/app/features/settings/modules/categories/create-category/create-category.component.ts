@@ -14,13 +14,14 @@ import { MatIcon } from '@angular/material/icon';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe';
+import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 
 @Component({
     selector: 'app-create-category',
     templateUrl: './create-category.component.html',
     styleUrls: ['./create-category.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, ColorItemComponent, MatOption, MatIcon, MatCheckbox, MatProgressSpinner, ShowErrorPipe]
+    imports: [PanelBackDirective, FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, ColorItemComponent, MatOption, MatIcon, MatCheckbox, MatProgressSpinner, ShowErrorPipe]
 })
 export class CreateCategoryComponent implements OnInit {
   private router = inject(Router);

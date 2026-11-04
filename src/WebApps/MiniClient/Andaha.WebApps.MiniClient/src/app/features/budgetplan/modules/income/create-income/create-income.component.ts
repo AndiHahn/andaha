@@ -10,13 +10,14 @@ import { MatSelect, MatOption } from '@angular/material/select';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe';
+import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 
 @Component({
     selector: 'app-create-income',
     templateUrl: './create-income.component.html',
     styleUrls: ['./create-income.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [FormsModule, ReactiveFormsModule, MatSelect, MatOption, MatIcon, MatProgressSpinner, ShowErrorPipe]
+    imports: [PanelBackDirective, FormsModule, ReactiveFormsModule, MatSelect, MatOption, MatIcon, MatProgressSpinner, ShowErrorPipe]
 })
 export class CreateIncomeComponent implements OnInit {
   private snackbar = inject(MatSnackBar);

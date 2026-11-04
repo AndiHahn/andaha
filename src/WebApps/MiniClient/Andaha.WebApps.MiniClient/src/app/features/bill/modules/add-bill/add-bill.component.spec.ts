@@ -61,6 +61,7 @@ describe('AddBillComponent', () => {
   let recordLocal: ReturnType<typeof vi.fn>;
   let clearDraft: ReturnType<typeof vi.fn>;
   let leaveTo: ReturnType<typeof vi.fn>;
+  let register: ReturnType<typeof vi.fn>;
   let openSnackbar: ReturnType<typeof vi.spyOn>;
   let vibrate: ReturnType<typeof vi.spyOn>;
 
@@ -75,6 +76,7 @@ describe('AddBillComponent', () => {
     recordLocal = vi.fn();
     clearDraft = vi.fn();
     leaveTo = vi.fn();
+    register = vi.fn(() => () => undefined);
 
     TestBed.configureTestingModule({
       imports: [AddBillComponent],
@@ -93,7 +95,7 @@ describe('AddBillComponent', () => {
         { provide: BillApiService, useValue: { addBill: apiAddBill, deleteAnalyzedBill } },
         { provide: AnalyzedBillContextService, useValue: { refresh: refreshAnalyzed } },
         { provide: QuickEntryDraftService, useValue: { clear: clearDraft } },
-        { provide: OverlayBackService, useValue: { register: () => () => undefined } },
+        { provide: OverlayBackService, useValue: { register } },
         { provide: HistoryTrailService, useValue: { leaveTo } }
       ]
     });
@@ -302,6 +304,21 @@ describe('AddBillComponent', () => {
     expect(clearDraft).not.toHaveBeenCalled();
     expect(leaveTo).not.toHaveBeenCalled();
     expect(openSnackbar).toHaveBeenCalledWith(ErrorSnackbarComponent, expect.objectContaining({ data: 'Rechnung konnte nicht gespeichert werden.' }));
+  });
+
+  // I3: Zurück mit offener Auswahl schließt nur die Auswahl, das Formular bleibt
+  it('registers an open category select with the back handling', async () => {
+    await setup();
+
+    host.querySelector<HTMLElement>('mat-select[aria-label="Kategorie"] .mat-mdc-select-trigger')!.click();
+    await settle();
+    expect(document.querySelector('mat-option')).toBeTruthy();
+    expect(register).toHaveBeenCalledTimes(1);
+
+    (register.mock.calls[0][0] as () => void)();
+    await settle();
+    await vi.waitFor(() => expect(document.querySelector('.mat-mdc-select-panel')).toBeNull());
+    expect(leaveTo).not.toHaveBeenCalled();
   });
 
   it('keeps the bill id of the form for a second attempt', async () => {

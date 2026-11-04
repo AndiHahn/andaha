@@ -18,13 +18,14 @@ import { DatePickerFormFieldComponent } from '../../../../../shared/date-picker/
 import { TimePickerFormFieldComponent } from '../../../../../shared/date-picker/time-picker-form-field/time-picker-form-field.component';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe';
+import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 
 @Component({
     selector: 'app-add-working-entry',
     templateUrl: './add-working-entry.component.html',
     styleUrls: ['./add-working-entry.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, MatInput, MatOption, MatIcon, DatePickerFormFieldComponent, TimePickerFormFieldComponent, MatProgressSpinner, ShowErrorPipe]
+    imports: [PanelBackDirective, FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, MatInput, MatOption, MatIcon, DatePickerFormFieldComponent, TimePickerFormFieldComponent, MatProgressSpinner, ShowErrorPipe]
 })
 export class AddWorkingEntryComponent implements OnInit {
   private snackbar = inject(MatSnackBar);

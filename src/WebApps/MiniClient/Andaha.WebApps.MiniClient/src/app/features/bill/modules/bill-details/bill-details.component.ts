@@ -25,6 +25,7 @@ import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { ShowErrorPipe } from '../../../../shared/form-field/show-error.pipe';
+import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 
 @Component({
     selector: 'app-bill-details',
@@ -32,7 +33,7 @@ import { ShowErrorPipe } from '../../../../shared/form-field/show-error.pipe';
     styleUrls: ['./bill-details.component.scss'],
     providers: GERMAN_DATE_PROVIDERS,
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [BillImageComponent, FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, MatOption, MatIcon, MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker, MatProgressBar, MatProgressSpinner, DecimalPipe, DatePipe, ShowErrorPipe]
+    imports: [PanelBackDirective, BillImageComponent, FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, MatOption, MatIcon, MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker, MatProgressBar, MatProgressSpinner, DecimalPipe, DatePipe, ShowErrorPipe]
 })
 export class BillDetailsComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);

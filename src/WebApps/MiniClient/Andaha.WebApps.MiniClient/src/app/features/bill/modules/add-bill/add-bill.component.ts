@@ -31,6 +31,7 @@ import { QuickDateRowComponent } from '../../quick-entry/quick-date-row/quick-da
 import { QuickEntryDraftService } from '../../quick-entry/quick-entry-draft.service';
 import { ShopStatsContextService } from '../../services/shop-stats-context.service';
 import { PhotoPickerComponent } from '../photo-picker/photo-picker.component';
+import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 
 /** Desktop-Breakpoint wie AppComponent */
 const DESKTOP = '(min-width: 1024px)';
@@ -55,7 +56,7 @@ function readPrefill(): BillCreatePrefill {
     templateUrl: './add-bill.component.html',
     styleUrls: ['./add-bill.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [
+    imports: [PanelBackDirective, 
       ReactiveFormsModule, MatAutocomplete, MatAutocompleteTrigger, MatSelect, MatSelectTrigger, MatOption, MatIcon,
       ShowErrorPipe, QuickDateRowComponent, PhotoPickerComponent
     ]

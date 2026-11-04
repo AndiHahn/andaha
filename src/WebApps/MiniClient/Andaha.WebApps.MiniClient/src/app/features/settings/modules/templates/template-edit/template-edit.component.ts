@@ -16,6 +16,7 @@ import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/co
 import { ShowErrorPipe } from 'src/app/shared/form-field/show-error.pipe';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
+import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 
 const LIST_URL = '/settings/templates';
 
@@ -32,7 +33,7 @@ function notBlank(control: AbstractControl): ValidationErrors | null {
   templateUrl: './template-edit.component.html',
   styleUrls: ['./template-edit.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [RouterLink, ReactiveFormsModule, MatSelect, MatSelectTrigger, MatOption, MatIcon, MatProgressSpinner, ShowErrorPipe]
+  imports: [PanelBackDirective, RouterLink, ReactiveFormsModule, MatSelect, MatSelectTrigger, MatOption, MatIcon, MatProgressSpinner, ShowErrorPipe]
 })
 export class TemplateEditComponent implements OnInit {
   private route = inject(ActivatedRoute);
