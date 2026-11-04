@@ -5,8 +5,15 @@
     <span class="sfx">€</span>
   </button>
   @if (layout === 'mobile') {
-    <button type="button" class="cam" aria-label="Rechnung scannen" (click)="scan.emit()">
+    <button type="button" class="cam" aria-label="Rechnung scannen" (click)="photoInput.click()">
       <mat-icon aria-hidden="true">photo_camera</mat-icon>
     </button>
+  } @else {
+    <button type="button" class="btn sec2 scan" (click)="photoInput.click()">
+      <mat-icon aria-hidden="true">photo_camera</mat-icon><span>Scannen</span>
+    </button>
   }
+  <!-- Foto über die native Kamera (mobil) bzw. Dateiauswahl (Desktop), wie im Foto-Wähler des Formulars -->
+  <input #photoInput class="file" type="file" accept="image/*" capture="environment" tabindex="-1" aria-hidden="true"
+    (change)="onPhotoChosen(photoInput)">
 </div>

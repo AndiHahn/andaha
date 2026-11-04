@@ -1,8 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogContent } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BillApiService } from 'src/app/api/shopping/bill-api.service';
-import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { blobToDataUrl } from 'src/app/shared/utils/file-utils';
 import { BillImageDialogData } from './BillImageDialogData';
@@ -22,34 +20,28 @@ import { MatIcon } from '@angular/material/icon';
 })
 export class BillImageDialogComponent {
   private snackbar = inject(MatSnackBar);
-  private billApiService = inject(BillApiService);
   private dialogRef = inject<MatDialogRef<BillImageDialogComponent, boolean | undefined>>(MatDialogRef);
 
-
-  bill: BillDto;
+  private readonly data = inject<BillImageDialogData>(MAT_DIALOG_DATA);
+  /** „Löschen“ nur, wenn das Foto gelöscht werden darf (Rechnung, nicht Analyse) */
+  readonly canDelete = !!this.data.delete;
 
   imageSrc?: string;
 
   isLoading: boolean = false;
   isDeleting: boolean = false;
-  imageWidth: number;
 
   constructor() {
-    const data = inject<BillImageDialogData>(MAT_DIALOG_DATA);
-
-    const padding = 24;
-    const windowWidth = window.innerWidth;
-    this.imageWidth = windowWidth - (2 * padding);
-
-    this.bill = data.bill;
-
     this.fetchImage();
   }
 
   onDeleteImageClick(): void {
+    if (!this.data.delete) {
+      return;
+    }
     this.isDeleting = true;
 
-    this.billApiService.deleteImage(this.bill.id).subscribe(
+    this.data.delete().subscribe(
       {
         next: _ =>{
           this.isDeleting = false;
@@ -66,9 +58,15 @@ export class BillImageDialogComponent {
   private fetchImage(): void {
     this.isLoading = true;
 
-    this.billApiService.downloadImage(this.bill.id).subscribe(
+    this.data.image.subscribe(
       {
         next: async blob => {
+          // leeres Foto (z. B. fehlgeschlagene Analyse ohne Bilddaten): kein kaputtes Bild anzeigen
+          if (blob.size === 0) {
+            this.isLoading = false;
+            openErrorSnackbar('Foto konnte nicht geladen werden.', this.snackbar);
+            return;
+          }
           this.imageSrc = await blobToDataUrl(blob);
           this.isLoading = false;
         },

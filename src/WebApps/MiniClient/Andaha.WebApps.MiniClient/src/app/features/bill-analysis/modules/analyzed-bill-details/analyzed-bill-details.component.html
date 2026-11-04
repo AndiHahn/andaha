@@ -1,43 +1,74 @@
 <div class="page">
   <div class="progress-slot">
-    @if (!bill) {
+    @if (!bill || busy) {
       <mat-progress-bar mode="indeterminate" color="accent" />
     }
   </div>
   @if (bill) {
-    <div class="body">
-      <div class="info">
-        <div class="head">
-          <div class="shop">{{ bill.shopName }}</div>
-          <div class="big">{{ bill.price | number:'1.2-2':'de' }}<small>€</small></div>
-          <div class="when">{{ bill.date ? (bill.date | date:'dd.MM.yyyy') : '–' }}</div>
-        </div>
-        <div class="kv">
-          <span class="k">Kategorie</span>
-          <span class="v cat">
-            <span class="dot" [class.dot-light]="category?.color == 'white'" [style.background]="category?.color || 'grey'"></span>
-            {{ category?.name || 'Keine Kategorie' }}
-          </span>
-        </div>
-        @if (subCategory) {
-          <div class="kv">
-            <span class="k">Unterkategorie</span>
-            <span class="v">{{ subCategory.name }}</span>
+    <div class="scroll">
+      <div class="body">
+        <div class="info">
+          <div class="head">
+            <div class="shop">{{ bill.shopName }}</div>
+            <div class="big">{{ bill.price | number:'1.2-2':'de' }}<small>€</small></div>
+            <div class="when">{{ bill.date ? (bill.date | date:'dd.MM.yyyy') : '–' }}</div>
           </div>
-        }
-        @if (confidence !== null) {
           <div class="kv">
-            <span class="k">Analyse-Konfidenz</span>
-            <span class="v conf">
-              <span class="bar" aria-hidden="true"><span class="fill" [style.width.%]="confidence"></span></span>
-              {{ confidence }} %
+            <span class="k">Kategorie</span>
+            <span class="v cat">
+              <span class="dot" [class.dot-light]="category?.color == 'white'" [style.background]="category?.color || 'grey'"></span>
+              {{ category?.name || 'Keine Kategorie' }}
             </span>
           </div>
-        }
+          @if (subCategory) {
+            <div class="kv">
+              <span class="k">Unterkategorie</span>
+              <span class="v">{{ subCategory.name }}</span>
+            </div>
+          }
+          @if (confidence !== null) {
+            <div class="kv">
+              <span class="k">Analyse-Konfidenz</span>
+              <span class="v conf">
+                <span class="bar" aria-hidden="true"><span class="fill" [style.width.%]="confidence"></span></span>
+                {{ confidence }} %
+              </span>
+            </div>
+          }
+          @if (bill.lineItems.length) {
+            <p class="sec">Positionen</p>
+            <ul class="items">
+              @for (item of bill.lineItems; track $index) {
+                <li class="line-item">
+                  <span class="desc">
+                    {{ item.description || '–' }}
+                    @if (item.quantity != null && item.unitPrice != null) {
+                      <span class="qty">{{ item.quantity | number:'1.0-3':'de' }} × {{ item.unitPrice | number:'1.2-2':'de' }}</span>
+                    }
+                  </span>
+                  <span class="amt">{{ item.totalPrice != null ? (item.totalPrice | number:'1.2-2':'de') : '–' }}<small>€</small></span>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+        <div class="photo-well">
+          @if (bill.imageAvailable) {
+            <app-analyzed-bill-image [billId]="bill.id" />
+          } @else {
+            <span class="no-photo">Kein Foto</span>
+          }
+        </div>
       </div>
-      <div class="photo-well">
-        <app-analyzed-bill-image [billId]="bill.id" />
-      </div>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn pri" [disabled]="busy" (click)="onTakeOverClick()">
+        <mat-icon>check</mat-icon><span>Als Rechnung übernehmen</span>
+      </button>
+      <button type="button" class="btn del" [disabled]="busy" (click)="onDiscardClick()">
+        <mat-icon>delete</mat-icon><span>Verwerfen</span>
+      </button>
     </div>
   }
 </div>

@@ -59,16 +59,21 @@
   cursor: pointer;
 }
 
-// Desktop (04): Feld 44 px neben der Suche, ohne eigene Leiste
+.file { display: none; }
+
+// Desktop (04): Feld 44 px und „Scannen“ (sec2, 44 px) neben der Suche, ohne eigene Leiste
 :host(.desktop) {
-  flex: 1 1 320px;
-  max-width: 380px;
+  flex: 1 1 440px;
+  max-width: 520px;
 
   .dock {
+    gap: 10px;
     padding: 0;
     border-top: 0;
     background: transparent;
   }
+
+  .scan { height: 44px; flex: none; }
 
   .in {
     height: 44px;

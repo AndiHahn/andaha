@@ -14,6 +14,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BillListItemComponent } from './bill-list-item/bill-list-item.component';
 import { QuickEntryDockComponent } from '../../quick-entry/quick-entry-dock/quick-entry-dock.component';
 import { QuickEntryService } from '../../quick-entry/quick-entry.service';
+import { ScanService } from '../../scan/scan.service';
 
 @Component({
     selector: 'app-bill-list',
@@ -27,6 +28,7 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   private billContextService = inject(BillContextService);
   private breakpointObserver = inject(BreakpointObserver);
   private quickEntry = inject(QuickEntryService);
+  private scanService = inject(ScanService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
@@ -85,9 +87,9 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
     this.quickEntry.open();
   }
 
-  // Kamera-Knopf: bis zum Scan-Ablauf (Task 11) das große Formular mit Foto
-  onScan(): void {
-    void this.router.navigate(['/bill/create']);
+  // Kamera-Knopf (mobil) bzw. „Scannen“ (Desktop): Scan-Ablauf mit dem gewählten Foto (AC30)
+  onScan(photo: File): void {
+    void this.scanService.start(photo);
   }
 
   ngOnDestroy(): void {

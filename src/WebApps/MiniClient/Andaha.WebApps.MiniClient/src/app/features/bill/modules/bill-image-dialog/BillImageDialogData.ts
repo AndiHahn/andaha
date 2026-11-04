@@ -1,5 +1,9 @@
-import { BillDto } from "src/app/api/shopping/dtos/BillDto";
+import { Observable } from 'rxjs';
 
+/** Pinch-Zoom-Dialog eines Rechnungsfotos: Rechnung oder analysierte Rechnung (AC34) */
 export interface BillImageDialogData {
-  bill: BillDto;
+  /** Lädt das Foto */
+  image: Observable<Blob>;
+  /** Löscht das Foto; ohne: kein „Löschen“-Knopf */
+  delete?: () => Observable<void>;
 }

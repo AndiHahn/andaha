@@ -7,7 +7,7 @@
     (categoryFilterChanged)="onCategoryFilterChanged($event)"
     (dateFilterChanged)="onDateFilterChanged($event)">
     @if (isDesktop) {
-      <app-quick-entry-dock filterLead layout="desktop" (openEntry)="openQuickEntry()" />
+      <app-quick-entry-dock filterLead layout="desktop" (openEntry)="openQuickEntry()" (scan)="onScan($event)" />
     }
   </app-bill-list-filter>
 </div>
@@ -39,7 +39,7 @@
 </cdk-virtual-scroll-viewport>
 
 @if (!isDesktop) {
-  <app-quick-entry-dock (openEntry)="openQuickEntry()" (scan)="onScan()" />
+  <app-quick-entry-dock (openEntry)="openQuickEntry()" (scan)="onScan($event)" />
 }
 
 <div style="display: none;">

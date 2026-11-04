@@ -1,4 +1,4 @@
-// Seite im Flex-Fluss der .area: Inhalt scrollt
+// Seite im Flex-Fluss der .area: Inhalt scrollt, Aktionen unten fest
 :host {
   display: flex;
   flex-direction: column;
@@ -7,12 +7,19 @@
 .page {
   flex: 1;
   min-height: 0;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .progress-slot {
   flex: none;
   height: 3px;
+}
+
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
 }
 
 .body {
@@ -37,35 +44,32 @@
   overflow-wrap: anywhere;
 }
 
-.when {
+.when,
+.qty,
+.no-photo {
   font-size: 14px;
   color: var(--mut);
 }
 
-.v {
+.v,
+.desc {
   min-width: 0;
   overflow-wrap: anywhere;
 }
 
-.cat {
+.cat,
+.conf {
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
 
 // Konfidenz: kleiner Balken in positive
-.conf {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .bar {
   width: 72px;
   height: 6px;
   border-radius: 3px;
   background: var(--line-sheet);
-  display: inline-block;
   overflow: hidden;
 }
 
@@ -76,38 +80,59 @@
   background: var(--pos);
 }
 
-.notes {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 14px 16px 16px;
-  font-size: 15px;
-  border-bottom: 1px solid var(--line2);
+// Positionen (AC32): Beschreibung, darunter Menge × Einzelpreis, rechts Summe
+.items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.notes-text {
-  line-height: 1.5;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
+.line-item {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line2);
+  font-size: 15px;
+}
+
+.desc {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .photo-well {
   flex: 1;
   display: flex;
   justify-content: center;
+  align-items: center;
   padding: 20px 16px;
   background: var(--well);
 }
 
-// Desktop: Werte links, Bild rechts (bestehendes links/rechts-Layout)
+// Mobil untereinander: „Als Rechnung übernehmen“ passt nicht neben „Verwerfen“
+.actions {
+  flex-direction: column;
+
+  .btn { flex: none; }
+}
+
 @media (min-width: 1024px) {
+  .body,
+  .progress-slot,
+  .actions {
+    margin: 0 40px;
+    max-width: 1040px;
+  }
+
+  // Werte links, Bild rechts
   .body {
     flex-direction: row;
     align-items: flex-start;
     gap: 40px;
-    margin: 0 40px;
     padding-top: 8px;
-    max-width: 1040px;
   }
 
   .info {
@@ -118,7 +143,8 @@
 
   .head,
   .kv,
-  .notes {
+  .sec,
+  .line-item {
     padding-left: 0;
     padding-right: 0;
   }
@@ -128,6 +154,15 @@
     width: 320px;
     min-height: 260px;
     border-radius: 16px;
-    align-items: center;
+  }
+
+  .actions {
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 16px 0 24px;
+    border-top: 0;
+    background: transparent;
+
+    .btn { flex: none; min-width: 160px; }
   }
 }

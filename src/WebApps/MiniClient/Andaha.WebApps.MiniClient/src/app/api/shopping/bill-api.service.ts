@@ -123,12 +123,11 @@ export class BillApiService {
     return this.httpClient.get(url, { responseType: 'blob' as 'blob' });
   }
 
-  getAnalyzedBills(parameters?: SearchBillsParameters): Observable<BillAnalyzedDto[]> {
+  /** Alle offenen Analysen; der Endpoint kennt keine Seitenparameter (AC36) */
+  getAnalyzedBills(): Observable<BillAnalyzedDto[]> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'analyzed');
 
-    const httpParameters = parameters ? createHttpParameters(getSearchBillsHttpParams(parameters)) : undefined;
-
-    return this.httpClient.get<BillAnalyzedDtoRaw[]>(url, { params: httpParameters })
+    return this.httpClient.get<BillAnalyzedDtoRaw[]>(url)
       .pipe(map(raw => raw.map(mapBillAnalyzedDtoRaw)));
   }
 

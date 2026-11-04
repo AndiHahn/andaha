@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy, inject } from '@angular/core';
+import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { BillImageDialogService } from '../bill-image-dialog/bill-image-dialog.service';
 import { BillImageDialogData } from '../bill-image-dialog/BillImageDialogData';
@@ -14,6 +15,7 @@ import { PhotoPickerComponent } from '../photo-picker/photo-picker.component';
 })
 export class BillImageComponent {
   private imageDialogService = inject(BillImageDialogService);
+  private billApi = inject(BillApiService);
 
   @Input()
   bill?: BillDto;
@@ -37,8 +39,10 @@ export class BillImageComponent {
       throw new Error("Bill is required to show bill image.");
     }
 
+    const billId = this.bill.id;
     const data: BillImageDialogData = {
-      bill: this.bill
+      image: this.billApi.downloadImage(billId),
+      delete: () => this.billApi.deleteImage(billId)
     };
 
     this.imageDialogService.openDialog(data).then(dialogRef => dialogRef.afterClosed().subscribe(

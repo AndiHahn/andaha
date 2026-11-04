@@ -4,23 +4,21 @@ import { afterFirstLoad } from 'src/app/shared/utils/load-state';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillAnalyzedDto } from 'src/app/api/shopping/dtos/BillAnalyzedDto';
 import { ContextService } from 'src/app/core/context.service';
-import { SearchBillsParameters } from 'src/app/api/shopping/dtos/SearchBillsParameters';
 
+/**
+ * Offene Analysen (Analyse-Tab und Badge). Kein Paginator und keine Suche (AC36, design.md §5.2):
+ * übernommene und verworfene Einträge verschwinden, die Liste enthält nur offene Analysen.
+ */
 @Injectable({ providedIn: 'root' })
 export class AnalyzedBillContextService {
   private billApi = inject(BillApiService);
   private contextService = inject(ContextService);
 
   private bills$: BehaviorSubject<BillAnalyzedDto[]> = new BehaviorSubject<BillAnalyzedDto[]>([]);
-  private totalResults$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-  private pageIndex$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-  private pageSize$: BehaviorSubject<number> = new BehaviorSubject<number>(50);
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   private loadState$ = new ReplaySubject<'loaded' | 'failed'>(1);
   private backendIsReady: boolean = false;
-
-  private searchText: string = '';
 
   constructor() {
     this.initSubscriptions();
@@ -28,15 +26,14 @@ export class AnalyzedBillContextService {
   }
 
   bills(): Observable<BillAnalyzedDto[]> { return this.bills$.asObservable(); }
-  totalResults(): Observable<number> { return this.totalResults$.asObservable(); }
-  pageSize(): Observable<number> { return this.pageSize$.asObservable(); }
   loading(): Observable<boolean> { return this.loading$.asObservable(); }
 
-  setPageSize(size: number) { if (size != this.pageSize$.value) { this.pageSize$.next(size); } }
-  setPageIndex(index: number) { if (index != this.pageIndex$.value) { this.pageIndex$.next(index); } }
-  setSearchText(text: string) { this.searchText = text; }
-
   refresh() { this.fetchAnalyzedBills(); }
+
+  /** Eintrag sofort entfernen (nach Verwerfen); der Badge zählt mit */
+  remove(id: string): void {
+    this.bills$.next(this.bills$.value.filter(b => b.id !== id));
+  }
 
   private initSubscriptions(): void {
     this.contextService
@@ -52,24 +49,15 @@ export class AnalyzedBillContextService {
             }
           }
         });
-
-    this.pageIndex$.asObservable().subscribe(_ => this.fetchAnalyzedBills());
-    this.pageSize$.asObservable().subscribe(_ => this.fetchAnalyzedBills());
   }
 
   private fetchAnalyzedBills() {
     this.loading$.next(true);
-    const params: SearchBillsParameters = {
-      pageIndex: this.pageIndex$.value,
-      pageSize: this.pageSize$.value,
-      search: this.searchText
-    };
 
-    this.billApi.getAnalyzedBills(params).subscribe({
+    this.billApi.getAnalyzedBills().subscribe({
       next: result => {
         this.loading$.next(false);
         this.bills$.next(result);
-        this.totalResults$.next(result.length);
         this.loadState$.next('loaded');
       },
       error: _ => {
@@ -79,14 +67,6 @@ export class AnalyzedBillContextService {
         }
       }
     });
-  }
-
-  fetchNextBills(): void {
-    if ((this.pageIndex$.value + 1) * this.pageSize$.value >= this.totalResults$.value) {
-      return;
-    }
-
-    this.setPageIndex(this.pageIndex$.value + 1);
   }
 
   getBillById(id: string): BillAnalyzedDto | undefined {

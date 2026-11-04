@@ -1,9 +1,8 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
-import { PageEvent, MatPaginator } from '@angular/material/paginator';
+import { takeUntil } from 'rxjs/operators';
 import { AnalyzedBillContextService } from '../../services/analyzed-bill-context.service';
-import { CdkScrollable, ScrollDispatcher, CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf } from '@angular/cdk/scrolling';
+import { CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf } from '@angular/cdk/scrolling';
 import { AnalyzedBillDataSource } from './AnalyzedBillDataSource';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
@@ -11,15 +10,15 @@ import { MatProgressBar } from '@angular/material/progress-bar';
 import { RouterLink } from '@angular/router';
 import { AnalyzedBillListItemComponent } from './analyzed-bill-list-item/analyzed-bill-list-item.component';
 
+/** Analyse-Tab: alle offenen Analysen, ohne Paginator (AC36, design.md §5.2); Virtual Scroll bleibt */
 @Component({
     selector: 'app-analyzed-bill-list',
     templateUrl: './analyzed-bill-list.component.html',
     styleUrls: ['./analyzed-bill-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [MatProgressBar, CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf, RouterLink, AnalyzedBillListItemComponent, MatPaginator]
+    imports: [MatProgressBar, CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf, RouterLink, AnalyzedBillListItemComponent]
 })
-export class AnalyzedBillListComponent implements OnInit, AfterViewInit, OnDestroy {
-  private scrollDispatcher = inject(ScrollDispatcher);
+export class AnalyzedBillListComponent implements OnInit, OnDestroy {
   private analyzedBillContextService = inject(AnalyzedBillContextService);
   private categoryContext = inject(BillCategoryContextService);
 
@@ -29,12 +28,6 @@ export class AnalyzedBillListComponent implements OnInit, AfterViewInit, OnDestr
 
   totalCount?: number;
   loading: boolean = false;
-
-  pageSize?: number;
-  totalResults?: number;
-
-  showFilterBar: boolean = true;
-  timeoutHandler?: any;
 
   private destroy$: Subject<void> = new Subject();
 
@@ -46,49 +39,6 @@ export class AnalyzedBillListComponent implements OnInit, AfterViewInit, OnDestr
     this.destroy$.next();
   }
 
-  ngAfterViewInit(): void {
-      this.scrollDispatcher
-        .scrolled()
-        .pipe(takeUntil(this.destroy$))
-        .pipe(filter(data => data instanceof CdkScrollable))
-        .subscribe(data => {
-          this.onScroll(data);
-        });
-    }
-
-  onPageChange(event: PageEvent): void {
-    this.analyzedBillContextService.setPageIndex(event.pageIndex);
-    this.analyzedBillContextService.setPageSize(event.pageSize);
-  }
-
-  onSearchInput(searchText: string): void {
-    this.analyzedBillContextService.setSearchText(searchText);
-    this.analyzedBillContextService.setPageIndex(0);
-  }
-
-  private previousTop: number = 0;
-
-  private onScroll(data: any) {
-    if (data instanceof CdkScrollable) {
-      const topOffset = data.measureScrollOffset('top');
-      const bottomOffset = data.measureScrollOffset('bottom');
-
-      // hide filterbar on scroll down and show it on scroll up
-      if (topOffset < this.previousTop || topOffset <= 0) {
-        this.showFilterBar = true;
-      } else {
-        this.showFilterBar = false;
-      }
-
-      const thresholdReached = bottomOffset < (topOffset + bottomOffset) / 2;
-      if (thresholdReached && !this.loading) {
-        this.analyzedBillContextService.fetchNextBills();
-      }
-
-      this.previousTop = topOffset;
-    }
-  }
-
   private initSubscriptions(): void {
     this.categoryContext.categories().pipe(takeUntil(this.destroy$)).subscribe(categories => this.categories = categories);
 
@@ -97,25 +47,13 @@ export class AnalyzedBillListComponent implements OnInit, AfterViewInit, OnDestr
         next: result => {
           this.billDataSource.update(result);
           this.totalCount = result.length;
-        } 
-      }
-    );
-
-    this.analyzedBillContextService.totalResults().pipe(takeUntil(this.destroy$)).subscribe(
-      {
-        next: totalResults => this.totalResults = totalResults
-      }
-    );
-
-    this.analyzedBillContextService.pageSize().pipe(takeUntil(this.destroy$)).subscribe(
-      {
-        next: pageSize => this.pageSize = pageSize
+        }
       }
     );
 
     this.analyzedBillContextService.loading().pipe(takeUntil(this.destroy$)).subscribe(
       {
-        next: loading => this.loading = loading 
+        next: loading => this.loading = loading
       }
     );
   }

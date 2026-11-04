@@ -14,16 +14,18 @@
     }
   </mat-dialog-content>
 
-  <div class="progress-slot">
-    @if (isDeleting) {
-      <mat-progress-bar mode="indeterminate" color="accent" />
-    }
-  </div>
+  @if (canDelete) {
+    <div class="progress-slot">
+      @if (isDeleting) {
+        <mat-progress-bar mode="indeterminate" color="accent" />
+      }
+    </div>
 
-  <div class="actions">
-    <button type="button" class="btn del" [disabled]="isDeleting || isLoading || !imageSrc"
-      (click)="onDeleteImageClick()">
-      <mat-icon>delete</mat-icon><span>Löschen</span>
-    </button>
-  </div>
+    <div class="actions">
+      <button type="button" class="btn del" [disabled]="isDeleting || isLoading || !imageSrc"
+        (click)="onDeleteImageClick()">
+        <mat-icon>delete</mat-icon><span>Löschen</span>
+      </button>
+    </div>
+  }
 </app-dialog>
