@@ -328,7 +328,7 @@ describe('AuthService', () => {
                 return {} as any;
             });
             oauth.getRefreshToken.mockReturnValue('rt');
-            await expect(service.init()).resolves.not.toThrow();
+            await expect(service.init()).resolves.toBeUndefined();
             expect(oauth.initLoginFlow).not.toHaveBeenCalled();
             fail = false;
             fireVisible();
