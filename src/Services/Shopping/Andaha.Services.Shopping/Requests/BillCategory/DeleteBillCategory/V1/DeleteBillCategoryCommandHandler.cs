@@ -23,7 +23,13 @@ internal class DeleteBillCategoryCommandHandler : IRequestHandler<DeleteBillCate
         Guid userId = identityService.GetUserId();
 
         var category = await dbContext.BillCategory
-            .SingleAsync(category => category.Id == request.Id, cancellationToken);
+            .Where(category => category.UserId == userId)
+            .FirstOrDefaultAsync(category => category.Id == request.Id, cancellationToken);
+
+        if (category is null)
+        {
+            return Results.NotFound();
+        }
 
         await RemoveTemplatesAndHiddenSuggestionsAsync(request.Id, cancellationToken);
 
