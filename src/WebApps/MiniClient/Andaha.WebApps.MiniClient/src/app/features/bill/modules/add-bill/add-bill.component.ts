@@ -256,6 +256,9 @@ export class AddBillComponent implements OnInit {
 
     try {
       await firstValueFrom(this.billApi.deleteAnalyzedBill(analyzedBillId), { defaultValue: undefined });
+      // sofort aus der Liste (wie „Verwerfen“): die Detailseite ist danach „nicht gefunden“, auch wenn
+      // man vor dem Neuladen der Liste dorthin zurückkommt; kein zweites Übernehmen (Re-Review N1)
+      this.analyzedBillContext.remove(analyzedBillId);
       return 'saved';
     } catch (error) {
       console.error('Deleting analyzed bill failed', error);

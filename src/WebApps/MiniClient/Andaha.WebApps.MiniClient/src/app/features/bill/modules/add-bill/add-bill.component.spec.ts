@@ -58,6 +58,7 @@ describe('AddBillComponent', () => {
   let apiAddBill: ReturnType<typeof vi.fn>;
   let deleteAnalyzedBill: ReturnType<typeof vi.fn>;
   let refreshAnalyzed: ReturnType<typeof vi.fn>;
+  let removeAnalyzed: ReturnType<typeof vi.fn>;
   let recordLocal: ReturnType<typeof vi.fn>;
   let clearDraft: ReturnType<typeof vi.fn>;
   let leaveTo: ReturnType<typeof vi.fn>;
@@ -73,6 +74,7 @@ describe('AddBillComponent', () => {
     apiAddBill = vi.fn(options.apiAddBill ?? (() => of({})));
     deleteAnalyzedBill = vi.fn(options.deleteAnalyzedBill ?? (() => of(undefined)));
     refreshAnalyzed = vi.fn();
+    removeAnalyzed = vi.fn();
     recordLocal = vi.fn();
     clearDraft = vi.fn();
     leaveTo = vi.fn();
@@ -93,7 +95,7 @@ describe('AddBillComponent', () => {
           }
         },
         { provide: BillApiService, useValue: { addBill: apiAddBill, deleteAnalyzedBill } },
-        { provide: AnalyzedBillContextService, useValue: { refresh: refreshAnalyzed } },
+        { provide: AnalyzedBillContextService, useValue: { refresh: refreshAnalyzed, remove: removeAnalyzed } },
         { provide: QuickEntryDraftService, useValue: { clear: clearDraft } },
         { provide: OverlayBackService, useValue: { register } },
         { provide: HistoryTrailService, useValue: { leaveTo } }
@@ -348,6 +350,9 @@ describe('AddBillComponent', () => {
       expect(deleteAnalyzedBill).toHaveBeenCalledWith('a1');
       expect(apiAddBill.mock.invocationCallOrder[0]).toBeLessThan(deleteAnalyzedBill.mock.invocationCallOrder[0]);
       expect(refreshAnalyzed).toHaveBeenCalled();
+      // Re-Review N1: sofort aus dem Kontext, bevor die Seite verlassen wird
+      expect(removeAnalyzed).toHaveBeenCalledWith('a1');
+      expect(removeAnalyzed.mock.invocationCallOrder[0]).toBeLessThan(leaveTo.mock.invocationCallOrder[0]);
       expect(showAddedBill).toHaveBeenCalled();
       expect(openSnackbar).toHaveBeenCalledWith(SuccessSnackbarComponent, expect.objectContaining({ data: 'Gespeichert · Billa 9,90 €' }));
       // I1/I2: zurück zur Analyse-Liste, über den gelöschten Analyse-Eintrag hinweg
@@ -410,6 +415,7 @@ describe('AddBillComponent', () => {
       await save();
 
       expect(leaveTo).toHaveBeenCalledWith('/bill/analysis', 2);
+      expect(removeAnalyzed).not.toHaveBeenCalled();
       expect(refreshAnalyzed).toHaveBeenCalled();
       expect(openSnackbar).toHaveBeenCalledWith(ErrorSnackbarComponent,
         expect.objectContaining({ data: 'Rechnung gespeichert, die Analyse konnte aber nicht entfernt werden.' }));

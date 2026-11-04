@@ -133,21 +133,35 @@ export class OverlayBackService {
   }
 
   /**
-   * Wie die Zurück-Taste, `steps` Einträge weit (Seite nach Speichern oder Löschen verlassen, I1/I2).
-   * Ein freigegebener Overlay-Eintrag, auf dem der Browser noch steht, zählt mit. Landet der Schritt
-   * auf einem liegen gebliebenen Overlay-Eintrag, geht es wie bei der Zurück-Taste gleich weiter.
+   * Wie die Zurück-Taste, `steps` Router-Einträge weit (Seite nach Speichern oder Löschen verlassen,
+   * I1/I2). Steht der Browser noch auf Overlay-Einträgen der Seite (z. B. offenes Autocomplete beim
+   * Speichern per Enter, Re-Review N1), zählen alle mit, offene wie freigegebene: ein einziger Schritt,
+   * beim popstate schließt `onPopState` die offenen (sie sind dann schon vom Stapel, ihre Freigabe
+   * traversiert nicht noch einmal). Landet der Schritt auf einem liegen gebliebenen Overlay-Eintrag,
+   * geht es wie bei der Zurück-Taste gleich weiter.
    */
   back(steps: number): void {
     this.afterPendingSteps(() => {
-      const top = this.stack.at(-1);
-      const releasedOnTop = !!top?.released && numberOf(this.window.history.state, 'overlayBack') === top.id;
-      const delta = steps + (releasedOnTop ? this.popReleasedRun() : 0);
+      const delta = steps + this.overlayEntriesOfCurrentPage();
       if (delta === 1) {
         this.window.history.back();
       } else {
         this.window.history.go(-delta);
       }
     });
+  }
+
+  /**
+   * Overlay-Einträge zwischen dem Router-Eintrag der Seite und der Stelle, an der der Browser steht
+   * (offen oder freigegeben, aber noch in der History). 0, wenn er auf dem Router-Eintrag steht.
+   */
+  private overlayEntriesOfCurrentPage(): number {
+    const marker = numberOf(this.window.history.state, 'overlayBack');
+    const current = this.stack.find(entry => entry.id === marker);
+    if (!current) {
+      return 0;
+    }
+    return this.stack.filter(entry => entry.base === current.base && entry.id <= current.id).length;
   }
 
   private push(entry: OverlayEntry): void {
