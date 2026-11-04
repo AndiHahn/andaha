@@ -1,9 +1,12 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { NgStyle } from '@angular/common';
 
 @Component({
-  selector: 'app-color-item',
-  templateUrl: './color-item.component.html',
-  styleUrls: ['./color-item.component.scss']
+    selector: 'app-color-item',
+    templateUrl: './color-item.component.html',
+    styleUrls: ['./color-item.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [NgStyle]
 })
 export class ColorItemComponent implements OnInit {
 

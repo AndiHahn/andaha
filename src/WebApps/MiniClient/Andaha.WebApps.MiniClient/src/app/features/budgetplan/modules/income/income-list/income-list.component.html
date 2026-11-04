@@ -1,13 +1,17 @@
 <p class="sec">Einkommen</p>
 
-<div class="empty" *ngIf="incomes.length == 0">
-  Keine Ausgaben.
-</div>
+@if (incomes.length == 0) {
+  <div class="empty">
+    Keine Ausgaben.
+  </div>
+}
 
-<a class="row" *ngFor="let income of incomes" routerLink="{{income.id}}">
-  <span class="t">{{ income.name }}</span>
-  <span class="rc">
-    <span class="amt">{{ income.value | number:'1.2-2':'de' }} €</span>
-    <span class="per">{{ durationLabel.get(income.duration) }}</span>
-  </span>
-</a>
+@for (income of incomes; track income.id) {
+  <a class="row" routerLink="{{income.id}}">
+    <span class="t">{{ income.name }}</span>
+    <span class="rc">
+      <span class="amt">{{ income.value | number:'1.2-2':'de' }} €</span>
+      <span class="per">{{ durationLabel.get(income.duration) }}</span>
+    </span>
+  </a>
+}

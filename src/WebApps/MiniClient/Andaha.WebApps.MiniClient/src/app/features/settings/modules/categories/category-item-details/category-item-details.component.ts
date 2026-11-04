@@ -1,7 +1,7 @@
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, CdkDropList, CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormGroup } from '@angular/forms';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { FormArray, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -16,13 +16,29 @@ import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
 import { getAllColors } from '../functions/category-functions';
 import { CategoryForm, createSubCategoryForm, createCategoryForm, SubCategoryForm } from '../functions/form-functions';
+import { MatSelect, MatSelectTrigger, MatOption } from '@angular/material/select';
+import { ColorItemComponent } from '../color-item/color-item.component';
+import { MatIcon } from '@angular/material/icon';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe';
 
 @Component({
-  selector: 'app-category-item-details',
-  templateUrl: './category-item-details.component.html',
-  styleUrls: ['./category-item-details.component.scss']
+    selector: 'app-category-item-details',
+    templateUrl: './category-item-details.component.html',
+    styleUrls: ['./category-item-details.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, ColorItemComponent, MatOption, MatIcon, MatCheckbox, CdkDropList, CdkDrag, CdkDragHandle, MatProgressBar, MatProgressSpinner, ShowErrorPipe]
 })
 export class CategoryItemDetailsComponent implements OnInit, OnDestroy {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private snackbar = inject(MatSnackBar);
+  private confirmationDialog = inject(ConfirmationDialogService);
+  private categoryContextService = inject(BillCategoryContextService);
+  private pageTitleService = inject(PageTitleService);
+
 
   form!: FormGroup<CategoryForm>;
   
@@ -43,14 +59,7 @@ export class CategoryItemDetailsComponent implements OnInit, OnDestroy {
     return this.form.controls.subCategories;
   }
   
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private snackbar: MatSnackBar,
-    private confirmationDialog: ConfirmationDialogService,
-    private categoryContextService: BillCategoryContextService,
-    private pageTitleService: PageTitleService
-  ) {
+  constructor() {
     this.colors = getAllColors();
   }
 

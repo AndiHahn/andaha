@@ -1,17 +1,25 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ChangeDetectionStrategy, inject } from '@angular/core';
 import { TimeRange } from '../../../../../shared/models/TimeRange';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DATE_TYPE_SEGMENT_LABELS, DateType, DateTypeLabelMapping } from './DateType';
-import * as moment from 'moment';
+import moment from 'moment';
 import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-providers';
+import { MatSelect, MatOption } from '@angular/material/select';
+import { MatIcon } from '@angular/material/icon';
+import { MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker } from '@angular/material/datepicker';
+import { DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-timerange-selection',
-  templateUrl: './timerange-selection.component.html',
-  styleUrls: ['./timerange-selection.component.scss'],
-  providers: GERMAN_DATE_PROVIDERS
+    selector: 'app-timerange-selection',
+    templateUrl: './timerange-selection.component.html',
+    styleUrls: ['./timerange-selection.component.scss'],
+    providers: GERMAN_DATE_PROVIDERS,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormsModule, ReactiveFormsModule, MatSelect, MatOption, MatIcon, MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker, DatePipe]
 })
 export class TimerangeSelectionComponent implements OnInit, OnChanges {
+  private fb = inject(UntypedFormBuilder);
+
 
   @Input()
   availableTimeRange!: TimeRange;
@@ -36,8 +44,7 @@ export class TimerangeSelectionComponent implements OnInit, OnChanges {
   customFromDate?: Date;
   customToDate?: Date;
 
-  constructor(
-    private fb: UntypedFormBuilder) {
+  constructor() {
     this.selectedDateType = DateType.Month;
 
     this.form = this.fb.group({

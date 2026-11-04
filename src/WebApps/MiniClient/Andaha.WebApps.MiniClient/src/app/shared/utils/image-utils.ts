@@ -12,6 +12,11 @@ export async function compressImage(file: Blob, maxEdge: number = 2000, quality:
     const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' } as unknown as ImageBitmapOptions);
 
     try {
+      // Bereits JPEG und klein genug: unverändert zurückgeben (kein zweites verlustbehaftetes Re-Encode)
+      if (file.type === 'image/jpeg' && Math.max(bitmap.width, bitmap.height) <= maxEdge) {
+        return toFile(file);
+      }
+
       const scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height));
       const width = Math.max(1, Math.round(bitmap.width * scale));
       const height = Math.max(1, Math.round(bitmap.height * scale));

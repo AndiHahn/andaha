@@ -1,28 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { PersonForm, getEmptyPersonForm } from '../../../functions/person-form-functions';
-import { FormGroup, FormGroupDirective } from '@angular/forms';
+import { FormGroup, FormGroupDirective, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PersonContextService } from '../../../services/person-context.service';
 import { CreatePersonDto } from 'src/app/api/work/dtos/CreatePersonDto';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { Router } from '@angular/router';
+import { MatIcon } from '@angular/material/icon';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe';
 
 @Component({
-  selector: 'app-add-person',
-  templateUrl: './add-person.component.html',
-  styleUrls: ['./add-person.component.scss']
+    selector: 'app-add-person',
+    templateUrl: './add-person.component.html',
+    styleUrls: ['./add-person.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormsModule, ReactiveFormsModule, MatIcon, MatProgressSpinner, ShowErrorPipe]
 })
 export class AddPersonComponent implements OnInit {
+  private snackbar = inject(MatSnackBar);
+  private router = inject(Router);
+  private personContextService = inject(PersonContextService);
+
   
   form: FormGroup<PersonForm>;
 
   isSaving: boolean = false;
   
-  constructor(
-    private snackbar: MatSnackBar,
-    private router: Router,
-    private personContextService: PersonContextService
-  ) {
+  constructor() {
     this.form = getEmptyPersonForm();
   }
 

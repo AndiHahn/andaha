@@ -3,9 +3,9 @@
     <div class="field" [class.invalid]="form.controls.selectedPersons | showError">
       <span class="field-label">Personen</span>
       <span class="field-box">
-        <mat-select multiple [formControl]="form.controls.selectedPersons" aria-label="Personen"
-            [attr.aria-describedby]="form.controls.selectedPersons.value.length > 1 ? 'add-working-entry-persons-hint' : null"
-            (openedChange)="onOpenChange(multiUserSearch)">
+        <mat-select multiple panelClass="andaha-select-multi" [formControl]="form.controls.selectedPersons" aria-label="Personen"
+          [attr.aria-describedby]="form.controls.selectedPersons.value.length > 1 ? 'add-working-entry-persons-hint' : null"
+          (openedChange)="onOpenChange(multiUserSearch)">
           <mat-select-trigger>
             {{ getPersonDisplayText() }}
           </mat-select-trigger>
@@ -17,39 +17,35 @@
             matInput
             placeholder="Suche nach Personen..."
             (input)="onInputChange($event)"/>
-          <mat-option *ngFor="let person of filteredPersons" [value]="person">{{ person.name }}</mat-option>
+          @for (person of filteredPersons; track person.id) {
+            <mat-option [value]="person">{{ person.name }}</mat-option>
+          }
         </mat-select>
         <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
       </span>
-      <span class="field-hint" id="add-working-entry-persons-hint" *ngIf="form.controls.selectedPersons.value.length > 1">
-        {{ form.controls.selectedPersons.value.length }} Personen ausgewählt
-      </span>
+      @if (form.controls.selectedPersons.value.length > 1) {
+        <span class="field-hint" id="add-working-entry-persons-hint">
+          {{ form.controls.selectedPersons.value.length }} Personen ausgewählt
+        </span>
+      }
     </div>
 
-    <app-date-picker-form-field
-      [control]="form.controls.date"
-      label="Datum">
-    </app-date-picker-form-field>
+    <app-date-picker-form-field [control]="form.controls.date"
+      label="Datum" />
 
     <!-- Start/Ende/Pause als 3er-Reihe (Mockup 05, Arbeitszeiten hinzufuegen) -->
     <div class="times">
-      <app-time-picker-form-field
-        label="Startzeit"
+      <app-time-picker-form-field label="Startzeit"
         [defaultTime]="getNgxTime(form.controls.fromTime)"
-        (timeChanged)="setFormTime(form.controls.fromTime, $event)">
-      </app-time-picker-form-field>
+        (timeChanged)="setFormTime(form.controls.fromTime, $event)" />
 
-      <app-time-picker-form-field
-        label="Endzeit"
+      <app-time-picker-form-field label="Endzeit"
         [defaultTime]="getNgxTime(form.controls.untilTime)"
-        (timeChanged)="setFormTime(form.controls.untilTime, $event)">
-      </app-time-picker-form-field>
+        (timeChanged)="setFormTime(form.controls.untilTime, $event)" />
 
-      <app-time-picker-form-field
-        label="Pause"
+      <app-time-picker-form-field label="Pause"
         [defaultTime]="getNgxTime(form.controls.break)"
-        (timeChanged)="setFormTime(form.controls.break, $event)">
-      </app-time-picker-form-field>
+        (timeChanged)="setFormTime(form.controls.break, $event)" />
     </div>
 
     <div class="net">
@@ -67,8 +63,12 @@
 
   <div class="actions">
     <button type="submit" class="btn pri" [disabled]="!form.valid || isSaving">
-      <ng-container *ngIf="!isSaving"><mat-icon>check</mat-icon><span>Speichern</span></ng-container>
-      <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
+      @if (!isSaving) {
+        <mat-icon>check</mat-icon><span>Speichern</span>
+      }
+      @if (isSaving) {
+        <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
+      }
     </button>
   </div>
 </form>

@@ -1,68 +1,85 @@
 <!-- Verlauf: Icon-Button in der Kopfzeile (PageTitleService.setAction, siehe ngOnInit) -->
 <div class="page">
   <div class="progress-slot">
-    <mat-progress-bar *ngIf="!fixedCost" mode="indeterminate" color="accent"></mat-progress-bar>
+    @if (!fixedCost) {
+      <mat-progress-bar mode="indeterminate" color="accent" />
+    }
   </div>
 
-  <form *ngIf="fixedCost" class="form-body" [formGroup]="form">
-    <label class="field" [class.invalid]="form.controls.name | showError">
-      <span class="field-label">Name</span>
-      <span class="field-box">
-        <input formControlName="name" required [attr.aria-invalid]="form.controls.name | showError">
-      </span>
-    </label>
+  @if (fixedCost) {
+    <form class="form-body" [formGroup]="form">
+      <label class="field" [class.invalid]="form.controls.name | showError">
+        <span class="field-label">Name</span>
+        <span class="field-box">
+          <input formControlName="name" required [attr.aria-invalid]="form.controls.name | showError">
+        </span>
+      </label>
+      <div class="field" [class.invalid]="form.controls.category | showError">
+        <span class="field-label">Kategorie</span>
+        <span class="field-box">
+          <mat-select formControlName="category" required aria-label="Kategorie">
+            @for (category of costCategoryOptions; track category) {
+              <mat-option [value]="category">
+                {{ costCategoryLabel.get(category) }}
+              </mat-option>
+            }
+          </mat-select>
+          <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
+        </span>
+      </div>
+      <div class="field" [class.invalid]="form.controls.duration | showError">
+        <span class="field-label">Intervall</span>
+        <span class="field-box">
+          <mat-select formControlName="duration" required aria-label="Intervall">
+            @for (duration of durationOptions; track duration) {
+              <mat-option [value]="duration">
+                {{ durationLabel.get(duration) }}
+              </mat-option>
+            }
+          </mat-select>
+          <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
+        </span>
+      </div>
+      <label class="field" [class.invalid]="form.controls.value | showError">
+        <span class="field-label">Kosten</span>
+        <span class="field-box">
+          <input class="value" formControlName="value" type="number" required [attr.aria-invalid]="form.controls.value | showError">
+          <span class="suffix" aria-hidden="true">€</span>
+        </span>
+      </label>
+    </form>
+  }
 
-    <div class="field" [class.invalid]="form.controls.category | showError">
-      <span class="field-label">Kategorie</span>
-      <span class="field-box">
-        <mat-select formControlName="category" required aria-label="Kategorie">
-          <mat-option *ngFor="let category of costCategoryOptions" [value]="category">
-            {{ costCategoryLabel.get(category) }}
-          </mat-option>
-        </mat-select>
-        <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
-      </span>
-    </div>
-
-    <div class="field" [class.invalid]="form.controls.duration | showError">
-      <span class="field-label">Intervall</span>
-      <span class="field-box">
-        <mat-select formControlName="duration" required aria-label="Intervall">
-          <mat-option *ngFor="let duration of durationOptions" [value]="duration">
-            {{ durationLabel.get(duration) }}
-          </mat-option>
-        </mat-select>
-        <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
-      </span>
-    </div>
-
-    <label class="field" [class.invalid]="form.controls.value | showError">
-      <span class="field-label">Kosten</span>
-      <span class="field-box">
-        <input class="value" formControlName="value" type="number" required [attr.aria-invalid]="form.controls.value | showError">
-        <span class="suffix" aria-hidden="true">€</span>
-      </span>
-    </label>
-  </form>
-
-  <div class="actions" *ngIf="fixedCost && !isEditing">
-    <button type="button" class="btn pri" (click)="onEditClick()" [disabled]="isDeleting || isLoading || isSaving">
-      <ng-container *ngIf="!isSaving"><mat-icon>edit</mat-icon><span>Bearbeiten</span></ng-container>
-      <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
-    </button>
-    <button type="button" class="btn del" (click)="onDeleteClick()"
+  @if (fixedCost && !isEditing) {
+    <div class="actions">
+      <button type="button" class="btn pri" (click)="onEditClick()" [disabled]="isDeleting || isLoading || isSaving">
+        @if (!isSaving) {
+          <mat-icon>edit</mat-icon><span>Bearbeiten</span>
+        }
+        @if (isSaving) {
+          <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
+        }
+      </button>
+      <button type="button" class="btn del" (click)="onDeleteClick()"
         [disabled]="isEditing || isDeleting || isLoading || isSaving">
-      <mat-icon>delete</mat-icon><span>Löschen</span>
-    </button>
-  </div>
+        <mat-icon>delete</mat-icon><span>Löschen</span>
+      </button>
+    </div>
+  }
 
-  <div class="actions" *ngIf="fixedCost && isEditing">
-    <button type="button" class="btn sec2" (click)="onCancelClick()">
-      <mat-icon>close</mat-icon><span>Abbrechen</span>
-    </button>
-    <button type="button" class="btn pri" (click)="onSaveClick()" [disabled]="isSaving">
-      <ng-container *ngIf="!isSaving"><mat-icon>check</mat-icon><span>Speichern</span></ng-container>
-      <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
-    </button>
-  </div>
+  @if (fixedCost && isEditing) {
+    <div class="actions">
+      <button type="button" class="btn sec2" (click)="onCancelClick()">
+        <mat-icon>close</mat-icon><span>Abbrechen</span>
+      </button>
+      <button type="button" class="btn pri" (click)="onSaveClick()" [disabled]="isSaving">
+        @if (!isSaving) {
+          <mat-icon>check</mat-icon><span>Speichern</span>
+        }
+        @if (isSaving) {
+          <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
+        }
+      </button>
+    </div>
+  }
 </div>

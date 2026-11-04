@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -16,13 +16,28 @@ import { FixedCostContextService } from '../../../services/fixed-cost-context.se
 import { FixedCostHistoryDialogService } from '../fixed-cost-history-dialog/fixed-cost-history-dialog.service';
 import { FixedCostHistoryDialogData } from '../fixed-cost-history-dialog/FixedCostHistoryDialogData';
 import { FixedCostForm } from '../functions/fixed-cost-form-functions';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatSelect, MatOption } from '@angular/material/select';
+import { MatIcon } from '@angular/material/icon';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe';
 
 @Component({
-  selector: 'app-fixed-cost-details',
-  templateUrl: './fixed-cost-details.component.html',
-  styleUrls: ['./fixed-cost-details.component.scss']
+    selector: 'app-fixed-cost-details',
+    templateUrl: './fixed-cost-details.component.html',
+    styleUrls: ['./fixed-cost-details.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatProgressBar, FormsModule, ReactiveFormsModule, MatSelect, MatOption, MatIcon, MatProgressSpinner, ShowErrorPipe]
 })
 export class FixedCostDetailsComponent implements OnInit, OnDestroy {
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private snackbar = inject(MatSnackBar);
+  private confirmationDialog = inject(ConfirmationDialogService);
+  private fixedCostContextService = inject(FixedCostContextService);
+  private fixedCostHistoryDialogService = inject(FixedCostHistoryDialogService);
+  private pageTitleService = inject(PageTitleService);
+
 
   form!: FormGroup<FixedCostForm>;
 
@@ -40,17 +55,6 @@ export class FixedCostDetailsComponent implements OnInit, OnDestroy {
 
   durationOptions = Object.values(Duration);
   durationLabel = DurationLabel;
-  
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private snackbar: MatSnackBar,
-    private confirmationDialog: ConfirmationDialogService,
-    private fixedCostContextService: FixedCostContextService,
-    private fixedCostHistoryDialogService: FixedCostHistoryDialogService,
-    private pageTitleService: PageTitleService
-  ) {
-  }
 
   ngOnInit(): void {
     const fixedCostId = getParametersFromRouteRecursive(this.route.snapshot)["id"];

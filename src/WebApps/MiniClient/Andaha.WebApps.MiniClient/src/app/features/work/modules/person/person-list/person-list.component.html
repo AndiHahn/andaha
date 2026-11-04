@@ -1,5 +1,9 @@
-<a class="row" *ngFor="let person of persons" routerLink="{{person.id}}">
-  <span class="t">{{ person.name }}</span>
-  <span class="tag" *ngIf="isPaymentRequired(person)"><mat-icon aria-hidden="true">schedule</mat-icon>Zahlung offen</span>
-  <span class="amt">{{ getTimeDisplayName(person.totalHours) }}</span>
-</a>
+@for (person of persons; track person.id) {
+  <a class="row" routerLink="{{person.id}}">
+    <span class="t">{{ person.name }}</span>
+    @if (isPaymentRequired(person)) {
+      <span class="tag"><mat-icon aria-hidden="true">schedule</mat-icon>Zahlung offen</span>
+    }
+    <span class="amt">{{ getTimeDisplayName(person.totalHours) }}</span>
+  </a>
+}

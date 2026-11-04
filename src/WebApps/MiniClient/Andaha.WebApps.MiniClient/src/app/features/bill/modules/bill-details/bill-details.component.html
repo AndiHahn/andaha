@@ -1,138 +1,159 @@
 <div class="page">
-  <div class="body" *ngIf="bill">
-    <!--
+  @if (bill) {
+    <div class="body">
+      <!--
       LESEMODUS: KOPF
-    -->
-    <div class="head" *ngIf="!isEditing">
-      <div class="shop">{{ bill.shopName }}</div>
-      <div class="big">{{ bill.price | number:'1.2-2':'de' }}<small>€</small></div>
-      <div class="when">{{ bill.date | date:'dd.MM.yyyy' }}</div>
-    </div>
-
-    <div class="photo-wrap">
-      <app-bill-image [bill]="bill" [editing]="isEditing" [saving]="isSaving"
-          (imageSelected)="onImageSelected($event)">
-      </app-bill-image>
-    </div>
-
-    <!--
+      -->
+      @if (!isEditing) {
+        <div class="head">
+          <div class="shop">{{ bill.shopName }}</div>
+          <div class="big">{{ bill.price | number:'1.2-2':'de' }}<small>€</small></div>
+          <div class="when">{{ bill.date | date:'dd.MM.yyyy' }}</div>
+        </div>
+      }
+      <div class="photo-wrap">
+        <app-bill-image [bill]="bill" [editing]="isEditing" [saving]="isSaving"
+          (imageSelected)="onImageSelected($event)" />
+      </div>
+      <!--
       LESEMODUS: WERTEZEILEN
-    -->
-    <ng-container *ngIf="!isEditing">
-      <div class="kv">
-        <span class="k">Kategorie</span>
-        <span class="v cat">
-          <span class="dot" [class.dot-light]="bill.category.color == 'white'" [style.background]="bill.category.color"></span>
-          {{ bill.category.name }}
-        </span>
-      </div>
-      <div class="kv" *ngIf="bill.subCategory">
-        <span class="k">Unterkategorie</span>
-        <span class="v">{{ bill.subCategory.name }}</span>
-      </div>
-      <div class="notes" *ngIf="bill.notes">
-        <span class="k">Notizen</span>
-        <span class="notes-text">{{ bill.notes }}</span>
-      </div>
-    </ng-container>
-
-    <!--
+      -->
+      @if (!isEditing) {
+        <div class="kv">
+          <span class="k">Kategorie</span>
+          <span class="v cat">
+            <span class="dot" [class.dot-light]="bill.category.color == 'white'" [style.background]="bill.category.color"></span>
+            {{ bill.category.name }}
+          </span>
+        </div>
+        @if (bill.subCategory) {
+          <div class="kv">
+            <span class="k">Unterkategorie</span>
+            <span class="v">{{ bill.subCategory.name }}</span>
+          </div>
+        }
+        @if (bill.notes) {
+          <div class="notes">
+            <span class="k">Notizen</span>
+            <span class="notes-text">{{ bill.notes }}</span>
+          </div>
+        }
+      }
+      <!--
       BEARBEITEN: FORMULAR
-    -->
-    <form *ngIf="isEditing" class="form" [formGroup]="form">
-      <label class="field" [class.invalid]="form.controls.shopName | showError">
-        <span class="field-label">Shopname</span>
-        <span class="field-box">
-          <input formControlName="shopName" required [attr.aria-invalid]="form.controls.shopName | showError">
-        </span>
-      </label>
-
-      <label class="field" [class.invalid]="form.controls.notes | showError">
-        <span class="field-label">Notizen</span>
-        <span class="field-box ta">
-          <textarea formControlName="notes" [attr.aria-invalid]="form.controls.notes | showError"></textarea>
-        </span>
-      </label>
-
-      <label class="field" [class.invalid]="form.controls.price | showError">
-        <span class="field-label">Preis</span>
-        <span class="field-box">
-          <input class="price" formControlName="price" type="number" required autocomplete="off" [attr.aria-invalid]="form.controls.price | showError">
-          <span class="suffix" aria-hidden="true">€</span>
-        </span>
-      </label>
-
-      <div class="field" [class.invalid]="form.controls.category | showError">
-        <span class="field-label">Kategorie</span>
-        <span class="field-box">
-          <mat-select formControlName="category" required aria-label="Kategorie" (selectionChange)="categorySelectionChanged($event)">
-            <mat-select-trigger>
-              <span class="trigger">
-                <span class="dot" [class.dot-light]="form.controls.category.value?.color == 'white'"
+      -->
+      @if (isEditing) {
+        <form class="form" [formGroup]="form">
+          <label class="field" [class.invalid]="form.controls.shopName | showError">
+            <span class="field-label">Shopname</span>
+            <span class="field-box">
+              <input formControlName="shopName" required [attr.aria-invalid]="form.controls.shopName | showError">
+            </span>
+          </label>
+          <label class="field" [class.invalid]="form.controls.notes | showError">
+            <span class="field-label">Notizen</span>
+            <span class="field-box ta">
+              <textarea formControlName="notes" [attr.aria-invalid]="form.controls.notes | showError"></textarea>
+            </span>
+          </label>
+          <label class="field" [class.invalid]="form.controls.price | showError">
+            <span class="field-label">Preis</span>
+            <span class="field-box">
+              <input class="price" formControlName="price" type="number" required autocomplete="off" [attr.aria-invalid]="form.controls.price | showError">
+              <span class="suffix" aria-hidden="true">€</span>
+            </span>
+          </label>
+          <div class="field" [class.invalid]="form.controls.category | showError">
+            <span class="field-label">Kategorie</span>
+            <span class="field-box">
+              <mat-select formControlName="category" required aria-label="Kategorie" (selectionChange)="categorySelectionChanged($event)">
+                <mat-select-trigger>
+                  <span class="trigger">
+                    <span class="dot" [class.dot-light]="form.controls.category.value?.color == 'white'"
                     [style.background]="form.controls.category.value?.color"></span>
-                {{ form.controls.category.value?.name }}
+                    {{ form.controls.category.value?.name }}
+                  </span>
+                </mat-select-trigger>
+                @for (category of billCategories; track category.id) {
+                  <mat-option [value]="category">
+                    {{category?.name}}
+                  </mat-option>
+                }
+              </mat-select>
+              <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
+            </span>
+          </div>
+          @if (bill.subCategory || (billSubCategories && billSubCategories.length > 0)) {
+            <div class="field">
+              <span class="field-label">Unterkategorie</span>
+              <span class="field-box">
+                <mat-select formControlName="subCategory" aria-label="Unterkategorie">
+                  <mat-option />
+                  @for (subCategory of billSubCategories; track subCategory.id) {
+                    <mat-option [value]="subCategory">
+                      {{subCategory?.name}}
+                    </mat-option>
+                  }
+                </mat-select>
+                <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
               </span>
-            </mat-select-trigger>
-            <mat-option *ngFor="let category of billCategories" [value]="category">
-              {{category?.name}}
-            </mat-option>
-          </mat-select>
-          <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
-        </span>
-      </div>
-
-      <div class="field" *ngIf="bill.subCategory || (billSubCategories && billSubCategories.length > 0)">
-        <span class="field-label">Unterkategorie</span>
-        <span class="field-box">
-          <mat-select formControlName="subCategory" aria-label="Unterkategorie">
-            <mat-option></mat-option>
-            <mat-option *ngFor="let subCategory of billSubCategories" [value]="subCategory">
-              {{subCategory?.name}}
-            </mat-option>
-          </mat-select>
-          <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
-        </span>
-      </div>
-
-      <label class="field" [class.invalid]="form.controls.date | showError">
-        <span class="field-label">Datum</span>
-        <span class="field-box">
-          <input [matDatepicker]="picker" formControlName="date" aria-label="Datum" aria-describedby="bill-details-date-hint" [attr.aria-invalid]="form.controls.date | showError">
-          <mat-datepicker-toggle class="suffix" [for]="picker" [aria-label]="'Kalender öffnen'">
-            <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
-          </mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </span>
-        <span class="field-hint" id="bill-details-date-hint">DD.MM.YYYY</span>
-      </label>
-    </form>
-  </div>
+            </div>
+          }
+          <label class="field" [class.invalid]="form.controls.date | showError">
+            <span class="field-label">Datum</span>
+            <span class="field-box">
+              <input [matDatepicker]="picker" formControlName="date" aria-label="Datum" aria-describedby="bill-details-date-hint" [attr.aria-invalid]="form.controls.date | showError">
+              <mat-datepicker-toggle class="suffix" [for]="picker" [aria-label]="'Kalender öffnen'">
+                <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
+              </mat-datepicker-toggle>
+              <mat-datepicker #picker />
+            </span>
+            <span class="field-hint" id="bill-details-date-hint">DD.MM.YYYY</span>
+          </label>
+        </form>
+      }
+    </div>
+  }
 
   <!--
-    AKTIONEN
+  AKTIONEN
   -->
   <div class="progress-slot">
-    <mat-progress-bar *ngIf="isDeleting || isLoading || !bill" mode="indeterminate" color="accent"></mat-progress-bar>
+    @if (isDeleting || isLoading || !bill) {
+      <mat-progress-bar mode="indeterminate" color="accent" />
+    }
   </div>
 
-  <div class="actions" *ngIf="bill && !isEditing">
-    <button type="button" class="btn pri" (click)="onEditClick()" [disabled]="isDeleting || isLoading || isSaving">
-      <ng-container *ngIf="!isSaving"><mat-icon>edit</mat-icon><span>Bearbeiten</span></ng-container>
-      <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
-    </button>
-    <button type="button" class="btn del" (click)="onDeleteClick()"
+  @if (bill && !isEditing) {
+    <div class="actions">
+      <button type="button" class="btn pri" (click)="onEditClick()" [disabled]="isDeleting || isLoading || isSaving">
+        @if (!isSaving) {
+          <mat-icon>edit</mat-icon><span>Bearbeiten</span>
+        }
+        @if (isSaving) {
+          <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
+        }
+      </button>
+      <button type="button" class="btn del" (click)="onDeleteClick()"
         [disabled]="isExternal || isEditing || isDeleting || isLoading || isSaving">
-      <mat-icon>delete</mat-icon><span>Löschen</span>
-    </button>
-  </div>
+        <mat-icon>delete</mat-icon><span>Löschen</span>
+      </button>
+    </div>
+  }
 
-  <div class="actions" *ngIf="bill && isEditing">
-    <button type="button" class="btn sec2" (click)="onCancelClick()">
-      <mat-icon>close</mat-icon><span>Abbrechen</span>
-    </button>
-    <button type="button" class="btn pri" (click)="onSaveClick()" [disabled]="isSaving">
-      <ng-container *ngIf="!isSaving"><mat-icon>check</mat-icon><span>Speichern</span></ng-container>
-      <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
-    </button>
-  </div>
+  @if (bill && isEditing) {
+    <div class="actions">
+      <button type="button" class="btn sec2" (click)="onCancelClick()">
+        <mat-icon>close</mat-icon><span>Abbrechen</span>
+      </button>
+      <button type="button" class="btn pri" (click)="onSaveClick()" [disabled]="isSaving">
+        @if (!isSaving) {
+          <mat-icon>check</mat-icon><span>Speichern</span>
+        }
+        @if (isSaving) {
+          <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
+        }
+      </button>
+    </div>
+  }
 </div>

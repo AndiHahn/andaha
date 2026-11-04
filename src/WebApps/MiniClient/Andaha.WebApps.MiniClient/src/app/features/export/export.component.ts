@@ -1,20 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { finalize, take } from 'rxjs/operators';
 import { ExpenseContextService } from '../bill/services/expense-context.service';
 import { PersonContextService } from '../work/services/person-context.service';
+import { MatIcon } from '@angular/material/icon';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
-  selector: 'app-export',
-  templateUrl: './export.component.html',
-  styleUrls: ['./export.component.scss']
+    selector: 'app-export',
+    templateUrl: './export.component.html',
+    styleUrls: ['./export.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatIcon, MatProgressSpinner]
 })
 export class ExportComponent implements OnInit {
+  private expenseContextService = inject(ExpenseContextService);
+  private personContextService = inject(PersonContextService);
+
 
   exporting: 'expenses' | 'work' | null = null;
-
-  constructor(
-    private expenseContextService: ExpenseContextService,
-    private personContextService: PersonContextService) { }
 
   ngOnInit(): void {
   }

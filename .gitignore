@@ -361,3 +361,9 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# Local analysis image store of the Monolith (runtime data)
+src/Services/Monolith/Andaha.Services.Monolith/analyze/
+
+# Playwright MCP scratch output (snapshots, ad-hoc capture scripts)
+.playwright-mcp/

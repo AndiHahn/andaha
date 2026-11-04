@@ -1,10 +1,14 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
+import { NgTemplateOutlet, DecimalPipe, DatePipe } from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-bill-list-item',
-  templateUrl: './bill-list-item.component.html',
-  styleUrls: ['./bill-list-item.component.scss']
+    selector: 'app-bill-list-item',
+    templateUrl: './bill-list-item.component.html',
+    styleUrls: ['./bill-list-item.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [NgTemplateOutlet, MatIcon, DecimalPipe, DatePipe]
 })
 export class BillListItemComponent implements OnInit {
 

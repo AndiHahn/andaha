@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { afterFirstLoad } from '../shared/utils/load-state';
 import { BillCategoryApiService } from '../api/shopping/bill-category-api.service';
@@ -13,16 +13,16 @@ import { CategoryOrderDto } from '../api/shopping/dtos/CategoryOrderDto';
   providedIn: 'root'
 })
 export class BillCategoryContextService {
+  private contextService = inject(ContextService);
+  private billCategoryApiService = inject(BillCategoryApiService);
+  private billContextService = inject(BillContextService);
+
   
   private categories$: BehaviorSubject<CategoryDto[]> = new BehaviorSubject<CategoryDto[]>([]);
   private loadState$ = new ReplaySubject<'loaded' | 'failed'>(1);
   private backendIsReady: boolean = false;
 
-  constructor(
-    private contextService: ContextService,
-    private billCategoryApiService: BillCategoryApiService,
-    private billContextService: BillContextService
-  ) {
+  constructor() {
     this.initSubscriptions();
     this.fetchBillCategories();
   }

@@ -2,89 +2,91 @@ import { BillCreateDto } from '../../../api/shopping/dtos/BillCreateDto';
 import { PendingBillStore } from './pending-bill-store.service';
 
 function createBill(id: string): BillCreateDto {
-  return { id, shopName: 'Shop', categoryId: 'cat', price: 1, date: new Date(2024, 0, 2) };
+    return { id, shopName: 'Shop', categoryId: 'cat', price: 1, date: new Date(2024, 0, 2) };
 }
 
 describe('PendingBillStore', () => {
-  let store: PendingBillStore;
+    let store: PendingBillStore;
 
-  async function openConnection(): Promise<IDBDatabase> {
-    return (store as any).open() as Promise<IDBDatabase>;
-  }
+    async function openConnection(): Promise<IDBDatabase> {
+        return (store as any).open() as Promise<IDBDatabase>;
+    }
 
-  beforeEach(async () => {
-    store = new PendingBillStore();
-    await store.put(createBill('seed'));
-    await store.delete('seed');
-  });
-
-  afterEach(async () => {
-    const db = await openConnection();
-    db.close();
-    await new Promise<void>(resolve => {
-      const request = indexedDB.deleteDatabase('andaha');
-      request.onsuccess = () => resolve();
-      request.onerror = () => resolve();
-      request.onblocked = () => resolve();
+    beforeEach(async () => {
+        store = new PendingBillStore();
+        await store.put(createBill('seed'));
+        await store.delete('seed');
     });
-  });
 
-  it('stores, lists and deletes bills', async () => {
-    await store.put(createBill('a'));
-    expect((await store.getAll()).map(b => b.id)).toEqual(['a']);
+    afterEach(async () => {
+        const db = await openConnection();
+        db.close();
+        await new Promise<void>(resolve => {
+            const request = indexedDB.deleteDatabase('andaha');
+            request.onsuccess = () => resolve();
+            request.onerror = () => resolve();
+            request.onblocked = () => resolve();
+        });
+    });
 
-    await store.delete('a');
-    expect(await store.getAll()).toEqual([]);
-  });
+    it('stores, lists and deletes bills', async () => {
+        await store.put(createBill('a'));
+        expect((await store.getAll()).map(b => b.id)).toEqual(['a']);
 
-  it('stores and returns a bill with an image blob', async () => {
-    const image = new File([new Uint8Array([1, 2, 3, 4, 5])], 'photo.jpg', { type: 'image/jpeg' });
-    await store.put({ ...createBill('img'), image } as BillCreateDto);
+        await store.delete('a');
+        expect(await store.getAll()).toEqual([]);
+    });
 
-    const [stored] = await store.getAll();
+    it('stores and returns a bill with an image blob', async () => {
+        const image = new File([new Uint8Array([1, 2, 3, 4, 5])], 'photo.jpg', { type: 'image/jpeg' });
+        await store.put({ ...createBill('img'), image } as BillCreateDto);
 
-    expect(stored.image instanceof Blob).toBeTrue();
-    expect((stored.image as Blob).size).toBe(image.size);
-  });
+        const [stored] = await store.getAll();
 
-  it('reopens the connection after onclose', async () => {
-    const db = await openConnection();
+        expect(stored.image instanceof Blob).toBe(true);
+        expect((stored.image as Blob).size).toBe(image.size);
+    });
 
-    db.onclose!(new Event('close'));
+    it('reopens the connection after onclose', async () => {
+        const db = await openConnection();
 
-    expect((store as any).db).toBeUndefined();
-    await store.put(createBill('a'));
-    expect((await openConnection())).not.toBe(db);
-    expect((await store.getAll()).length).toBe(1);
-  });
+        db.onclose!(new Event('close'));
 
-  it('closes and reopens the connection after onversionchange', async () => {
-    const db = await openConnection();
-    const closeSpy = spyOn(db, 'close').and.callThrough();
+        expect((store as any).db).toBeUndefined();
+        await store.put(createBill('a'));
+        expect((await openConnection())).not.toBe(db);
+        expect((await store.getAll()).length).toBe(1);
+    });
 
-    db.onversionchange!(new Event('versionchange') as IDBVersionChangeEvent);
+    it('closes and reopens the connection after onversionchange', async () => {
+        const db = await openConnection();
+        const closeSpy = vi.spyOn(db, 'close');
 
-    expect(closeSpy).toHaveBeenCalled();
-    expect((store as any).db).toBeUndefined();
-    await store.put(createBill('a'));
-    expect((await store.getAll()).length).toBe(1);
-  });
+        db.onversionchange!(new Event('versionchange') as IDBVersionChangeEvent);
 
-  it('retries once with a fresh connection on InvalidStateError', async () => {
-    const db = await openConnection();
-    db.close();
+        expect(closeSpy).toHaveBeenCalled();
+        expect((store as any).db).toBeUndefined();
+        await store.put(createBill('a'));
+        expect((await store.getAll()).length).toBe(1);
+    });
 
-    await store.put(createBill('a'));
+    it('retries once with a fresh connection on InvalidStateError', async () => {
+        const db = await openConnection();
+        db.close();
 
-    expect((await openConnection())).not.toBe(db);
-    expect((await store.getAll()).map(b => b.id)).toEqual(['a']);
-  });
+        await store.put(createBill('a'));
 
-  it('does not retry other errors', async () => {
-    const db = await openConnection();
-    spyOn(db, 'transaction').and.throwError('boom');
+        expect((await openConnection())).not.toBe(db);
+        expect((await store.getAll()).map(b => b.id)).toEqual(['a']);
+    });
 
-    await expectAsync(store.getAll()).toBeRejectedWithError('boom');
-    expect(db.transaction).toHaveBeenCalledTimes(1);
-  });
+    it('does not retry other errors', async () => {
+        const db = await openConnection();
+        vi.spyOn(db, 'transaction').mockImplementation(() => {
+            throw new Error('boom');
+        });
+
+        await expect(store.getAll()).rejects.toThrowError('boom');
+        expect(db.transaction).toHaveBeenCalledTimes(1);
+    });
 });

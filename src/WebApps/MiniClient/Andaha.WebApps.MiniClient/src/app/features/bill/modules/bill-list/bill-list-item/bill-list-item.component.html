@@ -8,17 +8,23 @@
     <div class="t">{{ bill.shopName }}</div>
     <div class="s">
       <span class="dot" [class.dot-light]="bill.category.color == 'white'" [style.background]="bill.category.color"></span>
-      <span class="cat">{{ bill.category.name }}<span class="sub" *ngIf="bill.subCategory"> · {{ bill.subCategory.name }}</span></span>
-      <ng-container *ngTemplateOutlet="origin"></ng-container>
+      <span class="cat">{{ bill.category.name }}@if (bill.subCategory) {
+        <span class="sub"> · {{ bill.subCategory.name }}</span>
+      }</span>
+      <ng-container *ngTemplateOutlet="origin" />
     </div>
   </div>
   <div class="origin-cell">
-    <ng-container *ngTemplateOutlet="origin"></ng-container>
+    <ng-container *ngTemplateOutlet="origin" />
   </div>
   <div class="amt">{{ bill.price | number:'1.2-2':'de' }}<small>€</small></div>
 </div>
 
 <ng-template #origin>
-  <mat-icon *ngIf="bill.isExternal" class="origin" role="img" aria-label="Von verbundenem Konto">link</mat-icon>
-  <mat-icon *ngIf="bill.fromAnalysis" class="origin" role="img" aria-label="Aus Analyse übernommen">receipt_long</mat-icon>
+  @if (bill.isExternal) {
+    <mat-icon class="origin" role="img" aria-label="Von verbundenem Konto">link</mat-icon>
+  }
+  @if (bill.fromAnalysis) {
+    <mat-icon class="origin" role="img" aria-label="Aus Analyse übernommen">receipt_long</mat-icon>
+  }
 </ng-template>

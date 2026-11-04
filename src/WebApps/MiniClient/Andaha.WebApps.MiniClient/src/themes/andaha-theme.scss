@@ -1,4 +1,4 @@
-// Andaha MiniClient – Angular Material 14 Theme (hell, „Tinte & Kupfer“)
+// Andaha MiniClient – Material-2-Theme (mat.m2-*-API) auf Angular Material 22 (MDC) (hell, „Tinte & Kupfer“)
 //
 // Ersetzt src/themes/custom-theme.scss (bisher: define-dark-theme, Pink/Blue-Grey).
 // Material liefert nur die Basis (Ripple, Overlays, Datepicker, Select-Panels);
@@ -6,7 +6,7 @@
 // docs/design/umsetzung.md, Phase 1.
 
 @use '@angular/material' as mat;
-@import 'andaha-tokens';
+@use 'andaha-tokens' as *;
 
 $andaha-ink: (
   50: #ECEFF8,
@@ -76,15 +76,31 @@ $andaha-red: (
   )
 );
 
-$primary: mat.define-palette($andaha-ink, 700, 100, 900);
-$accent: mat.define-palette($andaha-copper, 500, 100, 700);
-$warn: mat.define-palette($andaha-red, 600, 100, 800);
+$primary: mat.m2-define-palette($andaha-ink, 700, 100, 900);
+$accent: mat.m2-define-palette($andaha-copper, 500, 100, 700);
+$warn: mat.m2-define-palette($andaha-red, 600, 100, 800);
 
-$typography: mat.define-typography-config(
+// Typografie: Werte der bisherigen (Legacy-/2014-)Konfiguration aus Material 14, auf die
+// 2018-Level umgemappt (wie private-typography-to-2018-config in Material 15), damit
+// .mat-typography (body), h1-h4 und die Komponenten-Typografie genau wie vorher aussehen.
+// Die MDC-Standardwerte hätten andere Größen und Laufweiten (letter-spacing).
+$typography: mat.m2-define-typography-config(
   $font-family: $andaha-font,
+  $headline-1: mat.m2-define-typography-level(112px, 112px, 300, $letter-spacing: -0.05em),
+  $headline-2: mat.m2-define-typography-level(56px, 56px, 400, $letter-spacing: -0.02em),
+  $headline-3: mat.m2-define-typography-level(45px, 48px, 400, $letter-spacing: -0.005em),
+  $headline-4: mat.m2-define-typography-level(34px, 40px, 400),
+  $headline-5: mat.m2-define-typography-level(24px, 32px, 400),
+  $headline-6: mat.m2-define-typography-level(20px, 32px, 500),
+  $subtitle-1: mat.m2-define-typography-level(16px, 28px, 400),
+  $subtitle-2: mat.m2-define-typography-level(14px, 24px, 500),
+  $body-1: mat.m2-define-typography-level(15px, 24px, 400),
+  $body-2: mat.m2-define-typography-level(14px, 20px, 400),
+  $caption: mat.m2-define-typography-level(12px, 20px, 400),
+  $button: mat.m2-define-typography-level(14px, 14px, 500),
 );
 
-$theme: mat.define-light-theme((
+$theme: mat.m2-define-light-theme((
   color: (
     primary: $primary,
     accent: $accent,
@@ -93,5 +109,12 @@ $theme: mat.define-light-theme((
   typography: $typography,
 ));
 
-@include mat.core($typography);
+// Material 15 (MDC): mat.core() enthält keine Typografie mehr. Die Hierarchie
+// (.mat-typography am body, h1-h6, p) kommt aus typography-hierarchy, die
+// Komponenten-Typografie aus all-component-themes (Theme enthält $typography).
+// Material 19: mat.core() ist veraltet, die Migration ersetzt es durch
+// elevation-classes und app-background (gleicher Inhalt).
+@include mat.elevation-classes();
+@include mat.app-background();
+@include mat.typography-hierarchy($typography);
 @include mat.all-component-themes($theme);

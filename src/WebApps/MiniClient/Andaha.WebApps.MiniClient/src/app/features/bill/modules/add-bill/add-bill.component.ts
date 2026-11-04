@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormGroupDirective } from '@angular/forms';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { FormGroup, FormGroupDirective, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-providers';
 import { generateGuid } from 'src/app/api/functions/api-utils';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
@@ -10,17 +10,27 @@ import { BillForm, getEmptyBillForm } from '../../functions/bill-form-functions'
 import { ImageSnippet } from '../add-bill-image-dialog/add-bill-image-dialog.component';
 import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
 import { BillSubCategoryDto } from 'src/app/api/shopping/dtos/BillSubCategoryDto';
-import { MatSelectChange } from '@angular/material/select';
+import { MatSelectChange, MatSelect, MatSelectTrigger, MatOption } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
+import { BillImageComponent } from '../bill-image/bill-image.component';
+import { MatIcon } from '@angular/material/icon';
+import { MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker } from '@angular/material/datepicker';
+import { ShowErrorPipe } from '../../../../shared/form-field/show-error.pipe';
 
 @Component({
-  selector: 'app-add-bill',
-  templateUrl: './add-bill.component.html',
-  styleUrls: ['./add-bill.component.scss'],
-  providers: GERMAN_DATE_PROVIDERS,
+    selector: 'app-add-bill',
+    templateUrl: './add-bill.component.html',
+    styleUrls: ['./add-bill.component.scss'],
+    providers: GERMAN_DATE_PROVIDERS,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormsModule, ReactiveFormsModule, BillImageComponent, MatSelect, MatSelectTrigger, MatOption, MatIcon, MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker, ShowErrorPipe]
 })
 export class AddBillComponent implements OnInit {
+  private billContextService = inject(BillContextService);
+  private billCategoryContextService = inject(BillCategoryContextService);
+  private snackbar = inject(MatSnackBar);
+
   numberRegex: string = '^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$';
 
   form: FormGroup<BillForm>;
@@ -33,11 +43,7 @@ export class AddBillComponent implements OnInit {
 
   isSaving: boolean = false;
   
-  constructor(
-    private billContextService: BillContextService,
-    private billCategoryContextService: BillCategoryContextService,
-    private snackbar: MatSnackBar
-    ) {
+  constructor() {
     this.form = getEmptyBillForm();
   }
 

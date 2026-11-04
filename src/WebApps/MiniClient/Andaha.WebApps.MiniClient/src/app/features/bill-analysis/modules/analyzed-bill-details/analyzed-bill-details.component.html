@@ -1,37 +1,43 @@
 <div class="page">
   <div class="progress-slot">
-    <mat-progress-bar *ngIf="!bill" mode="indeterminate" color="accent"></mat-progress-bar>
+    @if (!bill) {
+      <mat-progress-bar mode="indeterminate" color="accent" />
+    }
   </div>
-  <div class="body" *ngIf="bill">
-    <div class="info">
-      <div class="head">
-        <div class="shop">{{ bill.shopName }}</div>
-        <div class="big">{{ bill.price | number:'1.2-2':'de' }}<small>€</small></div>
-        <div class="when">{{ bill.date ? (bill.date | date:'dd.MM.yyyy') : '–' }}</div>
+  @if (bill) {
+    <div class="body">
+      <div class="info">
+        <div class="head">
+          <div class="shop">{{ bill.shopName }}</div>
+          <div class="big">{{ bill.price | number:'1.2-2':'de' }}<small>€</small></div>
+          <div class="when">{{ bill.date ? (bill.date | date:'dd.MM.yyyy') : '–' }}</div>
+        </div>
+        <div class="kv">
+          <span class="k">Kategorie</span>
+          <span class="v cat">
+            <span class="dot" [class.dot-light]="category?.color == 'white'" [style.background]="category?.color || 'grey'"></span>
+            {{ category?.name || 'Keine Kategorie' }}
+          </span>
+        </div>
+        @if (subCategory) {
+          <div class="kv">
+            <span class="k">Unterkategorie</span>
+            <span class="v">{{ subCategory.name }}</span>
+          </div>
+        }
+        @if (confidence !== null) {
+          <div class="kv">
+            <span class="k">Analyse-Konfidenz</span>
+            <span class="v conf">
+              <span class="bar" aria-hidden="true"><span class="fill" [style.width.%]="confidence"></span></span>
+              {{ confidence }} %
+            </span>
+          </div>
+        }
       </div>
-
-      <div class="kv">
-        <span class="k">Kategorie</span>
-        <span class="v cat">
-          <span class="dot" [class.dot-light]="category?.color == 'white'" [style.background]="category?.color || 'grey'"></span>
-          {{ category?.name || 'Keine Kategorie' }}
-        </span>
-      </div>
-      <div class="kv" *ngIf="subCategory">
-        <span class="k">Unterkategorie</span>
-        <span class="v">{{ subCategory.name }}</span>
-      </div>
-      <div class="kv" *ngIf="confidence !== null">
-        <span class="k">Analyse-Konfidenz</span>
-        <span class="v conf">
-          <span class="bar" aria-hidden="true"><span class="fill" [style.width.%]="confidence"></span></span>
-          {{ confidence }} %
-        </span>
+      <div class="photo-well">
+        <app-analyzed-bill-image [billId]="bill.id" />
       </div>
     </div>
-
-    <div class="photo-well">
-      <app-analyzed-bill-image [billId]="bill.id"></app-analyzed-bill-image>
-    </div>
-  </div>
+  }
 </div>

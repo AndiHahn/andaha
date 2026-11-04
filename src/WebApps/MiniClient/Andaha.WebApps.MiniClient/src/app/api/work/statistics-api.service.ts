@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { constructPath, constructVersionedPath } from '../functions/functions';
 import { StatisticsDto, StatisticsDtoRaw, mapStatisticsDtoRaw } from './dtos/StatisticsDto';
@@ -13,12 +13,13 @@ import { FullStatisticsDto, FullStatisticsDtoRaw, mapFullStatisticsDtoRaw } from
   providedIn: 'root'
 })
 export class StatisticsApiService {
+  private datePipe = inject(DatePipe);
+  private httpClient = inject(HttpClient);
+
   private endpointUrl: string;
   private apiVersion: string = "1.0";
 
-  constructor(
-    private datePipe: DatePipe,
-    private httpClient: HttpClient) {
+  constructor() {
     if (environment.useMonolithApi) {
       this.endpointUrl = constructPath(environment.monolithApiBaseUrl, 'api', 'work-statistics');
     } else if (environment.useGateway) {

@@ -16,14 +16,13 @@ describe('ExportComponent', () => {
     workExport = new Subject<void>();
 
     await TestBed.configureTestingModule({
-      declarations: [ExportComponent],
-      imports: [MatProgressSpinnerModule],
-      schemas: [NO_ERRORS_SCHEMA],
-      providers: [
+    imports: [MatProgressSpinnerModule, ExportComponent],
+    schemas: [NO_ERRORS_SCHEMA],
+    providers: [
         { provide: ExpenseContextService, useValue: { downloadExpenses: () => expensesExport.asObservable() } },
         { provide: PersonContextService, useValue: { downloadPersonInformations: () => workExport.asObservable() } }
-      ]
-    }).compileComponents();
+    ]
+}).compileComponents();
 
     fixture = TestBed.createComponent(ExportComponent);
     fixture.detectChanges();

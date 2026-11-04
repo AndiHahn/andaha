@@ -1,8 +1,12 @@
-<button type="button" class="we" *ngFor="let workEntry of workEntries" (click)="onOpenWorkEntryDetails(workEntry)">
-  <span class="l">
-    <span class="d">{{ workEntry.from | date:'dd.MM.yyyy' }}</span>
-    <span class="tm">{{ workEntry.from | date:'HH:mm' }} – {{ workEntry.until | date:'HH:mm' }}</span>
-    <b>{{ getTotalWorkingTime(workEntry) }}</b>
-  </span>
-  <span class="n" *ngIf="workEntry.notes">{{ workEntry.notes }}</span>
-</button>
+@for (workEntry of workEntries; track workEntry.id) {
+  <button type="button" class="we" (click)="onOpenWorkEntryDetails(workEntry)">
+    <span class="l">
+      <span class="d">{{ workEntry.from | date:'dd.MM.yyyy' }}</span>
+      <span class="tm">{{ workEntry.from | date:'HH:mm' }} – {{ workEntry.until | date:'HH:mm' }}</span>
+      <b>{{ getTotalWorkingTime(workEntry) }}</b>
+    </span>
+    @if (workEntry.notes) {
+      <span class="n">{{ workEntry.notes }}</span>
+    }
+  </button>
+}

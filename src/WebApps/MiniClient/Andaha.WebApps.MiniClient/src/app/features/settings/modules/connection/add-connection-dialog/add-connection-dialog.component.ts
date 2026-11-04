@@ -1,24 +1,30 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { UntypedFormControl, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatDialogRef, MatDialogContent } from '@angular/material/dialog';
 import { CollaborationContextService } from 'src/app/services/collaboration-context.service';
+import { DialogComponent } from '../../../../../shared/dialog/dialog.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe';
 
 @Component({
-  selector: 'app-add-connection-dialog',
-  templateUrl: './add-connection-dialog.component.html',
-  styleUrls: ['./add-connection-dialog.component.scss']
+    selector: 'app-add-connection-dialog',
+    templateUrl: './add-connection-dialog.component.html',
+    styleUrls: ['./add-connection-dialog.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [DialogComponent, FormsModule, ReactiveFormsModule, CdkScrollable, MatDialogContent, MatProgressSpinner, ShowErrorPipe]
 })
 export class AddConnectionDialogComponent implements OnInit {
+  private dialogRef = inject<MatDialogRef<AddConnectionDialogComponent>>(MatDialogRef);
+  private contextService = inject(CollaborationContextService);
+
 
   formGroup: UntypedFormGroup;
 
   isSaving: boolean = false;
   errorMessage?: string;
 
-  constructor(
-    private dialogRef: MatDialogRef<AddConnectionDialogComponent>,
-    private contextService: CollaborationContextService
-  ) {
+  constructor() {
     this.formGroup = new UntypedFormGroup(
       {
         emailAddress: new UntypedFormControl('', [ Validators.email ])

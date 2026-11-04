@@ -1,20 +1,30 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { CdkScrollable, ScrollDispatcher } from '@angular/cdk/scrolling';
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { CdkScrollable, ScrollDispatcher, CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf } from '@angular/cdk/scrolling';
+import { AfterViewInit, Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { filter, takeUntil } from 'rxjs/operators';
-import { PageEvent } from '@angular/material/paginator';
+import { PageEvent, MatPaginator } from '@angular/material/paginator';
 import { BillContextService } from '../../services/bill-context.service';
 import { BillDataSource } from './BillDataSource';
 import { Subject } from 'rxjs';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillListDateFilter } from './bill-list-filter/BillListDateFilter';
+import { BillListFilterComponent } from './bill-list-filter/bill-list-filter.component';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { RouterLink } from '@angular/router';
+import { BillListItemComponent } from './bill-list-item/bill-list-item.component';
 
 @Component({
-  selector: 'app-bill-list',
-  templateUrl: './bill-list.component.html',
-  styleUrls: ['./bill-list.component.scss']
+    selector: 'app-bill-list',
+    templateUrl: './bill-list.component.html',
+    styleUrls: ['./bill-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [BillListFilterComponent, MatProgressBar, CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf, RouterLink, BillListItemComponent, MatPaginator]
 })
 export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
+  private scrollDispatcher = inject(ScrollDispatcher);
+  private billContextService = inject(BillContextService);
+  private breakpointObserver = inject(BreakpointObserver);
+
 
   billDataSource = new BillDataSource();
   pixelHeightPerItem = 64;
@@ -35,10 +45,7 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   
   private destroy$: Subject<void> = new Subject();
 
-  constructor(
-    private scrollDispatcher: ScrollDispatcher,
-    private billContextService: BillContextService,
-    private breakpointObserver: BreakpointObserver) {
+  constructor() {
       const searchText = this.billContextService.getSearchText();
       if (searchText.length > 0) {
         this.initialSearchValue = searchText;

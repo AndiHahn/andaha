@@ -1,5 +1,5 @@
 import { ComponentType } from '@angular/cdk/portal';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { getDialogBaseConfig } from 'src/app/shared/dialog/dialog-functions';
 import { AddBillImageDialogComponent, ImageSnippet } from './add-bill-image-dialog.component';
@@ -8,8 +8,8 @@ import { AddBillImageDialogComponent, ImageSnippet } from './add-bill-image-dial
   providedIn: 'root'
 })
 export class AddBillImageDialogService {
-  
-  constructor(private dialog: MatDialog) { }
+  private dialog = inject(MatDialog);
+
 
   async openDialog(): Promise<MatDialogRef<AddBillImageDialogComponent, ImageSnippet>> {
     const chunk = await import(`./add-bill-image-dialog.component`);

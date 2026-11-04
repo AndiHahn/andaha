@@ -1,8 +1,7 @@
 <form class="page" [formGroup]="form" #formDirective="ngForm" (ngSubmit)="onSubmit(formDirective)">
   <div class="form-body">
     <app-bill-image [editing]="true" [saving]="false" [onlyUpload]="true"
-        (imageSelected)="onImageSelected($event)">
-    </app-bill-image>
+      (imageSelected)="onImageSelected($event)" />
 
     <label class="field" [class.invalid]="form.controls.shopName | showError: formDirective">
       <span class="field-label">Shopname</span>
@@ -33,30 +32,36 @@
           <mat-select-trigger>
             <span class="trigger">
               <span class="dot" [class.dot-light]="form.controls.category.value?.color == 'white'"
-                  [style.background]="form.controls.category.value?.color"></span>
+              [style.background]="form.controls.category.value?.color"></span>
               {{ form.controls.category.value?.name }}
             </span>
           </mat-select-trigger>
-          <mat-option *ngFor="let category of billCategories" [value]="category">
-            {{category?.name}}
-          </mat-option>
+          @for (category of billCategories; track category.id) {
+            <mat-option [value]="category">
+              {{category?.name}}
+            </mat-option>
+          }
         </mat-select>
         <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
       </span>
     </div>
 
-    <div class="field" *ngIf="billSubCategories && billSubCategories.length > 0">
-      <span class="field-label">Unterkategorie</span>
-      <span class="field-box">
-        <mat-select formControlName="subCategory" aria-label="Unterkategorie">
-          <mat-option></mat-option>
-          <mat-option *ngFor="let subCategory of billSubCategories" [value]="subCategory">
-            {{subCategory?.name}}
-          </mat-option>
-        </mat-select>
-        <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
-      </span>
-    </div>
+    @if (billSubCategories && billSubCategories.length > 0) {
+      <div class="field">
+        <span class="field-label">Unterkategorie</span>
+        <span class="field-box">
+          <mat-select formControlName="subCategory" aria-label="Unterkategorie">
+            <mat-option />
+            @for (subCategory of billSubCategories; track subCategory.id) {
+              <mat-option [value]="subCategory">
+                {{subCategory?.name}}
+              </mat-option>
+            }
+          </mat-select>
+          <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
+        </span>
+      </div>
+    }
 
     <label class="field" [class.invalid]="form.controls.date | showError: formDirective">
       <span class="field-label">Datum</span>
@@ -65,7 +70,7 @@
         <mat-datepicker-toggle class="suffix" [for]="picker" [aria-label]="'Kalender öffnen'">
           <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
         </mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
+        <mat-datepicker #picker />
       </span>
       <span class="field-hint" id="add-bill-date-hint">DD.MM.YYYY</span>
     </label>

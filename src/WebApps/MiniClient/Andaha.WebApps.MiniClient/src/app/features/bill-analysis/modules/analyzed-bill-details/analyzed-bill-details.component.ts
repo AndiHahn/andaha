@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject, takeUntil } from 'rxjs';
@@ -9,13 +9,24 @@ import { SubCategoryDto } from 'src/app/api/shopping/dtos/SubCategoryDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { confidencePercent, resolveAnalyzedCategory } from '../../functions/analyzed-bill-functions';
 import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { AnalyzedBillImageComponent } from '../analyzed-bill-image/analyzed-bill-image.component';
+import { DecimalPipe, DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-analyzed-bill-details',
-  templateUrl: './analyzed-bill-details.component.html',
-  styleUrls: ['./analyzed-bill-details.component.scss']
+    selector: 'app-analyzed-bill-details',
+    templateUrl: './analyzed-bill-details.component.html',
+    styleUrls: ['./analyzed-bill-details.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatProgressBar, AnalyzedBillImageComponent, DecimalPipe, DatePipe]
 })
 export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private snackbar = inject(MatSnackBar);
+  private analyzedContext = inject(AnalyzedBillContextService);
+  private categoryContext = inject(BillCategoryContextService);
+
   bill?: BillAnalyzedDto;
   isLoading: boolean = false;
   category?: CategoryDto;
@@ -23,15 +34,6 @@ export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
   confidence: number | null = null;
 
   private destroy$ = new Subject<void>();
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private snackbar: MatSnackBar,
-    private analyzedContext: AnalyzedBillContextService,
-    private categoryContext: BillCategoryContextService
-  ) {
-  }
 
   ngOnInit(): void {
     const billId = getParametersFromRouteRecursive(this.route.snapshot)['id'];

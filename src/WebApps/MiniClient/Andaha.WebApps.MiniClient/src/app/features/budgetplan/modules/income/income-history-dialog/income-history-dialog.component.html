@@ -1,18 +1,24 @@
 <app-dialog [title]="'Historie'">
   <mat-dialog-content>
-    <div *ngIf="!historyEntries" class="loading">
-      <mat-spinner diameter="40"></mat-spinner>
-    </div>
+    @if (!historyEntries) {
+      <div class="loading">
+        <mat-spinner diameter="40" />
+      </div>
+    }
 
-    <div class="row" *ngFor="let history of historyEntries; index as i">
-      <span class="main">
-        <span class="t">Gültig von: {{ history.validFrom | date:'dd.MM.yyyy' }}</span>
-        <span class="s" *ngIf="i > 0">Gültig bis: {{ history.validTo | date:'dd.MM.yyyy' }}</span>
-      </span>
-      <span class="rc">
-        <span class="amt">{{ history.income.value | number:'1.2-2':'de' }} €</span>
-        <span class="per">{{ durationLabel.get(history.income.duration) }}</span>
-      </span>
-    </div>
+    @for (history of historyEntries; track history; let i = $index) {
+      <div class="row">
+        <span class="main">
+          <span class="t">Gültig von: {{ history.validFrom | date:'dd.MM.yyyy' }}</span>
+          @if (i > 0) {
+            <span class="s">Gültig bis: {{ history.validTo | date:'dd.MM.yyyy' }}</span>
+          }
+        </span>
+        <span class="rc">
+          <span class="amt">{{ history.income.value | number:'1.2-2':'de' }} €</span>
+          <span class="per">{{ durationLabel.get(history.income.duration) }}</span>
+        </span>
+      </div>
+    }
   </mat-dialog-content>
 </app-dialog>

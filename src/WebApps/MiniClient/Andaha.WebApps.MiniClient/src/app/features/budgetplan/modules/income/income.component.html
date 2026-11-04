@@ -1,13 +1,16 @@
 <div class="page">
   <div class="body">
-    <div *ngIf="!incomes" class="loading">
-      <mat-spinner diameter="40"></mat-spinner>
-    </div>
+    @if (!incomes) {
+      <div class="loading">
+        <mat-spinner diameter="40" />
+      </div>
+    }
 
-    <div *ngIf="incomes">
-      <app-income-list [incomes]="incomes">
-      </app-income-list>
-    </div>
+    @if (incomes) {
+      <div>
+        <app-income-list [incomes]="incomes" />
+      </div>
+    }
   </div>
 
   <div class="actions">

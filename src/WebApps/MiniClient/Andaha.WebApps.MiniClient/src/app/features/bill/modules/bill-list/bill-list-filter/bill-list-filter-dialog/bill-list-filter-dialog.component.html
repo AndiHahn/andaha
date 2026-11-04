@@ -9,7 +9,7 @@
             <mat-datepicker-toggle class="suffix" [for]="dpFrom" [aria-label]="'Kalender öffnen'">
               <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
             </mat-datepicker-toggle>
-            <mat-datepicker #dpFrom></mat-datepicker>
+            <mat-datepicker #dpFrom />
           </span>
           <button type="button" class="icon-btn clear-btn" (click)="onClearFromDateClick()" aria-label="Von-Datum leeren">
             <mat-icon>close</mat-icon>
@@ -26,7 +26,7 @@
             <mat-datepicker-toggle class="suffix" [for]="dpUntil" [aria-label]="'Kalender öffnen'">
               <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
             </mat-datepicker-toggle>
-            <mat-datepicker #dpUntil></mat-datepicker>
+            <mat-datepicker #dpUntil />
           </span>
           <button type="button" class="icon-btn clear-btn" (click)="onClearUntilDateClick()" aria-label="Bis-Datum leeren">
             <mat-icon>close</mat-icon>

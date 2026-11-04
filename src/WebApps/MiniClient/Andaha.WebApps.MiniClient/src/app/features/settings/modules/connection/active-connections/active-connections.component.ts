@@ -1,18 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { ConnectionDto } from 'src/app/api/collaboration/dtos/ConnectionDto';
 import { CollaborationContextService } from 'src/app/services/collaboration-context.service';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
-  selector: 'app-active-connections',
-  templateUrl: './active-connections.component.html',
-  styleUrls: ['./active-connections.component.scss']
+    selector: 'app-active-connections',
+    templateUrl: './active-connections.component.html',
+    styleUrls: ['./active-connections.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatProgressSpinner]
 })
 export class ActiveConnectionsComponent implements OnInit {
+  private collaborationContextService = inject(CollaborationContextService);
+
 
   loading: boolean = false;
   connections?: ConnectionDto[];
-  
-  constructor(private collaborationContextService: CollaborationContextService) { }
 
   ngOnInit(): void {
     this.initSubscriptions();

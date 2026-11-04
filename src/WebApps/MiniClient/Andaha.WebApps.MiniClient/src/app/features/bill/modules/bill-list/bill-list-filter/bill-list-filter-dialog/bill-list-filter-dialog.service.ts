@@ -1,5 +1,5 @@
 import { ComponentType } from '@angular/cdk/portal';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { getDialogBaseConfig } from 'src/app/shared/dialog/dialog-functions';
 import { BillListFilterDialogComponent } from './bill-list-filter-dialog.component';
@@ -9,7 +9,8 @@ import { BillListFilterDialogData } from './BillListFilterDialogData';
   providedIn: 'root'
 })
 export class BillListFilterDialogService {
-  constructor(private dialog: MatDialog) { }
+  private dialog = inject(MatDialog);
+
 
   async openDialog(data: BillListFilterDialogData): Promise<MatDialogRef<BillListFilterDialogComponent, BillListFilterDialogData>> {
     const chunk = await import(`./bill-list-filter-dialog.component`);

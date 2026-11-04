@@ -1,27 +1,35 @@
 # Andaha.WebApps.MiniClient
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.1.2.
+Angular 22 PWA (Standalone Components, Angular Material 22 mit Material-2-Theme). Mit [Angular CLI](https://github.com/angular/angular-cli) erzeugt.
+
+## Voraussetzungen
+
+Node 24 (ab 24.15). Laut `engines` in `package.json` laufen auch Node 22.22.3+ und Node 26+. Abhängigkeiten installieren:
+
+```
+npm ci
+```
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+`npm start` (oder `ng serve`) startet den Dev-Server auf `http://localhost:4200/`. Der Port 4200 ist fest, da die B2C-App-Registrierung diese Redirect-URL erwartet. Die App lädt bei Änderungen an den Quelldateien automatisch neu.
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+`npm run build:prod` baut die Produktionsversion nach `dist/andaha.web-apps.mini-client/` (flache Ausgabe, ohne `browser`-Unterordner). Die Platzhalter `#{...}#` in den `.js`-Dateien werden erst bei der Bereitstellung in der CD-Pipeline ersetzt.
 
-## Running unit tests
+## Unit-Tests
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+`npm test` führt die Tests mit [Vitest](https://vitest.dev) im Browser-Modus aus (einmaliger Lauf). Dafür wird Playwright Chromium benötigt, einmalig installieren mit:
 
-## Running end-to-end tests
+```
+npx playwright install chromium
+```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+## Code scaffolding
+
+`ng generate component component-name` erzeugt eine neue Komponente. Weitere Schematics: `ng generate directive|pipe|service|class|guard|interface|enum`.
 
 ## Further help
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Mehr Hilfe zur Angular CLI: `ng help` oder die [Angular CLI Dokumentation](https://angular.dev/tools/cli).

@@ -15,6 +15,11 @@ variables:
   nodeModulesCachePath: $(System.DefaultWorkingDirectory)/src/WebApps/MiniClient/Andaha.WebApps.MiniClient/node_modules
 
 steps:
+  - task: NodeTool@0
+    displayName: "use node 24"
+    inputs:
+      versionSpec: '24.x'
+
   - task: Cache@2
     displayName: "cache npm packages"
     inputs:
@@ -24,20 +29,13 @@ steps:
       cacheHitVar: CACHE_RESTORED
 
   - task: Npm@1
-    displayName: "install typescript"
-    inputs:
-      command: custom
-      verbose: false
-      customCommand: "install -D typescript"
-
-  - task: Npm@1
     displayName: "npm install"
     condition: ne(variables.CACHE_RESTORED, 'true')
     inputs:
       command: custom
       workingDir: src/WebApps/MiniClient/Andaha.WebApps.MiniClient
       verbose: false
-      customCommand: install --force
+      customCommand: ci
 
   - task: Npm@1
     displayName: "npm build"

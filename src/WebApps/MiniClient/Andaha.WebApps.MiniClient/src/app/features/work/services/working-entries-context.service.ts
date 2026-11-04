@@ -1,24 +1,22 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { WorkingEntryDto } from 'src/app/api/work/dtos/WorkingEntryDto';
 import { WorkingEntryApiService } from 'src/app/api/work/working-entry-api.service';
 import { getParametersFromRouteRecursive } from 'src/app/shared/utils/routing-helper';
-import { PersonModule } from '../modules/person/person.module';
 
-@Injectable({
-  providedIn: PersonModule
-})
+// vorher providedIn: PersonModule; jetzt in den Providern der Route 'work/person' (work.routes.ts)
+@Injectable()
 export class WorkingEntriesContextService {
+  private route = inject(ActivatedRoute);
+  private apiService = inject(WorkingEntryApiService);
+
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private workingEntries$: BehaviorSubject<WorkingEntryDto[] | undefined> = new BehaviorSubject<WorkingEntryDto[] | undefined>(undefined);
   
   private personId: string;
 
-  constructor(
-    private route: ActivatedRoute,
-    private apiService: WorkingEntryApiService
-  ) {
+  constructor() {
     const params = getParametersFromRouteRecursive(this.route.snapshot);
     this.personId = params["id"];
     if (!this.personId) {

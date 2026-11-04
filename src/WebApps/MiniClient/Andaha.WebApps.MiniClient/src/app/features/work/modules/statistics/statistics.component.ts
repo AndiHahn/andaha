@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { TimeRange, mapTimeRangeDto } from 'src/app/shared/models/TimeRange';
 import { StatisticsContextService } from '../../services/statistics-context.service';
 import { StatisticsDto } from 'src/app/api/work/dtos/StatisticsDto';
@@ -6,13 +6,19 @@ import { Time } from '@angular/common';
 import { createTimeDisplayName } from '../../functions/date-time-functions';
 import { DateType } from 'src/app/features/bill/modules/expenses/timerange-selection/DateType';
 import { FullStatisticsDto } from 'src/app/api/work/dtos/FullStatisticsDto';
+import { TimerangeSelectionComponent } from '../../../bill/modules/expenses/timerange-selection/timerange-selection.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
-  selector: 'app-statistics',
-  templateUrl: './statistics.component.html',
-  styleUrls: ['./statistics.component.scss']
+    selector: 'app-statistics',
+    templateUrl: './statistics.component.html',
+    styleUrls: ['./statistics.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [TimerangeSelectionComponent, MatProgressSpinner]
 })
 export class StatisticsComponent implements OnInit {
+  private contextService = inject(StatisticsContextService);
+
 
   availableTimeRange?: TimeRange;
   statistics?: StatisticsDto;
@@ -23,9 +29,7 @@ export class StatisticsComponent implements OnInit {
 
   dateType = DateType;
 
-  constructor(
-    private contextService: StatisticsContextService
-  ) {
+  constructor() {
     this.initSubscriptions();
   }
 

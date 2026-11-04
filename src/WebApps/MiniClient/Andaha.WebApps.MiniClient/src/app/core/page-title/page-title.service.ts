@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ActivatedRouteSnapshot, NavigationEnd, Router } from '@angular/router';
 import { asapScheduler, BehaviorSubject, Observable } from 'rxjs';
 import { filter, observeOn } from 'rxjs/operators';
@@ -12,6 +12,8 @@ export interface HeaderAction {
 
 @Injectable({ providedIn: 'root' })
 export class PageTitleService {
+  private readonly router = inject(Router);
+
   private readonly titleSubject = new BehaviorSubject<string>('');
   private readonly backSubject = new BehaviorSubject<string | null>(null);
   private readonly actionSubject = new BehaviorSubject<HeaderAction | null>(null);
@@ -23,7 +25,7 @@ export class PageTitleService {
   readonly back$: Observable<string | null> = this.backSubject.asObservable();
   readonly action$: Observable<HeaderAction | null> = this.actionSubject.pipe(observeOn(asapScheduler));
 
-  constructor(private readonly router: Router) {
+  constructor() {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => this.update());

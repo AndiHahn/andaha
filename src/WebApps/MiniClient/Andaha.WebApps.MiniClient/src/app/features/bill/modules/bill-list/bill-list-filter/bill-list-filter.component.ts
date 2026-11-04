@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ChangeDetectionStrategy, inject } from '@angular/core';
 import { merge, of, Subject, timer } from 'rxjs';
 import { distinctUntilChanged, map, skip, startWith, switchMap, takeUntil } from 'rxjs/operators';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
@@ -6,6 +6,8 @@ import { BillCategoryContextService } from 'src/app/services/bill-category-conte
 import { BillListFilterDialogService } from './bill-list-filter-dialog/bill-list-filter-dialog.service';
 import { BillListFilterDialogData } from './bill-list-filter-dialog/BillListFilterDialogData';
 import { BillListDateFilter } from './BillListDateFilter';
+import { MatIcon } from '@angular/material/icon';
+import { DatePipe } from '@angular/common';
 
 interface CategorySelection {
   selected: boolean;
@@ -14,11 +16,16 @@ interface CategorySelection {
 }
 
 @Component({
-  selector: 'app-bill-list-filter',
-  templateUrl: './bill-list-filter.component.html',
-  styleUrls: ['./bill-list-filter.component.scss']
+    selector: 'app-bill-list-filter',
+    templateUrl: './bill-list-filter.component.html',
+    styleUrls: ['./bill-list-filter.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatIcon, DatePipe]
 })
 export class BillListFilterComponent implements OnInit, OnDestroy {
+  private billListFilterDialogService = inject(BillListFilterDialogService);
+  private billCategoryContextService = inject(BillCategoryContextService);
+
   @ViewChild('searchTerm') searchInput!: ElementRef;
   
   @Input()
@@ -55,10 +62,6 @@ export class BillListFilterComponent implements OnInit, OnDestroy {
 
   fromDateFilter?: Date;
   untilDateFilter?: Date;
-  
-  constructor(
-    private billListFilterDialogService: BillListFilterDialogService,
-    private billCategoryContextService: BillCategoryContextService) { }
 
   ngOnInit(): void {
     if (this.initialSearchText) {

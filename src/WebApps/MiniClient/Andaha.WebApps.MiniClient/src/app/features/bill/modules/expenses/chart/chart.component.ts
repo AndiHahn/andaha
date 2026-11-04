@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, OnInit, SimpleChanges, ChangeDetectionStrategy, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ChartOptions } from 'chart.js';
@@ -9,13 +9,23 @@ import { getDialogBaseConfig } from 'src/app/shared/dialog/dialog-functions';
 import { ChartDetailsDialogComponent } from '../chart-details-dialog/chart-details-dialog.component';
 import { ChartDetailsDialogData } from '../chart-details-dialog/ChartDetailsDialogData';
 import { TimeRange } from '../../../../../shared/models/TimeRange';
+import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
+import { MatIcon } from '@angular/material/icon';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
-  selector: 'app-chart',
-  templateUrl: './chart.component.html',
-  styleUrls: ['./chart.component.scss']
+    selector: 'app-chart',
+    templateUrl: './chart.component.html',
+    styleUrls: ['./chart.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [BaseChartDirective, MatIcon, DecimalPipe],
+    // ng2-charts 11: Chart.js-Registrierung per Provider. Hier statt in app.config.ts oder einer Route,
+    // damit chart.js nur im Statistik-Chunk geladen wird.
+    providers: [provideCharts(withDefaultRegisterables())]
 })
 export class ChartComponent implements OnInit, OnChanges {
+  private matDialog = inject(MatDialog);
+
 
   @Input()
   expenses!: ExpenseDto[];
@@ -66,9 +76,6 @@ export class ChartComponent implements OnInit, OnChanges {
       }
     }
   };
-
-  constructor(
-    private matDialog: MatDialog) {}
 
   ngOnInit(): void {
     if (!this.expenses) {

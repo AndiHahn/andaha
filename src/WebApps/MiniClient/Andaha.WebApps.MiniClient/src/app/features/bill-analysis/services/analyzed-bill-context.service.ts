@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { afterFirstLoad } from 'src/app/shared/utils/load-state';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
@@ -8,6 +8,9 @@ import { SearchBillsParameters } from 'src/app/api/shopping/dtos/SearchBillsPara
 
 @Injectable({ providedIn: 'root' })
 export class AnalyzedBillContextService {
+  private billApi = inject(BillApiService);
+  private contextService = inject(ContextService);
+
   private bills$: BehaviorSubject<BillAnalyzedDto[]> = new BehaviorSubject<BillAnalyzedDto[]>([]);
   private totalResults$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   private pageIndex$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
@@ -19,7 +22,7 @@ export class AnalyzedBillContextService {
 
   private searchText: string = '';
 
-  constructor(private billApi: BillApiService, private contextService: ContextService) {
+  constructor() {
     this.initSubscriptions();
     this.fetchAnalyzedBills();
   }

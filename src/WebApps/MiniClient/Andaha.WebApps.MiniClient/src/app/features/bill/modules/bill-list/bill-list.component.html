@@ -1,16 +1,17 @@
 <div #filterBar class="filter-container" [class.collapsed]="!showFilterBar" (transitionend)="viewport.checkViewportSize()">
   <app-bill-list-filter [deactivate]="loading"
-      [initialSearchText]="initialSearchValue"
-      [initialCategoryFilters]="initialCategoryFilters"
-      [initialDateFilter]="initialDateFilter"
-      (searchTextChanged)="onSearchInput($event)"
-      (categoryFilterChanged)="onCategoryFilterChanged($event)"
-      (dateFilterChanged)="onDateFilterChanged($event)" >
-  </app-bill-list-filter>
+    [initialSearchText]="initialSearchValue"
+    [initialCategoryFilters]="initialCategoryFilters"
+    [initialDateFilter]="initialDateFilter"
+    (searchTextChanged)="onSearchInput($event)"
+    (categoryFilterChanged)="onCategoryFilterChanged($event)"
+    (dateFilterChanged)="onDateFilterChanged($event)"  />
 </div>
 
 <div class="progress-slot">
-  <mat-progress-bar *ngIf="loading" mode="indeterminate" color="accent"></mat-progress-bar>
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate" color="accent" />
+  }
 </div>
 
 <div class="table-head" aria-hidden="true">
@@ -21,23 +22,23 @@
   <span class="r">Preis</span>
 </div>
 
-<div class="empty" *ngIf="!loading && totalCount === 0">
-  Keine Rechnungen verfügbar.
-</div>
+@if (!loading && totalCount === 0) {
+  <div class="empty">
+    Keine Rechnungen verfügbar.
+  </div>
+}
 
 <cdk-virtual-scroll-viewport #viewport class="list" [itemSize]="pixelHeightPerItem">
   <a *cdkVirtualFor="let bill of billDataSource" class="bill-link" routerLink="/bill/{{bill.id}}">
-    <app-bill-list-item [bill]="bill"></app-bill-list-item>
+    <app-bill-list-item [bill]="bill" />
   </a>
 </cdk-virtual-scroll-viewport>
 
 <div style="display: none;">
-  <mat-paginator
-    class="paginator"
+  <mat-paginator class="paginator"
     [length]="totalResults"
     [pageSize]="pageSize"
     [pageSizeOptions]="[20, 50, 100]"
     aria-label="Select page"
-    (page)="onPageChange($event)">
-  </mat-paginator>
+    (page)="onPageChange($event)" />
 </div>

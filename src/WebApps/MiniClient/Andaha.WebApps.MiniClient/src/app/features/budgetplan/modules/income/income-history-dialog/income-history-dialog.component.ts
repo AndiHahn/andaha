@@ -1,25 +1,32 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogContent } from '@angular/material/dialog';
 import { DurationLabel } from 'src/app/api/budgetplan/dtos/Duration';
 import { IncomeHistoryDto } from 'src/app/api/budgetplan/dtos/IncomeHistoryDto';
 import { IncomeApiService } from 'src/app/api/budgetplan/income-api.service';
 import { IncomeHistoryDialogData } from './IncomeHistoryDialogData';
+import { DialogComponent } from '../../../../../shared/dialog/dialog.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { DecimalPipe, DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-income-history-dialog',
-  templateUrl: './income-history-dialog.component.html',
-  styleUrls: ['./income-history-dialog.component.scss']
+    selector: 'app-income-history-dialog',
+    templateUrl: './income-history-dialog.component.html',
+    styleUrls: ['./income-history-dialog.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [DialogComponent, CdkScrollable, MatDialogContent, MatProgressSpinner, DecimalPipe, DatePipe]
 })
 export class IncomeHistoryDialogComponent implements OnInit {
+  private incomeApiService = inject(IncomeApiService);
+
 
   historyEntries?: IncomeHistoryDto[];
 
   durationLabel = DurationLabel;
   
-  constructor(
-    private incomeApiService: IncomeApiService,
-    @Inject(MAT_DIALOG_DATA) data: IncomeHistoryDialogData
-  ) {
+  constructor() {
+    const data = inject<IncomeHistoryDialogData>(MAT_DIALOG_DATA);
+
     this.fetchHistory(data.incomeId);
   }
 

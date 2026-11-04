@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter, take } from 'rxjs/operators';
@@ -6,7 +6,9 @@ import { openInformationSnackbar } from '../shared/snackbar/snackbar-functions';
 
 @Injectable({ providedIn: 'root' })
 export class AppUpdateService {
-  constructor(private swUpdate: SwUpdate, private snackbar: MatSnackBar) {}
+  private swUpdate = inject(SwUpdate);
+  private snackbar = inject(MatSnackBar);
+
 
   init(): void {
     this.swUpdate.versionUpdates

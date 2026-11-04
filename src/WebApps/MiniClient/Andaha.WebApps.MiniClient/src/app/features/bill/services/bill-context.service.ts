@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, inject } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, Subscription, catchError, finalize, firstValueFrom, of, skip, timeout } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
@@ -16,6 +16,10 @@ const SYNC_REQUEST_TIMEOUT_MS = 60000;
   providedIn: 'root'
 })
 export class BillContextService implements OnDestroy {
+  private billApiService = inject(BillApiService);
+  private contextService = inject(ContextService);
+  private billCacheService = inject(BillCacheService);
+
   private bills$: BehaviorSubject<BillDto[]> = new BehaviorSubject<BillDto[]>([]);
   private totalResults$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   private pageIndex$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
@@ -41,11 +45,7 @@ export class BillContextService implements OnDestroy {
     }
   };
 
-  constructor(
-    private billApiService: BillApiService,
-    private contextService: ContextService,
-    private billCacheService: BillCacheService
-  ) {
+  constructor() {
     this.initSubscriptions();
     window.addEventListener('online', this.onOnline);
     document.addEventListener('visibilitychange', this.onVisibilityChange);

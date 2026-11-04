@@ -1,7 +1,7 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent } from '@angular/material/dialog';
 import { PersonPaymentDialogData } from './PersonPaymentDialogData';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PaymentForm, getEmptyPaymentForm } from '../../../functions/payment-form-functions';
 import { PersonContextService } from '../../../services/person-context.service';
 import { PayPersonDto } from 'src/app/api/work/dtos/PayPersonDto';
@@ -9,24 +9,33 @@ import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { formatTime, formatTimeWithoutSeconds, getHoursFromTimeString, getMinutesFromTimeString } from 'src/app/api/functions/api-utils';
 import { Time } from '@angular/common';
+import { DialogComponent } from '../../../../../shared/dialog/dialog.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { MatIcon } from '@angular/material/icon';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe';
 
 @Component({
-  selector: 'app-person-payment-dialog',
-  templateUrl: './person-payment-dialog.component.html',
-  styleUrls: ['./person-payment-dialog.component.scss']
+    selector: 'app-person-payment-dialog',
+    templateUrl: './person-payment-dialog.component.html',
+    styleUrls: ['./person-payment-dialog.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [DialogComponent, FormsModule, ReactiveFormsModule, CdkScrollable, MatDialogContent, MatIcon, MatProgressSpinner, ShowErrorPipe]
 })
 export class PersonPaymentDialogComponent implements OnInit {
+  private snackbar = inject(MatSnackBar);
+  private personContextService = inject(PersonContextService);
+  private dialogRef = inject<MatDialogRef<PersonPaymentDialogComponent>>(MatDialogRef);
+  private data = inject<PersonPaymentDialogData>(MAT_DIALOG_DATA);
+
 
   form: FormGroup<PaymentForm>;
 
   isSaving: boolean = false;
 
-  constructor(
-    private snackbar: MatSnackBar,
-    private personContextService: PersonContextService,
-    private dialogRef: MatDialogRef<PersonPaymentDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) private data: PersonPaymentDialogData
-  ) {
+  constructor() {
+    const data = this.data;
+
     const openHours = formatTimeWithoutSeconds(data.openHours);
     this.form = getEmptyPaymentForm(openHours);
   }

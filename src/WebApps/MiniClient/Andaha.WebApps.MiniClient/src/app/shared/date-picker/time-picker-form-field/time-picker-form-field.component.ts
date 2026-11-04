@@ -1,9 +1,13 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
+import { NgxMatTimepickerDirective, NgxMatTimepickerComponent } from 'ngx-mat-timepicker';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-time-picker-form-field',
-  templateUrl: './time-picker-form-field.component.html',
-  styleUrls: ['./time-picker-form-field.component.scss']
+    selector: 'app-time-picker-form-field',
+    templateUrl: './time-picker-form-field.component.html',
+    styleUrls: ['./time-picker-form-field.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [NgxMatTimepickerDirective, MatIcon, NgxMatTimepickerComponent]
 })
 export class TimePickerFormFieldComponent implements OnInit {
 

@@ -1,5 +1,5 @@
 import { ComponentType } from '@angular/cdk/portal';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { getDialogBaseConfig } from 'src/app/shared/dialog/dialog-functions';
 import { IncomeHistoryDialogComponent } from './income-history-dialog.component';
@@ -9,8 +9,8 @@ import { IncomeHistoryDialogData } from './IncomeHistoryDialogData';
   providedIn: 'root'
 })
 export class IncomeHistoryDialogService {
+  private dialog = inject(MatDialog);
 
-  constructor(private dialog: MatDialog) { }
 
   async openDialog(data: IncomeHistoryDialogData): Promise<MatDialogRef<IncomeHistoryDialogComponent, boolean | undefined>> {
     const chunk = await import(`./income-history-dialog.component`);

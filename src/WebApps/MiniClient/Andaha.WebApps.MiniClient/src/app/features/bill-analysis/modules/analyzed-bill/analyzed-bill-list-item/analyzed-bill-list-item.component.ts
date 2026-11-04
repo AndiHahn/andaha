@@ -1,13 +1,16 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BillAnalyzedDto } from 'src/app/api/shopping/dtos/BillAnalyzedDto';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { SubCategoryDto } from 'src/app/api/shopping/dtos/SubCategoryDto';
 import { confidencePercent, resolveAnalyzedCategory } from '../../../functions/analyzed-bill-functions';
+import { DecimalPipe, DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-analyzed-bill-list-item',
-  templateUrl: './analyzed-bill-list-item.component.html',
-  styleUrls: ['./analyzed-bill-list-item.component.scss']
+    selector: 'app-analyzed-bill-list-item',
+    templateUrl: './analyzed-bill-list-item.component.html',
+    styleUrls: ['./analyzed-bill-list-item.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [DecimalPipe, DatePipe]
 })
 export class AnalyzedBillListItemComponent implements OnInit {
 

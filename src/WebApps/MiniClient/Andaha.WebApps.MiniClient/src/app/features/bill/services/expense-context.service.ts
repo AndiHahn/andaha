@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { ExpenseDto } from '../../../api/shopping/dtos/ExpenseDto';
@@ -14,15 +14,15 @@ import { downloadFile, getFileName } from 'src/app/shared/utils/file-utils';
   providedIn: 'root'
 })
 export class ExpenseContextService {
+  private billContextService = inject(BillContextService);
+  private contextService = inject(ContextService);
+  private apiService = inject(ExpenseApiService);
+  private datePipe = inject(DatePipe);
+
   private availableTimeRange$: BehaviorSubject<TimeRangeDto | undefined> = new BehaviorSubject<TimeRangeDto | undefined>(undefined);
   private expenses$ : BehaviorSubject<ExpenseDto[] | undefined> = new BehaviorSubject<ExpenseDto[] | undefined>(undefined);
 
-  constructor(
-    private billContextService: BillContextService,
-    private contextService: ContextService,
-    private apiService: ExpenseApiService,
-    private datePipe: DatePipe
-  ) {
+  constructor() {
     this.initSubscriptions();
     this.fetchTimeRange();
   }

@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CategoryForm, createEmptyForm } from '../functions/form-functions';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -8,13 +8,25 @@ import { getAllColors } from '../functions/category-functions';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CategoryCreateDto } from 'src/app/api/shopping/dtos/CategoryCreateDto';
+import { MatSelect, MatSelectTrigger, MatOption } from '@angular/material/select';
+import { ColorItemComponent } from '../color-item/color-item.component';
+import { MatIcon } from '@angular/material/icon';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe';
 
 @Component({
-  selector: 'app-create-category',
-  templateUrl: './create-category.component.html',
-  styleUrls: ['./create-category.component.scss']
+    selector: 'app-create-category',
+    templateUrl: './create-category.component.html',
+    styleUrls: ['./create-category.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, ColorItemComponent, MatOption, MatIcon, MatCheckbox, MatProgressSpinner, ShowErrorPipe]
 })
 export class CreateCategoryComponent implements OnInit {
+  private router = inject(Router);
+  private snackbar = inject(MatSnackBar);
+  private categoryContextService = inject(BillCategoryContextService);
+
   
   form: FormGroup<CategoryForm>;
   
@@ -24,11 +36,7 @@ export class CreateCategoryComponent implements OnInit {
 
   colors: string[];
   
-  constructor(
-    private router: Router,
-    private snackbar: MatSnackBar,
-    private categoryContextService: BillCategoryContextService
-  ) {
+  constructor() {
     this.form = createEmptyForm();
     this.includeToStatisticsCheckbox = true;
     this.colors = getAllColors();

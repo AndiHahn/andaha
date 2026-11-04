@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
-  selector: 'app-worktime',
-  templateUrl: './worktime.component.html',
-  styleUrls: ['./worktime.component.scss']
+    selector: 'app-worktime',
+    templateUrl: './worktime.component.html',
+    styleUrls: ['./worktime.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager
 })
 export class WorktimeComponent implements OnInit {
 

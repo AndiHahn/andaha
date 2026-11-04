@@ -1,4 +1,5 @@
 import { DatePipe } from '@angular/common';
+import { TestBed } from '@angular/core/testing';
 import { of, Subject } from 'rxjs';
 import { TimeRangeDto } from 'src/app/api/common-dtos/TimeRangeDto';
 import { ExpenseApiService } from 'src/app/api/shopping/expense-api.service';
@@ -25,11 +26,15 @@ describe('ExpenseContextService downloadExpenses', () => {
       exportExpenses: () => { exportCalls++; return of({ body: null, headers: undefined } as any); }
     } as unknown as ExpenseApiService;
 
-    service = new ExpenseContextService(
-      { bills: () => new Subject<any[]>().asObservable() } as unknown as BillContextService,
-      { backendReady: () => of(false) } as unknown as ContextService,
-      api,
-      new DatePipe('en-US'));
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: BillContextService, useValue: { bills: () => new Subject<any[]>().asObservable() } },
+        { provide: ContextService, useValue: { backendReady: () => of(false) } },
+        { provide: ExpenseApiService, useValue: api },
+        { provide: DatePipe, useValue: new DatePipe('en-US') }
+      ]
+    });
+    service = TestBed.runInInjectionContext(() => new ExpenseContextService());
   });
 
   it('emits even when the result is produced synchronously', () => {

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { getRecordOfProperties } from 'src/app/shared/utils/utils';
 import { environment } from 'src/environments/environment';
@@ -16,10 +16,12 @@ import { getSearchBillsHttpParams, SearchBillsParameters } from './dtos/SearchBi
   providedIn: 'root'
 })
 export class BillApiService {
+  private httpClient = inject(HttpClient);
+
   private endpointUrl: string;
   private apiVersion: string = "1.0";
 
-  constructor(private httpClient: HttpClient) {
+  constructor() {
     if (environment.useMonolithApi) {
       this.endpointUrl = constructPath(environment.monolithApiBaseUrl, 'api', 'bill');
     } else if (environment.useGateway) {

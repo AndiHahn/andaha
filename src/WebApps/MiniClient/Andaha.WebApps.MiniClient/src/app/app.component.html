@@ -1,14 +1,18 @@
 <mat-sidenav-container class="shell">
   <mat-sidenav #sidenav class="side" [class.side-desktop]="isDesktop$ | async"
-               [mode]="(isDesktop$ | async) ? 'side' : 'over'" [opened]="isDesktop$ | async"
-               [disableClose]="isDesktop$ | async"
-               role="navigation" aria-label="Hauptnavigation">
+    [mode]="(isDesktop$ | async) ? 'side' : 'over'" [opened]="isDesktop$ | async"
+    [disableClose]="isDesktop$ | async"
+    role="navigation" aria-label="Hauptnavigation">
     <div class="side-head">
       <span class="brand">Andaha</span>
-      <span class="side-user" *ngIf="!(isDesktop$ | async)">
-        {{ userName }}
-        <mat-icon *ngIf="syncActive" class="side-sync" role="img" aria-label="Synchronisierung aktiv">sync</mat-icon>
-      </span>
+      @if (!(isDesktop$ | async)) {
+        <span class="side-user">
+          {{ userName }}
+          @if (syncActive) {
+            <mat-icon class="side-sync" role="img" aria-label="Synchronisierung aktiv">sync</mat-icon>
+          }
+        </span>
+      }
     </div>
 
     <span hidden routerLink="/bill" routerLinkActive #billActive="routerLinkActive"></span>
@@ -41,58 +45,77 @@
 
   <mat-sidenav-content class="shell-main">
     <!-- Kopf Mobile -->
-    <header class="top" *ngIf="!(isDesktop$ | async)">
-      <a class="icon-btn" *ngIf="back$ | async as back; else menuButton" [routerLink]="back" aria-label="Zurück">
-        <mat-icon>arrow_back</mat-icon>
-      </a>
-      <ng-template #menuButton>
-        <button type="button" class="icon-btn" (click)="sidenav.toggle()" aria-label="Menü öffnen">
-          <mat-icon>menu</mat-icon>
+    @if (!(isDesktop$ | async)) {
+      <header class="top">
+        @if (back$ | async; as back) {
+          <a class="icon-btn" [routerLink]="back" aria-label="Zurück">
+            <mat-icon>arrow_back</mat-icon>
+          </a>
+        } @else {
+          <button type="button" class="icon-btn" (click)="sidenav.toggle()" aria-label="Menü öffnen">
+            <mat-icon>menu</mat-icon>
+          </button>
+        }
+        <h1 class="top-title">{{ title$ | async }}</h1>
+        @if (action$ | async; as action) {
+          <button type="button" class="icon-btn" (click)="action.run()" [attr.aria-label]="action.label">
+            <mat-icon>{{ action.icon }}</mat-icon>
+          </button>
+        }
+        @if (syncActive) {
+          <span class="sync-info" role="img" aria-label="Synchronisierung aktiv"><mat-icon>sync</mat-icon></span>
+        }
+        <button type="button" class="icon-btn" [matMenuTriggerFor]="userPopupMobile" aria-label="Benutzerkonto">
+          <mat-icon>account_circle</mat-icon>
         </button>
-      </ng-template>
-      <h1 class="top-title">{{ title$ | async }}</h1>
-      <button type="button" class="icon-btn" *ngIf="action$ | async as action" (click)="action.run()" [attr.aria-label]="action.label">
-        <mat-icon>{{ action.icon }}</mat-icon>
-      </button>
-      <span class="sync-info" *ngIf="syncActive" role="img" aria-label="Synchronisierung aktiv"><mat-icon>sync</mat-icon></span>
-      <button type="button" class="icon-btn" [matMenuTriggerFor]="userPopupMobile" aria-label="Benutzerkonto">
-        <mat-icon>account_circle</mat-icon>
-      </button>
-      <mat-menu #userPopupMobile="matMenu">
-        <button mat-menu-item (click)="logout()">
-          <mat-icon>logout</mat-icon>
-          <span>Ausloggen</span>
-        </button>
-      </mat-menu>
-    </header>
+        <mat-menu #userPopupMobile="matMenu">
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Ausloggen</span>
+          </button>
+        </mat-menu>
+      </header>
+    }
 
     <!-- Kopf Desktop -->
-    <header class="top-desktop" *ngIf="isDesktop$ | async">
-      <a class="icon-btn" *ngIf="back$ | async as back" [routerLink]="back" aria-label="Zurück">
-        <mat-icon>arrow_back</mat-icon>
-      </a>
-      <h1 class="top-desktop-title">{{ title$ | async }}</h1>
-      <button type="button" class="icon-btn" *ngIf="action$ | async as action" (click)="action.run()" [attr.aria-label]="action.label">
-        <mat-icon>{{ action.icon }}</mat-icon>
-      </button>
-      <span class="sync-status" *ngIf="syncActive"><mat-icon>sync</mat-icon>Synchronisiert …</span>
-      <span class="user-info">{{ userName }}</span>
-      <button type="button" class="icon-btn" [matMenuTriggerFor]="userPopupDesktop" aria-label="Benutzerkonto">
-        <mat-icon>account_circle</mat-icon>
-      </button>
-      <mat-menu #userPopupDesktop="matMenu">
-        <button mat-menu-item (click)="logout()">
-          <mat-icon>logout</mat-icon>
-          <span>Ausloggen</span>
+    @if (isDesktop$ | async) {
+      <header class="top-desktop">
+        @if (back$ | async; as back) {
+          <a class="icon-btn" [routerLink]="back" aria-label="Zurück">
+            <mat-icon>arrow_back</mat-icon>
+          </a>
+        }
+        <h1 class="top-desktop-title">{{ title$ | async }}</h1>
+        @if (action$ | async; as action) {
+          <button type="button" class="icon-btn" (click)="action.run()" [attr.aria-label]="action.label">
+            <mat-icon>{{ action.icon }}</mat-icon>
+          </button>
+        }
+        @if (syncActive) {
+          <span class="sync-status"><mat-icon>sync</mat-icon>Synchronisiert …</span>
+        }
+        <span class="user-info">{{ userName }}</span>
+        <button type="button" class="icon-btn" [matMenuTriggerFor]="userPopupDesktop" aria-label="Benutzerkonto">
+          <mat-icon>account_circle</mat-icon>
         </button>
-      </mat-menu>
-    </header>
+        <mat-menu #userPopupDesktop="matMenu">
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Ausloggen</span>
+          </button>
+        </mat-menu>
+      </header>
+    }
 
     <main class="content">
-      <div class="wait-login-container" *ngIf="!isLoggedIn">
-        <span class="wait-login">Warten auf Login...</span>
-      </div>
-      <router-outlet *ngIf="isLoggedIn"></router-outlet>
+      @if (!isLoggedIn) {
+        <div class="wait-login-container">
+          <span class="wait-login">Warten auf Login...</span>
+        </div>
+      }
+      @if (isLoggedIn) {
+        <router-outlet />
+      }
     </main>
   </mat-sidenav-content>
 </mat-sidenav-container>

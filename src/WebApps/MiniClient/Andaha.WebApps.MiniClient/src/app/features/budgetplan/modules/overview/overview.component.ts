@@ -1,14 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { BudgetPlanDto } from 'src/app/api/budgetplan/dtos/BudgetPlanDto';
 import { CostCategoryLabel } from 'src/app/api/budgetplan/dtos/CostCategory';
 import { BudgetplanContextService } from '../../services/budgetplan-context.service';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
-  selector: 'app-overview',
-  templateUrl: './overview.component.html',
-  styleUrls: ['./overview.component.scss']
+    selector: 'app-overview',
+    templateUrl: './overview.component.html',
+    styleUrls: ['./overview.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatProgressSpinner, DecimalPipe]
 })
 export class OverviewComponent implements OnInit {
+  private budgetPlanContextService = inject(BudgetplanContextService);
+
 
   budgetPlan?: BudgetPlanDto;
 
@@ -19,10 +25,6 @@ export class OverviewComponent implements OnInit {
   monthlySurplusPercent: number = 0;
 
   costCategoryLabel = CostCategoryLabel;
-  
-  constructor(
-    private budgetPlanContextService: BudgetplanContextService
-  ) { }
 
   ngOnInit(): void {
     this.initSubscriptions();

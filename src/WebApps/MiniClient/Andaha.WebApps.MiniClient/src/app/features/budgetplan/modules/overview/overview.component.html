@@ -1,40 +1,51 @@
-<div *ngIf="!budgetPlan" class="loading">
-  <mat-spinner diameter="40"></mat-spinner>
-</div>
+@if (!budgetPlan) {
+  <div class="loading">
+    <mat-spinner diameter="40" />
+  </div>
+}
 
-<div *ngIf="budgetPlan" class="page">
-  <!-- Kopf: Überschuss zuerst (Mockup 04, Übersicht) -->
-  <div class="head">
-    <span class="head-label">Monatlicher Überschuss</span>
-    <span class="big pos" *ngIf="monthlySurplus >= 0">{{ monthlySurplus > 0 ? '+' : '' }}{{ monthlySurplus | number:'1.2-2':'de' }}<small>€</small></span>
-    <span class="big neg" *ngIf="monthlySurplus < 0">{{ monthlySurplus | number:'1.2-2':'de' }}<small>€</small></span>
-
-    <div class="split">
-      <div class="bar" role="img"
+@if (budgetPlan) {
+  <div class="page">
+    <!-- Kopf: Überschuss zuerst (Mockup 04, Übersicht) -->
+    <div class="head">
+      <span class="head-label">Monatlicher Überschuss</span>
+      @if (monthlySurplus >= 0) {
+        <span class="big pos">{{ monthlySurplus > 0 ? '+' : '' }}{{ monthlySurplus | number:'1.2-2':'de' }}<small>€</small></span>
+      }
+      @if (monthlySurplus < 0) {
+        <span class="big neg">{{ monthlySurplus | number:'1.2-2':'de' }}<small>€</small></span>
+      }
+      <div class="split">
+        <div class="bar" role="img"
           [attr.aria-label]="'Ausgaben ' + (monthlyExpensesPercent | number:'1.0-1':'de') + ' Prozent, Überschuss ' + (monthlySurplusPercent | number:'1.0-1':'de') + ' Prozent'">
-        <span class="bar-exp" *ngIf="expensesBarWidth > 0" [style.width.%]="expensesBarWidth"></span>
-        <span class="bar-sur" *ngIf="surplusBarWidth > 0"></span>
-      </div>
-      <div class="split-labels">
-        <span class="neg-text">Ausgaben {{ monthlyExpensesPercent | number:'1.0-1':'de' }} %</span>
-        <span [class.pos]="monthlySurplus >= 0" [class.neg-text]="monthlySurplus < 0">Überschuss {{ monthlySurplusPercent | number:'1.0-1':'de' }} %</span>
+          @if (expensesBarWidth > 0) {
+            <span class="bar-exp" [style.width.%]="expensesBarWidth"></span>
+          }
+          @if (surplusBarWidth > 0) {
+            <span class="bar-sur"></span>
+          }
+        </div>
+        <div class="split-labels">
+          <span class="neg-text">Ausgaben {{ monthlyExpensesPercent | number:'1.0-1':'de' }} %</span>
+          <span [class.pos]="monthlySurplus >= 0" [class.neg-text]="monthlySurplus < 0">Überschuss {{ monthlySurplusPercent | number:'1.0-1':'de' }} %</span>
+        </div>
       </div>
     </div>
+    <p class="sec">Einnahmen</p>
+    <div class="kv">
+      <span class="k strong">Einkommen</span>
+      <span class="v">{{ budgetPlan.income | number:'1.2-2':'de' }} €</span>
+    </div>
+    <p class="sec">Ausgaben</p>
+    <div class="kv">
+      <span class="k">Lebenserhaltungskosten</span>
+      <span class="v">{{ livingCosts | number:'1.2-2':'de' }} €</span>
+    </div>
+    @for (expense of budgetPlan.expenses; track expense.category) {
+      <div class="kv">
+        <span class="k">{{ costCategoryLabel.get(expense.category) }}</span>
+        <span class="v">{{ expense.value | number:'1.2-2':'de' }} €</span>
+      </div>
+    }
   </div>
-
-  <p class="sec">Einnahmen</p>
-  <div class="kv">
-    <span class="k strong">Einkommen</span>
-    <span class="v">{{ budgetPlan.income | number:'1.2-2':'de' }} €</span>
-  </div>
-
-  <p class="sec">Ausgaben</p>
-  <div class="kv">
-    <span class="k">Lebenserhaltungskosten</span>
-    <span class="v">{{ livingCosts | number:'1.2-2':'de' }} €</span>
-  </div>
-  <div class="kv" *ngFor="let expense of budgetPlan.expenses">
-    <span class="k">{{ costCategoryLabel.get(expense.category) }}</span>
-    <span class="v">{{ expense.value | number:'1.2-2':'de' }} €</span>
-  </div>
-</div>
+}

@@ -1,17 +1,24 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { ExpenseDto } from 'src/app/api/shopping/dtos/ExpenseDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { ExpenseContextService } from 'src/app/features/bill/services/expense-context.service';
 import { mapTimeRangeDto, TimeRange } from '../../../../shared/models/TimeRange';
+import { TimerangeSelectionComponent } from './timerange-selection/timerange-selection.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ChartComponent } from './chart/chart.component';
 
 @Component({
-  selector: 'app-expenses',
-  templateUrl: './expenses.component.html',
-  styleUrls: ['./expenses.component.scss']
+    selector: 'app-expenses',
+    templateUrl: './expenses.component.html',
+    styleUrls: ['./expenses.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [TimerangeSelectionComponent, MatProgressSpinner, ChartComponent]
 })
 export class ExpensesComponent implements OnInit {
+  private expenseContextService = inject(ExpenseContextService);
+  private categoryContextService = inject(BillCategoryContextService);
+
 
   availableTimeRange?: TimeRange;
   expenses: ExpenseDto[] = [];
@@ -23,10 +30,6 @@ export class ExpensesComponent implements OnInit {
   sum: number = 0.0;
 
   selectedTimeRange?: TimeRange;
-
-  constructor(
-    private expenseContextService: ExpenseContextService,
-    private categoryContextService: BillCategoryContextService) { }
 
   ngOnInit(): void {
     this.initSubscriptions();

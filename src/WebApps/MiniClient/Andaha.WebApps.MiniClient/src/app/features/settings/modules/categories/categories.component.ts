@@ -1,18 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { openErrorSnackbar, openInformationSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { CategoryOrderDto } from 'src/app/api/shopping/dtos/CategoryOrderDto';
 import { HttpErrorResponse } from '@angular/common/http';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatIcon } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
+import { NgStyle } from '@angular/common';
 
 @Component({
-  selector: 'app-categories',
-  templateUrl: './categories.component.html',
-  styleUrls: ['./categories.component.scss']
+    selector: 'app-categories',
+    templateUrl: './categories.component.html',
+    styleUrls: ['./categories.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatProgressSpinner, CdkDropList, CdkDrag, CdkDragHandle, MatIcon, RouterLink, NgStyle]
 })
 export class CategoriesComponent implements OnInit {
+  private snackbar = inject(MatSnackBar);
+  private categoryContextService = inject(BillCategoryContextService);
+
 
   categories?: CategoryDto[];
   tmpCategories?: CategoryDto[];
@@ -20,10 +29,6 @@ export class CategoriesComponent implements OnInit {
   isSaving: boolean = false;
   isEditing: boolean = false;
   isLoading: boolean = false;
-
-  constructor(
-    private snackbar: MatSnackBar,
-    private categoryContextService: BillCategoryContextService) { }
 
   ngOnInit(): void {
     this.initSubscriptions();

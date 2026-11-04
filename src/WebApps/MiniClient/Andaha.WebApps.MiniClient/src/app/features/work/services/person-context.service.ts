@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { afterFirstLoad } from 'src/app/shared/utils/load-state';
 import { CreatePersonDto } from 'src/app/api/work/dtos/CreatePersonDto';
@@ -13,15 +13,15 @@ import { downloadFile, getFileName } from 'src/app/shared/utils/file-utils';
   providedIn: 'root'
 })
 export class PersonContextService {
+  private contextService = inject(ContextService);
+  private personApiService = inject(PersonApiService);
+
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private persons$: BehaviorSubject<PersonDto[] | undefined> = new BehaviorSubject<PersonDto[] | undefined>(undefined);
   private loadState$ = new ReplaySubject<'loaded' | 'failed'>(1);
   private backendIsReady: boolean = false;
 
-  constructor(
-    private contextService: ContextService,
-    private personApiService: PersonApiService
-  ) {
+  constructor() {
     this.fetchPersons();
     this.initSubscriptions();
   }

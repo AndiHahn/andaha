@@ -7,9 +7,8 @@
       [value]="defaultTime"
       [disabled]="disabled" />
     <mat-icon class="suffix" aria-hidden="true">schedule</mat-icon>
-    <ngx-mat-timepicker
-      #picker
+    <ngx-mat-timepicker #picker
       [minutesGap]="minutesGap"
-      (timeSet)="ngxTimeSet($event)"></ngx-mat-timepicker>
+      (timeSet)="ngxTimeSet($event)" />
   </span>
 </label>

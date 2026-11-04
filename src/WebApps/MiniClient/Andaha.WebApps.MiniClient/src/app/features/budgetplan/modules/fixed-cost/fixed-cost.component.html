@@ -1,14 +1,16 @@
 <div class="page">
   <div class="body">
-    <div *ngIf="!fixedCosts" class="loading">
-      <mat-spinner diameter="40"></mat-spinner>
-    </div>
+    @if (!fixedCosts) {
+      <div class="loading">
+        <mat-spinner diameter="40" />
+      </div>
+    }
 
-    <ng-container *ngIf="fixedCosts">
-      <app-fixed-cost-list *ngFor="let costCategoryOption of costCategoryOptions"
-        [category]="costCategoryOption" [fixedCosts]="fixedCosts[costCategoryOption.toString()]">
-      </app-fixed-cost-list>
-    </ng-container>
+    @if (fixedCosts) {
+      @for (costCategoryOption of costCategoryOptions; track costCategoryOption) {
+        <app-fixed-cost-list [category]="costCategoryOption" [fixedCosts]="fixedCosts[costCategoryOption.toString()]" />
+      }
+    }
   </div>
 
   <div class="actions">

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { CollaborationApiService } from '../api/collaboration/collaboration-api.service';
 import { ConnectionDto } from '../api/collaboration/dtos/ConnectionDto';
@@ -10,6 +10,10 @@ import { BillContextService } from '../features/bill/services/bill-context.servi
   providedIn: 'root'
 })
 export class CollaborationContextService {
+  private contextService = inject(ContextService);
+  private billContextService = inject(BillContextService);
+  private collaborationApiService = inject(CollaborationApiService);
+
   private connections$: BehaviorSubject<ConnectionDto[] | undefined> = new BehaviorSubject<ConnectionDto[] | undefined>(undefined);
   private connectionsLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
@@ -19,10 +23,7 @@ export class CollaborationContextService {
   private outgoingConnectionRequests$: BehaviorSubject<ConnectionRequestDto[] | undefined> = new BehaviorSubject<ConnectionRequestDto[] | undefined>(undefined);
   private outgoingConnectionRequestsLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  constructor(
-    private contextService: ContextService,
-    private billContextService: BillContextService,
-    private collaborationApiService: CollaborationApiService) {
+  constructor() {
     this.initSubscriptions();
     this.fetchConnections();
     this.fetchIncomingConnectionRequests();

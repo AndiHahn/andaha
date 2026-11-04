@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -8,6 +8,8 @@ import { UserAuthInfo } from './UserAuthInfo';
   providedIn: 'root'
 })
 export class AuthService {
+  private oauthService = inject(OAuthService);
+
 
   private isAuthenticated$: BehaviorSubject<boolean> = new BehaviorSubject(this.isLoggedIn());
   private userAuthInfo$: BehaviorSubject<UserAuthInfo> = new BehaviorSubject<UserAuthInfo>({ userName: '', userEmail: '' });
@@ -18,8 +20,6 @@ export class AuthService {
   private listenersRegistered = false;
   private loginStarted = false;
   private expiryTimer?: ReturnType<typeof setTimeout>;
-
-  constructor(private oauthService: OAuthService) { }
 
   init(): Promise<void> {
     this.oauthService.configure(this.getCodeFlowConfig());
