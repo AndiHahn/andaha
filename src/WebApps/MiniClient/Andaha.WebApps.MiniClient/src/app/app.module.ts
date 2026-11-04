@@ -18,6 +18,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AppSnackbarModule } from './shared/snackbar/snackbar.module';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MAT_SELECT_CONFIG, MatSelectConfig } from '@angular/material/select';
 
 registerLocaleData(localeDe);
 
@@ -85,6 +86,11 @@ async function initApp(authService: AuthService): Promise<void> {
     {
       provide: OAuthStorage,
       useFactory: storageFactory
+    },
+    {
+      // MDC-Select (Material 15) zeigt bei Einfachauswahl einen Haken; vorher gab es keinen
+      provide: MAT_SELECT_CONFIG,
+      useValue: { hideSingleSelectionIndicator: true } as MatSelectConfig
     },
     DatePipe
   ],

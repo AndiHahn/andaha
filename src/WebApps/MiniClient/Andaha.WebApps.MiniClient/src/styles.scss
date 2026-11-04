@@ -39,7 +39,7 @@ body.mat-app-background {
 // Elemente, die bis an den Rand eines scrollenden Containers reichen: Ring nach innen, sonst wird er abgeschnitten
 .row:focus-visible,
 .bottom-nav a:focus-visible,
-.cdk-overlay-container .mat-menu-item:focus-visible {
+.cdk-overlay-container .mat-mdc-menu-item:focus-visible {
   outline-offset: -2px;
 }
 
@@ -187,9 +187,6 @@ body.mat-app-background {
 .pri { background: var(--pri); color: var(--on-pri); }
 .sec2 { background: var(--raised); color: var(--fg); box-shadow: inset 0 0 0 1px var(--raised-line); }
 .del { background: transparent; color: var(--neg); box-shadow: inset 0 0 0 1px var(--neg-line); }
-
-// Speichern laeuft: 18-px-Spinner im Button in Textfarbe (Theme-Farbe waere auf .pri unsichtbar)
-.btn .mat-progress-spinner circle { stroke: currentColor; }
 
 .icon-btn {
   width: 44px;
@@ -394,18 +391,20 @@ body.mat-app-background {
     }
 
     // Fokus zeigt der Rahmen (:focus-within), kein zweiter Ring am mat-select
-    .mat-select:focus-visible { outline: none; }
+    .mat-mdc-select:focus-visible { outline: none; }
   }
 
-  .mat-select { flex: 1; min-width: 0; font: inherit; color: var(--fg); }
-  .mat-select-arrow-wrapper { display: none; }
-  .mat-select-placeholder { color: var(--faint); }
+  .mat-mdc-select { flex: 1; min-width: 0; font: inherit; color: var(--fg); }
+  // Triggerhoehe wie Material 14 (1.125em), sonst steht ein eigener mat-select-trigger 1 px hoeher
+  .mat-mdc-select-trigger { height: 1.125em; }
+  .mat-mdc-select-arrow-wrapper { display: none; }
+  .mat-mdc-select-placeholder { color: var(--faint); }
 
   &.invalid .field-box { border-color: var(--neg); }
 
   // Deaktiviertes Formular (Lesemodus der Detailseiten): Input und mat-select gleich gedämpft
   input:disabled, textarea:disabled { color: var(--mut); -webkit-text-fill-color: var(--mut); }
-  .mat-select-disabled .mat-select-value { color: var(--mut); }
+  .mat-mdc-select-disabled .mat-mdc-select-value { color: var(--mut); }
 }
 
 .field-label { font-size: 13px; font-weight: 500; color: var(--mut); }
@@ -413,21 +412,49 @@ body.mat-app-background {
 .field-error { font-size: 12px; color: var(--neg); }
 .suffix { color: var(--mut); }
 
-// Material-Overrides ---------------------------------------------------------
+// Material-Overrides (MDC, Material 15) ---------------------------------------
+// Reihenfolge laut design.md: Theme-Werte, dann Komponenten-Tokens (--mdc-*-CSS-Variablen,
+// in 15 das Gegenstück zu den späteren mat.<component>-overrides), zuletzt MDC-Klassen.
 
-// Select-Panel
-.cdk-overlay-container .mat-select-panel {
+// Select-Panel. MDC: Panel so breit wie der Trigger, ohne Radius an der Trigger-Seite, 275 px hoch.
+// Wie Material 14: 16 px links ueberstehend (Optionstext fluchtet mit dem Wert im Feld), 256 px hoch.
+// (.cdk-overlay-pane ...: Spezifitaet ueber den Regeln des Select-Komponenten-CSS)
+.cdk-overlay-container .cdk-overlay-pane .mat-mdc-select-panel.mdc-menu-surface {
   background: var(--surface);
   border-radius: 12px;
   box-shadow: 0 0 0 1px var(--line3), 0 16px 40px -8px var(--sh7) !important;
   padding: 6px 0;
+  max-height: 256px;
+  width: calc(100% + 32px);
+  margin-left: -16px;
+
+  // Mehrfachauswahl: Optionstext steht hinter der Pseudo-Checkbox (Material 14: 40 px Versatz,
+  // 64 px breiter; ragt es links aus dem Viewport, rueckte Material 14 es auf 8 px Abstand).
+  // Mobil liegt der Trigger bei 31 px (16 px Rand + Feldinnenabstand), daher dort -23 px.
+  &:has(.mat-mdc-option-multiple) {
+    width: calc(100% + 64px);
+    margin-left: -40px;
+
+    @media (max-width: 1023.98px) { margin-left: -23px; }
+  }
 }
 
-.cdk-overlay-container .mat-option {
+// Pseudo-Checkbox der Mehrfachauswahl wie Material 14: 16 px, 8 px Abstand zum Text (MDC: 18 px / 16 px)
+.cdk-overlay-container .mat-mdc-option .mat-pseudo-checkbox-full {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+
+  &.mat-pseudo-checkbox-checked::after { width: 8px; height: 3px; top: 2.4px; left: 1px; right: auto; bottom: auto; margin: 0; }
+}
+
+.cdk-overlay-container .mat-mdc-option {
   color: var(--fg);
   font-size: 15px;
-  &:hover:not(.mat-option-disabled), &:focus:not(.mat-option-disabled) { background: var(--act); }
-  &.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) { background: var(--pri-soft); color: var(--pri-chip); }
+  // Wie Material 14: einzeilig mit Auslassungspunkten (MDC bricht lange Optionen um)
+  .mdc-list-item__primary-text { color: inherit; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  &:hover:not(.mdc-list-item--disabled), &:focus:not(.mdc-list-item--disabled) { background: var(--act); }
+  &.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled) { background: var(--pri-soft); color: var(--pri-chip); }
 }
 
 // Datepicker
@@ -438,11 +465,12 @@ body.mat-app-background {
   box-shadow: 0 0 0 1px var(--line3), 0 16px 40px -8px var(--sh7);
 }
 
-// Kalender-Button im Feld: Touch-Ziel mindestens 44 px (Material-Icon-Button hat 40 px)
-.mat-datepicker-toggle .mat-icon-button {
+// Kalender-Button im Feld: Touch-Ziel 44 px wie bisher (MDC-Icon-Button hat 48 px, die
+// Dichte-Styles des Themes setzen Breite/Hoehe direkt), 20-px-Icon mittig
+.mat-datepicker-toggle .mat-mdc-icon-button.mat-mdc-button-base {
   width: 44px;
   height: 44px;
-  line-height: 44px;
+  padding: 12px;
 
   // Material setzt outline: none; Ring nach innen, weil der Button fast so hoch ist wie das Feld
   &:focus-visible { outline: 2px solid var(--pri); outline-offset: -2px; }
@@ -462,72 +490,130 @@ body.mat-app-background {
 }
 
 // Menue
-.cdk-overlay-container .mat-menu-panel {
+.cdk-overlay-container .mat-mdc-menu-panel {
   background: var(--menu);
   border-radius: 12px !important;
   box-shadow: 0 0 0 1px var(--line3), 0 16px 40px -8px var(--sh7) !important;
 
-  .mat-menu-item { color: var(--fg); font-size: 15px; &:hover:not([disabled]) { background: var(--act); } }
+  .mat-mdc-menu-item { color: var(--fg); font-size: 15px; &:hover:not([disabled]) { background: var(--act); } }
+  // MDC faerbt Text und Icon im Eintrag selbst (rgba(0,0,0,.87)); wie Material 14: Text in --fg, Icon .54
+  .mat-mdc-menu-item .mdc-list-item__primary-text { color: inherit; }
+  .mat-mdc-menu-item .mat-icon-no-color { color: rgba(0, 0, 0, .54); }
 }
 
-// Snackbar: Basis fuer alle Snackbars (auch ohne panelClass) = andaha-snackbar + andaha-snackbar-info
-.cdk-overlay-container .mat-snack-bar-container {
+// Snackbar: Basis fuer alle Snackbars (auch ohne panelClass) = andaha-snackbar + andaha-snackbar-info.
+// MDC: Flaeche ist .mdc-snackbar__surface, der Container nur noch Rahmen fuer Breite und Abstand.
+.cdk-overlay-container .mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-color: var(--surface);
+  --mdc-snackbar-container-shape: 12px;
+  --mdc-snackbar-supporting-text-color: var(--fg);
+  // Schrift wie bisher 15/20, 500 (MDC: body-2 14/20, 400)
+  --mdc-snackbar-supporting-text-font: #{$andaha-font};
+  --mdc-snackbar-supporting-text-size: 15px;
+  --mdc-snackbar-supporting-text-line-height: 20px;
+  --mdc-snackbar-supporting-text-weight: 500;
   max-width: 480px !important;
   min-width: 0 !important;
   width: calc(100% - 24px);
   margin: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
-  padding: 12px 16px;
-  min-height: 48px;
-  border-radius: 12px;
+  flex: none;
   font-size: 15px;
   font-weight: 500;
-  background: var(--surface);
   color: var(--fg);
-  box-shadow: 0 0 0 1px var(--line3), 0 16px 40px -8px var(--sh7);
+
+  .mdc-snackbar__surface {
+    min-width: 0;
+    max-width: none;
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 16px;
+    box-shadow: 0 0 0 1px var(--line3), 0 16px 40px -8px var(--sh7);
+  }
+
+  // Innenabstand liegt wie bisher an der Flaeche (12/16), nicht zusaetzlich am MDC-Label (14/16/8)
+  .mdc-snackbar__label { padding: 0; }
 }
 
-.cdk-overlay-container .mat-snack-bar-container.andaha-snackbar-error {
-  background: var(--neg-bg);
+.cdk-overlay-container .mat-mdc-snack-bar-container.andaha-snackbar-error {
+  --mdc-snackbar-container-color: var(--neg-bg);
+  --mdc-snackbar-supporting-text-color: var(--neg-text);
   color: var(--neg-text);
-  box-shadow: 0 0 0 1px var(--neg-line), 0 16px 40px -8px var(--sh7);
+
+  .mdc-snackbar__surface { box-shadow: 0 0 0 1px var(--neg-line), 0 16px 40px -8px var(--sh7); }
 }
 
-// Fortschrittsbalken (3 px, Primaer; color="accent" in Templates wird bewusst ueberstimmt)
-body .mat-progress-bar {
-  height: 3px;
+// Fortschrittsbalken (3 px, Primaer; color="accent" in Templates wird bewusst ueberstimmt).
+// Die Spurfarbe ist in MDC kein Token (SVG-Puffer), daher Klasse.
+body .mat-mdc-progress-bar,
+body .mat-mdc-progress-bar.mat-accent,
+body .mat-mdc-progress-bar.mat-primary {
+  --mdc-linear-progress-active-indicator-color: var(--pri);
+  --mdc-linear-progress-track-height: 3px;
 
-  .mat-progress-bar-fill::after,
-  &.mat-accent .mat-progress-bar-fill::after,
-  &.mat-primary .mat-progress-bar-fill::after { background-color: var(--pri); }
-
-  .mat-progress-bar-background,
-  &.mat-accent .mat-progress-bar-background,
-  &.mat-primary .mat-progress-bar-background { fill: var(--pri-soft); }
-
-  .mat-progress-bar-buffer,
-  &.mat-accent .mat-progress-bar-buffer,
-  &.mat-primary .mat-progress-bar-buffer { background: var(--pri-soft); }
+  .mdc-linear-progress__buffer-bar { background-color: var(--pri-soft); }
 }
 
-// Checkbox / Radio
-.mat-checkbox-checked.mat-accent .mat-checkbox-background,
-.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background { background-color: var(--pri); }
-.mat-checkbox-frame { border-color: var(--line3); }
+// Speichern laeuft: 18-px-Spinner im Button in Textfarbe (Theme-Farbe waere auf .pri unsichtbar)
+.btn .mat-mdc-progress-spinner { --mdc-circular-progress-active-indicator-color: currentColor; }
 
-.mat-radio-button.mat-accent {
-  &.mat-radio-checked .mat-radio-outer-circle { border-color: var(--pri); }
-  .mat-radio-inner-circle, .mat-radio-ripple .mat-ripple-element { background-color: var(--pri); }
+// Checkbox / Radio (Farben ueber Komponenten-Tokens, Akzent wird auf Primaer gesetzt)
+.mat-mdc-checkbox.mat-accent,
+.mat-mdc-checkbox.mat-primary {
+  --mdc-checkbox-selected-icon-color: var(--pri);
+  --mdc-checkbox-selected-hover-icon-color: var(--pri);
+  --mdc-checkbox-selected-focus-icon-color: var(--pri);
+  --mdc-checkbox-selected-pressed-icon-color: var(--pri);
+  --mdc-checkbox-selected-checkmark-color: #FAFAFA; // Material 14: Theme-Hintergrund
+  --mdc-checkbox-unselected-icon-color: var(--line3);
+  --mdc-checkbox-unselected-hover-icon-color: var(--line3);
+  --mdc-checkbox-unselected-focus-icon-color: var(--line3);
+  --mdc-checkbox-unselected-pressed-icon-color: var(--line3);
+  // Lesemodus (disabled): Material 14 zeigte die gewaehlte Checkbox weiter in Primaer
+  --mdc-checkbox-disabled-selected-icon-color: var(--pri);
+  --mdc-checkbox-disabled-selected-checkmark-color: #FAFAFA;
+  --mdc-checkbox-disabled-unselected-icon-color: #B0B0B0; // Material 14: Rahmen deaktiviert
 }
-.mat-radio-outer-circle { border-color: var(--line3); }
+
+.mat-mdc-radio-button.mat-accent,
+.mat-mdc-radio-button.mat-primary {
+  --mdc-radio-selected-icon-color: var(--pri);
+  --mdc-radio-selected-hover-icon-color: var(--pri);
+  --mdc-radio-selected-focus-icon-color: var(--pri);
+  --mdc-radio-selected-pressed-icon-color: var(--pri);
+  --mdc-radio-unselected-icon-color: var(--line3);
+  --mdc-radio-unselected-hover-icon-color: var(--line3);
+  --mdc-radio-unselected-focus-icon-color: var(--line3);
+  --mdc-radio-unselected-pressed-icon-color: var(--line3);
+  --mat-mdc-radio-checked-ripple-color: var(--pri);
+
+  // Wie Material 14: 20-px-Kreis ohne Innenabstand (MDC: 10 px), Text 8 px daneben, Schrift vom Host.
+  // Zustandsflaeche (Hover/Fokus) bleibt 40 px um den Kreis, wie der Ripple in Material 14.
+  .mdc-radio { padding: 0; }
+  .mdc-radio .mdc-radio__native-control { top: -10px; left: -10px; right: auto; }
+  .mdc-form-field { font: inherit; letter-spacing: inherit; color: inherit; }
+  .mdc-form-field > label { padding-left: 8px; }
+
+  // Fokusflaeche nur bei Tastaturfokus (Material 14); MDC zeigt sie auch nach Mausklick
+  &:not(.cdk-keyboard-focused) .mdc-radio__native-control:focus + .mdc-radio__background::before { opacity: 0; transform: scale(0); }
+}
 
 // Checkbox nach Mockup 06 (22 px, Radius 6), nur mit Klasse andaha-checkbox
-.andaha-checkbox {
-  .mat-checkbox-layout { align-items: center; }
-  .mat-checkbox-inner-container { width: 22px; height: 22px; margin-right: 12px; }
-  .mat-checkbox-frame { border-radius: 6px; border-width: 1.5px; }
-  .mat-checkbox-background { border-radius: 6px; }
-  .mat-checkbox-label { font-size: 15px; color: var(--fg); }
-  &.mat-checkbox-disabled .mat-checkbox-label { color: var(--mut); }
+// (.andaha-checkbox.mat-mdc-checkbox: Komponenten-CSS wird nach styles.scss geladen, daher hoehere Spezifitaet)
+.andaha-checkbox.mat-mdc-checkbox {
+  --mdc-checkbox-state-layer-size: 22px;
+
+  .mdc-form-field { font: inherit; letter-spacing: inherit; }
+  .mdc-checkbox { padding: 0; width: 22px; height: 22px; flex: 0 0 22px; }
+  .mdc-checkbox .mdc-checkbox__background { top: 0; left: 0; width: 22px; height: 22px; border-radius: 6px; border-width: 1.5px; }
+  // Haken wie in Material 14: gleiche Form, MDC zeichnet ihn aber 1,3x groesser und dicker.
+  // Auf 76,9 % verkleinert und mittig (2,54 px Rand ab Kachelkante, abzgl. 1,5 px Rahmen).
+  .mdc-checkbox__checkmark { inset: 1.04px; width: auto; }
+  .mdc-checkbox__checkmark-path { stroke-width: 2.6px; }
+  .mdc-form-field > label { padding-left: 12px; font-size: 15px; line-height: 24px; color: var(--fg); }
+  &.mat-mdc-checkbox-disabled label { color: var(--mut); }
+
+  // Fokusflaeche nur bei Tastaturfokus (Material 14); MDC zeigt sie auch nach Mausklick
+  &:not(.cdk-keyboard-focused) .mdc-checkbox .mdc-checkbox__native-control:not([disabled]):focus ~ .mdc-checkbox__ripple { opacity: 0; }
 }
 
 // Drag & Drop (Kategorien, Unterkategorien) -----------------------------------
@@ -549,30 +635,54 @@ body .cdk-drag-preview.andaha-drag-item {
 }
 
 // Dialoge: Bottom Sheet (< 600 px) und zentrierter Dialog (>= 600 px) -------------
+// MDC-Aufbau: mat-dialog-container > .mdc-dialog__container > .mdc-dialog__surface > Feature-Komponente.
+// Flaeche (Farbe, Radius, Schatten) ueber die Dialog-Tokens, Layout ueber die Surface.
 
 .cdk-overlay-container .cdk-overlay-dark-backdrop { background: var(--scrim); }
 
+// Alle Dialoge (auch Zeitauswahl): Inhalt wie in Material 14 in der Body-Schrift (.mat-typography: 14/20, 400)
+// und Textfarbe des Containers statt der MDC-Dialogtypografie (body-1, Farbe .6).
+// (Werte explizit: "inherit" in einer Custom Property wuerde auf den MDC-Fallback 14/14 500 fallen.)
+.cdk-overlay-container .mat-mdc-dialog-container {
+  --mdc-dialog-supporting-text-font: #{$andaha-font};
+  --mdc-dialog-supporting-text-size: 14px;
+  --mdc-dialog-supporting-text-line-height: 20px;
+  --mdc-dialog-supporting-text-weight: 400;
+  --mdc-dialog-supporting-text-tracking: normal;
+  --mdc-dialog-supporting-text-color: rgba(0, 0, 0, .87);
+}
+
 .cdk-overlay-container .andaha-sheet,
 .cdk-overlay-container .andaha-dialog {
-  .mat-dialog-container {
+  .mat-mdc-dialog-container {
+    --mdc-dialog-container-color: var(--surface);
+    --mdc-dialog-subhead-color: var(--fg);
+    --mdc-dialog-supporting-text-color: var(--fg);
+    color: var(--fg);
+  }
+
+  .mat-mdc-dialog-container .mdc-dialog__surface {
     display: flex;
     flex-direction: column;
-    padding: 0;
-    background: var(--surface);
-    color: var(--fg);
     overflow: hidden;
   }
 
-  // Host der Feature-Dialogkomponente liegt zwischen Container und app-dialog;
+  // Host der Feature-Dialogkomponente liegt zwischen Surface und app-dialog;
   // ohne diese Regel reißt die max-height-Kette und die Aktionen fallen aus dem Sheet
-  .mat-dialog-container > * {
+  .mdc-dialog__surface > * {
     display: flex;
     flex-direction: column;
     min-height: 0;
     max-height: inherit;
   }
 
-  .mat-dialog-content {
+  // Titel in app-dialog: MDC setzt Innenabstand und eine 40-px-Grundlinienhilfe (::before)
+  .mat-mdc-dialog-title {
+    padding: 0;
+    &::before { content: none; display: none; }
+  }
+
+  .mat-mdc-dialog-content {
     flex: 1 1 auto;
     min-height: 0;
     max-height: none;
@@ -595,23 +705,46 @@ body .cdk-drag-preview.andaha-drag-item {
   max-height: 90vh;
   max-height: 90dvh;
 
-  .mat-dialog-container {
+  .mat-mdc-dialog-container {
+    --mdc-dialog-container-shape: 20px 20px 0 0;
+    --mdc-dialog-container-elevation: 0 -12px 40px var(--sh5);
     max-height: 90vh;
     max-height: 90dvh;
-    border-radius: 20px 20px 0 0;
-    box-shadow: 0 -12px 40px var(--sh5);
-    // Home-Indicator / Android-Navigationsleiste (viewport-fit=cover): Sheet endet nicht buendig am Rand
-    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
+
+  // Home-Indicator / Android-Navigationsleiste (viewport-fit=cover): Sheet endet nicht buendig am Rand
+  .mat-mdc-dialog-container .mdc-dialog__surface { padding-bottom: env(safe-area-inset-bottom, 0px); }
 }
 
 .cdk-overlay-container .andaha-dialog {
-  .mat-dialog-container {
+  .mat-mdc-dialog-container {
+    --mdc-dialog-container-shape: 16px;
+    --mdc-dialog-container-elevation: 0 16px 40px -8px var(--sh7);
     max-height: 90vh;
     max-height: 90dvh;
-    border-radius: 16px;
-    box-shadow: 0 16px 40px -8px var(--sh7);
   }
+}
+
+// Zeitauswahl (ngx-mat-timepicker 15, MDC-Buttons) wie mit Material 14 --------------
+.cdk-overlay-container .ngx-mat-timepicker-dialog {
+  // Ziffern: Button-Schrift von Material 14 (14/500, Textfarbe), MDC-Mini-FAB hat keine Typografie
+  .clock-face .mat-mdc-mini-fab {
+    font-family: $andaha-font;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: normal;
+    box-shadow: none; // mat-elevation-z0 der Bibliothek; MDC-FAB setzt seinen Schatten spezifischer
+  }
+  .clock-face .mat-mdc-mini-fab.mat-void { color: rgba(0, 0, 0, .87); }
+
+  // Aktionszeile wie .mat-dialog-actions in Material 14 (52 px + 8 px oben/unten, 24 px seitlich)
+  .mat-mdc-dialog-actions {
+    box-sizing: content-box;
+    min-height: 52px;
+    padding: 8px 24px;
+    border-top: 0;
+  }
+  .mat-mdc-dialog-actions .mat-mdc-button.mat-mdc-button-base { padding: 0 16px; }
 }
 
 // Shell ---------------------------------------------------------------
