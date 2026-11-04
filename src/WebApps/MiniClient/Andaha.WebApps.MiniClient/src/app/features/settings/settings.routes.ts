@@ -20,12 +20,12 @@ export const routes: Routes = [
     children: [
       {
         path: 'connections',
-        data: { title: 'Verbindungen' },
+        data: { title: 'Verbindungen', back: '/more' },
         loadComponent: () => import('./modules/connection/connection.component').then(m => m.ConnectionComponent)
       },
       {
         path: 'categories',
-        data: { title: 'Kategorien' },
+        data: { title: 'Kategorien', back: '/more' },
         loadChildren: () => import('./modules/categories/categories.routes').then(m => m.routes)
       }
     ]

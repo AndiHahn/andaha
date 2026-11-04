@@ -1,14 +1,4 @@
 <div class="area">
+  <app-area-tabs [area]="area" />
   <router-outlet />
-  <nav class="bottom-nav" aria-label="Rechnungen">
-    <a routerLink="bill/list" routerLinkActive="on" #rla0="routerLinkActive" [attr.aria-current]="rla0.isActive ? 'page' : null">
-      <mat-icon>list</mat-icon>Rechnungen
-    </a>
-    <a routerLink="bill/create" routerLinkActive="on" #rla1="routerLinkActive" [attr.aria-current]="rla1.isActive ? 'page' : null">
-      <mat-icon>add_circle</mat-icon>Hinzufügen
-    </a>
-    <a routerLink="bill/expenses" routerLinkActive="on" #rla2="routerLinkActive" [attr.aria-current]="rla2.isActive ? 'page' : null">
-      <mat-icon>donut_small</mat-icon>Statistik
-    </a>
-  </nav>
 </div>

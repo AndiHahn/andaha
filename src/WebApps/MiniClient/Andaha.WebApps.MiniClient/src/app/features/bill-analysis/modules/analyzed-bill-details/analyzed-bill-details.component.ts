@@ -38,13 +38,13 @@ export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const billId = getParametersFromRouteRecursive(this.route.snapshot)['id'];
     if (!billId) {
-      leaveDetailNotFound(this.router, this.snackbar, '/analyzed/list');
+      leaveDetailNotFound(this.router, this.snackbar, '/bill/analysis');
       return;
     }
 
     this.analyzedContext.byId(billId).pipe(takeUntil(this.destroy$)).subscribe(bill => {
       if (!bill) {
-        leaveDetailNotFound(this.router, this.snackbar, '/analyzed/list');
+        leaveDetailNotFound(this.router, this.snackbar, '/bill/analysis');
         return;
       }
 

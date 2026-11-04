@@ -1,0 +1,80 @@
+// Tabs (v2 README „Komponenten“): 46 px, gleich breit, 15/500 muted, aktiv 15/600 fg mit 2-px-Unterstrich
+// primary (16 px eingerückt), Linie line unten. Zähler-Badge 20 px secondary-soft / secondary-text 12/600.
+:host {
+  display: block;
+  flex: none;
+}
+
+.tabs {
+  display: flex;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--line);
+
+  a {
+    flex: 1;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--mut);
+    text-decoration: none;
+    position: relative;
+
+    &:focus-visible { outline-offset: -2px; }
+
+    &.on {
+      color: var(--fg);
+      font-weight: 600;
+    }
+
+    &.on::after {
+      content: "";
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: -1px;
+      height: 2px;
+      border-radius: 2px 2px 0 0;
+      background: var(--pri);
+    }
+  }
+}
+
+.cnt {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: var(--sec-soft);
+  color: var(--sec-text);
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Desktop (04-shortcut-desktop): Tabs unter dem Titel, linksbündig, 48 px, 40 px Seitenrand
+@media (min-width: 1024px) {
+  .tabs {
+    gap: 4px;
+    margin: 12px 40px 0;
+    padding: 0;
+
+    a {
+      flex: none;
+      height: 48px;
+      gap: 8px;
+      padding: 0 14px;
+
+      &.on { font-weight: 500; }
+      &.on::after {
+        left: 10px;
+        right: 10px;
+      }
+    }
+  }
+}

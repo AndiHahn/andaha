@@ -1,0 +1,9 @@
+@let activeId = activeId$ | async;
+<nav class="bar" aria-label="Hauptbereiche">
+  @for (area of areas; track area.id) {
+    <a [routerLink]="area.path" [class.on]="area.id === activeId" [attr.aria-current]="area.id === activeId ? 'page' : null">
+      <mat-icon aria-hidden="true">{{ area.icon }}</mat-icon>
+      {{ area.label }}
+    </a>
+  }
+</nav>

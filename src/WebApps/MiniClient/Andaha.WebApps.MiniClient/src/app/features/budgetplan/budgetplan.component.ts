@@ -1,19 +1,15 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { MatIcon } from '@angular/material/icon';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { AreaTabsComponent } from 'src/app/core/navigation/area-tabs/area-tabs.component';
+import { navArea } from 'src/app/core/navigation/nav-areas';
 
 @Component({
     selector: 'app-budgetplan',
     templateUrl: './budgetplan.component.html',
     styleUrls: ['./budgetplan.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [RouterOutlet, RouterLink, RouterLinkActive, MatIcon]
+    imports: [RouterOutlet, AreaTabsComponent]
 })
-export class BudgetplanComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+export class BudgetplanComponent {
+  readonly area = navArea('budgetplan');
 }

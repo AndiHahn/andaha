@@ -39,7 +39,6 @@ body.mat-app-background {
 
 // Elemente, die bis an den Rand eines scrollenden Containers reichen: Ring nach innen, sonst wird er abgeschnitten
 .row:focus-visible,
-.bottom-nav a:focus-visible,
 .cdk-overlay-container .mat-mdc-menu-item:focus-visible {
   outline-offset: -2px;
 }
@@ -307,42 +306,6 @@ body.mat-app-background {
   input[type="radio"]:checked + span { background: var(--seg-on); color: var(--fg); box-shadow: 0 1px 2px var(--sh4); }
   // Das Radio selbst ist unsichtbar: Fokusring (wie :focus-visible global) auf die sichtbare Option legen
   input[type="radio"]:focus-visible + span { outline: 2px solid var(--pri); outline-offset: 2px; }
-}
-
-// Bereichsnavigation unten (Mobile)
-.bottom-nav {
-  flex: none;
-  height: 64px;
-  display: flex;
-  border-top: 1px solid var(--line);
-  background: var(--bg);
-
-  a {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    color: var(--faint);
-    text-decoration: none;
-    font-size: 12px;
-    font-weight: 500;
-    position: relative;
-
-    &.on { color: var(--fg); }
-    &.on .mat-icon { color: var(--pri-text); }
-    &.on::before {
-      content: "";
-      position: absolute;
-      top: -1px;
-      left: calc(50% - 14px);
-      width: 28px;
-      height: 2px;
-      background: var(--pri);
-      border-radius: 0 0 2px 2px;
-    }
-  }
 }
 
 // Feld
@@ -819,93 +782,47 @@ body .cdk-drag-preview.andaha-drag-item {
 .shell .mat-drawer { overflow-x: hidden; }
 .shell .mat-drawer-inner-container { display: flex; flex-direction: column; }
 
-// Bereichskomponenten: Seite scrollt, Navigation bleibt am Ende
+// Bereichskomponenten: Tabs oben fest, die Seite darunter scrollt (Tabs: core/navigation/area-tabs)
 .area {
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
 
-  > :not(router-outlet):not(.bottom-nav) {
+  > :not(router-outlet):not(app-area-tabs) {
     flex: 1 1 auto;
     min-height: 0;
     overflow: auto;
   }
 }
 
-// Bereichsnavigation als Tabs unter dem Titel (Desktop)
-@media (min-width: 1024px) {
-  .area > .bottom-nav {
-    order: -1;
-    height: auto;
-    flex: none;
-    margin: 12px 40px 0;
-    gap: 4px;
-    flex-wrap: wrap;
-    border-top: 0;
-    border-bottom: 1px solid var(--line);
-    background: transparent;
-
-    a {
-      flex: none;
-      flex-direction: row;
-      gap: 8px;
-      height: 48px;
-      padding: 0 14px;
-      color: var(--mut);
-      font-size: 15px;
-
-      &.on { color: var(--fg); }
-      &.on::before { content: none; }
-      &.on::after {
-        content: "";
-        position: absolute;
-        left: 10px;
-        right: 10px;
-        bottom: -1px;
-        height: 2px;
-        background: var(--pri);
-        border-radius: 2px 2px 0 0;
-      }
-    }
-  }
+// FAB (v2, AC5): rechts unten über der Hauptleiste, 16 px Rand. Die Seite ist der Bezugsrahmen
+// (position: relative) und lässt unten Platz, damit die letzte Zeile nicht verdeckt wird.
+.fab.mat-mdc-fab {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1;
+  --mat-fab-container-shape: 16px;
+  --mat-fab-container-elevation-shadow: #{$andaha-shadow-md};
+  --mat-fab-hover-container-elevation-shadow: #{$andaha-shadow-md};
+  --mat-fab-focus-container-elevation-shadow: #{$andaha-shadow-md};
+  --mat-fab-pressed-container-elevation-shadow: #{$andaha-shadow-md};
 }
 
-// Drawer/Sidebar des Shells (Mobile 304 px, Desktop 248 px), Markup in app.component.html
+// Sidebar des Shells, nur Desktop (248 px, 04-shortcut-desktop), Markup in app.component.html
 .side {
   // Breite, Flaeche und Text setzt Material ab 17/18 im Komponenten-CSS ueber Tokens.
-  // Den Schatten setzt Material selbst (Elevation 16, schon bis 15); ein eigener box-shadow hier wirkte nie.
-  // (Absicht aus dem Redesign war 12px 0 40px var(--sh5).)
-  --mat-sidenav-container-width: 304px;
-  --mat-sidenav-container-background-color: var(--surface);
+  --mat-sidenav-container-width: 248px;
+  --mat-sidenav-container-background-color: var(--side);
   --mat-sidenav-container-text-color: var(--fg);
-  max-width: 100%;
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  border-right: 0;
-
-  &.side-desktop {
-    --mat-sidenav-container-width: 248px;
-    --mat-sidenav-container-background-color: var(--side);
-    --mat-sidenav-container-divider-color: var(--line);
-    border-right: 1px solid var(--line);
-    box-shadow: none;
-  }
+  --mat-sidenav-container-divider-color: var(--line);
+  border-right: 1px solid var(--line);
+  box-shadow: none;
 }
 
 .side-head {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 22px 24px 20px;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 10px;
-}
-
-.side-desktop .side-head {
   padding: 24px 26px;
-  border-bottom: 0;
-  margin-bottom: 0;
 }
 
 .brand {
@@ -914,48 +831,38 @@ body .cdk-drag-preview.andaha-drag-item {
   letter-spacing: -.03em;
 }
 
-.side-user {
-  font-size: 14px;
-  color: var(--mut);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.side-sync {
-  width: 15px;
-  height: 15px;
-  font-size: 15px;
-  line-height: 15px;
-  color: var(--pri-text);
-}
-
 .dl {
   display: flex;
   align-items: center;
-  gap: 14px;
-  height: 52px;
-  margin: 0 10px;
-  padding: 0 14px;
-  border-radius: 12px;
+  gap: 12px;
+  height: 44px;
+  margin: 2px 14px;
+  padding: 0 12px;
+  border-radius: 10px;
   color: var(--fg2);
   text-decoration: none;
   font-size: 15px;
   font-weight: 500;
   flex: none;
 
-  .mat-icon { color: var(--mut); }
+  .mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    line-height: 20px;
+    color: var(--mut);
+  }
   &:hover { background: var(--menu); }
   &.on { background: var(--act); color: var(--fg); }
   &.on .mat-icon { color: var(--pri-text); }
 }
 
-.side-desktop .dl {
-  height: 44px;
-  gap: 12px;
-  margin: 2px 14px;
-  padding: 0 12px;
-  border-radius: 10px;
+// Gruppenkopf „Mehr“ in der Sidebar
+.grp {
+  padding: 18px 26px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mut);
 }
 
 .grow { flex: 1; min-height: 16px; }
@@ -964,7 +871,7 @@ body .cdk-drag-preview.andaha-drag-item {
   display: flex;
   flex-wrap: wrap;
   gap: 4px 14px;
-  padding: 16px 24px 24px;
+  padding: 16px 26px 24px;
   border-top: 1px solid var(--line);
   font-size: 13px;
 
@@ -978,6 +885,3 @@ body .cdk-drag-preview.andaha-drag-item {
     align-items: center;
   }
 }
-
-.side-desktop .legal { padding: 16px 26px 24px; }
-

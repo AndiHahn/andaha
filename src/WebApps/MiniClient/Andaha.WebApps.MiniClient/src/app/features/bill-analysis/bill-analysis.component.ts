@@ -1,15 +1,13 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { MatIcon } from '@angular/material/icon';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
+// Host der Analyse-Seiten unter /bill/analysis; Tabs und Hauptleiste kommen von app-bill bzw. der Shell
 @Component({
     selector: 'app-bill-analysis',
     templateUrl: './bill-analysis.component.html',
     styleUrls: ['./bill-analysis.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [RouterOutlet, RouterLink, RouterLinkActive, MatIcon]
+    imports: [RouterOutlet]
 })
-export class BillAnalysisComponent implements OnInit {
-  constructor() { }
-  ngOnInit(): void { }
+export class BillAnalysisComponent {
 }

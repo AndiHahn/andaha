@@ -1,0 +1,15 @@
+@let url = (url$ | async) ?? '';
+@if (isTabPage(area, url)) {
+  @let active = findTabIndex(area, url);
+  @let analysisCount = (analysisCount$ | async) ?? 0;
+  <nav class="tabs" role="tablist" [attr.aria-label]="area.label">
+    @for (tab of area.tabs; track tab.path; let i = $index) {
+      <a role="tab" [routerLink]="tab.path" [class.on]="i === active" [attr.aria-selected]="i === active">
+        {{ tab.label }}
+        @if (tab.badge === 'analysis' && analysisCount > 0) {
+          <span class="cnt">{{ analysisCount }}</span>
+        }
+      </a>
+    }
+  </nav>
+}

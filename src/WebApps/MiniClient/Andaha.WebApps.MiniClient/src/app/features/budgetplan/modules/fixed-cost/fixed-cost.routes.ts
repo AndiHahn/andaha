@@ -4,7 +4,7 @@ import { FixedCostComponent } from './fixed-cost.component';
 export const routes: Routes = [
   {
     path: '',
-    data: { title: 'Fixkosten' },
+    data: { title: 'Haushalt' },
     component: FixedCostComponent
   },
   {

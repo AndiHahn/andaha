@@ -1,20 +1,23 @@
-// Seite im Flex-Fluss der .area: Liste scrollt, Aktionsleiste bleibt ueber der Bereichsnavigation
+// Seite im Flex-Fluss der .area: Liste scrollt, FAB (global .fab) rechts unten ueber der Hauptleiste
 :host {
   display: flex;
   flex-direction: column;
 }
 
 .page {
+  position: relative;
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
 }
 
+// unten Platz fuer den FAB (56 px + 2 x 16 px), damit die letzte Zeile nicht verdeckt wird
 .body {
   flex: 1;
   min-height: 0;
   overflow: auto;
+  padding-bottom: 88px;
 }
 
 .loading {
@@ -23,30 +26,8 @@
   padding-top: 30px;
 }
 
-// Desktop: Inhaltsspalte, Aktionen rechtsbuendig am Ende (DESIGN.md Layout)
+// Desktop: Inhaltsspalte mit 40 px Seitenrand (DESIGN.md Layout), FAB bleibt rechts unten
 @media (min-width: 1024px) {
-  .page {
-    display: block;
-    overflow: auto;
-  }
-
-  .body,
-  .actions {
-    max-width: 560px;
-    margin: 0 40px;
-  }
-
-  .body {
-    overflow: visible;
-    padding-top: 8px;
-  }
-
-  .actions {
-    justify-content: flex-end;
-    padding: 16px 0 24px;
-    border-top: 0;
-    background: transparent;
-
-    .btn { flex: none; min-width: 160px; }
-  }
+  // Inhaltsspalte 560 px; der rechte Innenabstand fuellt den Rest, so bleibt die Scrollleiste am Fensterrand
+  .body { padding: 8px max(40px, calc(100% - 600px)) 88px 40px; }
 }

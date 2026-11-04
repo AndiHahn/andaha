@@ -1,60 +1,42 @@
 <mat-sidenav-container class="shell">
-  <mat-sidenav #sidenav class="side" [class.side-desktop]="isDesktop$ | async"
-    [mode]="(isDesktop$ | async) ? 'side' : 'over'" [opened]="isDesktop$ | async"
-    [disableClose]="isDesktop$ | async"
+  <!-- Sidebar nur Desktop (04-shortcut-desktop); Mobile hat die Hauptleiste unten -->
+  <mat-sidenav class="side" mode="side" [opened]="isDesktop$ | async" disableClose
     role="navigation" aria-label="Hauptnavigation">
+    @let activeAreaId = activeAreaId$ | async;
     <div class="side-head">
       <span class="brand">Andaha</span>
-      @if (!(isDesktop$ | async)) {
-        <span class="side-user">
-          {{ userName }}
-          @if (syncActive) {
-            <mat-icon class="side-sync" role="img" aria-label="Synchronisierung aktiv">sync</mat-icon>
-          }
-        </span>
-      }
     </div>
 
-    <span hidden routerLink="/bill" routerLinkActive #billActive="routerLinkActive"></span>
-    <a class="dl" routerLink="/" [class.on]="billActive.isActive" (click)="sidenav.mode === 'over' && sidenav.close()">
-      <mat-icon>receipt_long</mat-icon>Rechnungen
-    </a>
-    <a class="dl" routerLink="/analyzed" routerLinkActive="on" (click)="sidenav.mode === 'over' && sidenav.close()">
-      <mat-icon>document_scanner</mat-icon>Analyse
-    </a>
-    <a class="dl" routerLink="/budgetplan" routerLinkActive="on" (click)="sidenav.mode === 'over' && sidenav.close()">
-      <mat-icon>account_balance_wallet</mat-icon>Haushaltsplan
-    </a>
-    <a class="dl" routerLink="/work" routerLinkActive="on" (click)="sidenav.mode === 'over' && sidenav.close()">
-      <mat-icon>group</mat-icon>Stundenaufzeichnungen
-    </a>
-    <a class="dl" routerLink="/settings" routerLinkActive="on" (click)="sidenav.mode === 'over' && sidenav.close()">
-      <mat-icon>settings</mat-icon>Einstellungen
-    </a>
-    <a class="dl" routerLink="/export" routerLinkActive="on" (click)="sidenav.mode === 'over' && sidenav.close()">
-      <mat-icon>download</mat-icon>Export
-    </a>
+    @for (area of mainAreas; track area.id) {
+      <a class="dl" [routerLink]="area.path" [class.on]="area.id === activeAreaId" [attr.aria-current]="area.id === activeAreaId ? 'page' : null">
+        <mat-icon aria-hidden="true">{{ area.icon }}</mat-icon>{{ area.label }}
+      </a>
+    }
+
+    <div class="grp">Mehr</div>
+    @for (link of moreLinks; track link.path) {
+      <a class="dl" [routerLink]="link.path" routerLinkActive="on" ariaCurrentWhenActive="page">
+        <mat-icon aria-hidden="true">{{ link.icon }}</mat-icon>{{ link.label }}
+      </a>
+    }
 
     <div class="grow"></div>
     <div class="legal">
-      <a routerLink="/agb" (click)="sidenav.mode === 'over' && sidenav.close()">AGB</a>
-      <a routerLink="/data-protection" (click)="sidenav.mode === 'over' && sidenav.close()">Datenschutzerklärung</a>
-      <a routerLink="/user-data" (click)="sidenav.mode === 'over' && sidenav.close()">Benutzerdaten</a>
+      @for (link of legalLinks; track link.path) {
+        <a [routerLink]="link.path">{{ link.label }}</a>
+      }
     </div>
   </mat-sidenav>
 
   <mat-sidenav-content class="shell-main">
-    <!-- Kopf Mobile -->
+    <!-- Kopf Mobile: Titel links (Detailseiten mit Zurück-Pfeil), rechts Aktion, Sync, Konto; kein Menü-Icon -->
     @if (!(isDesktop$ | async)) {
-      <header class="top">
-        @if (back$ | async; as back) {
+      @let back = back$ | async;
+      <header class="top" [class.has-back]="back">
+        @if (back) {
           <a class="icon-btn" [routerLink]="back" aria-label="Zurück">
             <mat-icon>arrow_back</mat-icon>
           </a>
-        } @else {
-          <button type="button" class="icon-btn" (click)="sidenav.toggle()" aria-label="Menü öffnen">
-            <mat-icon>menu</mat-icon>
-          </button>
         }
         <h1 class="top-title">{{ title$ | async }}</h1>
         @if (action$ | async; as action) {
@@ -117,5 +99,10 @@
         <router-outlet />
       }
     </main>
+
+    <!-- Hauptleiste nur Mobile (< 1024 px) -->
+    @if (!(isDesktop$ | async)) {
+      <app-bottom-bar />
+    }
   </mat-sidenav-content>
 </mat-sidenav-container>

@@ -13,19 +13,23 @@
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+// Kopfzeile Mobile (v2): 56 px, Titel links mit 16 px Rand, ohne Linie (die Tabs bringen ihre eigene mit)
 .top {
   height: 56px;
   flex: none;
   display: flex;
   align-items: center;
   gap: 2px;
-  padding: 0 6px;
+  padding: 0 6px 0 16px;
   background: var(--bg);
-  border-bottom: 1px solid var(--line);
+
+  // Detailseiten: Zurück-Pfeil links
+  &.has-back { padding-left: 6px; }
+  &.has-back .top-title { margin-left: 6px; }
 }
 
 .top-title {
-  margin: 0 0 0 6px;
+  margin: 0;
   font-size: 18px;
   font-weight: 600;
   letter-spacing: -.01em;

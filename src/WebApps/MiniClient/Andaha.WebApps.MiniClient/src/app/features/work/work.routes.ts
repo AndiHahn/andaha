@@ -13,12 +13,12 @@ export const routes: Routes = [
     children: [
       {
         path: 'person',
-        data: { title: 'Stundenaufzeichnungen' },
+        data: { title: 'Stunden' },
         loadChildren: () => import('./modules/person/person.routes').then(m => m.routes)
       },
       {
         path: 'statistics',
-        data: { title: 'Statistik' },
+        data: { title: 'Stunden' },
         loadComponent: () => import('./modules/statistics/statistics.component').then(m => m.StatisticsComponent)
       }
     ]

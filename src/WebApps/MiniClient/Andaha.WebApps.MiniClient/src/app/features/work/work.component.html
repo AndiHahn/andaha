@@ -1,11 +1,4 @@
 <div class="area">
+  <app-area-tabs [area]="area" />
   <router-outlet />
-  <nav class="bottom-nav" aria-label="Stunden">
-    <a routerLink="person" routerLinkActive="on" #rla0="routerLinkActive" [attr.aria-current]="rla0.isActive ? 'page' : null">
-      <mat-icon>group</mat-icon>Personen
-    </a>
-    <a routerLink="statistics" routerLinkActive="on" #rla1="routerLinkActive" [attr.aria-current]="rla1.isActive ? 'page' : null">
-      <mat-icon>donut_small</mat-icon>Statistik
-    </a>
-  </nav>
 </div>

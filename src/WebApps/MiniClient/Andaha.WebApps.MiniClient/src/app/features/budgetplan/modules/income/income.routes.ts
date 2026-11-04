@@ -4,7 +4,7 @@ import { IncomeComponent } from './income.component';
 export const routes: Routes = [
   {
     path: '',
-    data: { title: 'Einkommen' },
+    data: { title: 'Haushalt' },
     component: IncomeComponent
   },
   {

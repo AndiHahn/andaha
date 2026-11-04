@@ -13,7 +13,7 @@ export const routes: Routes = [
     children: [
       {
         path: 'overview',
-        data: { title: 'Haushaltsplan' },
+        data: { title: 'Haushalt' },
         loadComponent: () => import('./modules/overview/overview.component').then(m => m.OverviewComponent)
       },
       {

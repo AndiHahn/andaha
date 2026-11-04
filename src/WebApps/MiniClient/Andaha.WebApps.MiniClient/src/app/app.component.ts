@@ -8,22 +8,26 @@ import { HeaderAction, PageTitleService } from './core/page-title/page-title.ser
 import { AppUpdateService } from './core/app-update.service';
 import { MatSidenavContainer, MatSidenav, MatSidenavContent } from '@angular/material/sidenav';
 import { MatIcon } from '@angular/material/icon';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { AsyncPipe } from '@angular/common';
+import { BottomBarComponent } from './core/navigation/bottom-bar/bottom-bar.component';
+import { currentUrl$ } from './core/navigation/current-url';
+import { findArea, LEGAL_LINKS, MORE_DATA, MORE_SETTINGS, NAV_AREAS, NavArea } from './core/navigation/nav-areas';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [MatSidenavContainer, MatSidenav, MatIcon, RouterLink, RouterLinkActive, MatSidenavContent, MatMenuTrigger, MatMenu, MatMenuItem, RouterOutlet, AsyncPipe]
+    imports: [MatSidenavContainer, MatSidenav, MatIcon, RouterLink, RouterLinkActive, MatSidenavContent, MatMenuTrigger, MatMenu, MatMenuItem, RouterOutlet, AsyncPipe, BottomBarComponent]
 })
 export class AppComponent implements OnInit {
   private appUpdateService = inject(AppUpdateService);
   private authService = inject(AuthService);
   private billContextService = inject(BillContextService);
   private breakpointObserver = inject(BreakpointObserver);
+  private router = inject(Router);
 
   title = 'Andaha.WebApps.MiniClient';
 
@@ -32,6 +36,12 @@ export class AppComponent implements OnInit {
   userName: string = '';
   isLoggedIn: boolean = false;
   syncActive: boolean = true;
+
+  // Desktop-Sidebar: Bereiche mit Tabs, darunter Gruppe „Mehr“ und Rechtliches
+  readonly mainAreas = NAV_AREAS.filter(area => area.id !== 'more');
+  readonly moreLinks = [...MORE_SETTINGS, ...MORE_DATA];
+  readonly legalLinks = LEGAL_LINKS;
+  readonly activeAreaId$: Observable<NavArea['id'] | undefined> = currentUrl$(this.router).pipe(map(url => findArea(url)?.id));
 
   readonly isDesktop$: Observable<boolean>;
   readonly title$: Observable<string>;

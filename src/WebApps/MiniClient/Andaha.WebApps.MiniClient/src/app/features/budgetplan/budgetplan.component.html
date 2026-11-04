@@ -1,14 +1,4 @@
 <div class="area">
+  <app-area-tabs [area]="area" />
   <router-outlet />
-  <nav class="bottom-nav" aria-label="Haushaltsplan">
-    <a routerLink="overview" routerLinkActive="on" #rla0="routerLinkActive" [attr.aria-current]="rla0.isActive ? 'page' : null">
-      <mat-icon>account_balance_wallet</mat-icon>Haushaltsplan
-    </a>
-    <a routerLink="fixedcost" routerLinkActive="on" #rla1="routerLinkActive" [attr.aria-current]="rla1.isActive ? 'page' : null">
-      <mat-icon>north_east</mat-icon>Fixkosten
-    </a>
-    <a routerLink="income" routerLinkActive="on" #rla2="routerLinkActive" [attr.aria-current]="rla2.isActive ? 'page' : null">
-      <mat-icon>south_west</mat-icon>Einkommen
-    </a>
-  </nav>
 </div>

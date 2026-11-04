@@ -1,0 +1,49 @@
+// Hauptleiste (v2 README „Komponenten“): 64 px, Icon 22 + Label 12, aktiv Text fg, Icon primary, 28×2-px-Strich oben
+:host {
+  display: block;
+  flex: none;
+}
+
+.bar {
+  height: 64px;
+  display: flex;
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+
+  a {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    color: var(--faint);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    position: relative;
+
+    // Fokusring nach innen, die Leiste reicht bis an den Rand
+    &:focus-visible { outline-offset: -2px; }
+
+    &.on { color: var(--fg); }
+    &.on .mat-icon { color: var(--pri-text); }
+    &.on::before {
+      content: "";
+      position: absolute;
+      top: -1px;
+      left: calc(50% - 14px);
+      width: 28px;
+      height: 2px;
+      background: var(--pri);
+      border-radius: 0 0 2px 2px;
+    }
+  }
+
+  .mat-icon {
+    width: 22px;
+    height: 22px;
+    font-size: 22px;
+    line-height: 22px;
+  }
+}

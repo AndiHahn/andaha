@@ -5,13 +5,14 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { IncomeListComponent } from './income-list/income-list.component';
 import { RouterLink } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
+import { MatFabButton } from '@angular/material/button';
 
 @Component({
     selector: 'app-income',
     templateUrl: './income.component.html',
     styleUrls: ['./income.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [MatProgressSpinner, IncomeListComponent, RouterLink, MatIcon]
+    imports: [MatProgressSpinner, IncomeListComponent, RouterLink, MatIcon, MatFabButton]
 })
 export class IncomeComponent implements OnInit {
   private incomeContextService = inject(IncomeContextService);

@@ -11,7 +11,7 @@
 }
 
 <cdk-virtual-scroll-viewport class="list" [itemSize]="pixelHeightPerItem">
-  <a *cdkVirtualFor="let bill of billDataSource" class="bill-link" [routerLink]="['/analyzed', bill.id]">
+  <a *cdkVirtualFor="let bill of billDataSource" class="bill-link" [routerLink]="['/bill/analysis', bill.id]">
     <app-analyzed-bill-list-item [bill]="bill" [categories]="categories" />
   </a>
 </cdk-virtual-scroll-viewport>

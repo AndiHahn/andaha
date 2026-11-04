@@ -6,6 +6,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { FixedCostListComponent } from './fixed-cost-list/fixed-cost-list.component';
 import { RouterLink } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
+import { MatFabButton } from '@angular/material/button';
 
 interface CostCategoryDictionary {
   [key: string]: FixedCostDto[];
@@ -16,7 +17,7 @@ interface CostCategoryDictionary {
     templateUrl: './fixed-cost.component.html',
     styleUrls: ['./fixed-cost.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [MatProgressSpinner, FixedCostListComponent, RouterLink, MatIcon]
+    imports: [MatProgressSpinner, FixedCostListComponent, RouterLink, MatIcon, MatFabButton]
 })
 export class FixedCostComponent implements OnInit {
   private fixedCostContextService = inject(FixedCostContextService);
