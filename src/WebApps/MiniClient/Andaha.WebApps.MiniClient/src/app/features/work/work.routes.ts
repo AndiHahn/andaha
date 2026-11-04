@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { WorkComponent } from './work.component';
-import { WorkingEntriesContextService } from './services/working-entries-context.service';
 
 export const routes: Routes = [
   {
@@ -15,8 +14,6 @@ export const routes: Routes = [
       {
         path: 'person',
         data: { title: 'Stundenaufzeichnungen' },
-        // vorher providedIn: PersonModule, gilt fuer alle Personen-Routen
-        providers: [WorkingEntriesContextService],
         loadChildren: () => import('./modules/person/person.routes').then(m => m.routes)
       },
       {

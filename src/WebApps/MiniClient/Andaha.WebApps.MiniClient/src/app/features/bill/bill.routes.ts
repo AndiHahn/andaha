@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
 import { BillComponent } from './bill.component';
 
 export const routes: Routes = [
@@ -15,8 +14,6 @@ export const routes: Routes = [
       {
         path: 'bill/list',
         data: { title: 'Rechnungen' },
-        // vorher MatDialogModule im BillListModule: eigene MatDialog-Instanz im Lazy-Injector
-        providers: [MatDialog],
         loadComponent: () => import('./modules/bill-list/bill-list.component').then(m => m.BillListComponent)
       },
       {

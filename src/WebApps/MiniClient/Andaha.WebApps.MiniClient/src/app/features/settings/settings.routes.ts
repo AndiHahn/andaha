@@ -15,11 +15,7 @@ export const routes: Routes = [
     // vorher die Provider des SettingsModule (inkl. MatDialog aus MatDialogModule)
     providers: [
       MatDialog,
-      AddConnectionDialogService,
-      {
-        provide: 'dialog',
-        useValue: MatDialog
-      }
+      AddConnectionDialogService
     ],
     children: [
       {
