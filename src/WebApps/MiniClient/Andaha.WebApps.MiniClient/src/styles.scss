@@ -605,14 +605,15 @@ body.mat-app-background {
 }
 
 // Fortschrittsbalken (3 px, Primaer; color="accent" in Templates wird bewusst ueberstimmt).
-// Die Spurfarbe ist in MDC kein Token (SVG-Puffer), daher Klasse.
+// Spur und Indikator beide 3 px (MDC: Hoehe = max(track, active-indicator), Theme-Default 4 px).
+// Spurfarbe ueber den Token --mat-progress-bar-track-color (Material 22, faerbt .mdc-linear-progress__buffer-bar).
 body .mat-mdc-progress-bar,
 body .mat-mdc-progress-bar.mat-accent,
 body .mat-mdc-progress-bar.mat-primary {
   --mat-progress-bar-active-indicator-color: var(--pri);
+  --mat-progress-bar-track-color: var(--pri-soft);
   --mat-progress-bar-track-height: 3px;
-
-  .mdc-linear-progress__buffer-bar { background-color: var(--pri-soft); }
+  --mat-progress-bar-active-indicator-height: 3px;
 }
 
 // Speichern laeuft: 18-px-Spinner im Button in Textfarbe (Theme-Farbe waere auf .pri unsichtbar)
