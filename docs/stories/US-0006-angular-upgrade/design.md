@@ -44,7 +44,7 @@ Der MiniClient (`src/WebApps/MiniClient/Andaha.WebApps.MiniClient`) läuft auf A
 | Bibliothek | Entscheidung |
 |---|---|
 | `angular-oauth2-oidc` 13 | auf 22.x heben (peer `@angular/core >=22`). Unterwegs die zur jeweiligen Angular-Version passende Major wählen. Konfiguration (Refresh-Token, `domain_hint`, US-0002) unverändert lassen; API-Änderungen per Context7/Changelog prüfen |
-| `ngx-mat-timepicker` 14 | auf 22.1.x heben, bei Zwischenschritten passende Major |
+| `ngx-mat-timepicker` 14 | **bleibt** auf 21.0.2 statt 22.1.x (die 22er-Versionen unterstützen kein Material-2-Theme mehr). Siehe Abweichungen → Task 4. |
 | `ng2-charts` 4 / `chart.js` 3 | `ng2-charts` 11, `chart.js` 4.x. Diagramm-Konfiguration auf chart.js 4 anpassen (Ring in der Statistik, ggf. weitere). Umstellung auf `provideCharts(withDefaultRegisterables())` bzw. was ng2-charts 11 vorgibt (Context7) |
 | `@angular/material-moment-adapter` | **bleibt** und folgt Material (Endstand 22.2.x). *Korrigiert in Task 4:* `shared/date-picker/german-date-providers.ts` nutzt `MomentDateAdapter` (mit `MAT_DATE_LOCALE` de-DE) für das Parsen von `TT.MM.JJJJ`; die ursprüngliche Annahme `MatNativeDateModule` traf nicht zu. Entfernen hieße, den Datumsadapter umzubauen (anderes Parse-Verhalten), das ist nicht Teil der Story. |
 | `moment` | bleibt, auf aktuelle 2.x |
@@ -107,3 +107,11 @@ Wird eine dieser Versionen beim Umsetzen nicht mit 22.2 kompatibel gefunden, ist
 - **Statistik-Ring (08b, 390):** chart.js 4 glättet die Segmentkanten minimal anders (37 Pixel über Schwelle 40, nur an Bogenkanten). Farben, Lücken, Summe unverändert; 08 (Monat) pixelgleich.
 - **Select-Optionstext (16c, 25d, 390 und 1440):** maximale Kanaldifferenz 25 an 13–61 Pixeln im Text der gewählten Option, nicht sichtbar.
 - Nicht sichtbar, aber nötig für „keine Änderung“: CDK 21 rendert Overlays als Popover (`OVERLAY_DEFAULT_CONFIG.usePopover: false` stellt den `.cdk-overlay-container` wieder her); Material 20 benennt `--mdc-*`-Tokens in `--mat-*` um; Material 20/22 lassen nach CSS-Einblendanimationen ein `transform` stehen (Snackbar, Select-Panel; Text sonst in Graustufen geglättet); Material 22 rendert Checkbox-/Radio-Beschriftungen als `span.mdc-label`.
+
+### Task 7 (Infrastruktur und Doku)
+
+- **`docker build` lokal nicht ausgeführt:** Der Docker-Daemon läuft auf dem Entwicklungsrechner nicht. Das Dockerfile (`node:24-alpine`, `npm ci`, `npm run build:prod`, unveränderter Kopierpfad `dist/andaha.web-apps.mini-client`, nginx-Stufe unverändert) wurde stattdessen über einen frischen `npm ci` und `npm run build:prod` in einer sauberen Kopie des App-Ordners geprüft. Der Image-Build selbst ist offen und gehört in die Regression (Task 8) beziehungsweise in die erste Pipeline-Ausführung.
+- **Schritt „install typescript“ (Repo-Root) entfernt** in `ci-pipeline.yml` und `cd-pipeline.yml`: `npm ci && npm run build:prod` ist ohne ihn grün.
+- **`engines.node`** als `^22.22.3 || ^24.15.0 || >=26.0.0` (Range von `@angular/core@22`); die Wurzel von `package-lock.json` wurde passend nachgezogen.
+- **Sass `@import` → `@use`** (Entscheidung 2): `styles.scss` und `themes/andaha-theme.scss` nutzen `@use`, `stylePreprocessorOptions.includePaths` bleibt. Das erzeugte CSS ist byteidentisch zu vorher, die Deprecation-Warnung entfällt.
+- **HTTP-Interceptor-Reihenfolge:** In `app.config.ts` steht der `ErrorHttpInterceptor` jetzt nach `provideOAuthClient(...)`, wie vor dem Upgrade (OAuth-Interceptor zuerst).
