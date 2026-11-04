@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StatisticsComponent } from './statistics.component';
 import { RouterModule, Routes } from '@angular/router';
-import { DatePickerFormFieldModule } from 'src/app/shared/date-picker/date-picker-form-field/date-picker-form-field.module';
-import { TimerangeSelectionModule } from 'src/app/features/bill/modules/expenses/timerange-selection/timerange-selection.module';
+
+
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { WorktimeComponent } from './worktime/worktime.component';
 
@@ -16,13 +16,11 @@ const routes: Routes = [
 
 @NgModule({
     imports: [
-        CommonModule,
-        RouterModule.forChild(routes),
-        MatProgressSpinnerModule,
-        DatePickerFormFieldModule,
-        TimerangeSelectionModule,
-        StatisticsComponent,
-        WorktimeComponent
-    ]
+    CommonModule,
+    RouterModule.forChild(routes),
+    MatProgressSpinnerModule,
+    StatisticsComponent,
+    WorktimeComponent
+]
 })
 export class StatisticsModule { }

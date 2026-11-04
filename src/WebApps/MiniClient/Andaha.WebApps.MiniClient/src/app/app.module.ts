@@ -15,7 +15,7 @@ import localeDe from '@angular/common/locales/de';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { AppSnackbarModule } from './shared/snackbar/snackbar.module';
+
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_SELECT_CONFIG, MatSelectConfig } from '@angular/material/select';
@@ -43,17 +43,17 @@ async function initApp(authService: AuthService): Promise<void> {
     BrowserModule,
     AppRoutingModule,
     OAuthModule.forRoot({
-      resourceServer: {
-        allowedUrls: [
-          environment.gatewayBaseUrl,
-          environment.monolithApiBaseUrl,
-          'https://localhost:8100/api',
-          'https://localhost:8200/api',
-          'https://localhost:8300/api',
-          'https://localhost:8400/api'
-        ],
-        sendAccessToken: true
-      }
+        resourceServer: {
+            allowedUrls: [
+                environment.gatewayBaseUrl,
+                environment.monolithApiBaseUrl,
+                'https://localhost:8100/api',
+                'https://localhost:8200/api',
+                'https://localhost:8300/api',
+                'https://localhost:8400/api'
+            ],
+            sendAccessToken: true
+        }
     }),
     BrowserAnimationsModule,
     CommonModule,
@@ -61,16 +61,15 @@ async function initApp(authService: AuthService): Promise<void> {
     MatMenuModule,
     MatSidenavModule,
     MatSnackBarModule,
-    AppSnackbarModule,
     MatDialogModule,
     MatDatepickerModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: environment.production,
-      // Register the ServiceWorker as soon as the application is stable
-      // or after 30 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:30000'
+        enabled: environment.production,
+        // Register the ServiceWorker as soon as the application is stable
+        // or after 30 seconds (whichever comes first).
+        registrationStrategy: 'registerWhenStable:30000'
     }),
-  ],
+],
   providers: [
     {
       provide: APP_INITIALIZER,

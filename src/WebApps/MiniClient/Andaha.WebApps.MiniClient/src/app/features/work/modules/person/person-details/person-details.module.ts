@@ -9,7 +9,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { WorkEntryListComponent } from '../work-entry-list/work-entry-list.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialogModule } from '@angular/material/dialog';
-import { ShowErrorModule } from 'src/app/shared/form-field/show-error.module';
+
 
 const routes: Routes = [
   {
@@ -24,18 +24,17 @@ const routes: Routes = [
 
 @NgModule({
     imports: [
-        CommonModule,
-        RouterModule.forChild(routes),
-        MatIconModule,
-        FormsModule,
-        ReactiveFormsModule,
-        MatNativeDateModule,
-        MatProgressBarModule,
-        MatProgressSpinnerModule,
-        MatDialogModule,
-        ShowErrorModule,
-        PersonDetailsComponent,
-        WorkEntryListComponent
-    ]
+    CommonModule,
+    RouterModule.forChild(routes),
+    MatIconModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatNativeDateModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
+    MatDialogModule,
+    PersonDetailsComponent,
+    WorkEntryListComponent
+]
 })
 export class PersonDetailsModule { }

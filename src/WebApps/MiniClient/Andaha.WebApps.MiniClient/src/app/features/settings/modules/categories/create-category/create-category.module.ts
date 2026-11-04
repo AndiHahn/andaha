@@ -5,11 +5,11 @@ import { RouterModule, Routes } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { ColorItemModule } from '../color-item/color-item.module';
+
 import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ShowErrorModule } from 'src/app/shared/form-field/show-error.module';
+
 
 const routes: Routes = [
   {
@@ -20,18 +20,16 @@ const routes: Routes = [
 
 @NgModule({
     imports: [
-        CommonModule,
-        RouterModule.forChild(routes),
-        MatIconModule,
-        FormsModule,
-        ReactiveFormsModule,
-        MatSelectModule,
-        MatOptionModule,
-        MatCheckboxModule,
-        ColorItemModule,
-        MatProgressSpinnerModule,
-        ShowErrorModule,
-        CreateCategoryComponent
-    ]
+    CommonModule,
+    RouterModule.forChild(routes),
+    MatIconModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatCheckboxModule,
+    MatProgressSpinnerModule,
+    CreateCategoryComponent
+]
 })
 export class CreateCategoryModule { }

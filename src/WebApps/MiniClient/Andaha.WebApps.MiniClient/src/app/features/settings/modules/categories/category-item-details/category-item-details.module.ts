@@ -9,9 +9,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { ColorItemComponent } from '../color-item/color-item.component';
 import { RouterModule, Routes } from '@angular/router';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { ColorItemModule } from '../color-item/color-item.module';
+
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ShowErrorModule } from 'src/app/shared/form-field/show-error.module';
+
 
 const routes: Routes = [
   {
@@ -22,19 +22,17 @@ const routes: Routes = [
 
 @NgModule({
     imports: [
-        CommonModule,
-        RouterModule.forChild(routes),
-        MatIconModule,
-        FormsModule,
-        ReactiveFormsModule,
-        MatProgressBarModule,
-        MatSelectModule,
-        MatCheckboxModule,
-        DragDropModule,
-        ColorItemModule,
-        MatProgressSpinnerModule,
-        ShowErrorModule,
-        CategoryItemDetailsComponent
-    ],
+    CommonModule,
+    RouterModule.forChild(routes),
+    MatIconModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatProgressBarModule,
+    MatSelectModule,
+    MatCheckboxModule,
+    DragDropModule,
+    MatProgressSpinnerModule,
+    CategoryItemDetailsComponent
+],
 })
 export class CategoryItemDetailsModule { }

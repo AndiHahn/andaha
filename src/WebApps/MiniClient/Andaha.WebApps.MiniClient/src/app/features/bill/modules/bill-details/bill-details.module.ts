@@ -9,8 +9,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { BillImageModule } from '../bill-image/bill-image.module';
-import { ShowErrorModule } from 'src/app/shared/form-field/show-error.module';
+
+
 
 const routes: Routes = [
   {
@@ -21,19 +21,17 @@ const routes: Routes = [
 
 @NgModule({
     imports: [
-        CommonModule,
-        RouterModule.forChild(routes),
-        MatIconModule,
-        FormsModule,
-        ReactiveFormsModule,
-        MatNativeDateModule,
-        MatDatepickerModule,
-        MatSelectModule,
-        MatProgressBarModule,
-        MatProgressSpinnerModule,
-        BillImageModule,
-        ShowErrorModule,
-        BillDetailsComponent
-    ]
+    CommonModule,
+    RouterModule.forChild(routes),
+    MatIconModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatNativeDateModule,
+    MatDatepickerModule,
+    MatSelectModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
+    BillDetailsComponent
+]
 })
 export class BillDetailsModule { }

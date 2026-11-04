@@ -5,12 +5,12 @@ import { RouterModule, Routes } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
-import { DatePickerFormFieldModule } from 'src/app/shared/date-picker/date-picker-form-field/date-picker-form-field.module';
+
 import { TimePickerFormFieldModule } from 'src/app/shared/date-picker/time-picker-form-field/time-picker-form-field.module';
 import { MatDialogModule } from '@angular/material/dialog';
-import { DialogModule } from 'src/app/shared/dialog/dialog.module';
+
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ShowErrorModule } from 'src/app/shared/form-field/show-error.module';
+
 
 const routes: Routes = [
   {
@@ -21,19 +21,16 @@ const routes: Routes = [
 
 @NgModule({
     imports: [
-        CommonModule,
-        RouterModule.forChild(routes),
-        FormsModule,
-        ReactiveFormsModule,
-        MatProgressBarModule,
-        MatIconModule,
-        DatePickerFormFieldModule,
-        TimePickerFormFieldModule,
-        MatDialogModule,
-        DialogModule,
-        MatProgressSpinnerModule,
-        ShowErrorModule,
-        WorkEntryDetailsDialogComponent
-    ]
+    CommonModule,
+    RouterModule.forChild(routes),
+    FormsModule,
+    ReactiveFormsModule,
+    MatProgressBarModule,
+    MatIconModule,
+    TimePickerFormFieldModule,
+    MatDialogModule,
+    MatProgressSpinnerModule,
+    WorkEntryDetailsDialogComponent
+]
 })
 export class WorkEntryDetailsDialogModule { }
