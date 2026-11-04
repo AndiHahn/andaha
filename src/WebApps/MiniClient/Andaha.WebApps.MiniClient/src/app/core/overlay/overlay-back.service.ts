@@ -124,6 +124,32 @@ export class OverlayBackService {
     this.leavingUntil = Number.POSITIVE_INFINITY;
   }
 
+  /**
+   * Führt `step` aus, wenn gerade geschlossene Overlays ihren Eintrag entfernt haben: deren Freigabe
+   * läuft einen Task später an (siehe `register`), ein eigener history-Schritt wird abgewartet.
+   */
+  afterPendingSteps(step: () => void): void {
+    setTimeout(() => this.whenIdle(step));
+  }
+
+  /**
+   * Wie die Zurück-Taste, `steps` Einträge weit (Seite nach Speichern oder Löschen verlassen, I1/I2).
+   * Ein freigegebener Overlay-Eintrag, auf dem der Browser noch steht, zählt mit. Landet der Schritt
+   * auf einem liegen gebliebenen Overlay-Eintrag, geht es wie bei der Zurück-Taste gleich weiter.
+   */
+  back(steps: number): void {
+    this.afterPendingSteps(() => {
+      const top = this.stack.at(-1);
+      const releasedOnTop = !!top?.released && numberOf(this.window.history.state, 'overlayBack') === top.id;
+      const delta = steps + (releasedOnTop ? this.popReleasedRun() : 0);
+      if (delta === 1) {
+        this.window.history.back();
+      } else {
+        this.window.history.go(-delta);
+      }
+    });
+  }
+
   private push(entry: OverlayEntry): void {
     if (entry.released) {
       return;

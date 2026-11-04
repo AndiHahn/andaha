@@ -428,4 +428,49 @@ describe('OverlayBackService', () => {
     await tick();
     expect(fake.index).toBe(1);
   });
+  // I1/I2: Seite nach Speichern/Löschen verlassen – wie die Zurück-Taste, liegen gebliebene Einträge übersprungen
+  describe('back()', () => {
+    it('goes back like the back button and skips an overlay entry buried under the page', async () => {
+      // Liste (0) → Sheet (1, beim Weiternavigieren liegen geblieben) → Formular (2)
+      const closeSheet = vi.fn();
+      const release = service.register(closeSheet);
+      fake.push({ navigationId: 2 });
+      release();
+      await tick();
+
+      service.back(1);
+      await tick();
+      await tick();
+
+      expect(fake.index).toBe(0);
+      expect(closeSheet).not.toHaveBeenCalled();
+    });
+
+    it('goes several entries back at once', async () => {
+      fake.push({ navigationId: 2 });
+      fake.push({ navigationId: 3 });
+
+      service.back(2);
+      await tick();
+
+      expect(goSpy).toHaveBeenCalledWith(-2);
+      expect(fake.index).toBe(0);
+    });
+
+    it('waits until a just closed dialog has removed its entry', async () => {
+      // Detailseite (1) mit Rückfrage-Dialog (2); nach dem Bestätigen zurück zur Liste (0)
+      fake.push({ navigationId: 2 });
+      const release = service.register(() => undefined);
+      expect(fake.index).toBe(2);
+
+      release();
+      service.back(1);
+      await tick();
+      await tick();
+
+      expect(fake.index).toBe(0);
+      expect(backSpy).toHaveBeenCalledTimes(2);
+      expect(goSpy).not.toHaveBeenCalled();
+    });
+  });
 });

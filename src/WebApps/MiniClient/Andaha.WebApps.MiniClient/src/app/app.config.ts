@@ -15,6 +15,7 @@ import { AuthService } from './core/auth.service';
 import { ErrorHttpInterceptor } from './core/error-http-interceptor.service';
 import { onTabViewTransition } from './core/navigation/tab-transition';
 import { provideOverlayBack } from './core/overlay/overlay-back.providers';
+import { HistoryTrailService } from './core/navigation/history-trail.service';
 
 registerLocaleData(localeDe);
 
@@ -29,6 +30,10 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withViewTransitions({ skipInitialTransition: true, onViewTransitionCreated: onTabViewTransition })),
     // Zurück schließt zuerst Sheet, Dialog oder Menü (AC6)
     provideOverlayBack(),
+    // Spur der Router-Einträge ab der ersten Navigation (Seiten nach Speichern/Löschen per Zurück verlassen)
+    provideAppInitializer(() => {
+      inject(HistoryTrailService);
+    }),
     provideHttpClient(withXhr(), withInterceptorsFromDi()),
     // registriert auch den DefaultOAuthInterceptor (HTTP_INTERCEPTORS, braucht withInterceptorsFromDi)
     provideOAuthClient({
