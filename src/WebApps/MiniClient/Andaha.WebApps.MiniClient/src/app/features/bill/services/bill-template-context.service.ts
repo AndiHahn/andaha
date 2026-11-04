@@ -1,9 +1,12 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, firstValueFrom, map, Observable } from 'rxjs';
 import { BillSuggestionDto, BillSuggestionKey } from 'src/app/api/shopping/dtos/BillSuggestionDto';
 import { BillTemplateCreateDto, BillTemplateDto } from 'src/app/api/shopping/dtos/BillTemplateDto';
 import { BillTemplateApiService } from 'src/app/api/shopping/bill-template-api.service';
 import { ContextService } from 'src/app/core/context.service';
+
+/** So lange wartet die Verwaltung auf das Backend, bevor sie einen Fehler zeigt. */
+export const BACKEND_WAIT_MS = 8000;
 
 @Injectable({
   providedIn: 'root'
@@ -16,13 +19,20 @@ export class BillTemplateContextService {
   private suggestions$ = new BehaviorSubject<BillSuggestionDto[]>([]);
   private loaded$ = new BehaviorSubject<boolean>(false);
   private loadFailed$ = new BehaviorSubject<boolean>(false);
+  private backendTimedOut$ = new BehaviorSubject<boolean>(false);
+  private backendIsReady = false;
+  private backendTimer?: ReturnType<typeof setTimeout>;
 
   constructor() {
     this.contextService.backendReady().subscribe(ready => {
       if (ready) {
+        this.backendIsReady = true;
+        clearTimeout(this.backendTimer);
+        this.backendTimedOut$.next(false);
         this.refresh();
       }
     });
+    this.armBackendTimer();
   }
 
   templates(): Observable<BillTemplateDto[]> {
@@ -43,7 +53,25 @@ export class BillTemplateContextService {
 
   /** true, wenn das letzte Laden von Vorlagen oder Vorschlägen fehlgeschlagen ist */
   loadFailed(): Observable<boolean> {
-    return this.loadFailed$.asObservable();
+    return combineLatest([this.loadFailed$, this.backendTimedOut$]).pipe(map(([failed, timedOut]) => failed || timedOut));
+  }
+
+  /** Erneut versuchen: Backend erneut wecken (lädt dann automatisch) bzw. direkt neu laden. */
+  retry(): void {
+    this.backendTimedOut$.next(false);
+    if (this.backendIsReady) {
+      this.refresh();
+    } else {
+      this.contextService.retryWakeUp();
+      this.armBackendTimer();
+    }
+  }
+
+  private armBackendTimer(): void {
+    clearTimeout(this.backendTimer);
+    if (!this.backendIsReady) {
+      this.backendTimer = setTimeout(() => this.backendTimedOut$.next(true), BACKEND_WAIT_MS);
+    }
   }
 
   refresh(): void {

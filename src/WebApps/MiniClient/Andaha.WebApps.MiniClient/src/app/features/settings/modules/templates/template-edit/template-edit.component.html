@@ -1,8 +1,8 @@
 <div class="page">
   <div class="body">
-    @if (!ready() && failed() && templateId !== null) {
+    @if (!ready() && failed()) {
       <div class="state" role="alert">
-        <p>Die Vorlage konnte nicht geladen werden.</p>
+        <p>Die Vorlage konnte nicht geladen werden. Prüfe die Verbindung.</p>
         <button type="button" class="btn sec2 retry" (click)="retry()">Erneut versuchen</button>
       </div>
     } @else if (!ready() && categories().length === 0 && loaded()) {

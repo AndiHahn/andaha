@@ -76,7 +76,7 @@ export class TemplateListComponent {
   }));
 
   retry(): void {
-    this.templateContext.refresh();
+    this.templateContext.retry();
   }
 
   async drop(event: CdkDragDrop<TemplateRow[]>): Promise<void> {

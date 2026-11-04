@@ -104,7 +104,7 @@ export class TemplateEditComponent implements OnInit {
   }
 
   retry(): void {
-    this.templateContext.refresh();
+    this.templateContext.retry();
   }
 
   async onSave(): Promise<void> {

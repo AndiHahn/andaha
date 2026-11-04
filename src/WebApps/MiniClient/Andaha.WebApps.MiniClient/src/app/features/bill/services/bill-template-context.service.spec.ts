@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { Subject, of } from 'rxjs';
+import { BehaviorSubject, Subject, of } from 'rxjs';
 import { BillTemplateApiService } from 'src/app/api/shopping/bill-template-api.service';
 import { ContextService } from 'src/app/core/context.service';
-import { BillTemplateContextService } from './bill-template-context.service';
+import { BACKEND_WAIT_MS, BillTemplateContextService } from './bill-template-context.service';
 
 describe('BillTemplateContextService', () => {
   function create(api: Record<string, unknown>) {
@@ -98,5 +98,66 @@ describe('BillTemplateContextService', () => {
     let loaded: boolean | undefined;
     TestBed.inject(BillTemplateContextService).loaded().subscribe(v => loaded = v);
     expect(loaded).toBe(false);
+  });
+
+  describe('backend not ready', () => {
+    let ready$: BehaviorSubject<boolean>;
+    let context: { backendReady: () => unknown; retryWakeUp: ReturnType<typeof vi.fn> };
+    let api: { list: ReturnType<typeof vi.fn>; suggestions: ReturnType<typeof vi.fn> };
+
+    function createOffline() {
+      ready$ = new BehaviorSubject(false);
+      context = { backendReady: () => ready$, retryWakeUp: vi.fn() };
+      api = { list: vi.fn(() => of([{ id: 't1' }])), suggestions: vi.fn(() => of([])) };
+      TestBed.configureTestingModule({
+        providers: [
+          { provide: BillTemplateApiService, useValue: api },
+          { provide: ContextService, useValue: context }
+        ]
+      });
+      const svc = TestBed.inject(BillTemplateContextService);
+      let failed = false;
+      svc.loadFailed().subscribe(f => failed = f);
+      return { svc, failed: () => failed };
+    }
+
+    beforeEach(() => vi.useFakeTimers());
+    afterEach(() => vi.useRealTimers());
+
+    it('reports a failure when the backend never becomes ready', () => {
+      const { failed } = createOffline();
+      expect(failed()).toBe(false);
+      vi.advanceTimersByTime(BACKEND_WAIT_MS + 1);
+      expect(failed()).toBe(true);
+      expect(api.list).not.toHaveBeenCalled();
+    });
+
+    it('loads and clears the failure when the backend becomes ready later', () => {
+      const { svc, failed } = createOffline();
+      vi.advanceTimersByTime(BACKEND_WAIT_MS + 1);
+      ready$.next(true);
+      expect(failed()).toBe(false);
+      expect(api.list).toHaveBeenCalledTimes(1);
+      let loaded = false;
+      svc.loaded().subscribe(l => loaded = l);
+      expect(loaded).toBe(true);
+    });
+
+    it('retry wakes the backend again and waits anew', () => {
+      const { svc, failed } = createOffline();
+      vi.advanceTimersByTime(BACKEND_WAIT_MS + 1);
+      svc.retry();
+      expect(context.retryWakeUp).toHaveBeenCalled();
+      expect(failed()).toBe(false);
+      vi.advanceTimersByTime(BACKEND_WAIT_MS + 1);
+      expect(failed()).toBe(true);
+    });
+
+    it('retry reloads directly when the backend is ready', () => {
+      const { svc } = createOffline();
+      ready$.next(true);
+      svc.retry();
+      expect(api.list).toHaveBeenCalledTimes(2);
+    });
   });
 });

@@ -39,12 +39,17 @@ export class ContextService {
       );
   }
 
+  /** Weckt die Dienste erneut, die noch nicht geantwortet haben (z. B. nach einem Netzfehler). */
+  retryWakeUp(): void {
+    this.wakeUpBackendServices();
+  }
+
   backendReady(): Observable<boolean> {
     return this.backendReady$.asObservable();
   }
 
   private wakeUpBackendServices(): void {
-    this.shoppingApiService.wakeUp().subscribe(
+    if (!this.shoppingApiAwakeInternal) this.shoppingApiService.wakeUp().subscribe(
       {
         next: _ => {
           this.shoppingApiAwakeInternal = true;
@@ -53,7 +58,7 @@ export class ContextService {
       }
     );
 
-    this.collaborationApiService.wakeUp().subscribe(
+    if (!this.collaborationApiAwakeInternal) this.collaborationApiService.wakeUp().subscribe(
       {
         next: _ => {
           this.collaborationApiAwakeInternal = true;
@@ -62,7 +67,7 @@ export class ContextService {
       }
     );
 
-    this.budgetPlanApiService.wakeUp().subscribe(
+    if (!this.budgetplanApiAwakeInternal) this.budgetPlanApiService.wakeUp().subscribe(
       {
         next: _ => {
           this.budgetplanApiAwakeInternal = true;
@@ -71,7 +76,7 @@ export class ContextService {
       }
     );
 
-    this.workApiService.wakeUp().subscribe(
+    if (!this.workApiAwakeInternal) this.workApiService.wakeUp().subscribe(
       {
         next: _ => {
           this.workApiAwakeInternal = true;

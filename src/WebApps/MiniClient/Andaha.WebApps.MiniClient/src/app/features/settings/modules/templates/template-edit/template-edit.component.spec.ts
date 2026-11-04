@@ -44,7 +44,7 @@ describe('TemplateEditComponent', () => {
             save: vi.fn().mockResolvedValue(undefined),
             remove: vi.fn().mockResolvedValue(undefined),
             templates: () => new BehaviorSubject(list),
-            refresh: vi.fn(),
+            retry: vi.fn(),
             loadFailed: () => of(failed),
             loaded: () => of(true)
           }
@@ -117,7 +117,7 @@ describe('TemplateEditComponent', () => {
     await setup('t1', [existing], categories, true);
     expect(fixture.nativeElement.textContent).toContain('konnte nicht geladen werden');
     (fixture.nativeElement.querySelector('button.retry') as HTMLButtonElement).click();
-    expect(TestBed.inject(BillTemplateContextService).refresh).toHaveBeenCalled();
+    expect(TestBed.inject(BillTemplateContextService).retry).toHaveBeenCalled();
   });
 
   it('does not save while the shop is missing for a fixed shop', async () => {

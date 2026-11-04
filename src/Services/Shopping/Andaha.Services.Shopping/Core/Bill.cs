@@ -137,10 +137,16 @@ public class Bill : Entity<Guid>
         string? notes = null)
     {
         this.CategoryId = categoryId ?? this.CategoryId;
-        this.SubCategoryId = subCategoryId ?? this.SubCategoryId;
+        // PUT ersetzt die Rechnung vollständig: ohne Unterkategorie wird sie entfernt
+        this.SubCategoryId = subCategoryId;
+        if (subCategoryId is null)
+        {
+            this.SubCategory = null;
+        }
+
         this.ShopName = shopName ?? this.ShopName;
         this.Price = price ?? this.Price;
         this.Date = date ?? this.Date;
-        this.Notes = notes ?? this.Notes;
+        this.Notes = notes;
     }
 }

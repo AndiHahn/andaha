@@ -44,7 +44,7 @@ describe('TemplateListComponent', () => {
             pin: vi.fn().mockResolvedValue({}),
             templates: () => new BehaviorSubject(t),
             suggestions: () => new BehaviorSubject(s),
-            refresh: vi.fn(),
+            retry: vi.fn(),
             loadFailed: () => of(failed),
             loaded: () => of(true)
           }
@@ -120,7 +120,7 @@ describe('TemplateListComponent', () => {
     await setup([], [], true);
     expect(text(fixture.nativeElement)).toContain('konnten nicht geladen werden');
     (fixture.nativeElement.querySelector('button.retry') as HTMLButtonElement).click();
-    expect(TestBed.inject(BillTemplateContextService).refresh).toHaveBeenCalled();
+    expect(TestBed.inject(BillTemplateContextService).retry).toHaveBeenCalled();
   });
 
   it('offers adding a template', async () => {
