@@ -1,4 +1,8 @@
-<div class="grab" aria-hidden="true"></div>
+@if (dialogRef) {
+  <div class="grab" aria-hidden="true" [appSheetDrag]="dialogRef"></div>
+} @else {
+  <div class="grab" aria-hidden="true"></div>
+}
 <div class="sh">
   @if (title) {
     <h2 mat-dialog-title>{{ title }}</h2>

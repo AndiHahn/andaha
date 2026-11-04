@@ -13,6 +13,7 @@ import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { AsyncPipe } from '@angular/common';
 import { BottomBarComponent } from './core/navigation/bottom-bar/bottom-bar.component';
 import { currentUrl$ } from './core/navigation/current-url';
+import { MenuBackDirective } from './core/overlay/menu-back.directive';
 import { findArea, LEGAL_LINKS, MORE_DATA, MORE_SETTINGS, NAV_AREAS, NavArea } from './core/navigation/nav-areas';
 
 @Component({
@@ -20,7 +21,7 @@ import { findArea, LEGAL_LINKS, MORE_DATA, MORE_SETTINGS, NAV_AREAS, NavArea } f
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [MatSidenavContainer, MatSidenav, MatIcon, RouterLink, RouterLinkActive, MatSidenavContent, MatMenuTrigger, MatMenu, MatMenuItem, RouterOutlet, AsyncPipe, BottomBarComponent]
+    imports: [MatSidenavContainer, MatSidenav, MatIcon, RouterLink, RouterLinkActive, MatSidenavContent, MatMenuTrigger, MatMenu, MatMenuItem, MenuBackDirective, RouterOutlet, AsyncPipe, BottomBarComponent]
 })
 export class AppComponent implements OnInit {
   private appUpdateService = inject(AppUpdateService);

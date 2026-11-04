@@ -75,6 +75,17 @@ describe('AreaTabsComponent', () => {
     expect(badge.textContent?.trim()).toBe('2');
   });
 
+  it('passes the slide direction from the tab order when a tab is tapped', async () => {
+    await navigate('/bill/analysis');
+    const spy = vi.spyOn(router, 'navigateByUrl');
+
+    tabs()[2].click();
+    expect(spy.mock.calls[0][1]).toEqual(expect.objectContaining({ info: { tabDirection: 'next' } }));
+
+    tabs()[0].click();
+    expect(spy.mock.calls[1][1]).toEqual(expect.objectContaining({ info: { tabDirection: 'prev' } }));
+  });
+
   it('shows no tabs on detail pages', async () => {
     await navigate('/bill/analysis/5');
 

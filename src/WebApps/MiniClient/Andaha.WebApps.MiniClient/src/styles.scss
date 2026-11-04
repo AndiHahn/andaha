@@ -796,6 +796,55 @@ body .cdk-drag-preview.andaha-drag-item {
   }
 }
 
+// Tab-Wechsel per View Transition (AC4, v2: Slide ca. 200 ms ease-out) -----------------
+// Der Router startet bei jeder Navigation eine View Transition (app.config.ts). Nur Tab-Wechsel
+// bekommen eine Richtungsklasse an <html> (core/navigation/tab-transition.ts) und gleiten; alle
+// anderen Navigationen und prefers-reduced-motion wechseln ohne Animation.
+.area > :not(router-outlet):not(app-area-tabs) { view-transition-name: tab-content; }
+
+::view-transition-group(*),
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation: none;
+}
+
+html.tab-next,
+html.tab-prev {
+  // Seite gleitet nur innerhalb ihres Bereichs (nicht über Sidebar oder Hauptleiste)
+  &::view-transition-group(tab-content) { overflow: clip; }
+
+  &::view-transition-old(tab-content),
+  &::view-transition-new(tab-content) {
+    animation-duration: 200ms;
+    animation-timing-function: ease-out;
+    animation-fill-mode: both;
+    mix-blend-mode: normal;
+  }
+}
+
+html.tab-next {
+  &::view-transition-old(tab-content) { animation-name: tab-out-to-left; }
+  &::view-transition-new(tab-content) { animation-name: tab-in-from-right; }
+}
+
+html.tab-prev {
+  &::view-transition-old(tab-content) { animation-name: tab-out-to-right; }
+  &::view-transition-new(tab-content) { animation-name: tab-in-from-left; }
+}
+
+@keyframes tab-out-to-left { to { transform: translateX(-100%); } }
+@keyframes tab-in-from-right { from { transform: translateX(100%); } }
+@keyframes tab-out-to-right { to { transform: translateX(100%); } }
+@keyframes tab-in-from-left { from { transform: translateX(-100%); } }
+
+@media (prefers-reduced-motion: reduce) {
+  html.tab-next,
+  html.tab-prev {
+    &::view-transition-old(tab-content),
+    &::view-transition-new(tab-content) { animation: none; }
+  }
+}
+
 // FAB (v2, AC5): rechts unten über der Hauptleiste, 16 px Rand. Die Seite ist der Bezugsrahmen
 // (position: relative) und lässt unten Platz, damit die letzte Zeile nicht verdeckt wird.
 .fab.mat-mdc-fab {

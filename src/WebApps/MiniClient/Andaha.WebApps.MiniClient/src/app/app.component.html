@@ -47,7 +47,7 @@
         @if (syncActive) {
           <span class="sync-info" role="img" aria-label="Synchronisierung aktiv"><mat-icon>sync</mat-icon></span>
         }
-        <button type="button" class="icon-btn" [matMenuTriggerFor]="userPopupMobile" aria-label="Benutzerkonto">
+        <button type="button" class="icon-btn" [matMenuTriggerFor]="userPopupMobile" appMenuBack aria-label="Benutzerkonto">
           <mat-icon>account_circle</mat-icon>
         </button>
         <mat-menu #userPopupMobile="matMenu">
@@ -77,7 +77,7 @@
           <span class="sync-status"><mat-icon>sync</mat-icon>Synchronisiert …</span>
         }
         <span class="user-info">{{ userName }}</span>
-        <button type="button" class="icon-btn" [matMenuTriggerFor]="userPopupDesktop" aria-label="Benutzerkonto">
+        <button type="button" class="icon-btn" [matMenuTriggerFor]="userPopupDesktop" appMenuBack aria-label="Benutzerkonto">
           <mat-icon>account_circle</mat-icon>
         </button>
         <mat-menu #userPopupDesktop="matMenu">

@@ -31,7 +31,7 @@
     </button>
   </div>
 
-  <div class="chips">
+  <div class="chips" data-no-swipe>
     @for (category of categories; track category.category?.id ?? category.displayName; let i = $index) {
       <button type="button" class="chip"
         [class.on]="category.selected"
@@ -45,7 +45,7 @@
   </div>
 
   @if (fromDateFilter || untilDateFilter) {
-    <div class="chips date-chips">
+    <div class="chips date-chips" data-no-swipe>
       @if (fromDateFilter) {
         <span class="chip date-chip">
           <button type="button" class="date-chip-label" (click)="onFilterClick()">Von: {{ fromDateFilter | date:'dd.MM.yyyy' }}</button>

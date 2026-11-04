@@ -2,7 +2,7 @@ import { ApplicationConfig, inject, provideAppInitializer, provideEnvironmentIni
 import { DatePipe, registerLocaleData } from '@angular/common';
 import localeDe from '@angular/common/locales/de';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withViewTransitions } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideServiceWorker } from '@angular/service-worker';
 import { OVERLAY_DEFAULT_CONFIG, OverlayDefaultConfig } from '@angular/cdk/overlay';
@@ -13,6 +13,8 @@ import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 import { AuthService } from './core/auth.service';
 import { ErrorHttpInterceptor } from './core/error-http-interceptor.service';
+import { onTabViewTransition } from './core/navigation/tab-transition';
+import { provideOverlayBack } from './core/overlay/overlay-back.providers';
 
 registerLocaleData(localeDe);
 
@@ -23,7 +25,10 @@ function storageFactory(): OAuthStorage {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection(),
-    provideRouter(routes),
+    // Slide-Animation beim Tab-Wechsel (AC4), siehe tab-transition.ts und styles.scss
+    provideRouter(routes, withViewTransitions({ skipInitialTransition: true, onViewTransitionCreated: onTabViewTransition })),
+    // Zurück schließt zuerst Sheet, Dialog oder Menü (AC6)
+    provideOverlayBack(),
     provideHttpClient(withXhr(), withInterceptorsFromDi()),
     // registriert auch den DefaultOAuthInterceptor (HTTP_INTERCEPTORS, braucht withInterceptorsFromDi)
     provideOAuthClient({
