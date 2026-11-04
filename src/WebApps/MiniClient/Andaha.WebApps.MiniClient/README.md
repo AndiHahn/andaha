@@ -4,7 +4,7 @@ Angular 22 PWA (Standalone Components, Angular Material 22 mit Material-2-Theme)
 
 ## Voraussetzungen
 
-Node 24 (siehe `engines` in `package.json`). Abhaengigkeiten installieren:
+Node 24 (ab 24.15). Laut `engines` in `package.json` laufen auch Node 22.22.3+ und Node 26+. Abhängigkeiten installieren:
 
 ```
 npm ci
@@ -12,7 +12,7 @@ npm ci
 
 ## Development server
 
-`npm start` (oder `ng serve`) startet den Dev-Server auf `http://localhost:4200/`. Der Port 4200 ist fest, da die B2C-App-Registrierung diese Redirect-URL erwartet. Die App laedt bei Aenderungen an den Quelldateien automatisch neu.
+`npm start` (oder `ng serve`) startet den Dev-Server auf `http://localhost:4200/`. Der Port 4200 ist fest, da die B2C-App-Registrierung diese Redirect-URL erwartet. Die App lädt bei Änderungen an den Quelldateien automatisch neu.
 
 ## Build
 
@@ -20,7 +20,7 @@ npm ci
 
 ## Unit-Tests
 
-`npm test` fuehrt die Tests mit [Vitest](https://vitest.dev) im Browser-Modus aus (einmaliger Lauf). Dafuer wird Playwright Chromium benoetigt, einmalig installieren mit:
+`npm test` führt die Tests mit [Vitest](https://vitest.dev) im Browser-Modus aus (einmaliger Lauf). Dafür wird Playwright Chromium benötigt, einmalig installieren mit:
 
 ```
 npx playwright install chromium
