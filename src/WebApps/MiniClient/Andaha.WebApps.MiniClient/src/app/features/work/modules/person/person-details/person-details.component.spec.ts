@@ -1,3 +1,4 @@
+import type { MockedObject } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -15,65 +16,79 @@ import { PersonPaymentDialogService } from '../person-payment-dialog/person-paym
 import { PersonDetailsComponent } from './person-details.component';
 
 describe('PersonDetailsComponent', () => {
-  let fixture: ComponentFixture<PersonDetailsComponent>;
-  let persons$: BehaviorSubject<PersonDto[] | undefined>;
-  let context: jasmine.SpyObj<PersonContextService>;
+    let fixture: ComponentFixture<PersonDetailsComponent>;
+    let persons$: BehaviorSubject<PersonDto[] | undefined>;
+    let context: MockedObject<PersonContextService>;
 
-  const person: PersonDto = {
-    id: 'p-1',
-    name: 'Alt',
-    hourlyRate: 10,
-    totalHours: { hours: 0, minutes: 0 },
-    payedHours: { hours: 0, minutes: 0 },
-    payments: []
-  };
+    const person: PersonDto = {
+        id: 'p-1',
+        name: 'Alt',
+        hourlyRate: 10,
+        totalHours: { hours: 0, minutes: 0 },
+        payedHours: { hours: 0, minutes: 0 },
+        payments: []
+    };
 
-  beforeEach(async () => {
-    persons$ = new BehaviorSubject<PersonDto[] | undefined>([person]);
-    context = jasmine.createSpyObj<PersonContextService>('PersonContextService', ['byId', 'persons', 'updatePerson']);
-    context.byId.and.returnValue(of(person));
-    context.persons.and.returnValue(persons$.asObservable());
-    const entries = jasmine.createSpyObj<WorkingEntriesContextService>('WorkingEntriesContextService', ['workingEntries', 'loading']);
-    entries.workingEntries.and.returnValue(new Subject<any>());
-    entries.loading.and.returnValue(new Subject<boolean>());
+    beforeEach(async () => {
+        persons$ = new BehaviorSubject<PersonDto[] | undefined>([person]);
+        context = {
+            byId: vi.fn().mockName("PersonContextService.byId"),
+            persons: vi.fn().mockName("PersonContextService.persons"),
+            updatePerson: vi.fn().mockName("PersonContextService.updatePerson")
+        } as unknown as MockedObject<PersonContextService>;
+        context.byId.mockReturnValue(of(person));
+        context.persons.mockReturnValue(persons$.asObservable());
+        const entries = {
+            workingEntries: vi.fn().mockName("WorkingEntriesContextService.workingEntries"),
+            loading: vi.fn().mockName("WorkingEntriesContextService.loading")
+        };
+        entries.workingEntries.mockReturnValue(new Subject<any>());
+        entries.loading.mockReturnValue(new Subject<boolean>());
 
-    await TestBed.configureTestingModule({
-      declarations: [PersonDetailsComponent],
-      imports: [ReactiveFormsModule, ShowErrorModule, NoopAnimationsModule],
-      schemas: [NO_ERRORS_SCHEMA],
-      providers: [
-        { provide: Router, useValue: jasmine.createSpyObj<Router>('Router', ['navigateByUrl']) },
-        { provide: MatSnackBar, useValue: jasmine.createSpyObj<MatSnackBar>('MatSnackBar', ['openFromComponent']) },
-        { provide: PersonContextService, useValue: context },
-        { provide: PageTitleService, useValue: jasmine.createSpyObj<PageTitleService>('PageTitleService', ['set', 'setAction']) },
-        { provide: ConfirmationDialogService, useValue: {} },
-        { provide: PersonPaymentDialogService, useValue: {} },
-        { provide: ActivatedRoute, useValue: { snapshot: { params: { id: 'p-1' }, children: [], parent: null } } }
-      ]
-    })
-    .overrideComponent(PersonDetailsComponent, {
-      set: { providers: [{ provide: WorkingEntriesContextService, useValue: entries }] }
-    })
-    .compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [PersonDetailsComponent],
+            imports: [ReactiveFormsModule, ShowErrorModule, NoopAnimationsModule],
+            schemas: [NO_ERRORS_SCHEMA],
+            providers: [
+                { provide: Router, useValue: {
+                        navigateByUrl: vi.fn().mockName("Router.navigateByUrl")
+                    } },
+                { provide: MatSnackBar, useValue: {
+                        openFromComponent: vi.fn().mockName("MatSnackBar.openFromComponent")
+                    } },
+                { provide: PersonContextService, useValue: context },
+                { provide: PageTitleService, useValue: {
+                        set: vi.fn().mockName("PageTitleService.set"),
+                        setAction: vi.fn().mockName("PageTitleService.setAction")
+                    } },
+                { provide: ConfirmationDialogService, useValue: {} },
+                { provide: PersonPaymentDialogService, useValue: {} },
+                { provide: ActivatedRoute, useValue: { snapshot: { params: { id: 'p-1' }, children: [], parent: null } } }
+            ]
+        })
+            .overrideComponent(PersonDetailsComponent, {
+            set: { providers: [{ provide: WorkingEntriesContextService, useValue: entries }] }
+        })
+            .compileComponents();
 
-    fixture = TestBed.createComponent(PersonDetailsComponent);
-  });
+        fixture = TestBed.createComponent(PersonDetailsComponent);
+    });
 
-  it('keeps entered values when a persons() refresh arrives while saving and the save fails', () => {
-    fixture.detectChanges();
-    const component = fixture.componentInstance;
-    const save$ = new Subject<void>();
-    context.updatePerson.and.returnValue(save$.asObservable());
+    it('keeps entered values when a persons() refresh arrives while saving and the save fails', () => {
+        fixture.detectChanges();
+        const component = fixture.componentInstance;
+        const save$ = new Subject<void>();
+        context.updatePerson.mockReturnValue(save$.asObservable());
 
-    component.onEditClick();
-    component.form.controls.name.setValue('Neu');
-    component.onSaveClick();
+        component.onEditClick();
+        component.form.controls.name.setValue('Neu');
+        component.onSaveClick();
 
-    persons$.next([{ ...person }]);
-    save$.error(new Error('fail'));
+        persons$.next([{ ...person }]);
+        save$.error(new Error('fail'));
 
-    expect(component.isEditing).toBeTrue();
-    expect(component.form.enabled).toBeTrue();
-    expect(component.form.controls.name.value).toBe('Neu');
-  });
+        expect(component.isEditing).toBe(true);
+        expect(component.form.enabled).toBe(true);
+        expect(component.form.controls.name.value).toBe('Neu');
+    });
 });

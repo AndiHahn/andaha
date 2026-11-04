@@ -1,3 +1,4 @@
+import type { MockedObject } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -16,62 +17,73 @@ import { createSubCategoryForm } from '../functions/form-functions';
 import { CategoryItemDetailsComponent } from './category-item-details.component';
 
 describe('CategoryItemDetailsComponent', () => {
-  let fixture: ComponentFixture<CategoryItemDetailsComponent>;
-  let context: jasmine.SpyObj<BillCategoryContextService>;
+    let fixture: ComponentFixture<CategoryItemDetailsComponent>;
+    let context: MockedObject<BillCategoryContextService>;
 
-  const category: CategoryDto = {
-    id: 'cat-1',
-    name: 'Essen',
-    color: '#ff0000',
-    order: 0,
-    includeToStatistics: true,
-    isDefault: false,
-    subCategories: [{ id: 'sub-0', name: 'Alt', order: 0 }]
-  };
+    const category: CategoryDto = {
+        id: 'cat-1',
+        name: 'Essen',
+        color: '#ff0000',
+        order: 0,
+        includeToStatistics: true,
+        isDefault: false,
+        subCategories: [{ id: 'sub-0', name: 'Alt', order: 0 }]
+    };
 
-  beforeEach(async () => {
-    context = jasmine.createSpyObj<BillCategoryContextService>('BillCategoryContextService', ['categoryById', 'getCategoryById', 'updateCategory']);
-    context.categoryById.and.returnValue(of(category));
-    const pageTitle = jasmine.createSpyObj<PageTitleService>('PageTitleService', ['set', 'setAction']);
+    beforeEach(async () => {
+        context = {
+            categoryById: vi.fn().mockName("BillCategoryContextService.categoryById"),
+            getCategoryById: vi.fn().mockName("BillCategoryContextService.getCategoryById"),
+            updateCategory: vi.fn().mockName("BillCategoryContextService.updateCategory")
+        } as unknown as MockedObject<BillCategoryContextService>;
+        context.categoryById.mockReturnValue(of(category));
+        const pageTitle = {
+            set: vi.fn().mockName("PageTitleService.set"),
+            setAction: vi.fn().mockName("PageTitleService.setAction")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [CategoryItemDetailsComponent],
-      imports: [ReactiveFormsModule, ShowErrorModule, MatSelectModule, NoopAnimationsModule],
-      schemas: [NO_ERRORS_SCHEMA],
-      providers: [
-        { provide: Router, useValue: jasmine.createSpyObj<Router>('Router', ['navigateByUrl']) },
-        { provide: MatSnackBar, useValue: jasmine.createSpyObj<MatSnackBar>('MatSnackBar', ['openFromComponent']) },
-        { provide: BillCategoryContextService, useValue: context },
-        { provide: PageTitleService, useValue: pageTitle },
-        { provide: ConfirmationDialogService, useValue: {} },
-        { provide: ActivatedRoute, useValue: { snapshot: { params: { id: 'cat-1' }, children: [], parent: null } } }
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [CategoryItemDetailsComponent],
+            imports: [ReactiveFormsModule, ShowErrorModule, MatSelectModule, NoopAnimationsModule],
+            schemas: [NO_ERRORS_SCHEMA],
+            providers: [
+                { provide: Router, useValue: {
+                        navigateByUrl: vi.fn().mockName("Router.navigateByUrl")
+                    } },
+                { provide: MatSnackBar, useValue: {
+                        openFromComponent: vi.fn().mockName("MatSnackBar.openFromComponent")
+                    } },
+                { provide: BillCategoryContextService, useValue: context },
+                { provide: PageTitleService, useValue: pageTitle },
+                { provide: ConfirmationDialogService, useValue: {} },
+                { provide: ActivatedRoute, useValue: { snapshot: { params: { id: 'cat-1' }, children: [], parent: null } } }
+            ]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(CategoryItemDetailsComponent);
-  });
-
-  it('second save keeps server ids of subcategories created by the first save', () => {
-    fixture.detectChanges();
-    const component = fixture.componentInstance;
-    const updates: CategoryUpdateDto[] = [];
-    context.updateCategory.and.callFake((_id, dto) => { updates.push(dto); return of(undefined); });
-    context.getCategoryById.and.returnValue({
-      ...category,
-      subCategories: [
-        { id: 'sub-0', name: 'Alt', order: 0 },
-        { id: 'srv-1', name: 'Neu', order: 1 }
-      ]
+        fixture = TestBed.createComponent(CategoryItemDetailsComponent);
     });
 
-    component.onEditClick();
-    component.subCategoryForms.push(createSubCategoryForm('Neu'));
-    component.onSaveClick();
+    it('second save keeps server ids of subcategories created by the first save', () => {
+        fixture.detectChanges();
+        const component = fixture.componentInstance;
+        const updates: CategoryUpdateDto[] = [];
+        context.updateCategory.mockImplementation((_id, dto) => { updates.push(dto); return of(undefined); });
+        context.getCategoryById.mockReturnValue({
+            ...category,
+            subCategories: [
+                { id: 'sub-0', name: 'Alt', order: 0 },
+                { id: 'srv-1', name: 'Neu', order: 1 }
+            ]
+        });
 
-    component.onEditClick();
-    component.onSaveClick();
+        component.onEditClick();
+        component.subCategoryForms.push(createSubCategoryForm('Neu'));
+        component.onSaveClick();
 
-    expect(updates.length).toBe(2);
-    expect(updates[1].subCategories.map(s => s.id)).toEqual(['sub-0', 'srv-1']);
-  });
+        component.onEditClick();
+        component.onSaveClick();
+
+        expect(updates.length).toBe(2);
+        expect(updates[1].subCategories.map(s => s.id)).toEqual(['sub-0', 'srv-1']);
+    });
 });
