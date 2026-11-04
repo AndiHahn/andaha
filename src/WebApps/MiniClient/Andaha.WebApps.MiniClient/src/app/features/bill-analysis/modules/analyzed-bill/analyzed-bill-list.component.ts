@@ -11,7 +11,8 @@ import { BillCategoryContextService } from 'src/app/services/bill-category-conte
 @Component({
   selector: 'app-analyzed-bill-list',
   templateUrl: './analyzed-bill-list.component.html',
-  styleUrls: ['./analyzed-bill-list.component.scss']
+  styleUrls: ['./analyzed-bill-list.component.scss'],
+  standalone: false
 })
 export class AnalyzedBillListComponent implements OnInit, AfterViewInit, OnDestroy {
   billDataSource = new AnalyzedBillDataSource();

@@ -6,7 +6,8 @@ import { PersonContextService } from '../work/services/person-context.service';
 @Component({
   selector: 'app-export',
   templateUrl: './export.component.html',
-  styleUrls: ['./export.component.scss']
+  styleUrls: ['./export.component.scss'],
+  standalone: false
 })
 export class ExportComponent implements OnInit {
 

@@ -13,7 +13,8 @@ import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/sh
 @Component({
   selector: 'app-analyzed-bill-details',
   templateUrl: './analyzed-bill-details.component.html',
-  styleUrls: ['./analyzed-bill-details.component.scss']
+  styleUrls: ['./analyzed-bill-details.component.scss'],
+  standalone: false
 })
 export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
   bill?: BillAnalyzedDto;

@@ -7,7 +7,8 @@ import { WorkingEntriesContextService } from '../../../services/working-entries-
 @Component({
   selector: 'app-work-entry-list',
   templateUrl: './work-entry-list.component.html',
-  styleUrls: ['./work-entry-list.component.scss']
+  styleUrls: ['./work-entry-list.component.scss'],
+  standalone: false
 })
 export class WorkEntryListComponent implements OnInit {
 

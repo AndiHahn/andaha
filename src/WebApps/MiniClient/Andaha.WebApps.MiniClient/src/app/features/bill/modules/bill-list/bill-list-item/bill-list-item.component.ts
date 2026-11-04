@@ -4,7 +4,8 @@ import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 @Component({
   selector: 'app-bill-list-item',
   templateUrl: './bill-list-item.component.html',
-  styleUrls: ['./bill-list-item.component.scss']
+  styleUrls: ['./bill-list-item.component.scss'],
+  standalone: false
 })
 export class BillListItemComponent implements OnInit {
 

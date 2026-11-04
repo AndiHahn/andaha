@@ -19,7 +19,8 @@ import { IncomeForm } from '../functions/income-form-functions';
 @Component({
   selector: 'app-income-details',
   templateUrl: './income-details.component.html',
-  styleUrls: ['./income-details.component.scss']
+  styleUrls: ['./income-details.component.scss'],
+  standalone: false
 })
 export class IncomeDetailsComponent implements OnInit, OnDestroy {
 

@@ -1,6 +1,7 @@
 <app-dialog>
   <mat-dialog-content>
-    <pinch-zoom *ngIf="imageSrc" style="width: 100%;">
+    <!-- limitZoom explizit: @meddv/ngx-pinch-zoom 20 ueberschreibt den Standard "original image size" sonst mit undefined (max. Zoom 3 statt Originalgroesse) -->
+    <pinch-zoom *ngIf="imageSrc" limitZoom="original image size" style="width: 100%;">
       <img [src]="imageSrc" alt="Rechnungsfoto" />
     </pinch-zoom>
 

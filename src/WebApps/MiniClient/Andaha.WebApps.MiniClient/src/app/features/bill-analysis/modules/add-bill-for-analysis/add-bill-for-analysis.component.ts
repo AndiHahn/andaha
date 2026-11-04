@@ -8,7 +8,8 @@ import { openErrorSnackbar, openInformationSnackbar } from 'src/app/shared/snack
 @Component({
   selector: 'app-add-bill-for-analysis',
   templateUrl: './add-bill-for-analysis.component.html',
-  styleUrls: ['./add-bill-for-analysis.component.scss']
+  styleUrls: ['./add-bill-for-analysis.component.scss'],
+  standalone: false
 })
 export class AddBillForAnalysisComponent {
   selectedFile?: File;

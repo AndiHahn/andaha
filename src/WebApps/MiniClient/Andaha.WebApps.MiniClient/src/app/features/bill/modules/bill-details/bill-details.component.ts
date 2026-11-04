@@ -24,6 +24,7 @@ import { MatSelectChange } from '@angular/material/select';
   templateUrl: './bill-details.component.html',
   styleUrls: ['./bill-details.component.scss'],
   providers: GERMAN_DATE_PROVIDERS,
+  standalone: false
 })
 export class BillDetailsComponent implements OnInit, OnDestroy {
 

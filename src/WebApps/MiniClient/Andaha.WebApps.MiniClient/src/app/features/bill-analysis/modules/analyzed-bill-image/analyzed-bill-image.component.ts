@@ -4,7 +4,8 @@ import { AnalyzedBillImageDialogService } from './analyzed-bill-image-dialog/ana
 @Component({
   selector: 'app-analyzed-bill-image',
   templateUrl: './analyzed-bill-image.component.html',
-  styleUrls: ['./analyzed-bill-image.component.scss']
+  styleUrls: ['./analyzed-bill-image.component.scss'],
+  standalone: false
 })
 export class AnalyzedBillImageComponent {
 

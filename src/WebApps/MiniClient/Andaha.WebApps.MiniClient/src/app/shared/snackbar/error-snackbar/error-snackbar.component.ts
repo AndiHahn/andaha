@@ -5,6 +5,7 @@ import { MatSnackBarRef, MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar'
   selector: 'app-error-snackbar',
   templateUrl: './error-snackbar.component.html',
   styleUrls: ['./error-snackbar.component.scss'],
+  standalone: false
 })
 export class ErrorSnackbarComponent {
   constructor(@Inject(MAT_SNACK_BAR_DATA) public message: string, private snackbarRef: MatSnackBarRef<ErrorSnackbarComponent>) {}

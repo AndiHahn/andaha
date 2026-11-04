@@ -10,7 +10,8 @@ interface CostCategoryDictionary {
 @Component({
   selector: 'app-fixed-cost',
   templateUrl: './fixed-cost.component.html',
-  styleUrls: ['./fixed-cost.component.scss']
+  styleUrls: ['./fixed-cost.component.scss'],
+  standalone: false
 })
 export class FixedCostComponent implements OnInit {
 

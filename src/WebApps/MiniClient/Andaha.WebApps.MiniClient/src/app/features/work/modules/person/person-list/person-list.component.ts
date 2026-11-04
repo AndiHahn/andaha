@@ -6,7 +6,8 @@ import { Time } from '@angular/common';
 @Component({
   selector: 'app-person-list',
   templateUrl: './person-list.component.html',
-  styleUrls: ['./person-list.component.scss']
+  styleUrls: ['./person-list.component.scss'],
+  standalone: false
 })
 export class PersonListComponent implements OnInit {
 

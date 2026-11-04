@@ -20,7 +20,8 @@ import { CategoryForm, createSubCategoryForm, createCategoryForm, SubCategoryFor
 @Component({
   selector: 'app-category-item-details',
   templateUrl: './category-item-details.component.html',
-  styleUrls: ['./category-item-details.component.scss']
+  styleUrls: ['./category-item-details.component.scss'],
+  standalone: false
 })
 export class CategoryItemDetailsComponent implements OnInit, OnDestroy {
 

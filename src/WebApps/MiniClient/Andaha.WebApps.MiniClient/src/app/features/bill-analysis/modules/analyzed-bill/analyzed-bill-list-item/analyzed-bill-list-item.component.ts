@@ -7,7 +7,8 @@ import { confidencePercent, resolveAnalyzedCategory } from '../../../functions/a
 @Component({
   selector: 'app-analyzed-bill-list-item',
   templateUrl: './analyzed-bill-list-item.component.html',
-  styleUrls: ['./analyzed-bill-list-item.component.scss']
+  styleUrls: ['./analyzed-bill-list-item.component.scss'],
+  standalone: false
 })
 export class AnalyzedBillListItemComponent implements OnInit {
 

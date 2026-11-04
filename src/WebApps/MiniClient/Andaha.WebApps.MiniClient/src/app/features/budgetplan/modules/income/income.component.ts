@@ -5,7 +5,8 @@ import { IncomeContextService } from '../../services/income-context.service';
 @Component({
   selector: 'app-income',
   templateUrl: './income.component.html',
-  styleUrls: ['./income.component.scss']
+  styleUrls: ['./income.component.scss'],
+  standalone: false
 })
 export class IncomeComponent implements OnInit {
 

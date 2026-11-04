@@ -16,7 +16,8 @@ interface CategorySelection {
 @Component({
   selector: 'app-bill-list-filter',
   templateUrl: './bill-list-filter.component.html',
-  styleUrls: ['./bill-list-filter.component.scss']
+  styleUrls: ['./bill-list-filter.component.scss'],
+  standalone: false
 })
 export class BillListFilterComponent implements OnInit, OnDestroy {
   @ViewChild('searchTerm') searchInput!: ElementRef;

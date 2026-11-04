@@ -19,6 +19,7 @@ import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
   templateUrl: './add-bill.component.html',
   styleUrls: ['./add-bill.component.scss'],
   providers: GERMAN_DATE_PROVIDERS,
+  standalone: false
 })
 export class AddBillComponent implements OnInit {
   numberRegex: string = '^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$';

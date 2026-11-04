@@ -6,7 +6,8 @@ import { CollaborationContextService } from 'src/app/services/collaboration-cont
 @Component({
   selector: 'app-add-connection-dialog',
   templateUrl: './add-connection-dialog.component.html',
-  styleUrls: ['./add-connection-dialog.component.scss']
+  styleUrls: ['./add-connection-dialog.component.scss'],
+  standalone: false
 })
 export class AddConnectionDialogComponent implements OnInit {
 

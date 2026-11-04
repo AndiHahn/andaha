@@ -11,7 +11,8 @@ import { FixedCostForm, getEmptyForm } from '../functions/fixed-cost-form-functi
 @Component({
   selector: 'app-create-fixed-cost',
   templateUrl: './create-fixed-cost.component.html',
-  styleUrls: ['./create-fixed-cost.component.scss']
+  styleUrls: ['./create-fixed-cost.component.scss'],
+  standalone: false
 })
 export class CreateFixedCostComponent implements OnInit {
 

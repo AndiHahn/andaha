@@ -4,7 +4,8 @@ import { AddConnectionDialogService } from './add-connection-dialog/add-connecti
 @Component({
   selector: 'app-connection',
   templateUrl: './connection.component.html',
-  styleUrls: ['./connection.component.scss']
+  styleUrls: ['./connection.component.scss'],
+  standalone: false
 })
 export class ConnectionComponent implements OnInit {
 

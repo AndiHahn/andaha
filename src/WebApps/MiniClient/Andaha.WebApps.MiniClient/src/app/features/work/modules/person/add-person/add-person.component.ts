@@ -10,7 +10,8 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-add-person',
   templateUrl: './add-person.component.html',
-  styleUrls: ['./add-person.component.scss']
+  styleUrls: ['./add-person.component.scss'],
+  standalone: false
 })
 export class AddPersonComponent implements OnInit {
   

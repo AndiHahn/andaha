@@ -5,7 +5,8 @@ import { IncomeDto } from 'src/app/api/budgetplan/dtos/IncomeDto';
 @Component({
   selector: 'app-income-list',
   templateUrl: './income-list.component.html',
-  styleUrls: ['./income-list.component.scss']
+  styleUrls: ['./income-list.component.scss'],
+  standalone: false
 })
 export class IncomeListComponent implements OnInit {
 

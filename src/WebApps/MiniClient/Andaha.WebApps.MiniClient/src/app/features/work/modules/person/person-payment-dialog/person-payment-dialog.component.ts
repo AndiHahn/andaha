@@ -13,7 +13,8 @@ import { Time } from '@angular/common';
 @Component({
   selector: 'app-person-payment-dialog',
   templateUrl: './person-payment-dialog.component.html',
-  styleUrls: ['./person-payment-dialog.component.scss']
+  styleUrls: ['./person-payment-dialog.component.scss'],
+  standalone: false
 })
 export class PersonPaymentDialogComponent implements OnInit {
 

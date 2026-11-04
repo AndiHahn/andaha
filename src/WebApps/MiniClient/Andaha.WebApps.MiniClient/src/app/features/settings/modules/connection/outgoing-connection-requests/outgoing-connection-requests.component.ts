@@ -5,7 +5,8 @@ import { CollaborationContextService } from 'src/app/services/collaboration-cont
 @Component({
   selector: 'app-outgoing-connection-requests',
   templateUrl: './outgoing-connection-requests.component.html',
-  styleUrls: ['./outgoing-connection-requests.component.scss']
+  styleUrls: ['./outgoing-connection-requests.component.scss'],
+  standalone: false
 })
 export class OutgoingConnectionRequestsComponent implements OnInit {
 

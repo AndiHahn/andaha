@@ -12,7 +12,8 @@ import { CategoryCreateDto } from 'src/app/api/shopping/dtos/CategoryCreateDto';
 @Component({
   selector: 'app-create-category',
   templateUrl: './create-category.component.html',
-  styleUrls: ['./create-category.component.scss']
+  styleUrls: ['./create-category.component.scss'],
+  standalone: false
 })
 export class CreateCategoryComponent implements OnInit {
   

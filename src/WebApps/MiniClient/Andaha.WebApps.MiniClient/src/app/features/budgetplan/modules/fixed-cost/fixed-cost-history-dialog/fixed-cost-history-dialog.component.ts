@@ -8,7 +8,8 @@ import { FixedCostHistoryDialogData } from './FixedCostHistoryDialogData';
 @Component({
   selector: 'app-fixed-cost-history-dialog',
   templateUrl: './fixed-cost-history-dialog.component.html',
-  styleUrls: ['./fixed-cost-history-dialog.component.scss']
+  styleUrls: ['./fixed-cost-history-dialog.component.scss'],
+  standalone: false
 })
 export class FixedCostHistoryDialogComponent implements OnInit {
 

@@ -9,6 +9,7 @@ import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-pr
   templateUrl: './bill-list-filter-dialog.component.html',
   styleUrls: ['./bill-list-filter-dialog.component.scss'],
   providers: GERMAN_DATE_PROVIDERS,
+  standalone: false
 })
 export class BillListFilterDialogComponent implements OnInit {
 

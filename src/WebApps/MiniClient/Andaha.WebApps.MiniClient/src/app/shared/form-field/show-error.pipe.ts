@@ -4,7 +4,7 @@ import { showError } from './show-error';
 
 // Impure on purpose: the control is a mutable object (same reference, changing touched/invalid state),
 // so a pure pipe would never re-evaluate. The function is a few property reads.
-@Pipe({ name: 'showError', pure: false })
+@Pipe({ name: 'showError', pure: false, standalone: false })
 export class ShowErrorPipe implements PipeTransform {
   transform(control: AbstractControl | null, form?: FormGroupDirective | NgForm | null): boolean {
     return showError(control, form);

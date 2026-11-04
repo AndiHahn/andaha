@@ -8,7 +8,8 @@ import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 @Component({
   selector: 'app-analyzed-bill-image-dialog',
   templateUrl: './analyzed-bill-image-dialog.component.html',
-  styleUrls: ['./analyzed-bill-image-dialog.component.scss']
+  styleUrls: ['./analyzed-bill-image-dialog.component.scss'],
+  standalone: false
 })
 export class AnalyzedBillImageDialogComponent {
   billId: string;

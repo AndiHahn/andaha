@@ -7,7 +7,8 @@ import { ChartDetailsDialogData } from './ChartDetailsDialogData';
 @Component({
   selector: 'app-chart-details-dialog',
   templateUrl: './chart-details-dialog.component.html',
-  styleUrls: ['./chart-details-dialog.component.scss']
+  styleUrls: ['./chart-details-dialog.component.scss'],
+  standalone: false
 })
 export class ChartDetailsDialogComponent implements OnInit {
 

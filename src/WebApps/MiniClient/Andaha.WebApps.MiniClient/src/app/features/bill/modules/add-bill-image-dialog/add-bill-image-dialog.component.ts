@@ -16,7 +16,8 @@ enum UploadSelection {
 @Component({
   selector: 'app-add-bill-image-dialog',
   templateUrl: './add-bill-image-dialog.component.html',
-  styleUrls: ['./add-bill-image-dialog.component.scss']
+  styleUrls: ['./add-bill-image-dialog.component.scss'],
+  standalone: false
 })
 export class AddBillImageDialogComponent {
 

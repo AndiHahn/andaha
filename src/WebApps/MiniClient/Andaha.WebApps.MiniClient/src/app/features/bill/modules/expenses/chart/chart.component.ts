@@ -13,7 +13,8 @@ import { TimeRange } from '../../../../../shared/models/TimeRange';
 @Component({
   selector: 'app-chart',
   templateUrl: './chart.component.html',
-  styleUrls: ['./chart.component.scss']
+  styleUrls: ['./chart.component.scss'],
+  standalone: false
 })
 export class ChartComponent implements OnInit, OnChanges {
 

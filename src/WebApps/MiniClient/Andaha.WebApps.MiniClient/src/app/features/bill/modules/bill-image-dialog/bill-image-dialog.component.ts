@@ -10,7 +10,8 @@ import { BillImageDialogData } from './BillImageDialogData';
 @Component({
   selector: 'app-bill-image-dialog',
   templateUrl: './bill-image-dialog.component.html',
-  styleUrls: ['./bill-image-dialog.component.scss']
+  styleUrls: ['./bill-image-dialog.component.scss'],
+  standalone: false
 })
 export class BillImageDialogComponent {
 

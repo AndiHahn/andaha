@@ -9,7 +9,8 @@ export interface InformationSnackbarData {
 @Component({
   selector: 'app-information-snackbar',
   templateUrl: './information-snackbar.component.html',
-  styleUrls: ['./information-snackbar.component.scss']
+  styleUrls: ['./information-snackbar.component.scss'],
+  standalone: false
 })
 export class InformationSnackbarComponent {
   constructor(@Inject(MAT_SNACK_BAR_DATA) public data: InformationSnackbarData, private snackbarRef: MatSnackBarRef<InformationSnackbarComponent>) {}

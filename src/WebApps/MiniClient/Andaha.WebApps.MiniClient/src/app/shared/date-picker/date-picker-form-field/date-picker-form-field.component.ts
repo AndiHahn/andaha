@@ -7,6 +7,7 @@ import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-pr
   templateUrl: './date-picker-form-field.component.html',
   styleUrls: ['./date-picker-form-field.component.scss'],
   providers: GERMAN_DATE_PROVIDERS,
+  standalone: false
 })
 export class DatePickerFormFieldComponent implements OnInit {
 

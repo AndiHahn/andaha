@@ -8,7 +8,8 @@ import { IncomeHistoryDialogData } from './IncomeHistoryDialogData';
 @Component({
   selector: 'app-income-history-dialog',
   templateUrl: './income-history-dialog.component.html',
-  styleUrls: ['./income-history-dialog.component.scss']
+  styleUrls: ['./income-history-dialog.component.scss'],
+  standalone: false
 })
 export class IncomeHistoryDialogComponent implements OnInit {
 

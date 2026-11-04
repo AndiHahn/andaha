@@ -12,7 +12,8 @@ import { BillListDateFilter } from './bill-list-filter/BillListDateFilter';
 @Component({
   selector: 'app-bill-list',
   templateUrl: './bill-list.component.html',
-  styleUrls: ['./bill-list.component.scss']
+  styleUrls: ['./bill-list.component.scss'],
+  standalone: false
 })
 export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
 

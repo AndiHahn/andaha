@@ -6,7 +6,8 @@ import { FixedCostDto } from 'src/app/api/budgetplan/dtos/FixedCostDto';
 @Component({
   selector: 'app-fixed-cost-list',
   templateUrl: './fixed-cost-list.component.html',
-  styleUrls: ['./fixed-cost-list.component.scss']
+  styleUrls: ['./fixed-cost-list.component.scss'],
+  standalone: false
 })
 export class FixedCostListComponent implements OnInit {
 

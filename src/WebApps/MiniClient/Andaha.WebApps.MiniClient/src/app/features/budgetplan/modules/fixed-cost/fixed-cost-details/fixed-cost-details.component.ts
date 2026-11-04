@@ -20,7 +20,8 @@ import { FixedCostForm } from '../functions/fixed-cost-form-functions';
 @Component({
   selector: 'app-fixed-cost-details',
   templateUrl: './fixed-cost-details.component.html',
-  styleUrls: ['./fixed-cost-details.component.scss']
+  styleUrls: ['./fixed-cost-details.component.scss'],
+  standalone: false
 })
 export class FixedCostDetailsComponent implements OnInit, OnDestroy {
 

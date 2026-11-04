@@ -5,7 +5,8 @@ import { CollaborationContextService } from 'src/app/services/collaboration-cont
 @Component({
   selector: 'app-incoming-connection-requests',
   templateUrl: './incoming-connection-requests.component.html',
-  styleUrls: ['./incoming-connection-requests.component.scss']
+  styleUrls: ['./incoming-connection-requests.component.scss'],
+  standalone: false
 })
 export class IncomingConnectionRequestsComponent implements OnInit {
 

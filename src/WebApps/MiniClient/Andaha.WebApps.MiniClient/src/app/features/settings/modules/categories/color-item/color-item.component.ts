@@ -3,7 +3,8 @@ import { Component, Input, OnInit } from '@angular/core';
 @Component({
   selector: 'app-color-item',
   templateUrl: './color-item.component.html',
-  styleUrls: ['./color-item.component.scss']
+  styleUrls: ['./color-item.component.scss'],
+  standalone: false
 })
 export class ColorItemComponent implements OnInit {
 

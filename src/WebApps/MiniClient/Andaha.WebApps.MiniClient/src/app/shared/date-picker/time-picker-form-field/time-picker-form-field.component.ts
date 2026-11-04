@@ -3,7 +3,8 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 @Component({
   selector: 'app-time-picker-form-field',
   templateUrl: './time-picker-form-field.component.html',
-  styleUrls: ['./time-picker-form-field.component.scss']
+  styleUrls: ['./time-picker-form-field.component.scss'],
+  standalone: false
 })
 export class TimePickerFormFieldComponent implements OnInit {
 

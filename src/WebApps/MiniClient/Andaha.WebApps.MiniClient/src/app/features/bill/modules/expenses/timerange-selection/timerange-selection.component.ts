@@ -9,7 +9,8 @@ import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-pr
   selector: 'app-timerange-selection',
   templateUrl: './timerange-selection.component.html',
   styleUrls: ['./timerange-selection.component.scss'],
-  providers: GERMAN_DATE_PROVIDERS
+  providers: GERMAN_DATE_PROVIDERS,
+  standalone: false
 })
 export class TimerangeSelectionComponent implements OnInit, OnChanges {
 

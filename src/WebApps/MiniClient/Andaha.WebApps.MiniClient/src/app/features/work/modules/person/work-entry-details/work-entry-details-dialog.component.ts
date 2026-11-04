@@ -18,7 +18,8 @@ import { formatTime } from 'src/app/api/functions/api-utils';
 @Component({
   selector: 'app-work-entry-details-dialog',
   templateUrl: './work-entry-details-dialog.component.html',
-  styleUrls: ['./work-entry-details-dialog.component.scss']
+  styleUrls: ['./work-entry-details-dialog.component.scss'],
+  standalone: false
 })
 export class WorkEntryDetailsDialogComponent implements OnInit {
 

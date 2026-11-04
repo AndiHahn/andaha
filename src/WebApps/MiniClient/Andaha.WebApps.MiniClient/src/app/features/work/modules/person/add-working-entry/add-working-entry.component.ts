@@ -16,6 +16,7 @@ import { formatTime } from 'src/app/api/functions/api-utils';
   selector: 'app-add-working-entry',
   templateUrl: './add-working-entry.component.html',
   styleUrls: ['./add-working-entry.component.scss'],
+  standalone: false
 })
 export class AddWorkingEntryComponent implements OnInit {
 

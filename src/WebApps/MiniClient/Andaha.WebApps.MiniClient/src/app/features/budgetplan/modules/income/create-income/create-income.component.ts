@@ -10,7 +10,8 @@ import { IncomeForm, getEmptyForm } from '../functions/income-form-functions';
 @Component({
   selector: 'app-create-income',
   templateUrl: './create-income.component.html',
-  styleUrls: ['./create-income.component.scss']
+  styleUrls: ['./create-income.component.scss'],
+  standalone: false
 })
 export class CreateIncomeComponent implements OnInit {
 

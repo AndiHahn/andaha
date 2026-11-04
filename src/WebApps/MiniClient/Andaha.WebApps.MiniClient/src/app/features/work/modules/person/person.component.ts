@@ -5,7 +5,8 @@ import { PersonContextService } from '../../services/person-context.service';
 @Component({
   selector: 'app-person',
   templateUrl: './person.component.html',
-  styleUrls: ['./person.component.scss']
+  styleUrls: ['./person.component.scss'],
+  standalone: false
 })
 export class PersonComponent implements OnInit {
 

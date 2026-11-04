@@ -5,7 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { firstValueFrom } from 'rxjs';
 import { PageTitleService } from './page-title.service';
 
-@Component({ template: '' })
+@Component({ template: '', standalone: false })
 class DummyComponent { }
 
 describe('PageTitleService', () => {

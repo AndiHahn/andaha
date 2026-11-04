@@ -22,7 +22,8 @@ import { PageTitleService } from 'src/app/core/page-title/page-title.service';
   selector: 'app-person-details',
   templateUrl: './person-details.component.html',
   styleUrls: ['./person-details.component.scss'],
-  providers: [WorkingEntriesContextService]
+  providers: [WorkingEntriesContextService],
+  standalone: false
 })
 export class PersonDetailsComponent implements OnInit, OnDestroy {
 

@@ -5,7 +5,8 @@ import { CollaborationContextService } from 'src/app/services/collaboration-cont
 @Component({
   selector: 'app-active-connections',
   templateUrl: './active-connections.component.html',
-  styleUrls: ['./active-connections.component.scss']
+  styleUrls: ['./active-connections.component.scss'],
+  standalone: false
 })
 export class ActiveConnectionsComponent implements OnInit {
 

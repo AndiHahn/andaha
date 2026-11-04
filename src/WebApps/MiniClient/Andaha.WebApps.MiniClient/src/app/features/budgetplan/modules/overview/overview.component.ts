@@ -6,7 +6,8 @@ import { BudgetplanContextService } from '../../services/budgetplan-context.serv
 @Component({
   selector: 'app-overview',
   templateUrl: './overview.component.html',
-  styleUrls: ['./overview.component.scss']
+  styleUrls: ['./overview.component.scss'],
+  standalone: false
 })
 export class OverviewComponent implements OnInit {
 
