@@ -32,7 +32,7 @@
   </div>
 
   <div class="chips">
-    @for (category of categories; track category; let i = $index) {
+    @for (category of categories; track category.category?.id ?? category.displayName; let i = $index) {
       <button type="button" class="chip"
         [class.on]="category.selected"
         [attr.aria-pressed]="category.selected"
