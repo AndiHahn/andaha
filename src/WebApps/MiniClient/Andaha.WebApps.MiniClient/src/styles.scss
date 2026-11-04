@@ -417,7 +417,9 @@ body.mat-app-background {
 // in 15 das Gegenstück zu den späteren mat.<component>-overrides), zuletzt MDC-Klassen.
 
 // Select-Panel. MDC: Panel so breit wie der Trigger, ohne Radius an der Trigger-Seite, 275 px hoch.
-// Wie Material 14: 16 px links ueberstehend (Optionstext fluchtet mit dem Wert im Feld), 256 px hoch.
+// Wie Material 14: 16 px links ueberstehend, 32 px breiter als der Trigger (Optionstext fluchtet
+// mit dem Wert im Feld), 256 px hoch. Das Overlay-Pane ist ein Flex-Container in Triggerbreite,
+// daher flex: none, sonst schrumpft das Panel wieder auf die Pane-Breite.
 // (.cdk-overlay-pane ...: Spezifitaet ueber den Regeln des Select-Komponenten-CSS)
 .cdk-overlay-container .cdk-overlay-pane .mat-mdc-select-panel.mdc-menu-surface {
   background: var(--surface);
@@ -425,16 +427,20 @@ body.mat-app-background {
   box-shadow: 0 0 0 1px var(--line3), 0 16px 40px -8px var(--sh7) !important;
   padding: 6px 0;
   max-height: 256px;
+  flex: none;
   width: calc(100% + 32px);
   margin-left: -16px;
 
-  // Mehrfachauswahl: Optionstext steht hinter der Pseudo-Checkbox (Material 14: 40 px Versatz,
-  // 64 px breiter; ragt es links aus dem Viewport, rueckte Material 14 es auf 8 px Abstand).
-  // Mobil liegt der Trigger bei 31 px (16 px Rand + Feldinnenabstand), daher dort -23 px.
-  &:has(.mat-mdc-option-multiple) {
+  // Mehrfachauswahl (panelClass am mat-select): Optionstext steht hinter der Pseudo-Checkbox,
+  // Material 14: 40 px Versatz und 64 px breiter als der Trigger.
+  &.andaha-select-multi {
     width: calc(100% + 64px);
+    max-width: none; // MDC-Menuflaeche begrenzt sonst auf 100vw - 32px (mobil 358 statt 367 px)
     margin-left: -40px;
 
+    // Ragte das Panel links aus dem Viewport, rueckte Material 14 es auf 8 px Abstand. Haengt am
+    // Layout der Seite "Arbeitszeiten hinzufuegen" < 1024 px: Trigger bei 31 px (16 px Seitenrand
+    // + 1 px Rahmen + 14 px Innenabstand der .field-box), also 8 - 31 = -23 px.
     @media (max-width: 1023.98px) { margin-left: -23px; }
   }
 }

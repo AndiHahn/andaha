@@ -3,7 +3,7 @@
     <div class="field" [class.invalid]="form.controls.selectedPersons | showError">
       <span class="field-label">Personen</span>
       <span class="field-box">
-        <mat-select multiple [formControl]="form.controls.selectedPersons" aria-label="Personen"
+        <mat-select multiple panelClass="andaha-select-multi" [formControl]="form.controls.selectedPersons" aria-label="Personen"
             [attr.aria-describedby]="form.controls.selectedPersons.value.length > 1 ? 'add-working-entry-persons-hint' : null"
             (openedChange)="onOpenChange(multiUserSearch)">
           <mat-select-trigger>
