@@ -27,11 +27,22 @@ public class AnalyzeBillCommandHandler(
             analysisResult,
             cancellationToken);
 
-        return Results.Ok(new
-        {
-            AnalysisResult = analysisResult,
-            ClassificationResult = classificationResult
-        });
+        var result = new AnalyzeBillResultDto(
+            ShopName: analysisResult.VendorName,
+            Date: analysisResult.InvoiceDate?.Date,
+            TotalAmount: analysisResult.TotalAmount,
+            CategoryId: classificationResult?.CategoryId,
+            SubCategoryId: classificationResult?.SubCategoryId,
+            Confidence: analysisResult.Confidence,
+            LineItems: analysisResult.LineItems
+                .Select(lineItem => new AnalyzeBillLineItemDto(
+                    lineItem.Description,
+                    lineItem.Quantity,
+                    lineItem.UnitPrice,
+                    lineItem.TotalPrice))
+                .ToList());
+
+        return Results.Ok(result);
     }
 
     private async Task<CategoryClassificationResult?> GetCategoryClassification(

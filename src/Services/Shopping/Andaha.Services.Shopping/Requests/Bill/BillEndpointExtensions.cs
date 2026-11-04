@@ -30,6 +30,7 @@ internal static class BillEndpointExtensions
         app.MapAnalyzeNasImage(groupBuilder);
         app.MapGetAnalyzedBills(groupBuilder);
         app.MapGetAnalyzedBillImage(groupBuilder);
+        app.MapDeleteAnalyzedBill(groupBuilder);
         app.MapAnalyzeBillSubscription(groupBuilder);
 
         return app;
@@ -90,6 +91,7 @@ internal static class BillEndpointExtensions
             })
             .DisableAntiforgery()
             .Accepts<IFormFile>("multipart/form-data")
+            .Produces<AnalyzeBill.V1.AnalyzeBillResultDto>()
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
@@ -286,6 +288,20 @@ internal static class BillEndpointExtensions
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<ProblemDetails>(StatusCodes.Status404NotFound)
             .WithDescription("Returns the image of an analyzed bill of the current user.");
+
+        return app;
+    }
+
+    private static WebApplication MapDeleteAnalyzedBill(
+        this WebApplication app,
+        RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediateDelete<DeleteAnalyzedBill.V1.DeleteAnalyzedBillCommand>("analyzed/{id}")
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<ProblemDetails>(StatusCodes.Status404NotFound)
+            .WithDescription("Discards an analyzed bill of the current user including its line items and image.");
 
         return app;
     }
