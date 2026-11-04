@@ -25,11 +25,6 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection(),
     provideRouter(routes),
     provideHttpClient(withXhr(), withInterceptorsFromDi()),
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: ErrorHttpInterceptor,
-      multi: true
-    },
     // registriert auch den DefaultOAuthInterceptor (HTTP_INTERCEPTORS, braucht withInterceptorsFromDi)
     provideOAuthClient({
       resourceServer: {
@@ -44,6 +39,12 @@ export const appConfig: ApplicationConfig = {
         sendAccessToken: true
       }
     }),
+    // nach provideOAuthClient: Reihenfolge OAuth-Interceptor zuerst, dann Error-Interceptor (wie vor dem Upgrade)
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorHttpInterceptor,
+      multi: true
+    },
     {
       // nach provideOAuthClient, damit dessen Standard-Storage ueberschrieben wird
       provide: OAuthStorage,
