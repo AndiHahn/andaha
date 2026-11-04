@@ -414,7 +414,7 @@ body.mat-app-background {
 .suffix { color: var(--mut); }
 
 // Material-Overrides (MDC, Material 15) ---------------------------------------
-// Reihenfolge laut design.md: Theme-Werte, dann Komponenten-Tokens (--mdc-*-CSS-Variablen,
+// Reihenfolge laut design.md: Theme-Werte, dann Komponenten-Tokens (--mdc-*/--mat-*-CSS-Variablen, ab Material 20 nur --mat-*;
 // in 15 das Gegenstück zu den späteren mat.<component>-overrides), zuletzt MDC-Klassen.
 
 // Select-Panel. MDC: Panel so breit wie der Trigger, ohne Radius an der Trigger-Seite, 275 px hoch.
@@ -466,12 +466,17 @@ body.mat-app-background {
   .mdc-list-item__primary-text { color: inherit; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   &:hover:not(.mdc-list-item--disabled), &:focus:not(.mdc-list-item--disabled) { background: var(--act); }
   &.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled) { background: var(--pri-soft); color: var(--pri-chip); }
+  // Material 20: Zustandsflaechen per color-mix (Fokus/aktiv 12 % statt 4 %); Werte wie bis 19
+  --mat-option-focus-state-layer-color: rgba(0, 0, 0, .04);
+  --mat-option-hover-state-layer-color: rgba(0, 0, 0, .04);
 }
 
 // Datepicker
 .cdk-overlay-container .mat-datepicker-content {
   // Ab Material 17/18 setzt das Komponenten-CSS die Heute-Markierung ueber Tokens (Regel unten greift nicht mehr)
   --mat-datepicker-calendar-date-today-outline-color: var(--pri);
+  // Material 20 faerbt den Monat/Jahr-Button ueber den Token (.87); bis 19 schwarz
+  --mat-datepicker-calendar-period-button-text-color: #000;
   background: var(--surface);
   color: var(--fg);
   border-radius: 12px;
@@ -550,14 +555,14 @@ body.mat-app-background {
 // Snackbar: Basis fuer alle Snackbars (auch ohne panelClass) = andaha-snackbar + andaha-snackbar-info.
 // MDC: Flaeche ist .mdc-snackbar__surface, der Container nur noch Rahmen fuer Breite und Abstand.
 .cdk-overlay-container .mat-mdc-snack-bar-container {
-  --mdc-snackbar-container-color: var(--surface);
-  --mdc-snackbar-container-shape: 12px;
-  --mdc-snackbar-supporting-text-color: var(--fg);
+  --mat-snack-bar-container-color: var(--surface);
+  --mat-snack-bar-container-shape: 12px;
+  --mat-snack-bar-supporting-text-color: var(--fg);
   // Schrift wie bisher 15/20, 500 (MDC: body-2 14/20, 400)
-  --mdc-snackbar-supporting-text-font: #{$andaha-font};
-  --mdc-snackbar-supporting-text-size: 15px;
-  --mdc-snackbar-supporting-text-line-height: 20px;
-  --mdc-snackbar-supporting-text-weight: 500;
+  --mat-snack-bar-supporting-text-font: #{$andaha-font};
+  --mat-snack-bar-supporting-text-size: 15px;
+  --mat-snack-bar-supporting-text-line-height: 20px;
+  --mat-snack-bar-supporting-text-weight: 500;
   max-width: 480px !important;
   min-width: 0 !important;
   width: calc(100% - 24px);
@@ -584,8 +589,8 @@ body.mat-app-background {
 .cdk-overlay-container .mat-mdc-snack-bar-handset .mat-mdc-snack-bar-container { width: calc(100% - 24px); }
 
 .cdk-overlay-container .mat-mdc-snack-bar-container.andaha-snackbar-error {
-  --mdc-snackbar-container-color: var(--neg-bg);
-  --mdc-snackbar-supporting-text-color: var(--neg-text);
+  --mat-snack-bar-container-color: var(--neg-bg);
+  --mat-snack-bar-supporting-text-color: var(--neg-text);
   color: var(--neg-text);
 
   .mdc-snackbar__surface { box-shadow: 0 0 0 1px var(--neg-line), 0 16px 40px -8px var(--sh7); }
@@ -596,43 +601,43 @@ body.mat-app-background {
 body .mat-mdc-progress-bar,
 body .mat-mdc-progress-bar.mat-accent,
 body .mat-mdc-progress-bar.mat-primary {
-  --mdc-linear-progress-active-indicator-color: var(--pri);
-  --mdc-linear-progress-track-height: 3px;
+  --mat-progress-bar-active-indicator-color: var(--pri);
+  --mat-progress-bar-track-height: 3px;
 
   .mdc-linear-progress__buffer-bar { background-color: var(--pri-soft); }
 }
 
 // Speichern laeuft: 18-px-Spinner im Button in Textfarbe (Theme-Farbe waere auf .pri unsichtbar)
-.btn .mat-mdc-progress-spinner { --mdc-circular-progress-active-indicator-color: currentColor; }
+.btn .mat-mdc-progress-spinner { --mat-progress-spinner-active-indicator-color: currentColor; }
 
 // Checkbox / Radio (Farben ueber Komponenten-Tokens, Akzent wird auf Primaer gesetzt)
 .mat-mdc-checkbox.mat-accent,
 .mat-mdc-checkbox.mat-primary {
-  --mdc-checkbox-selected-icon-color: var(--pri);
-  --mdc-checkbox-selected-hover-icon-color: var(--pri);
-  --mdc-checkbox-selected-focus-icon-color: var(--pri);
-  --mdc-checkbox-selected-pressed-icon-color: var(--pri);
-  --mdc-checkbox-selected-checkmark-color: #FAFAFA; // Material 14: Theme-Hintergrund
-  --mdc-checkbox-unselected-icon-color: var(--line3);
-  --mdc-checkbox-unselected-hover-icon-color: var(--line3);
-  --mdc-checkbox-unselected-focus-icon-color: var(--line3);
-  --mdc-checkbox-unselected-pressed-icon-color: var(--line3);
+  --mat-checkbox-selected-icon-color: var(--pri);
+  --mat-checkbox-selected-hover-icon-color: var(--pri);
+  --mat-checkbox-selected-focus-icon-color: var(--pri);
+  --mat-checkbox-selected-pressed-icon-color: var(--pri);
+  --mat-checkbox-selected-checkmark-color: #FAFAFA; // Material 14: Theme-Hintergrund
+  --mat-checkbox-unselected-icon-color: var(--line3);
+  --mat-checkbox-unselected-hover-icon-color: var(--line3);
+  --mat-checkbox-unselected-focus-icon-color: var(--line3);
+  --mat-checkbox-unselected-pressed-icon-color: var(--line3);
   // Lesemodus (disabled): Material 14 zeigte die gewaehlte Checkbox weiter in Primaer
-  --mdc-checkbox-disabled-selected-icon-color: var(--pri);
-  --mdc-checkbox-disabled-selected-checkmark-color: #FAFAFA;
-  --mdc-checkbox-disabled-unselected-icon-color: #B0B0B0; // Material 14: Rahmen deaktiviert
+  --mat-checkbox-disabled-selected-icon-color: var(--pri);
+  --mat-checkbox-disabled-selected-checkmark-color: #FAFAFA;
+  --mat-checkbox-disabled-unselected-icon-color: #B0B0B0; // Material 14: Rahmen deaktiviert
 }
 
 .mat-mdc-radio-button.mat-accent,
 .mat-mdc-radio-button.mat-primary {
-  --mdc-radio-selected-icon-color: var(--pri);
-  --mdc-radio-selected-hover-icon-color: var(--pri);
-  --mdc-radio-selected-focus-icon-color: var(--pri);
-  --mdc-radio-selected-pressed-icon-color: var(--pri);
-  --mdc-radio-unselected-icon-color: var(--line3);
-  --mdc-radio-unselected-hover-icon-color: var(--line3);
-  --mdc-radio-unselected-focus-icon-color: var(--line3);
-  --mdc-radio-unselected-pressed-icon-color: var(--line3);
+  --mat-radio-selected-icon-color: var(--pri);
+  --mat-radio-selected-hover-icon-color: var(--pri);
+  --mat-radio-selected-focus-icon-color: var(--pri);
+  --mat-radio-selected-pressed-icon-color: var(--pri);
+  --mat-radio-unselected-icon-color: var(--line3);
+  --mat-radio-unselected-hover-icon-color: var(--line3);
+  --mat-radio-unselected-focus-icon-color: var(--line3);
+  --mat-radio-unselected-pressed-icon-color: var(--line3);
   --mat-radio-checked-ripple-color: var(--pri); // Material 18 (vorher --mat-mdc-radio-checked-ripple-color)
 
   // Wie Material 14: 20-px-Kreis ohne Innenabstand (MDC: 10 px), Text 8 px daneben, Schrift vom Host.
@@ -649,7 +654,7 @@ body .mat-mdc-progress-bar.mat-primary {
 // Checkbox nach Mockup 06 (22 px, Radius 6), nur mit Klasse andaha-checkbox
 // (.andaha-checkbox.mat-mdc-checkbox: Komponenten-CSS wird nach styles.scss geladen, daher hoehere Spezifitaet)
 .andaha-checkbox.mat-mdc-checkbox {
-  --mdc-checkbox-state-layer-size: 22px;
+  --mat-checkbox-state-layer-size: 22px;
 
   .mdc-form-field { font: inherit; letter-spacing: inherit; }
   .mdc-checkbox { padding: 0; width: 22px; height: 22px; flex: 0 0 22px; }
@@ -693,20 +698,20 @@ body .cdk-drag-preview.andaha-drag-item {
 // und Textfarbe des Containers statt der MDC-Dialogtypografie (body-1, Farbe .6).
 // (Werte explizit: "inherit" in einer Custom Property wuerde auf den MDC-Fallback 14/14 500 fallen.)
 .cdk-overlay-container .mat-mdc-dialog-container {
-  --mdc-dialog-supporting-text-font: #{$andaha-font};
-  --mdc-dialog-supporting-text-size: 14px;
-  --mdc-dialog-supporting-text-line-height: 20px;
-  --mdc-dialog-supporting-text-weight: 400;
-  --mdc-dialog-supporting-text-tracking: normal;
-  --mdc-dialog-supporting-text-color: rgba(0, 0, 0, .87);
+  --mat-dialog-supporting-text-font: #{$andaha-font};
+  --mat-dialog-supporting-text-size: 14px;
+  --mat-dialog-supporting-text-line-height: 20px;
+  --mat-dialog-supporting-text-weight: 400;
+  --mat-dialog-supporting-text-tracking: normal;
+  --mat-dialog-supporting-text-color: rgba(0, 0, 0, .87);
 }
 
 .cdk-overlay-container .andaha-sheet,
 .cdk-overlay-container .andaha-dialog {
   .mat-mdc-dialog-container {
-    --mdc-dialog-container-color: var(--surface);
-    --mdc-dialog-subhead-color: var(--fg);
-    --mdc-dialog-supporting-text-color: var(--fg);
+    --mat-dialog-container-color: var(--surface);
+    --mat-dialog-subhead-color: var(--fg);
+    --mat-dialog-supporting-text-color: var(--fg);
     color: var(--fg);
   }
 
@@ -755,7 +760,7 @@ body .cdk-drag-preview.andaha-drag-item {
   max-height: 90dvh;
 
   .mat-mdc-dialog-container {
-    --mdc-dialog-container-shape: 20px 20px 0 0;
+    --mat-dialog-container-shape: 20px 20px 0 0;
     --mat-dialog-container-elevation-shadow: 0 -12px 40px var(--sh5); // Material 18 (vorher --mdc-dialog-container-elevation)
     max-height: 90vh;
     max-height: 90dvh;
@@ -767,7 +772,7 @@ body .cdk-drag-preview.andaha-drag-item {
 
 .cdk-overlay-container .andaha-dialog {
   .mat-mdc-dialog-container {
-    --mdc-dialog-container-shape: 16px;
+    --mat-dialog-container-shape: 16px;
     --mat-dialog-container-elevation-shadow: 0 16px 40px -8px var(--sh7);
     max-height: 90vh;
     max-height: 90dvh;
