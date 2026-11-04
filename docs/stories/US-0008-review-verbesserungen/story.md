@@ -82,6 +82,7 @@ Setzt US-0006 und US-0007 voraus (Tabs, Snackbar, Sheet-Verhalten, Vibrieren).
 - Dateiverweise stehen in `docs/review.md` an den jeweiligen Punkten.
 - Bibliotheks-APIs (z. B. Diagramme, Web Share API) per Context7 bzw. MDN nachschlagen.
 - Offene Punkte aus US-0006: toter Routen-Provider `NgxMatTimepickerModule.setLocale` in `person-details.routes.ts` (Route `working-entry/:entry-id` wird nie angesteuert); Zeitauswahl-Buttons englisch („CANCEL“/„OK“); Zahlungszeile zeigt „08:00 h h“; fest kodierte M2-Farben in `styles.scss` als Tokens nach `_andaha-tokens.scss`; zeitabhängige Specs laufen unter Last in Timeouts (vor CI-Tests `testTimeout` anheben); bekannte NG0100 in Ausgaben/Statistik (Monats-Select zeigt Vormonat) und Warnung „ngModel mit formControl“ in den Kategorie-Details.
+- Offene Punkte aus US-0007 (Backend, Shopping): Beim Löschen der eigenen Standardkategorie ordnet `DeleteBillCategoryCommandHandler` die Rechnungen der gerade gelöschten Kategorie zu (`SingleAsync(IsDefault)` liefert dieselbe Kategorie; vgl. AC27). Die Bill-Create/Update-Handler sind nicht darauf geprüft, ob `CategoryId`/`SubCategoryId` einer fremden Kategorie angegeben werden kann (Besitzprüfung wie bei den Vorlagen-Validatoren ergänzen).
 
 ## Out of Scope
 
