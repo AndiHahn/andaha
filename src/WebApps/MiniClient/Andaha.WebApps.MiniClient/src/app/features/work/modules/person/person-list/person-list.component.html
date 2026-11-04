@@ -1,4 +1,4 @@
-@for (person of persons; track person) {
+@for (person of persons; track person.id) {
   <a class="row" routerLink="{{person.id}}">
     <span class="t">{{ person.name }}</span>
     @if (isPaymentRequired(person)) {

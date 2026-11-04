@@ -1,4 +1,4 @@
-@for (workEntry of workEntries; track workEntry) {
+@for (workEntry of workEntries; track workEntry.id) {
   <button type="button" class="we" (click)="onOpenWorkEntryDetails(workEntry)">
     <span class="l">
       <span class="d">{{ workEntry.from | date:'dd.MM.yyyy' }}</span>

@@ -12,7 +12,7 @@
   }
 </div>
 
-@for (connectionRequest of connectionRequests; track connectionRequest) {
+@for (connectionRequest of connectionRequests; track connectionRequest.fromUserId + '|' + connectionRequest.targetUserId) {
   <div class="row">
     <span class="t">{{ connectionRequest.targetUserEmailAddress }}</span>
     @if (!connectionRequest.declined) {

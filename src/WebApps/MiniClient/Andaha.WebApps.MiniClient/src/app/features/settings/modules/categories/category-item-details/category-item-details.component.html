@@ -40,7 +40,7 @@
             class="andaha-checkbox"
             [disabled]="!isEditing"
             [checked]="includeToStatisticsCheckbox"
-          (change)="updateIncludeToStatistics()">Aufnehmen in Statistik</mat-checkbox>
+            (change)="updateIncludeToStatistics()">Aufnehmen in Statistik</mat-checkbox>
         </div>
       </form>
       <!--
@@ -69,65 +69,65 @@
               <span class="field-box">
                 <input required [readonly]="!isEditing" [formControl]="subCategoryForm.controls.name"
                   placeholder="Unterkategorie" aria-label="Unterkategorie" [attr.aria-invalid]="subCategoryForm.controls.name | showError">
-                </span>
-              </label>
-              <button type="button" class="icon-btn sub-del" [disabled]="!isEditing"
-                (click)="onDeleteSubCategoryClick(i)" aria-label="Unterkategorie löschen">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </div>
-          }
-        </div>
-        @if (isEditing && !form.controls.isDefault.value) {
-          <div class="add-sub">
-            <button type="button" class="btn sec2" (click)="onAddSubCategoryClick()"
-              [disabled]="isDeleting || isLoading || isSaving">
-              <mat-icon>add</mat-icon><span>Unterkategorie hinzufügen</span>
+              </span>
+            </label>
+            <button type="button" class="icon-btn sub-del" [disabled]="!isEditing"
+              (click)="onDeleteSubCategoryClick(i)" aria-label="Unterkategorie löschen">
+              <mat-icon>delete</mat-icon>
             </button>
           </div>
         }
       </div>
-    }
-
-    <!--
-    AKTIONEN
-    -->
-    <div class="progress-slot">
-      @if (isDeleting || isLoading || !category) {
-        <mat-progress-bar mode="indeterminate" color="accent" />
+      @if (isEditing && !form.controls.isDefault.value) {
+        <div class="add-sub">
+          <button type="button" class="btn sec2" (click)="onAddSubCategoryClick()"
+            [disabled]="isDeleting || isLoading || isSaving">
+            <mat-icon>add</mat-icon><span>Unterkategorie hinzufügen</span>
+          </button>
+        </div>
       }
     </div>
+  }
 
-    @if (category && !isEditing) {
-      <div class="actions">
-        <button type="button" class="btn pri" (click)="onEditClick()" [disabled]="isDeleting || isLoading || isSaving">
-          @if (!isSaving) {
-            <mat-icon>edit</mat-icon><span>Bearbeiten</span>
-          }
-          @if (isSaving) {
-            <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
-          }
-        </button>
-        <button type="button" class="btn del" (click)="onDeleteClick()"
-          [disabled]="isEditing || isDeleting || isLoading || isSaving">
-          <mat-icon>delete</mat-icon><span>Löschen</span>
-        </button>
-      </div>
-    }
-
-    @if (category && isEditing) {
-      <div class="actions">
-        <button type="button" class="btn sec2" (click)="onCancelClick()">
-          <mat-icon>close</mat-icon><span>Abbrechen</span>
-        </button>
-        <button type="button" class="btn pri" (click)="onSaveClick()" [disabled]="isSaving">
-          @if (!isSaving) {
-            <mat-icon>check</mat-icon><span>Speichern</span>
-          }
-          @if (isSaving) {
-            <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
-          }
-        </button>
-      </div>
+  <!--
+  AKTIONEN
+  -->
+  <div class="progress-slot">
+    @if (isDeleting || isLoading || !category) {
+      <mat-progress-bar mode="indeterminate" color="accent" />
     }
   </div>
+
+  @if (category && !isEditing) {
+    <div class="actions">
+      <button type="button" class="btn pri" (click)="onEditClick()" [disabled]="isDeleting || isLoading || isSaving">
+        @if (!isSaving) {
+          <mat-icon>edit</mat-icon><span>Bearbeiten</span>
+        }
+        @if (isSaving) {
+          <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
+        }
+      </button>
+      <button type="button" class="btn del" (click)="onDeleteClick()"
+        [disabled]="isEditing || isDeleting || isLoading || isSaving">
+        <mat-icon>delete</mat-icon><span>Löschen</span>
+      </button>
+    </div>
+  }
+
+  @if (category && isEditing) {
+    <div class="actions">
+      <button type="button" class="btn sec2" (click)="onCancelClick()">
+        <mat-icon>close</mat-icon><span>Abbrechen</span>
+      </button>
+      <button type="button" class="btn pri" (click)="onSaveClick()" [disabled]="isSaving">
+        @if (!isSaving) {
+          <mat-icon>check</mat-icon><span>Speichern</span>
+        }
+        @if (isSaving) {
+          <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
+        }
+      </button>
+    </div>
+  }
+</div>

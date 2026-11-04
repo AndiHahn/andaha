@@ -6,7 +6,7 @@
   </div>
 }
 
-@for (income of incomes; track income) {
+@for (income of incomes; track income.id) {
   <a class="row" routerLink="{{income.id}}">
     <span class="t">{{ income.name }}</span>
     <span class="rc">

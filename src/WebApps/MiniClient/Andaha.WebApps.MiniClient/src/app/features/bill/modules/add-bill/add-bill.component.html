@@ -36,7 +36,7 @@
               {{ form.controls.category.value?.name }}
             </span>
           </mat-select-trigger>
-          @for (category of billCategories; track category) {
+          @for (category of billCategories; track category.id) {
             <mat-option [value]="category">
               {{category?.name}}
             </mat-option>
@@ -52,7 +52,7 @@
         <span class="field-box">
           <mat-select formControlName="subCategory" aria-label="Unterkategorie">
             <mat-option />
-            @for (subCategory of billSubCategories; track subCategory) {
+            @for (subCategory of billSubCategories; track subCategory.id) {
               <mat-option [value]="subCategory">
                 {{subCategory?.name}}
               </mat-option>

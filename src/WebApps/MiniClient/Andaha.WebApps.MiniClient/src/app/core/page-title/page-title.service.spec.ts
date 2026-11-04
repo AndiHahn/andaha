@@ -5,7 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { firstValueFrom } from 'rxjs';
 import { PageTitleService } from './page-title.service';
 
-@Component({ template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
+@Component({ template: '', changeDetection: ChangeDetectionStrategy.Eager })
 class DummyComponent {
 }
 

@@ -39,7 +39,7 @@
         @if (person.payments.length <= 0) {
           <div class="empty">Noch keine Zahlungen.</div>
         }
-        @for (payment of person.payments; track payment) {
+        @for (payment of person.payments; track payment.id) {
           <div class="kv">
             <span class="k">{{ payment.payedAt | date:'dd.MM.yyyy':undefined:'de' }} · {{ getTimeDisplayName(payment.payedHours) }} h</span>
             <span class="v">

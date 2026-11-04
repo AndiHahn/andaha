@@ -17,58 +17,58 @@
             matInput
             placeholder="Suche nach Personen..."
             (input)="onInputChange($event)"/>
-            @for (person of filteredPersons; track person) {
-              <mat-option [value]="person">{{ person.name }}</mat-option>
-            }
-          </mat-select>
-          <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
+          @for (person of filteredPersons; track person.id) {
+            <mat-option [value]="person">{{ person.name }}</mat-option>
+          }
+        </mat-select>
+        <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
+      </span>
+      @if (form.controls.selectedPersons.value.length > 1) {
+        <span class="field-hint" id="add-working-entry-persons-hint">
+          {{ form.controls.selectedPersons.value.length }} Personen ausgewählt
         </span>
-        @if (form.controls.selectedPersons.value.length > 1) {
-          <span class="field-hint" id="add-working-entry-persons-hint">
-            {{ form.controls.selectedPersons.value.length }} Personen ausgewählt
-          </span>
-        }
-      </div>
-
-      <app-date-picker-form-field [control]="form.controls.date"
-        label="Datum" />
-
-      <!-- Start/Ende/Pause als 3er-Reihe (Mockup 05, Arbeitszeiten hinzufuegen) -->
-      <div class="times">
-        <app-time-picker-form-field label="Startzeit"
-          [defaultTime]="getNgxTime(form.controls.fromTime)"
-          (timeChanged)="setFormTime(form.controls.fromTime, $event)" />
-
-        <app-time-picker-form-field label="Endzeit"
-          [defaultTime]="getNgxTime(form.controls.untilTime)"
-          (timeChanged)="setFormTime(form.controls.untilTime, $event)" />
-
-        <app-time-picker-form-field label="Pause"
-          [defaultTime]="getNgxTime(form.controls.break)"
-          (timeChanged)="setFormTime(form.controls.break, $event)" />
-      </div>
-
-      <div class="net">
-        <span class="net-k">Arbeitszeit netto</span>
-        <span class="net-v">{{ getWorkingTime() }}</span>
-      </div>
-
-      <label class="field" [class.invalid]="form.controls.notes | showError">
-        <span class="field-label">Notizen</span>
-        <span class="field-box ta">
-          <textarea formControlName="notes" [attr.aria-invalid]="form.controls.notes | showError"></textarea>
-        </span>
-      </label>
+      }
     </div>
 
-    <div class="actions">
-      <button type="submit" class="btn pri" [disabled]="!form.valid || isSaving">
-        @if (!isSaving) {
-          <mat-icon>check</mat-icon><span>Speichern</span>
-        }
-        @if (isSaving) {
-          <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
-        }
-      </button>
+    <app-date-picker-form-field [control]="form.controls.date"
+      label="Datum" />
+
+    <!-- Start/Ende/Pause als 3er-Reihe (Mockup 05, Arbeitszeiten hinzufuegen) -->
+    <div class="times">
+      <app-time-picker-form-field label="Startzeit"
+        [defaultTime]="getNgxTime(form.controls.fromTime)"
+        (timeChanged)="setFormTime(form.controls.fromTime, $event)" />
+
+      <app-time-picker-form-field label="Endzeit"
+        [defaultTime]="getNgxTime(form.controls.untilTime)"
+        (timeChanged)="setFormTime(form.controls.untilTime, $event)" />
+
+      <app-time-picker-form-field label="Pause"
+        [defaultTime]="getNgxTime(form.controls.break)"
+        (timeChanged)="setFormTime(form.controls.break, $event)" />
     </div>
-  </form>
+
+    <div class="net">
+      <span class="net-k">Arbeitszeit netto</span>
+      <span class="net-v">{{ getWorkingTime() }}</span>
+    </div>
+
+    <label class="field" [class.invalid]="form.controls.notes | showError">
+      <span class="field-label">Notizen</span>
+      <span class="field-box ta">
+        <textarea formControlName="notes" [attr.aria-invalid]="form.controls.notes | showError"></textarea>
+      </span>
+    </label>
+  </div>
+
+  <div class="actions">
+    <button type="submit" class="btn pri" [disabled]="!form.valid || isSaving">
+      @if (!isSaving) {
+        <mat-icon>check</mat-icon><span>Speichern</span>
+      }
+      @if (isSaving) {
+        <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
+      }
+    </button>
+  </div>
+</form>

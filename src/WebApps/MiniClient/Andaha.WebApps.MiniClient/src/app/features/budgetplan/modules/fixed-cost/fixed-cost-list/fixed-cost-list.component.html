@@ -6,7 +6,7 @@
   </div>
 }
 
-@for (fixedCost of fixedCosts; track fixedCost) {
+@for (fixedCost of fixedCosts; track fixedCost.id) {
   <a class="row" routerLink="{{fixedCost.id}}">
     <span class="t">{{ fixedCost.name }}</span>
     <span class="rc">

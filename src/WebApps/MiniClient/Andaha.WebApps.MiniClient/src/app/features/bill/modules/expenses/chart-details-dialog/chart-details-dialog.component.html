@@ -14,7 +14,7 @@
     @for (expense of subCategoryExpenses; track expense) {
       <div class="kv">
         <span class="k">{{ expense?.subCategory }}</span>
-        <span class="v">{{ truncate(2, $safeNavigationMigration(expense?.costs)) | number:'1.2-2':'de' }} €</span>
+        <span class="v">{{ truncate(2, expense.costs) | number:'1.2-2':'de' }} €</span>
       </div>
     }
   </mat-dialog-content>

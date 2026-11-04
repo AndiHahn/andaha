@@ -10,7 +10,7 @@
       <div>
         <!-- Mockup 06, Kategorien: Musterfeld | Name | Chevron; im Modus "Reihenfolge anpassen" Griff links (cdkDragHandle) -->
         <div class="list" cdkDropList (cdkDropListDropped)="drop($event)">
-          @for (category of categories; track category; let i = $index) {
+          @for (category of categories; track category.id; let i = $index) {
             <div
               cdkDrag class="drag-item andaha-drag-item"
               [cdkDragDisabled]="!isEditing">

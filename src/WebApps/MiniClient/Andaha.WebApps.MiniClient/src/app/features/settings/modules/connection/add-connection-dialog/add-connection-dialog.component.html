@@ -8,29 +8,29 @@
             <input formControlName="emailAddress" email autocomplete="off"
               [attr.aria-invalid]="formGroup.controls['emailAddress'] | showError: formDirective"
               [attr.aria-describedby]="(formGroup.controls['emailAddress'] | showError: formDirective) ? 'add-connection-email-error' : null">
+          </span>
+          @if (formGroup.controls['emailAddress'] | showError: formDirective) {
+            <span class="field-error" id="add-connection-email-error">
+              Keine gültige email Adresse.
             </span>
-            @if (formGroup.controls['emailAddress'] | showError: formDirective) {
-              <span class="field-error" id="add-connection-email-error">
-                Keine gültige email Adresse.
-              </span>
-            }
-          </label>
+          }
+        </label>
 
-          @if (errorMessage) {
-            <span class="field-error" role="alert">{{ errorMessage }}</span>
-          }
-        </div>
-      </mat-dialog-content>
-
-      <div class="actions">
-        <button type="submit" class="btn pri" [disabled]="isSaving">
-          @if (!isSaving) {
-            <span>Verbindung anfordern</span>
-          }
-          @if (isSaving) {
-            <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
-          }
-        </button>
+        @if (errorMessage) {
+          <span class="field-error" role="alert">{{ errorMessage }}</span>
+        }
       </div>
-    </form>
-  </app-dialog>
+    </mat-dialog-content>
+
+    <div class="actions">
+      <button type="submit" class="btn pri" [disabled]="isSaving">
+        @if (!isSaving) {
+          <span>Verbindung anfordern</span>
+        }
+        @if (isSaving) {
+          <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
+        }
+      </button>
+    </div>
+  </form>
+</app-dialog>

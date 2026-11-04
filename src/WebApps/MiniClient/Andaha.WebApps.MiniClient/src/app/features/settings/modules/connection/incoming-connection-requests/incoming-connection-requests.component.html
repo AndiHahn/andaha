@@ -12,7 +12,7 @@
   }
 </div>
 
-@for (connectionRequest of connectionRequests; track connectionRequest) {
+@for (connectionRequest of connectionRequests; track connectionRequest.fromUserId + '|' + connectionRequest.targetUserId) {
   <div class="row">
     <span class="t">{{ connectionRequest.fromUserEmailAddress }}</span>
     <button type="button" class="mini accept" aria-label="Anfrage annehmen" (click)="onAcceptClick(connectionRequest)"><mat-icon>check</mat-icon></button>

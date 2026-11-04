@@ -12,7 +12,7 @@
   }
 </div>
 
-@for (connection of connections; track connection) {
+@for (connection of connections; track connection.userEmailAddress) {
   <div class="row">
     <span class="t">{{ connection.userEmailAddress }}</span>
     <span class="st ok"><span class="dot"></span>aktiv</span>

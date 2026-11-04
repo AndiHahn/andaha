@@ -13,59 +13,59 @@
           (keydown)="searchBoxKeyDown($event)"
           placeholder="Suche Rechnungen..."
           aria-label="Rechnungen durchsuchen">
-          @if (searchTerm.value) {
-            <button type="button" class="icon-btn clear-btn"
-              aria-label="Clear"
-              (click)="onClearSearch()">
-              <mat-icon>close</mat-icon>
-            </button>
-          }
-        </span>
-      </label>
-
-      <button type="button" class="icon-btn filter-btn" (click)="onFilterClick()" aria-label="Datumfilter öffnen">
-        <mat-icon>filter_list</mat-icon>
-        @if (fromDateFilter || untilDateFilter) {
-          <span class="badge"></span>
-        }
-      </button>
-    </div>
-
-    <div class="chips">
-      @for (category of categories; track category; let i = $index) {
-        <button type="button" class="chip"
-          [class.on]="category.selected"
-          [attr.aria-pressed]="category.selected"
-          (click)="onChipClick(i)">
-          @if (category.selected) {
-            <mat-icon aria-hidden="true">check</mat-icon>
-            }{{ category.displayName }}
+        @if (searchTerm.value) {
+          <button type="button" class="icon-btn clear-btn"
+            aria-label="Clear"
+            (click)="onClearSearch()">
+            <mat-icon>close</mat-icon>
           </button>
         }
-      </div>
+      </span>
+    </label>
 
+    <button type="button" class="icon-btn filter-btn" (click)="onFilterClick()" aria-label="Datumfilter öffnen">
+      <mat-icon>filter_list</mat-icon>
       @if (fromDateFilter || untilDateFilter) {
-        <div class="chips date-chips">
-          @if (fromDateFilter) {
-            <span class="chip date-chip">
-              <button type="button" class="date-chip-label" (click)="onFilterClick()">Von: {{ fromDateFilter | date:'dd.MM.yyyy' }}</button>
-              <button type="button" class="x" (click)="onFromDateFilterRemoveClick()" aria-label="Von-Datum entfernen">
-                <mat-icon>close</mat-icon>
-              </button>
-            </span>
-          }
-          @if (untilDateFilter) {
-            <span class="chip date-chip">
-              <button type="button" class="date-chip-label" (click)="onFilterClick()">Bis: {{ untilDateFilter | date:'dd.MM.yyyy' }}</button>
-              <button type="button" class="x" (click)="onUntilDateFilterRemoveClick()" aria-label="Bis-Datum entfernen">
-                <mat-icon>close</mat-icon>
-              </button>
-            </span>
-          }
-        </div>
+        <span class="badge"></span>
       }
+    </button>
+  </div>
 
-      <button type="button" class="chip filter-chip" (click)="onFilterClick()">
-        <mat-icon aria-hidden="true">calendar_today</mat-icon>Datumfilter
+  <div class="chips">
+    @for (category of categories; track category; let i = $index) {
+      <button type="button" class="chip"
+        [class.on]="category.selected"
+        [attr.aria-pressed]="category.selected"
+        (click)="onChipClick(i)">
+        @if (category.selected) {
+          <mat-icon aria-hidden="true">check</mat-icon>
+        }{{ category.displayName }}
       </button>
+    }
+  </div>
+
+  @if (fromDateFilter || untilDateFilter) {
+    <div class="chips date-chips">
+      @if (fromDateFilter) {
+        <span class="chip date-chip">
+          <button type="button" class="date-chip-label" (click)="onFilterClick()">Von: {{ fromDateFilter | date:'dd.MM.yyyy' }}</button>
+          <button type="button" class="x" (click)="onFromDateFilterRemoveClick()" aria-label="Von-Datum entfernen">
+            <mat-icon>close</mat-icon>
+          </button>
+        </span>
+      }
+      @if (untilDateFilter) {
+        <span class="chip date-chip">
+          <button type="button" class="date-chip-label" (click)="onFilterClick()">Bis: {{ untilDateFilter | date:'dd.MM.yyyy' }}</button>
+          <button type="button" class="x" (click)="onUntilDateFilterRemoveClick()" aria-label="Bis-Datum entfernen">
+            <mat-icon>close</mat-icon>
+          </button>
+        </span>
+      }
     </div>
+  }
+
+  <button type="button" class="chip filter-chip" (click)="onFilterClick()">
+    <mat-icon aria-hidden="true">calendar_today</mat-icon>Datumfilter
+  </button>
+</div>
