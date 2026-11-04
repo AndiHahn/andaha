@@ -41,7 +41,7 @@
       <span class="k">Lebenserhaltungskosten</span>
       <span class="v">{{ livingCosts | number:'1.2-2':'de' }} €</span>
     </div>
-    @for (expense of budgetPlan.expenses; track expense) {
+    @for (expense of budgetPlan.expenses; track expense.category) {
       <div class="kv">
         <span class="k">{{ costCategoryLabel.get(expense.category) }}</span>
         <span class="v">{{ expense.value | number:'1.2-2':'de' }} €</span>
