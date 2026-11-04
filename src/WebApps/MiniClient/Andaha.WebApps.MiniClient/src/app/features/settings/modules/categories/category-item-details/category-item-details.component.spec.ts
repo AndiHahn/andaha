@@ -12,7 +12,7 @@ import { CategoryUpdateDto } from 'src/app/api/shopping/dtos/CategoryUpdateDto';
 import { PageTitleService } from 'src/app/core/page-title/page-title.service';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
-import { ShowErrorModule } from 'src/app/shared/form-field/show-error.module';
+import { ShowErrorPipe } from 'src/app/shared/form-field/show-error.pipe';
 import { createSubCategoryForm } from '../functions/form-functions';
 import { CategoryItemDetailsComponent } from './category-item-details.component';
 
@@ -43,7 +43,7 @@ describe('CategoryItemDetailsComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-    imports: [ReactiveFormsModule, ShowErrorModule, MatSelectModule, NoopAnimationsModule, CategoryItemDetailsComponent],
+    imports: [ReactiveFormsModule, ShowErrorPipe, MatSelectModule, NoopAnimationsModule, CategoryItemDetailsComponent],
     schemas: [NO_ERRORS_SCHEMA],
     providers: [
         { provide: Router, useValue: {

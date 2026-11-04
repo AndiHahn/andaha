@@ -2,7 +2,6 @@ import type { MockedObject } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef } from '@angular/material/dialog';
 import { AddBillImageDialogComponent } from './add-bill-image-dialog.component';
-import { AddBillImageDialogModule } from './add-bill-image-dialog.module';
 
 async function createJpegFile(width: number, height: number): Promise<File> {
     const canvas = document.createElement('canvas');
@@ -30,7 +29,7 @@ describe('AddBillImageDialogComponent', () => {
         } as unknown as MockedObject<MatDialogRef<AddBillImageDialogComponent, any>>;
 
         await TestBed.configureTestingModule({
-            imports: [AddBillImageDialogModule],
+            imports: [AddBillImageDialogComponent],
             providers: [{ provide: MatDialogRef, useValue: dialogRef }]
         }).compileComponents();
 

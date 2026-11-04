@@ -9,7 +9,7 @@ import { BehaviorSubject, of, Subject } from 'rxjs';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
 import { PageTitleService } from 'src/app/core/page-title/page-title.service';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
-import { ShowErrorModule } from 'src/app/shared/form-field/show-error.module';
+import { ShowErrorPipe } from 'src/app/shared/form-field/show-error.pipe';
 import { PersonContextService } from '../../../services/person-context.service';
 import { WorkingEntriesContextService } from '../../../services/working-entries-context.service';
 import { PersonPaymentDialogService } from '../person-payment-dialog/person-payment-dialog.service';
@@ -46,7 +46,7 @@ describe('PersonDetailsComponent', () => {
         entries.loading.mockReturnValue(new Subject<boolean>());
 
         await TestBed.configureTestingModule({
-    imports: [ReactiveFormsModule, ShowErrorModule, NoopAnimationsModule, PersonDetailsComponent],
+    imports: [ReactiveFormsModule, ShowErrorPipe, NoopAnimationsModule, PersonDetailsComponent],
     schemas: [NO_ERRORS_SCHEMA],
     providers: [
         { provide: Router, useValue: {

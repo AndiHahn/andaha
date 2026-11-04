@@ -17,7 +17,7 @@ import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/co
 import { FixedCostContextService } from '../../../services/fixed-cost-context.service';
 import { FixedCostHistoryDialogService } from '../fixed-cost-history-dialog/fixed-cost-history-dialog.service';
 import { FixedCostDetailsComponent } from './fixed-cost-details.component';
-import { ShowErrorModule } from 'src/app/shared/form-field/show-error.module';
+import { ShowErrorPipe } from 'src/app/shared/form-field/show-error.pipe';
 
 registerLocaleData(localeDe, 'de');
 
@@ -55,7 +55,7 @@ describe('FixedCostDetailsComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-    imports: [ReactiveFormsModule, ShowErrorModule, MatSelectModule, NoopAnimationsModule, FixedCostDetailsComponent],
+    imports: [ReactiveFormsModule, ShowErrorPipe, MatSelectModule, NoopAnimationsModule, FixedCostDetailsComponent],
     schemas: [NO_ERRORS_SCHEMA],
     providers: [
         { provide: Router, useValue: router },

@@ -6,13 +6,18 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { HeaderAction, PageTitleService } from './core/page-title/page-title.service';
 import { AppUpdateService } from './core/app-update.service';
+import { MatSidenavContainer, MatSidenav, MatSidenavContent } from '@angular/material/sidenav';
+import { MatIcon } from '@angular/material/icon';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatSidenavContainer, MatSidenav, MatIcon, RouterLink, RouterLinkActive, MatSidenavContent, MatMenuTrigger, MatMenu, MatMenuItem, RouterOutlet, AsyncPipe]
 })
 export class AppComponent implements OnInit {
   title = 'Andaha.WebApps.MiniClient';
