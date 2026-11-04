@@ -1,4 +1,5 @@
-@import "themes/andaha-theme";
+@use "themes/andaha-theme";
+@use "themes/andaha-tokens" as *;
 
 // Basis ---------------------------------------------------------------
 *, *::before, *::after { box-sizing: border-box; }

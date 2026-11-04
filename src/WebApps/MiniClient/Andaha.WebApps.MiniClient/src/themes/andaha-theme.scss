@@ -6,7 +6,7 @@
 // docs/design/umsetzung.md, Phase 1.
 
 @use '@angular/material' as mat;
-@import 'andaha-tokens';
+@use 'andaha-tokens' as *;
 
 $andaha-ink: (
   50: #ECEFF8,
