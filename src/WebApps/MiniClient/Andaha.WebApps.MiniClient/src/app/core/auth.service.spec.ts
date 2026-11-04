@@ -4,11 +4,13 @@ import { TestBed } from '@angular/core/testing';
 import { OAuthErrorEvent, OAuthEvent, OAuthService, OAuthSuccessEvent } from 'angular-oauth2-oidc';
 import { firstValueFrom, Subject } from 'rxjs';
 import { AuthService } from './auth.service';
+import { OverlayBackService } from './overlay/overlay-back.service';
 
 describe('AuthService', () => {
     const key = 'andaha.auth.lastIdp';
     let service: AuthService;
     let oauth: MockedObject<OAuthService>;
+    let overlayBack: { leaveDocument: ReturnType<typeof vi.fn> };
     let events: Subject<OAuthEvent>;
     let expiresAt: number | null;
     let discoveryCalls: number;
@@ -77,7 +79,13 @@ describe('AuthService', () => {
         oauth.refreshToken.mockResolvedValue({} as any);
         oauth.getIdentityClaims.mockReturnValue({ name: 'Andi', emails: ['andi@example.com'], idp: 'google.com' });
 
-        TestBed.configureTestingModule({ providers: [{ provide: OAuthService, useValue: oauth }] });
+        overlayBack = { leaveDocument: vi.fn().mockName('OverlayBackService.leaveDocument') };
+        TestBed.configureTestingModule({
+            providers: [
+                { provide: OAuthService, useValue: oauth },
+                { provide: OverlayBackService, useValue: overlayBack }
+            ]
+        });
         service = TestBed.inject(AuthService);
     });
 
@@ -204,6 +212,13 @@ describe('AuthService', () => {
         service.logout();
         expect(localStorage.getItem(key)).toBeNull();
         expect(oauth.logOut).toHaveBeenCalledTimes(1);
+    });
+
+    it('logout stops overlay history steps before leaving the app', () => {
+        service.logout();
+        expect(overlayBack.leaveDocument).toHaveBeenCalledTimes(1);
+        expect(overlayBack.leaveDocument.mock.invocationCallOrder[0])
+            .toBeLessThan(oauth.logOut.mock.invocationCallOrder[0]);
     });
 
     describe('fix wave', () => {

@@ -18,6 +18,10 @@ class FakeHistory {
     return this.entries[this.index];
   }
 
+  replace(state: unknown): void {
+    this.entries[this.index] = state;
+  }
+
   push(state: unknown): void {
     this.entries.splice(this.index + 1);
     this.entries.push(state);
@@ -57,6 +61,7 @@ describe('OverlayBackService', () => {
     fake = new FakeHistory();
     vi.spyOn(history, 'state', 'get').mockImplementation(() => fake.state);
     vi.spyOn(history, 'pushState').mockImplementation(state => fake.push(state));
+    vi.spyOn(history, 'replaceState').mockImplementation(state => fake.replace(state));
     backSpy = vi.spyOn(history, 'back').mockImplementation(() => fake.go(-1));
     goSpy = vi.spyOn(history, 'go').mockImplementation(delta => fake.go(delta ?? 0));
 
@@ -207,5 +212,102 @@ describe('OverlayBackService', () => {
 
     expect(fake.index).toBe(0);
     expect(backSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('marks the router entry below the first overlay and keeps the marker for stacked overlays', () => {
+    service.register(() => undefined);
+    service.register(() => undefined);
+
+    expect(history.replaceState).toHaveBeenCalledTimes(1);
+    const base = (fake.entries[0] as { overlayBase: number }).overlayBase;
+    expect(base).toEqual(expect.any(Number));
+    expect(fake.entries[1]).toEqual(expect.objectContaining({ overlayBase: base }));
+    expect(fake.entries[2]).toEqual(expect.objectContaining({ overlayBase: base }));
+  });
+
+  // Fix Runde 1, Befund 1: ein unter einer Navigation liegen gebliebener Eintrag darf beim
+  // Schließen des nächsten Overlays nicht mit entfernt werden (sonst Sprung auf die Vorseite)
+  it('removes only the closed overlay when an older entry lies under a router navigation', async () => {
+    const releaseOld = service.register(() => undefined);
+    fake.push({ navigationId: 2 });
+    releaseOld();
+    await tick();
+
+    const closeDialog = vi.fn();
+    const releaseDialog = service.register(closeDialog);
+    expect(fake.index).toBe(3);
+
+    // Dialog per Speichern geschlossen
+    releaseDialog();
+    await tick();
+
+    expect(goSpy).not.toHaveBeenCalled();
+    expect(backSpy).toHaveBeenCalledTimes(1);
+    expect(fake.index).toBe(2);
+    expect(fake.state).toEqual(expect.objectContaining({ navigationId: 2 }));
+    expect(closeDialog).not.toHaveBeenCalled();
+  });
+
+  // Fix Runde 1, Befund 2: Zurück auf den Router-Eintrag verwirft den liegen gebliebenen Eintrag
+  // darunter nicht; er wird später übersprungen, kein Zurück-Druck bleibt wirkungslos
+  it('keeps a buried entry when the back button closes an overlay on a later page', async () => {
+    const closeOld = vi.fn();
+    const releaseOld = service.register(closeOld);
+    fake.push({ navigationId: 2 });
+    releaseOld();
+    await tick();
+    const closeDialog = vi.fn();
+    service.register(closeDialog);
+
+    // 1. Zurück: schließt den Dialog, bleibt auf der Seite
+    await fake.userBack();
+    expect(closeDialog).toHaveBeenCalledTimes(1);
+    expect(fake.index).toBe(2);
+    expect(backSpy).not.toHaveBeenCalled();
+
+    // 2. Zurück: Vorseite; der verwaiste Overlay-Eintrag wird gleich übersprungen
+    await fake.userBack();
+    await tick();
+    expect(fake.index).toBe(0);
+    expect(backSpy).toHaveBeenCalledTimes(1);
+    expect(closeOld).not.toHaveBeenCalled();
+  });
+
+  it('skips an overlay entry left over from an earlier session', async () => {
+    fake.entries = [{ navigationId: 1 }, { navigationId: 1, overlayBase: 4, overlayBack: 5 }, { navigationId: 2 }];
+    fake.index = 2;
+
+    await fake.userBack();
+    await tick();
+
+    expect(fake.index).toBe(0);
+    expect(backSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('stays on the entry of an overlay that is still open', async () => {
+    const closeLower = vi.fn();
+    service.register(closeLower);
+    const closeUpper = vi.fn();
+    service.register(closeUpper);
+
+    await fake.userBack();
+    await tick();
+
+    expect(closeUpper).toHaveBeenCalledTimes(1);
+    expect(closeLower).not.toHaveBeenCalled();
+    expect(fake.index).toBe(1);
+    expect(backSpy).not.toHaveBeenCalled();
+  });
+
+  // Fix Runde 1, Befund 3: Ausloggen aus dem Kontomenü darf kein history.back mehr abbrechen
+  it('does not traverse the history after leaveDocument', async () => {
+    const release = service.register(() => undefined);
+
+    service.leaveDocument();
+    release();
+    await tick();
+
+    expect(backSpy).not.toHaveBeenCalled();
+    expect(goSpy).not.toHaveBeenCalled();
   });
 });

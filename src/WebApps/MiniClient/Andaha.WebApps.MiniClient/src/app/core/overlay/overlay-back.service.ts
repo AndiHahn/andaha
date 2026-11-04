@@ -3,32 +3,51 @@ import { Router } from '@angular/router';
 
 interface OverlayEntry {
   id: number;
+  /** Kennung des Router-Eintrags, über dem das Overlay liegt (`history.state.overlayBase`) */
+  base: number;
   close: () => void;
   released: boolean;
 }
 
+/** Stelle eines History-Eintrags: Router-Eintrag (`base`, null = nie markiert) und Overlay (`marker`, 0 = keins) */
+interface HistoryPosition {
+  base: number | null;
+  marker: number;
+}
+
 /** Wartezeit auf das popstate eines eigenen history.back, falls der Browser keins schickt */
 const TRAVERSAL_TIMEOUT = 1000;
-/** So lange nach dem Start einer Navigation weg von der App (z. B. Ausloggen) kein history.back */
+/** So lange nach dem Start einer Navigation weg von der App kein history.back */
 const LEAVING_TIMEOUT = 5000;
 
-function markerOf(state: unknown): number {
-  const marker = (state as { overlayBack?: unknown } | null)?.overlayBack;
-  return typeof marker === 'number' ? marker : 0;
+function numberOf(state: unknown, key: 'overlayBase' | 'overlayBack'): number | null {
+  const value = (state as Record<string, unknown> | null)?.[key];
+  return typeof value === 'number' ? value : null;
+}
+
+function positionOf(state: unknown): HistoryPosition {
+  return { base: numberOf(state, 'overlayBase'), marker: numberOf(state, 'overlayBack') ?? 0 };
 }
 
 /**
  * Zurück-Taste und Zurück-Geste schließen zuerst ein offenes Sheet, einen Dialog oder ein Menü (AC6).
  *
  * Jedes Overlay bekommt einen History-Eintrag mit gleicher URL und `history.state.overlayBack = <id>`.
- * Ein popstate auf einen Eintrag unterhalb (Marker kleiner bzw. keiner) schließt alle Overlays darüber,
- * oberstes zuerst. Wird ein Overlay anders geschlossen, entfernt `history.back()` seinen Eintrag
- * wieder, sofern er noch oben liegt; das popstate dieses eigenen Schritts schließt nichts.
- * Der Router sieht beide popstate-Arten nur als Navigation auf dieselbe URL und überspringt sie;
- * Dialoge und Sheets schließen deshalb nicht selbst bei popstate (`closeOnNavigation: false`).
+ * Der Router-Eintrag darunter wird beim ersten Overlay mit `overlayBase = <id>` markiert (replaceState),
+ * die Overlay-Einträge erben die Markierung. So ist jede Stelle der History als (base, marker)
+ * geordnet, auch wenn der Router zwischendurch eigene Einträge angelegt hat.
  *
- * Ids steigen über Neuladen hinweg (Zeitbasis), Marker aus einer früheren Sitzung sind also immer
- * kleiner als die laufenden.
+ * - popstate: alle Overlays hinter der erreichten Stelle schließen, oberstes zuerst. Ist die Stelle
+ *   der Eintrag eines schon geschlossenen oder unbekannten Overlays (z. B. unter einer Navigation
+ *   liegen geblieben, oder aus einer früheren Sitzung), gleich einen Schritt weiter zurück: kein
+ *   Zurück-Druck bleibt wirkungslos.
+ * - Overlay anders geschlossen: `history.back()` entfernt seinen Eintrag, sofern er noch oben liegt;
+ *   zusammen mit direkt darunter liegenden geschlossenen Overlays desselben Router-Eintrags, nie
+ *   über einen Router-Eintrag hinweg. Das popstate dieses eigenen Schritts schließt nichts.
+ *
+ * Der Router sieht diese popstate-Ereignisse nur als Navigation auf dieselbe URL und überspringt sie;
+ * Dialoge und Sheets schließen nicht selbst bei popstate (`closeOnNavigation: false`).
+ * Ids steigen über Neuladen hinweg (Zeitbasis).
  */
 @Injectable({ providedIn: 'root' })
 export class OverlayBackService {
@@ -48,12 +67,11 @@ export class OverlayBackService {
   constructor() {
     const listener = (event: PopStateEvent) => this.onPopState(event);
     this.window.addEventListener('popstate', listener);
-    // Navigation weg vom Dokument (Ausloggen aus dem Kontomenü): ein history.back danach könnte sie
-    // abbrechen. Navigation API, wo vorhanden; das navigate-Ereignis kommt synchron beim Start.
+    // zusätzlich zu leaveDocument(): Navigation API, wo vorhanden (navigate kommt synchron beim Start)
     const navigation: Navigation | undefined = (this.window as Window & { navigation?: Navigation }).navigation;
     const onNavigate = (event: NavigateEvent) => {
       if (!event.destination.sameDocument) {
-        this.leavingUntil = Date.now() + LEAVING_TIMEOUT;
+        this.leavingUntil = Math.max(this.leavingUntil, Date.now() + LEAVING_TIMEOUT);
       }
     };
     navigation?.addEventListener('navigate', onNavigate);
@@ -69,7 +87,7 @@ export class OverlayBackService {
    * ruft das Overlay beim Schließen auf (mehrfacher Aufruf ist unschädlich).
    */
   register(close: () => void): () => void {
-    const entry: OverlayEntry = { id: this.nextId++, close, released: false };
+    const entry: OverlayEntry = { id: this.nextId++, base: 0, close, released: false };
     this.whenIdle(() => this.push(entry));
 
     return () => {
@@ -80,8 +98,16 @@ export class OverlayBackService {
       // erst nach den übrigen Abonnenten von afterClosed: startet einer davon eine Navigation oder ein
       // neues Overlay, liegt der Eintrag nicht mehr oben und bleibt stehen, statt mit ihm um die
       // Wette zu laufen (er wird beim nächsten Zurück übersprungen)
-      setTimeout(() => this.whenIdle(() => this.removeReleased(false)));
+      setTimeout(() => this.whenIdle(() => this.removeReleasedOnTop()));
     };
+  }
+
+  /**
+   * Vor einer Navigation weg von der App (Ausloggen): ab jetzt kein history.back mehr, es könnte die
+   * laufende Navigation abbrechen. Unabhängig von der Navigation API.
+   */
+  leaveDocument(): void {
+    this.leavingUntil = Number.POSITIVE_INFINITY;
   }
 
   private push(entry: OverlayEntry): void {
@@ -89,31 +115,39 @@ export class OverlayBackService {
       return;
     }
     const history = this.window.history;
-    const state = history.state && typeof history.state === 'object' ? history.state : {};
+    let state: Record<string, unknown> = history.state && typeof history.state === 'object' ? history.state : {};
+    let base = numberOf(state, 'overlayBase');
+    if (base === null) {
+      base = this.nextId++;
+      state = { ...state, overlayBase: base };
+      history.replaceState(state, '');
+    }
+    entry.base = base;
     history.pushState({ ...state, overlayBack: entry.id }, '');
     this.stack.push(entry);
   }
 
-  /**
-   * Entfernt freigegebene Einträge oben auf dem Stapel mit einem Schritt zurück, wenn der Browser
-   * gerade auf dem obersten steht. Nach einem popstate (`afterPop`) läuft die Router-Navigation zur
-   * selben URL bereits und hindert nicht.
-   */
-  private removeReleased(afterPop: boolean): void {
+  /** Programmatisch geschlossen: freigegebene Einträge oben entfernen, wenn der Browser dort steht. */
+  private removeReleasedOnTop(): void {
     const top = this.stack.at(-1);
-    if (!top?.released || markerOf(this.window.history.state) !== top.id) {
+    if (!top?.released || numberOf(this.window.history.state, 'overlayBack') !== top.id) {
       return;
     }
-    if (!afterPop && (this.router.currentNavigation() || Date.now() < this.leavingUntil)) {
+    if (this.router.currentNavigation() || Date.now() < this.leavingUntil) {
       return;
     }
+    this.traverse(-this.popReleasedRun());
+  }
 
+  /** Nimmt die freigegebenen Einträge oben vom Stapel, die über demselben Router-Eintrag liegen. */
+  private popReleasedRun(): number {
+    const base = this.stack.at(-1)?.base;
     let count = 0;
-    while (this.stack.at(-1)?.released) {
+    while (this.stack.at(-1)?.released && this.stack.at(-1)!.base === base) {
       this.stack.pop();
       count++;
     }
-    this.traverse(-count);
+    return count;
   }
 
   private traverse(delta: number): void {
@@ -132,16 +166,26 @@ export class OverlayBackService {
       return;
     }
 
-    const marker = markerOf(event.state);
-    while (this.stack.length && this.stack.at(-1)!.id > marker) {
+    const landed = positionOf(event.state);
+    while (this.stack.length && isAfter(this.stack.at(-1)!, landed)) {
       const entry = this.stack.pop()!;
       if (!entry.released) {
         entry.close();
       }
     }
 
-    // gelandet auf dem Eintrag eines schon geschlossenen Overlays: gleich weiter zurück
-    this.removeReleased(true);
+    if (landed.marker === 0 || Date.now() < this.leavingUntil) {
+      return;
+    }
+    // gelandet auf einem Overlay-Eintrag: offen → bleiben; geschlossen oder unbekannt → weiter zurück
+    const top = this.stack.at(-1);
+    if (top?.id === landed.marker) {
+      if (top.released) {
+        this.traverse(-this.popReleasedRun());
+      }
+    } else {
+      this.traverse(-1);
+    }
   }
 
   private settle(): void {
@@ -161,4 +205,12 @@ export class OverlayBackService {
       step();
     }
   }
+}
+
+/** Liegt der Overlay-Eintrag in der History hinter der erreichten Stelle? Unmarkierter Router-Eintrag: alles. */
+function isAfter(entry: OverlayEntry, landed: HistoryPosition): boolean {
+  if (landed.base === null) {
+    return true;
+  }
+  return entry.base > landed.base || (entry.base === landed.base && entry.id > landed.marker);
 }

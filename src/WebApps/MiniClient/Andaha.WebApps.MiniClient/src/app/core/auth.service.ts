@@ -3,12 +3,14 @@ import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { UserAuthInfo } from './UserAuthInfo';
+import { OverlayBackService } from './overlay/overlay-back.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private oauthService = inject(OAuthService);
+  private overlayBack = inject(OverlayBackService);
 
 
   private isAuthenticated$: BehaviorSubject<boolean> = new BehaviorSubject(this.isLoggedIn());
@@ -62,6 +64,8 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem(AuthService.lastIdpKey);
+    // Aufruf aus dem Kontomenü: das schließende Menü darf die Weiterleitung nicht per history.back abbrechen
+    this.overlayBack.leaveDocument();
     this.oauthService.logOut();
   }
 
