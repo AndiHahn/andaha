@@ -1,10 +1,7 @@
 @if (!bill?.imageAvailable) {
-  <button type="button" class="photo add" [disabled]="!editing" (click)="onAddImageClick()">
-    <span class="ic" aria-hidden="true"><mat-icon>photo_camera</mat-icon></span>
-    <span class="txt">Foto der Rechnung<span class="hint">Optional</span></span>
-  </button>
-}
-@if (bill?.imageAvailable && !onlyUpload) {
+  <app-photo-picker [photo]="photo" [disabled]="!editing || saving"
+    (photoSelected)="imageSelected.emit($event)" (photoRemoved)="imageSelected.emit(null)" />
+} @else {
   <button type="button" class="photo show" [disabled]="saving" (click)="onShowImageClick()">
     <span class="thumb" aria-hidden="true"><span class="w70"></span><span></span><span class="w55"></span><span></span><span class="w40"></span></span>
     <span class="txt">Rechnungsfoto<span class="hint">Tippen zum Vergrößern</span></span>

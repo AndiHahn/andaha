@@ -1,0 +1,36 @@
+<div class="photo" [class.has-photo]="previewUrl()" [class.off]="disabled()">
+  <div class="head">
+    <span class="ic" aria-hidden="true">
+      @if (busy()) {
+        <mat-progress-spinner mode="indeterminate" diameter="22" />
+      } @else if (previewUrl()) {
+        <img [src]="previewUrl()" alt="">
+      } @else {
+        <mat-icon>photo_camera</mat-icon>
+      }
+    </span>
+    <span class="txt" aria-live="polite">
+      Foto der Rechnung
+      <span class="hint">{{ busy() ? 'Wird verkleinert …' : previewUrl() ? 'Foto ausgewählt' : 'Optional' }}</span>
+    </span>
+    @if (previewUrl() && !busy()) {
+      <button type="button" class="icon-btn" aria-label="Foto entfernen" [disabled]="disabled()" (click)="photoRemoved.emit()">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </div>
+
+  <div class="pick">
+    <button type="button" class="btn sec2" [disabled]="disabled() || busy()" (click)="cameraInput.click()">
+      <mat-icon>photo_camera</mat-icon><span>Kamera</span>
+    </button>
+    <button type="button" class="btn sec2" [disabled]="disabled() || busy()" (click)="galleryInput.click()">
+      <mat-icon>photo_library</mat-icon><span>Galerie</span>
+    </button>
+  </div>
+
+  <input #cameraInput class="file" type="file" accept="image/*" capture="environment" tabindex="-1" aria-hidden="true"
+    (change)="onChoose(cameraInput)">
+  <input #galleryInput class="file" type="file" accept="image/*" tabindex="-1" aria-hidden="true"
+    (change)="onChoose(galleryInput)">
+</div>

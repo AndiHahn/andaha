@@ -1,34 +1,41 @@
-<form class="page" [formGroup]="form" #formDirective="ngForm" (ngSubmit)="onSubmit(formDirective)">
+<form class="page" [formGroup]="form" #formDirective="ngForm" (ngSubmit)="onSubmit()">
   <div class="form-body">
-    <app-bill-image [editing]="true" [saving]="false" [onlyUpload]="true"
-      (imageSelected)="onImageSelected($event)" />
-
-    <label class="field" [class.invalid]="form.controls.shopName | showError: formDirective">
-      <span class="field-label">Shopname</span>
-      <span class="field-box">
-        <input formControlName="shopName" required [attr.aria-invalid]="form.controls.shopName | showError: formDirective">
-      </span>
-    </label>
-
-    <label class="field" [class.invalid]="form.controls.notes | showError: formDirective">
-      <span class="field-label">Notizen</span>
-      <span class="field-box ta">
-        <textarea formControlName="notes" [attr.aria-invalid]="form.controls.notes | showError: formDirective"></textarea>
-      </span>
-    </label>
+    @if (prefill.notice === 'analysis-failed') {
+      <div class="notice" role="status">
+        <mat-icon aria-hidden="true">info</mat-icon>
+        <span>Die Rechnung konnte nicht gelesen werden. Bitte die Felder ausfüllen.</span>
+      </div>
+    }
 
     <label class="field" [class.invalid]="form.controls.price | showError: formDirective">
       <span class="field-label">Preis</span>
       <span class="field-box">
-        <input class="price" formControlName="price" type="number" required autocomplete="off" [attr.aria-invalid]="form.controls.price | showError: formDirective">
+        <input #priceInput class="price" name="price" formControlName="price" type="text" inputmode="decimal"
+          enterkeyhint="next" placeholder="0,00" autocomplete="off" required
+          [attr.aria-invalid]="form.controls.price | showError: formDirective">
         <span class="suffix" aria-hidden="true">€</span>
       </span>
     </label>
 
+    <label class="field" [class.invalid]="form.controls.shopName | showError: formDirective">
+      <span class="field-label">Shopname</span>
+      <span class="field-box">
+        <input name="shopName" formControlName="shopName" type="text" autocomplete="off" enterkeyhint="next" required
+          [matAutocomplete]="shopAuto" (focus)="updateShopOptions()"
+          [attr.aria-invalid]="form.controls.shopName | showError: formDirective">
+      </span>
+    </label>
+    <mat-autocomplete #shopAuto="matAutocomplete" (optionSelected)="onShopSelected($event)">
+      @for (name of shopOptions; track $index) {
+        <mat-option [value]="name">{{ name }}</mat-option>
+      }
+    </mat-autocomplete>
+
     <div class="field" [class.invalid]="form.controls.category | showError: formDirective">
       <span class="field-label">Kategorie</span>
       <span class="field-box">
-        <mat-select formControlName="category" required aria-label="Kategorie" (selectionChange)="categorySelectionChanged($event)">
+        <mat-select formControlName="category" required aria-label="Kategorie" placeholder="Kategorie wählen"
+          [compareWith]="compareById" (selectionChange)="categorySelectionChanged()">
           <mat-select-trigger>
             <span class="trigger">
               <span class="dot" [class.dot-light]="form.controls.category.value?.color == 'white'"
@@ -37,25 +44,22 @@
             </span>
           </mat-select-trigger>
           @for (category of billCategories; track category.id) {
-            <mat-option [value]="category">
-              {{category?.name}}
-            </mat-option>
+            <mat-option [value]="category">{{ category.name }}</mat-option>
           }
         </mat-select>
         <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
       </span>
     </div>
 
-    @if (billSubCategories && billSubCategories.length > 0) {
+    @if (billSubCategories.length > 0) {
       <div class="field">
         <span class="field-label">Unterkategorie</span>
         <span class="field-box">
-          <mat-select formControlName="subCategory" aria-label="Unterkategorie">
-            <mat-option />
+          <mat-select formControlName="subCategory" aria-label="Unterkategorie" placeholder="Keine"
+            [compareWith]="compareById" (selectionChange)="subCategorySelectionChanged()">
+            <mat-option [value]="null">Keine</mat-option>
             @for (subCategory of billSubCategories; track subCategory.id) {
-              <mat-option [value]="subCategory">
-                {{subCategory?.name}}
-              </mat-option>
+              <mat-option [value]="subCategory">{{ subCategory.name }}</mat-option>
             }
           </mat-select>
           <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
@@ -63,17 +67,23 @@
       </div>
     }
 
-    <label class="field" [class.invalid]="form.controls.date | showError: formDirective">
+    <div class="field">
       <span class="field-label">Datum</span>
       <span class="field-box">
-        <input [matDatepicker]="picker" formControlName="date" aria-label="Datum" aria-describedby="add-bill-date-hint" [attr.aria-invalid]="form.controls.date | showError: formDirective">
-        <mat-datepicker-toggle class="suffix" [for]="picker" [aria-label]="'Kalender öffnen'">
-          <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
-        </mat-datepicker-toggle>
-        <mat-datepicker #picker />
+        <app-quick-date-row class="date-row" [date]="form.controls.date.value" [touchUi]="touchUi" [showAllFields]="false"
+          (dateChange)="onDateChange($event)" />
       </span>
-      <span class="field-hint" id="add-bill-date-hint">DD.MM.YYYY</span>
+    </div>
+
+    <label class="field" [class.invalid]="form.controls.notes | showError: formDirective">
+      <span class="field-label">Notizen</span>
+      <span class="field-box ta">
+        <textarea name="notes" formControlName="notes" [attr.aria-invalid]="form.controls.notes | showError: formDirective"></textarea>
+      </span>
     </label>
+
+    <app-photo-picker [photo]="photo" [disabled]="isSaving"
+      (photoSelected)="onPhotoSelected($event)" (photoRemoved)="onPhotoRemoved()" />
   </div>
 
   <div class="actions">

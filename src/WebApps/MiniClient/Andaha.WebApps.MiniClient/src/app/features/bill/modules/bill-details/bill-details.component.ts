@@ -14,7 +14,6 @@ import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/Confi
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
 import { BillForm, getBillForm } from '../../functions/bill-form-functions';
-import { ImageSnippet } from '../add-bill-image-dialog/add-bill-image-dialog.component';
 import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
 import { BillSubCategoryDto } from 'src/app/api/shopping/dtos/BillSubCategoryDto';
 import { MatSelectChange, MatSelect, MatSelectTrigger, MatOption } from '@angular/material/select';
@@ -50,7 +49,8 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
   bill?: BillDto;
   billCategories?: BillCategoryDto[];
   billSubCategories?: BillSubCategoryDto[];
-  image?: ImageSnippet;
+  /** Neu gewähltes Foto, wird mit dem nächsten Speichern hochgeladen */
+  image: File | null = null;
   
   isSaving: boolean = false;
   isDeleting: boolean = false;
@@ -100,6 +100,7 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
 
   onCancelClick(): void {
     this.isEditing = false;
+    this.image = null;
     this.form = getBillForm(this.bill!);
     this.updateCategory();
     this.form.disable();
@@ -122,6 +123,7 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
       {
         next: _ => {
           this.isSaving = false;
+          this.image = null;
           // Rechnung kann ausserhalb der geladenen Liste liegen (GET bill/{id}); dann den Stand hier nachziehen.
           Object.assign(this.bill!, {
             shopName: dto.shopName,
@@ -159,7 +161,7 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
     ));
   }
 
-  onImageSelected(image: ImageSnippet): void {
+  onImageSelected(image: File | null): void {
     this.image = image;
   }
 
@@ -250,7 +252,7 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
       price: controls.price.value!,
       date: new Date(controls.date.value),
       notes: controls.notes?.value ?? undefined,
-      image: this.image?.file ?? undefined
+      image: this.image ?? undefined
     }
   }
 

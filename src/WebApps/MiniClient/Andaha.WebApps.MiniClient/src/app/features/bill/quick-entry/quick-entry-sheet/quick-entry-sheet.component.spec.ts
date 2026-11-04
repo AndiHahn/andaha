@@ -569,7 +569,7 @@ describe('QuickEntrySheetComponent', () => {
     expect(sheetRef.dismiss).toHaveBeenCalled();
     expect(sheetRef.dismiss.mock.invocationCallOrder[0]).toBeLessThan(navigate.mock.invocationCallOrder[0]);
     expect(navigate).toHaveBeenCalledWith(['/bill/create'], {
-      state: { prefill: { price: 6.8, shopName: 'Bäcker Ruetz', categoryId: 'c1', subCategoryId: 's1', date: toDayKey(new Date()) } }
+      state: { prefill: { price: 6.8, shopName: 'Bäcker Ruetz', categoryId: 'c1', subCategoryId: 's1', date: toDayKey(new Date()), fromQuickEntry: true } }
     });
   });
 

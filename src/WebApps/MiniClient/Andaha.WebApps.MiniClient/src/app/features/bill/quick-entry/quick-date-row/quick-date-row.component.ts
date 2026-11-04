@@ -24,6 +24,8 @@ export class QuickDateRowComponent {
   @Input({ required: true }) date!: Date;
   /** Datepicker als Dialog (mobil) statt Popup */
   @Input() touchUi = false;
+  /** Link „Alle Felder“ (nur im Sheet; das große Formular nutzt die Zeile ohne ihn) */
+  @Input() showAllFields = true;
 
   @Output() readonly dateChange = new EventEmitter<Date>();
   @Output() readonly allFields = new EventEmitter<void>();

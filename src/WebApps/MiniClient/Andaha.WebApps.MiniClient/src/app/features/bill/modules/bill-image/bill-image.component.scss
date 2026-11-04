@@ -2,7 +2,7 @@
   display: block;
 }
 
-// Foto-Zeile (Mockup 01 · Hinzufuegen / Details)
+// Foto-Zeile der Details (Mockup 01); ohne Foto zeigt der PhotoPicker Kamera | Galerie
 .photo {
   display: flex;
   align-items: center;
@@ -29,20 +29,6 @@
 .photo.show {
   border-style: solid;
   border-color: var(--line);
-}
-
-.ic {
-  width: 44px;
-  height: 44px;
-  flex: none;
-  border-radius: 10px;
-  background: var(--raised);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--pri-text);
-
-  .mat-icon { font-size: 22px; width: 22px; height: 22px; line-height: 22px; }
 }
 
 .txt {

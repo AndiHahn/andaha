@@ -5,7 +5,9 @@
   <input class="picker-anchor" tabindex="-1" aria-hidden="true"
     [matDatepicker]="picker" [max]="today" [value]="date" (dateChange)="onPicked($event)">
   <mat-datepicker #picker [touchUi]="touchUi" />
-  <button type="button" class="lnk" (click)="allFields.emit()">Alle Felder</button>
+  @if (showAllFields) {
+    <button type="button" class="lnk" (click)="allFields.emit()">Alle Felder</button>
+  }
 </div>
 
 <mat-menu #dateMenu="matMenu">

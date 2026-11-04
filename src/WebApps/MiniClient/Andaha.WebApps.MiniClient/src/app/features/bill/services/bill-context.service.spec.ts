@@ -271,6 +271,18 @@ describe('BillContextService local save and sync', () => {
         expect(values.at(-1)).toBeNull();
     });
 
+    it('showAddedBill lists and marks a bill saved directly at the server, without local save', async () => {
+        const values: (string | null)[] = [];
+        service.lastAddedId().subscribe(id => values.push(id));
+
+        service.showAddedBill(createDto('n1'), category);
+
+        expect(currentBills.map(b => b.id)).toEqual(['n1']);
+        expect(totalResults).toBe(1);
+        expect(values).toEqual([null, 'n1']);
+        expect(cacheService.saveNewBillLocal).not.toHaveBeenCalled();
+    });
+
     it('lastAddedId stays empty when the local save fails', async () => {
         const values: (string | null)[] = [];
         service.lastAddedId().subscribe(id => values.push(id));

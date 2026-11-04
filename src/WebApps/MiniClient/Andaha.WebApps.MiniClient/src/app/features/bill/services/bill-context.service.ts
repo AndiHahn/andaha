@@ -162,6 +162,14 @@ export class BillContextService implements OnDestroy {
     this.markLastAdded(dto.id);
   }
 
+  /** Rechnung, die schon beim Server gespeichert ist (Übernehmen aus der Analyse): in die Liste und hervorheben */
+  showAddedBill(dto: BillCreateDto, category: BillCategoryDto, subCategory?: BillSubCategoryDto): void {
+    if (!this.bills$.value.some(bill => bill.id == dto.id)) {
+      this.addNewBillToList(billCreateDtoToBillDto(dto, category, subCategory));
+    }
+    this.markLastAdded(dto.id);
+  }
+
   updateBill(
     id: string,
     updateDto: BillUpdateDto,

@@ -31,6 +31,26 @@
   gap: 8px;
 }
 
+// Scan ohne Ergebnis: wie der Duplikat-Hinweis (secondary-soft, Text secondary-text 13, Radius 10)
+.notice {
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--sec-soft);
+  color: var(--sec-text);
+  font-size: 13px;
+
+  .mat-icon { flex: none; width: 18px; height: 18px; font-size: 18px; }
+}
+
+// Datum-Schnellwahl der Schnellerfassung im Feld (ohne die Sheet-Ränder)
+.date-row {
+  flex: 1;
+  margin: 0;
+  color: var(--fg);
+}
+
 // Desktop: Formularspalte, Aktionen rechtsbuendig am Formularende (DESIGN.md Layout)
 @media (min-width: 1024px) {
   .page {

@@ -339,7 +339,7 @@ export class QuickEntrySheetComponent {
   }
 
   openFullForm(): void {
-    const prefill: BillCreatePrefill = { date: toDayKey(this.state.date()) };
+    const prefill: BillCreatePrefill = { date: toDayKey(this.state.date()), fromQuickEntry: true };
     const amount = this.state.amount();
     if (amount !== null) {
       prefill.price = amount;
