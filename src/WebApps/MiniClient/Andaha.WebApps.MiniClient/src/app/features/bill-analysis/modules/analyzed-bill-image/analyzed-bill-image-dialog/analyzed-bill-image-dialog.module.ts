@@ -8,7 +8,6 @@ import { AnalyzedBillImageDialogComponent } from './analyzed-bill-image-dialog.c
 @NgModule({
   declarations: [AnalyzedBillImageDialogComponent],
   imports: [CommonModule, MatDialogModule, MatProgressSpinnerModule, DialogModule],
-  exports: [],
-  entryComponents: [AnalyzedBillImageDialogComponent]
+  exports: []
 })
 export class AnalyzedBillImageDialogModule { }
