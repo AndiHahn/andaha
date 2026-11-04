@@ -7,7 +7,7 @@ import { FixedCostContextService } from './fixed-cost-context.service';
 
 describe('FixedCostContextService byId', () => {
     beforeEach(() => {
-        vi.useFakeTimers({ advanceTimeDelta: 1, shouldAdvanceTime: true });
+        vi.useFakeTimers();
     });
     afterEach(() => {
         vi.useRealTimers();

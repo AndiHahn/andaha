@@ -7,7 +7,7 @@ import { BillListFilterComponent } from './bill-list-filter.component';
 
 describe('BillListFilterComponent search', () => {
     beforeEach(() => {
-        vi.useFakeTimers({ advanceTimeDelta: 1, shouldAdvanceTime: true });
+        vi.useFakeTimers();
     });
     afterEach(() => {
         vi.useRealTimers();

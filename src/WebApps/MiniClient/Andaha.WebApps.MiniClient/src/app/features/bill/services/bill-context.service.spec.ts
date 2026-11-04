@@ -168,7 +168,7 @@ describe('BillContextService search', () => {
 
 describe('BillContextService local save and sync', () => {
     beforeEach(() => {
-        vi.useFakeTimers({ advanceTimeDelta: 1, shouldAdvanceTime: true });
+        vi.useFakeTimers();
     });
     afterEach(() => {
         vi.useRealTimers();
@@ -188,8 +188,8 @@ describe('BillContextService local save and sync', () => {
         return { id, shopName: id, categoryId: 'c1', price: 1, date: new Date(2024, 0, 2) };
     }
 
-    function flush(): Promise<void> {
-        return new Promise(resolve => setTimeout(resolve, 0));
+    async function flush(): Promise<void> {
+        await vi.advanceTimersByTimeAsync(0);
     }
 
     beforeEach(() => {
