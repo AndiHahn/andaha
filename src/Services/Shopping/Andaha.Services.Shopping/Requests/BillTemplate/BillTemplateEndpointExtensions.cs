@@ -2,6 +2,8 @@ using Andaha.CrossCutting.Application.Requests;
 using Andaha.Services.Shopping.Requests.BillTemplate.CreateBillTemplate.V1;
 using Andaha.Services.Shopping.Requests.BillTemplate.DeleteBillTemplate.V1;
 using Andaha.Services.Shopping.Requests.BillTemplate.Dtos.V1;
+using Andaha.Services.Shopping.Requests.BillTemplate.GetBillSuggestions.V1;
+using Andaha.Services.Shopping.Requests.BillTemplate.HideBillSuggestion.V1;
 using Andaha.Services.Shopping.Requests.BillTemplate.ListBillTemplates.V1;
 using Andaha.Services.Shopping.Requests.BillTemplate.UpdateBillTemplate.V1;
 using Andaha.Services.Shopping.Requests.BillTemplate.UpdateBillTemplateOrder.V1;
@@ -21,6 +23,8 @@ internal static class BillTemplateEndpointExtensions
 
         groupBuilder
             .MapListBillTemplates()
+            .MapGetBillSuggestions()
+            .MapHideBillSuggestion()
             .MapCreateBillTemplate()
             .MapUpdateBillTemplateOrder()
             .MapUpdateBillTemplate()
@@ -36,6 +40,30 @@ internal static class BillTemplateEndpointExtensions
             .MediateGet<ListBillTemplatesQuery>("/")
             .Produces<IEnumerable<BillTemplateDto>>()
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
+
+        return groupBuilder;
+    }
+
+    private static RouteGroupBuilder MapGetBillSuggestions(
+        this RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediateGet<GetBillSuggestionsQuery>("suggestions")
+            .Produces<IEnumerable<BillSuggestionDto>>()
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
+
+        return groupBuilder;
+    }
+
+    private static RouteGroupBuilder MapHideBillSuggestion(
+        this RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MapPost("hidden-suggestions", [Authorize] (IMediator mediator, [FromBody] HideBillSuggestionCommand command)
+                => mediator.Send(command))
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest);
 
         return groupBuilder;
     }

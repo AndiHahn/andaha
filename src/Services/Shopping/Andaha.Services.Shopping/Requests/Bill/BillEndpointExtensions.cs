@@ -17,6 +17,7 @@ internal static class BillEndpointExtensions
         var groupBuilder = bill.MapGroup("/api/bill").ApplyApiVersions();
 
         app.MapSearchBills(groupBuilder);
+        app.MapGetShopStats(groupBuilder);
         app.MapGetById(groupBuilder);
         app.MapAnalyzeBill(groupBuilder);
         app.MapCreateBill(groupBuilder);
@@ -42,6 +43,18 @@ internal static class BillEndpointExtensions
             .MediateGet<SearchBills.V1.SearchBillsQuery>("/")
             .Produces<PagedResultDto<Dtos.V1.BillDto>>()
             .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest)
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
+
+        return app;
+    }
+
+    private static WebApplication MapGetShopStats(
+        this WebApplication app,
+        RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediateGet<GetShopStats.V1.GetShopStatsQuery>("shop-stats")
+            .Produces<IEnumerable<Dtos.V1.ShopStatDto>>()
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
 
         return app;
