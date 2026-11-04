@@ -11,6 +11,9 @@
     "start-pwa": "ng build --configuration local-pwa && http-server -p 4200 -c-1 dist/andaha.web-apps.mini-client"
   },
   "private": true,
+  "engines": {
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+  },
   "dependencies": {
     "@angular/animations": "^22.2.4",
     "@angular/cdk": "^22.2.5",
