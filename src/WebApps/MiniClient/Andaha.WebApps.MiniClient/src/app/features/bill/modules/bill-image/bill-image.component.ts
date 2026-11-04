@@ -4,13 +4,14 @@ import { ImageSnippet } from '../add-bill-image-dialog/add-bill-image-dialog.com
 import { AddBillImageDialogService } from '../add-bill-image-dialog/add-bill-image-dialog.service';
 import { BillImageDialogService } from '../bill-image-dialog/bill-image-dialog.service';
 import { BillImageDialogData } from '../bill-image-dialog/BillImageDialogData';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-bill-image',
-  templateUrl: './bill-image.component.html',
-  styleUrls: ['./bill-image.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-bill-image',
+    templateUrl: './bill-image.component.html',
+    styleUrls: ['./bill-image.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatIcon]
 })
 export class BillImageComponent {
 

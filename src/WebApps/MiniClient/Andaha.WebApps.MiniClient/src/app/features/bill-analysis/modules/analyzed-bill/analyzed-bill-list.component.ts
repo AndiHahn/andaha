@@ -1,19 +1,22 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
-import { PageEvent } from '@angular/material/paginator';
+import { PageEvent, MatPaginator } from '@angular/material/paginator';
 import { AnalyzedBillContextService } from '../../services/analyzed-bill-context.service';
-import { CdkScrollable, ScrollDispatcher } from '@angular/cdk/scrolling';
+import { CdkScrollable, ScrollDispatcher, CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf } from '@angular/cdk/scrolling';
 import { AnalyzedBillDataSource } from './AnalyzedBillDataSource';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { RouterLink } from '@angular/router';
+import { AnalyzedBillListItemComponent } from './analyzed-bill-list-item/analyzed-bill-list-item.component';
 
 @Component({
-  selector: 'app-analyzed-bill-list',
-  templateUrl: './analyzed-bill-list.component.html',
-  styleUrls: ['./analyzed-bill-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-analyzed-bill-list',
+    templateUrl: './analyzed-bill-list.component.html',
+    styleUrls: ['./analyzed-bill-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatProgressBar, CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf, RouterLink, AnalyzedBillListItemComponent, MatPaginator]
 })
 export class AnalyzedBillListComponent implements OnInit, AfterViewInit, OnDestroy {
   billDataSource = new AnalyzedBillDataSource();

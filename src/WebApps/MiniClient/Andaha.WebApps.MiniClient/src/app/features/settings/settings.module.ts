@@ -31,22 +31,20 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    SettingsComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    MatIconModule,
-    MatDialogModule
-  ],
-  exports: [ RouterModule ],
-  providers: [
-    AddConnectionDialogService,
-    {
-      provide: 'dialog',
-      useValue: MatDialog
-    }
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        MatIconModule,
+        MatDialogModule,
+        SettingsComponent
+    ],
+    exports: [RouterModule],
+    providers: [
+        AddConnectionDialogService,
+        {
+            provide: 'dialog',
+            useValue: MatDialog
+        }
+    ]
 })
 export class SettingsModule { }

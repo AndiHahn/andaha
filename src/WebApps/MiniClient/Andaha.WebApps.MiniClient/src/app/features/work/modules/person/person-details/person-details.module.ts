@@ -23,21 +23,19 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    PersonDetailsComponent,
-    WorkEntryListComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    MatIconModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatNativeDateModule,
-    MatProgressBarModule,
-    MatProgressSpinnerModule,
-    MatDialogModule,
-    ShowErrorModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        MatIconModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatNativeDateModule,
+        MatProgressBarModule,
+        MatProgressSpinnerModule,
+        MatDialogModule,
+        ShowErrorModule,
+        PersonDetailsComponent,
+        WorkEntryListComponent
+    ]
 })
 export class PersonDetailsModule { }

@@ -4,15 +4,13 @@ import { BillImageComponent } from './bill-image.component';
 import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
-  declarations: [
-    BillImageComponent
-  ],
-  imports: [
-    CommonModule,
-    MatIconModule
-  ],
-  exports: [
-    BillImageComponent
-  ]
+    imports: [
+        CommonModule,
+        MatIconModule,
+        BillImageComponent
+    ],
+    exports: [
+        BillImageComponent
+    ]
 })
 export class BillImageModule { }

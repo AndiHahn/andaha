@@ -25,12 +25,12 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [ IncomeComponent, IncomeListComponent ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    MatIconModule,
-    MatProgressSpinnerModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        MatIconModule,
+        MatProgressSpinnerModule,
+        IncomeComponent, IncomeListComponent
+    ]
 })
 export class IncomeModule { }

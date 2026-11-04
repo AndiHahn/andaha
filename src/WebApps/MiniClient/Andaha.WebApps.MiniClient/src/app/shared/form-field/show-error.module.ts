@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { ShowErrorPipe } from './show-error.pipe';
 
 @NgModule({
-  declarations: [ShowErrorPipe],
-  exports: [ShowErrorPipe]
+    imports: [ShowErrorPipe],
+    exports: [ShowErrorPipe]
 })
 export class ShowErrorModule { }

@@ -1,16 +1,20 @@
 import { Component, Inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogContent } from '@angular/material/dialog';
 import { DurationLabel } from 'src/app/api/budgetplan/dtos/Duration';
 import { FixedCostHistoryDto } from 'src/app/api/budgetplan/dtos/FixedCostHistoryDto';
 import { FixedCostApiService } from 'src/app/api/budgetplan/fixedcost-api.service';
 import { FixedCostHistoryDialogData } from './FixedCostHistoryDialogData';
+import { DialogComponent } from '../../../../../shared/dialog/dialog.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { DecimalPipe, DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-fixed-cost-history-dialog',
-  templateUrl: './fixed-cost-history-dialog.component.html',
-  styleUrls: ['./fixed-cost-history-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-fixed-cost-history-dialog',
+    templateUrl: './fixed-cost-history-dialog.component.html',
+    styleUrls: ['./fixed-cost-history-dialog.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [DialogComponent, CdkScrollable, MatDialogContent, MatProgressSpinner, DecimalPipe, DatePipe]
 })
 export class FixedCostHistoryDialogComponent implements OnInit {
 

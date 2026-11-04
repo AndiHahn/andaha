@@ -6,8 +6,7 @@ import { DialogModule } from 'src/app/shared/dialog/dialog.module';
 import { AnalyzedBillImageDialogComponent } from './analyzed-bill-image-dialog.component';
 
 @NgModule({
-  declarations: [AnalyzedBillImageDialogComponent],
-  imports: [CommonModule, MatDialogModule, MatProgressSpinnerModule, DialogModule],
-  exports: []
+    imports: [CommonModule, MatDialogModule, MatProgressSpinnerModule, DialogModule, AnalyzedBillImageDialogComponent],
+    exports: []
 })
 export class AnalyzedBillImageDialogModule { }

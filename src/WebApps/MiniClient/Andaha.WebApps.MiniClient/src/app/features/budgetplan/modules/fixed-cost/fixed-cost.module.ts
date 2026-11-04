@@ -25,12 +25,12 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [ FixedCostComponent, FixedCostListComponent ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    MatIconModule,
-    MatProgressSpinnerModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        MatIconModule,
+        MatProgressSpinnerModule,
+        FixedCostComponent, FixedCostListComponent
+    ]
 })
 export class FixedCostModule { }

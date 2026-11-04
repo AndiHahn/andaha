@@ -1,16 +1,19 @@
 import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogContent } from '@angular/material/dialog';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { blobToDataUrl } from 'src/app/shared/utils/file-utils';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
+import { DialogComponent } from '../../../../../shared/dialog/dialog.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
-  selector: 'app-analyzed-bill-image-dialog',
-  templateUrl: './analyzed-bill-image-dialog.component.html',
-  styleUrls: ['./analyzed-bill-image-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-analyzed-bill-image-dialog',
+    templateUrl: './analyzed-bill-image-dialog.component.html',
+    styleUrls: ['./analyzed-bill-image-dialog.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [DialogComponent, CdkScrollable, MatDialogContent, MatProgressSpinner]
 })
 export class AnalyzedBillImageDialogComponent {
   billId: string;

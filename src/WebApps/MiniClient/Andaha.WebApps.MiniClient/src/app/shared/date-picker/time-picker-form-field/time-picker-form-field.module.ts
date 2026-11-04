@@ -6,17 +6,15 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 
 @NgModule({
-  declarations: [
-    TimePickerFormFieldComponent
-  ],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatIconModule,
-    NgxMatTimepickerModule.setLocale('de-DE')
-  ],
-  exports: [
-    TimePickerFormFieldComponent
-  ]
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatIconModule,
+        NgxMatTimepickerModule.setLocale('de-DE'),
+        TimePickerFormFieldComponent
+    ],
+    exports: [
+        TimePickerFormFieldComponent
+    ]
 })
 export class TimePickerFormFieldModule { }

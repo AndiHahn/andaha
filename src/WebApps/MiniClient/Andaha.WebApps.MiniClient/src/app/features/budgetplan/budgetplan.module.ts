@@ -32,13 +32,11 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    BudgetplanComponent
-  ],
-  imports: [
-    RouterModule.forChild(routes),
-    CommonModule,
-    MatIconModule
-  ]
+    imports: [
+        RouterModule.forChild(routes),
+        CommonModule,
+        MatIconModule,
+        BudgetplanComponent
+    ]
 })
 export class BudgetplanModule { }

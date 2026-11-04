@@ -7,15 +7,13 @@ import { MatRadioModule } from '@angular/material/radio'
 import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
-  declarations: [
-    AddBillImageDialogComponent
-  ],
-  imports: [
-    CommonModule,
-    DialogModule,
-    MatDialogModule,
-    MatRadioModule,
-    MatIconModule
-  ]
+    imports: [
+        CommonModule,
+        DialogModule,
+        MatDialogModule,
+        MatRadioModule,
+        MatIconModule,
+        AddBillImageDialogComponent
+    ]
 })
 export class AddBillImageDialogModule { }

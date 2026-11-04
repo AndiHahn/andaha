@@ -6,13 +6,15 @@ import { Time } from '@angular/common';
 import { createTimeDisplayName } from '../../functions/date-time-functions';
 import { DateType } from 'src/app/features/bill/modules/expenses/timerange-selection/DateType';
 import { FullStatisticsDto } from 'src/app/api/work/dtos/FullStatisticsDto';
+import { TimerangeSelectionComponent } from '../../../bill/modules/expenses/timerange-selection/timerange-selection.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
-  selector: 'app-statistics',
-  templateUrl: './statistics.component.html',
-  styleUrls: ['./statistics.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-statistics',
+    templateUrl: './statistics.component.html',
+    styleUrls: ['./statistics.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [TimerangeSelectionComponent, MatProgressSpinner]
 })
 export class StatisticsComponent implements OnInit {
 

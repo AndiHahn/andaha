@@ -1,18 +1,24 @@
 import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogContent } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { blobToDataUrl } from 'src/app/shared/utils/file-utils';
 import { BillImageDialogData } from './BillImageDialogData';
+import { DialogComponent } from '../../../../shared/dialog/dialog.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { PinchZoomComponent } from '@meddv/ngx-pinch-zoom';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-bill-image-dialog',
-  templateUrl: './bill-image-dialog.component.html',
-  styleUrls: ['./bill-image-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-bill-image-dialog',
+    templateUrl: './bill-image-dialog.component.html',
+    styleUrls: ['./bill-image-dialog.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [DialogComponent, CdkScrollable, MatDialogContent, PinchZoomComponent, MatProgressSpinner, MatProgressBar, MatIcon]
 })
 export class BillImageDialogComponent {
 

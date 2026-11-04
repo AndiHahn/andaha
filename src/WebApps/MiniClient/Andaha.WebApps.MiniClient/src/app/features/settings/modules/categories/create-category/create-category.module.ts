@@ -19,21 +19,19 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    CreateCategoryComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    MatIconModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatSelectModule,
-    MatOptionModule,
-    MatCheckboxModule,
-    ColorItemModule,
-    MatProgressSpinnerModule,
-    ShowErrorModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        MatIconModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatSelectModule,
+        MatOptionModule,
+        MatCheckboxModule,
+        ColorItemModule,
+        MatProgressSpinnerModule,
+        ShowErrorModule,
+        CreateCategoryComponent
+    ]
 })
 export class CreateCategoryModule { }

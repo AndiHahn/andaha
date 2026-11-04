@@ -15,19 +15,15 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    ConnectionComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    MatIconModule,
-    IncomingConnectionRequestsModule,
-    OutgoingConnectionRequestsModule,
-    ActiveConnectionsModule
-  ],
-  providers: [
-    
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        MatIconModule,
+        IncomingConnectionRequestsModule,
+        OutgoingConnectionRequestsModule,
+        ActiveConnectionsModule,
+        ConnectionComponent
+    ],
+    providers: []
 })
 export class ConnectionModule { }

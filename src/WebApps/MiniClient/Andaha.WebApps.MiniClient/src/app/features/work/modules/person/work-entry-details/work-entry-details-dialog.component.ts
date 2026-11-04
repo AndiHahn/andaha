@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { WorkingEntryForm, getWorkingEntryForm } from '../../../functions/working-entry-form-functions';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/ConfirmationDialogData';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -9,18 +9,26 @@ import { getTotalWorkingTimeString } from '../../../functions/date-time-function
 import moment from 'moment';
 import { Time } from '@angular/common';
 import { WorkEntryDetailsDialogData } from './WorkEntryDetailsDialogData';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent } from '@angular/material/dialog';
 import { WorkingEntryApiService } from 'src/app/api/work/working-entry-api.service';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { UpdateWorkingEntryDto } from 'src/app/api/work/dtos/UpdateWorkingEntryDto';
 import { formatTime } from 'src/app/api/functions/api-utils';
+import { DialogComponent } from '../../../../../shared/dialog/dialog.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { DatePickerFormFieldComponent } from '../../../../../shared/date-picker/date-picker-form-field/date-picker-form-field.component';
+import { TimePickerFormFieldComponent } from '../../../../../shared/date-picker/time-picker-form-field/time-picker-form-field.component';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatIcon } from '@angular/material/icon';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe';
 
 @Component({
-  selector: 'app-work-entry-details-dialog',
-  templateUrl: './work-entry-details-dialog.component.html',
-  styleUrls: ['./work-entry-details-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-work-entry-details-dialog',
+    templateUrl: './work-entry-details-dialog.component.html',
+    styleUrls: ['./work-entry-details-dialog.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [DialogComponent, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, DatePickerFormFieldComponent, TimePickerFormFieldComponent, MatProgressBar, MatIcon, MatProgressSpinner, ShowErrorPipe]
 })
 export class WorkEntryDetailsDialogComponent implements OnInit {
 

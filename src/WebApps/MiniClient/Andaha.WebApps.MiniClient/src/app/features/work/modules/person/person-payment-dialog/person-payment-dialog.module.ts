@@ -9,18 +9,16 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ShowErrorModule } from 'src/app/shared/form-field/show-error.module';
 
 @NgModule({
-  declarations: [
-    PersonPaymentDialogComponent
-  ],
-  imports: [
-    CommonModule,
-    DialogModule,
-    MatDialogModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    ShowErrorModule
-  ]
+    imports: [
+        CommonModule,
+        DialogModule,
+        MatDialogModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatIconModule,
+        MatProgressSpinnerModule,
+        ShowErrorModule,
+        PersonPaymentDialogComponent
+    ]
 })
 export class PersonPaymentDialogModule { }

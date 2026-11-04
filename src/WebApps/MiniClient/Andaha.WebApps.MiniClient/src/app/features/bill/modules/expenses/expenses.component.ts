@@ -5,13 +5,16 @@ import { ExpenseDto } from 'src/app/api/shopping/dtos/ExpenseDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { ExpenseContextService } from 'src/app/features/bill/services/expense-context.service';
 import { mapTimeRangeDto, TimeRange } from '../../../../shared/models/TimeRange';
+import { TimerangeSelectionComponent } from './timerange-selection/timerange-selection.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ChartComponent } from './chart/chart.component';
 
 @Component({
-  selector: 'app-expenses',
-  templateUrl: './expenses.component.html',
-  styleUrls: ['./expenses.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-expenses',
+    templateUrl: './expenses.component.html',
+    styleUrls: ['./expenses.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [TimerangeSelectionComponent, MatProgressSpinner, ChartComponent]
 })
 export class ExpensesComponent implements OnInit {
 

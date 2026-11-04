@@ -8,21 +8,19 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
-  declarations: [
-    TimerangeSelectionComponent
-  ],
-  imports: [
-    CommonModule,
-    MatOptionModule,
-    MatSelectModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatIconModule
-  ],
-  exports: [
-    TimerangeSelectionComponent
-  ]
+    imports: [
+        CommonModule,
+        MatOptionModule,
+        MatSelectModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatIconModule,
+        TimerangeSelectionComponent
+    ],
+    exports: [
+        TimerangeSelectionComponent
+    ]
 })
 export class TimerangeSelectionModule { }

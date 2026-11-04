@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CreateWorkingEntriesDto } from 'src/app/api/work/dtos/CreateWorkingEntriesDto';
 import { WorkingEntryForm, getEmptyWorkingEntryForm } from '../../../functions/working-entry-form-functions';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { openErrorSnackbar, openInformationSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { WorkingEntriesContextGlobalService } from '../../../services/working-entries-context-global.service';
@@ -11,13 +11,20 @@ import { PersonContextService } from '../../../services/person-context.service';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
 import { getTotalWorkingTimeString } from '../../../functions/date-time-functions';
 import { formatTime } from 'src/app/api/functions/api-utils';
+import { MatSelect, MatSelectTrigger, MatOption } from '@angular/material/select';
+import { MatInput } from '@angular/material/input';
+import { MatIcon } from '@angular/material/icon';
+import { DatePickerFormFieldComponent } from '../../../../../shared/date-picker/date-picker-form-field/date-picker-form-field.component';
+import { TimePickerFormFieldComponent } from '../../../../../shared/date-picker/time-picker-form-field/time-picker-form-field.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe';
 
 @Component({
-  selector: 'app-add-working-entry',
-  templateUrl: './add-working-entry.component.html',
-  styleUrls: ['./add-working-entry.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-add-working-entry',
+    templateUrl: './add-working-entry.component.html',
+    styleUrls: ['./add-working-entry.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, MatInput, MatOption, MatIcon, DatePickerFormFieldComponent, TimePickerFormFieldComponent, MatProgressSpinner, ShowErrorPipe]
 })
 export class AddWorkingEntryComponent implements OnInit {
 

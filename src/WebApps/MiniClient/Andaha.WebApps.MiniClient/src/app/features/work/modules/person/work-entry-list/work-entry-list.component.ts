@@ -3,13 +3,14 @@ import { WorkingEntryDto } from 'src/app/api/work/dtos/WorkingEntryDto';
 import { getTotalWorkingTimeString } from '../../../functions/date-time-functions';
 import { WorkEntryDetailsDialogService } from '../work-entry-details/work-entry-details-dialog.service';
 import { WorkingEntriesContextService } from '../../../services/working-entries-context.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-work-entry-list',
-  templateUrl: './work-entry-list.component.html',
-  styleUrls: ['./work-entry-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-work-entry-list',
+    templateUrl: './work-entry-list.component.html',
+    styleUrls: ['./work-entry-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [DatePipe]
 })
 export class WorkEntryListComponent implements OnInit {
 

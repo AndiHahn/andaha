@@ -4,13 +4,16 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { blobToDataUrl } from 'src/app/shared/utils/file-utils';
 import { compressImage } from 'src/app/shared/utils/image-utils';
 import { openErrorSnackbar, openInformationSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
+import { MatIcon } from '@angular/material/icon';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
-  selector: 'app-add-bill-for-analysis',
-  templateUrl: './add-bill-for-analysis.component.html',
-  styleUrls: ['./add-bill-for-analysis.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-add-bill-for-analysis',
+    templateUrl: './add-bill-for-analysis.component.html',
+    styleUrls: ['./add-bill-for-analysis.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatIcon, MatProgressBar, MatProgressSpinner]
 })
 export class AddBillForAnalysisComponent {
   selectedFile?: File;

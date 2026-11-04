@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-providers';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -17,15 +17,22 @@ import { BillForm, getBillForm } from '../../functions/bill-form-functions';
 import { ImageSnippet } from '../add-bill-image-dialog/add-bill-image-dialog.component';
 import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
 import { BillSubCategoryDto } from 'src/app/api/shopping/dtos/BillSubCategoryDto';
-import { MatSelectChange } from '@angular/material/select';
+import { MatSelectChange, MatSelect, MatSelectTrigger, MatOption } from '@angular/material/select';
+import { BillImageComponent } from '../bill-image/bill-image.component';
+import { MatIcon } from '@angular/material/icon';
+import { MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker } from '@angular/material/datepicker';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { DecimalPipe, DatePipe } from '@angular/common';
+import { ShowErrorPipe } from '../../../../shared/form-field/show-error.pipe';
 
 @Component({
-  selector: 'app-bill-details',
-  templateUrl: './bill-details.component.html',
-  styleUrls: ['./bill-details.component.scss'],
-  providers: GERMAN_DATE_PROVIDERS,
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-bill-details',
+    templateUrl: './bill-details.component.html',
+    styleUrls: ['./bill-details.component.scss'],
+    providers: GERMAN_DATE_PROVIDERS,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [BillImageComponent, FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, MatOption, MatIcon, MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker, MatProgressBar, MatProgressSpinner, DecimalPipe, DatePipe, ShowErrorPipe]
 })
 export class BillDetailsComponent implements OnInit, OnDestroy {
 

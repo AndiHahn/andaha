@@ -29,15 +29,13 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    PersonComponent,
-    PersonListComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    MatIconModule,
-    MatProgressSpinnerModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        MatIconModule,
+        MatProgressSpinnerModule,
+        PersonComponent,
+        PersonListComponent
+    ]
 })
 export class PersonModule { }

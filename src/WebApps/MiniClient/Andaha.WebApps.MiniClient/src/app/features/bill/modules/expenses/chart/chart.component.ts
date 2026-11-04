@@ -9,13 +9,16 @@ import { getDialogBaseConfig } from 'src/app/shared/dialog/dialog-functions';
 import { ChartDetailsDialogComponent } from '../chart-details-dialog/chart-details-dialog.component';
 import { ChartDetailsDialogData } from '../chart-details-dialog/ChartDetailsDialogData';
 import { TimeRange } from '../../../../../shared/models/TimeRange';
+import { BaseChartDirective } from 'ng2-charts';
+import { MatIcon } from '@angular/material/icon';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
-  selector: 'app-chart',
-  templateUrl: './chart.component.html',
-  styleUrls: ['./chart.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-chart',
+    templateUrl: './chart.component.html',
+    styleUrls: ['./chart.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [BaseChartDirective, MatIcon, DecimalPipe]
 })
 export class ChartComponent implements OnInit, OnChanges {
 

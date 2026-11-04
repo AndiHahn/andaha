@@ -12,13 +12,13 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [AnalyzedBillListComponent, AnalyzedBillListItemComponent],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    MatPaginatorModule,
-    MatProgressBarModule,
-    ScrollingModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        MatPaginatorModule,
+        MatProgressBarModule,
+        ScrollingModule,
+        AnalyzedBillListComponent, AnalyzedBillListItemComponent
+    ]
 })
 export class AnalyzedBillListModule { }

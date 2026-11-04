@@ -1,8 +1,11 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
-import { MatRadioChange } from '@angular/material/radio';
+import { MatDialogRef, MatDialogContent } from '@angular/material/dialog';
+import { MatRadioChange, MatRadioGroup, MatRadioButton } from '@angular/material/radio';
 import { blobToDataUrl } from 'src/app/shared/utils/file-utils';
 import { compressImage } from 'src/app/shared/utils/image-utils';
+import { DialogComponent } from '../../../../shared/dialog/dialog.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { MatIcon } from '@angular/material/icon';
 
 export class ImageSnippet {
   constructor(public src: string, public file: File) {}
@@ -14,11 +17,11 @@ enum UploadSelection {
 }
 
 @Component({
-  selector: 'app-add-bill-image-dialog',
-  templateUrl: './add-bill-image-dialog.component.html',
-  styleUrls: ['./add-bill-image-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-add-bill-image-dialog',
+    templateUrl: './add-bill-image-dialog.component.html',
+    styleUrls: ['./add-bill-image-dialog.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [DialogComponent, CdkScrollable, MatDialogContent, MatRadioGroup, MatRadioButton, MatIcon]
 })
 export class AddBillImageDialogComponent {
 

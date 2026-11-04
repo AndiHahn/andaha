@@ -20,25 +20,23 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    AddBillComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    MatSelectModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    FormsModule,
-    ReactiveFormsModule,
-    AppSnackbarModule,
-    MatSnackBarModule,
-    MatIconModule,
-    BillImageModule,
-    ShowErrorModule
-  ],
-  providers: [
-    MatDatepickerModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        MatSelectModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        FormsModule,
+        ReactiveFormsModule,
+        AppSnackbarModule,
+        MatSnackBarModule,
+        MatIconModule,
+        BillImageModule,
+        ShowErrorModule,
+        AddBillComponent
+    ],
+    providers: [
+        MatDatepickerModule
+    ]
 })
 export class AddBillModule { }

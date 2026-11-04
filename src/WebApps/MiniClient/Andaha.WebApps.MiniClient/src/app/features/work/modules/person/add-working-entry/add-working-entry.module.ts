@@ -22,24 +22,22 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    AddWorkingEntryComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    MatInputModule,
-    MatSelectModule,
-    MatOptionModule,
-    FormsModule,
-    ReactiveFormsModule,
-    AppSnackbarModule,
-    MatSnackBarModule,
-    MatIconModule,
-    DatePickerFormFieldModule,
-    TimePickerFormFieldModule,
-    MatProgressSpinnerModule,
-    ShowErrorModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        MatInputModule,
+        MatSelectModule,
+        MatOptionModule,
+        FormsModule,
+        ReactiveFormsModule,
+        AppSnackbarModule,
+        MatSnackBarModule,
+        MatIconModule,
+        DatePickerFormFieldModule,
+        TimePickerFormFieldModule,
+        MatProgressSpinnerModule,
+        ShowErrorModule,
+        AddWorkingEntryComponent
+    ]
 })
 export class AddWorkingEntryModule { }

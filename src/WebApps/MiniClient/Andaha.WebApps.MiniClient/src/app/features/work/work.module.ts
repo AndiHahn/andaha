@@ -29,13 +29,11 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    WorkComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    MatIconModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        MatIconModule,
+        WorkComponent
+    ]
 })
 export class WorkModule { }

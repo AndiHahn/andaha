@@ -5,16 +5,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
-  declarations: [
-    DialogComponent
-  ],
-  imports: [
-    CommonModule,
-    MatIconModule,
-    MatDialogModule
-  ],
-  exports: [
-    DialogComponent
-  ]
+    imports: [
+        CommonModule,
+        MatIconModule,
+        MatDialogModule,
+        DialogComponent
+    ],
+    exports: [
+        DialogComponent
+    ]
 })
 export class DialogModule { }

@@ -15,16 +15,14 @@ const routes: Routes = [
 ]
 
 @NgModule({
-  declarations: [
-    ExpensesComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    TimerangeSelectionModule,
-    MatProgressSpinnerModule,
-    ChartModule,
-    ChartDetailsDialogModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        TimerangeSelectionModule,
+        MatProgressSpinnerModule,
+        ChartModule,
+        ChartDetailsDialogModule,
+        ExpensesComponent
+    ]
 })
 export class ExpensesModule { }

@@ -10,7 +10,6 @@ import { AddBillForAnalysisComponent } from './add-bill-for-analysis.component';
 const routes: Routes = [ { path: '', component: AddBillForAnalysisComponent } ];
 
 @NgModule({
-  declarations: [AddBillForAnalysisComponent],
-  imports: [CommonModule, RouterModule.forChild(routes), MatIconModule, MatProgressBarModule, MatProgressSpinnerModule, MatSnackBarModule]
+    imports: [CommonModule, RouterModule.forChild(routes), MatIconModule, MatProgressBarModule, MatProgressSpinnerModule, MatSnackBarModule, AddBillForAnalysisComponent]
 })
 export class AddBillForAnalysisModule {}

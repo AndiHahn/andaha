@@ -6,14 +6,12 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
-  declarations: [
-    IncomeHistoryDialogComponent
-  ],
-  imports: [
-    CommonModule,
-    DialogModule,
-    MatDialogModule,
-    MatProgressSpinnerModule
-  ]
+    imports: [
+        CommonModule,
+        DialogModule,
+        MatDialogModule,
+        MatProgressSpinnerModule,
+        IncomeHistoryDialogComponent
+    ]
 })
 export class IncomeHistoryDialogModule { }

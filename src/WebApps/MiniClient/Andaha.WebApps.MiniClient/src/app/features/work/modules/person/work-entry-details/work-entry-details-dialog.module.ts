@@ -20,22 +20,20 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    WorkEntryDetailsDialogComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    FormsModule,
-    ReactiveFormsModule,
-    MatProgressBarModule,
-    MatIconModule,
-    DatePickerFormFieldModule,
-    TimePickerFormFieldModule,
-    MatDialogModule,
-    DialogModule,
-    MatProgressSpinnerModule,
-    ShowErrorModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        FormsModule,
+        ReactiveFormsModule,
+        MatProgressBarModule,
+        MatIconModule,
+        DatePickerFormFieldModule,
+        TimePickerFormFieldModule,
+        MatDialogModule,
+        DialogModule,
+        MatProgressSpinnerModule,
+        ShowErrorModule,
+        WorkEntryDetailsDialogComponent
+    ]
 })
 export class WorkEntryDetailsDialogModule { }

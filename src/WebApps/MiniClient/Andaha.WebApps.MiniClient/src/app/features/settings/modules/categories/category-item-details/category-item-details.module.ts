@@ -21,22 +21,20 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    CategoryItemDetailsComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    MatIconModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatProgressBarModule,
-    MatSelectModule,
-    MatCheckboxModule,
-    DragDropModule,
-    ColorItemModule,
-    MatProgressSpinnerModule,
-    ShowErrorModule
-  ],
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        MatIconModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatProgressBarModule,
+        MatSelectModule,
+        MatCheckboxModule,
+        DragDropModule,
+        ColorItemModule,
+        MatProgressSpinnerModule,
+        ShowErrorModule,
+        CategoryItemDetailsComponent
+    ],
 })
 export class CategoryItemDetailsModule { }

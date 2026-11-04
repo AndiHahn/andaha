@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -15,13 +15,18 @@ import { IncomeContextService } from '../../../services/income-context.service';
 import { IncomeHistoryDialogService } from '../income-history-dialog/income-history-dialog.service';
 import { IncomeHistoryDialogData } from '../income-history-dialog/IncomeHistoryDialogData';
 import { IncomeForm } from '../functions/income-form-functions';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatSelect, MatOption } from '@angular/material/select';
+import { MatIcon } from '@angular/material/icon';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe';
 
 @Component({
-  selector: 'app-income-details',
-  templateUrl: './income-details.component.html',
-  styleUrls: ['./income-details.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-income-details',
+    templateUrl: './income-details.component.html',
+    styleUrls: ['./income-details.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatProgressBar, FormsModule, ReactiveFormsModule, MatSelect, MatOption, MatIcon, MatProgressSpinner, ShowErrorPipe]
 })
 export class IncomeDetailsComponent implements OnInit, OnDestroy {
 

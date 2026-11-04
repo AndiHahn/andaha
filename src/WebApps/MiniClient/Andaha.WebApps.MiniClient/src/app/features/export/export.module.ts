@@ -18,14 +18,12 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    ExportComponent
-  ],
-  imports: [
-    RouterModule.forChild(routes),
-    CommonModule,
-    MatIconModule,
-    MatProgressSpinnerModule
-  ]
+    imports: [
+        RouterModule.forChild(routes),
+        CommonModule,
+        MatIconModule,
+        MatProgressSpinnerModule,
+        ExportComponent
+    ]
 })
 export class ExportModule { }

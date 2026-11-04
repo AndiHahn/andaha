@@ -8,20 +8,18 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [
-    DatePickerFormFieldComponent
-  ],
-  imports: [
-    CommonModule,
-    MatIconModule,
-    ShowErrorModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    FormsModule,
-    ReactiveFormsModule
-  ],
-  exports: [
-    DatePickerFormFieldComponent
-  ]
+    imports: [
+        CommonModule,
+        MatIconModule,
+        ShowErrorModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        FormsModule,
+        ReactiveFormsModule,
+        DatePickerFormFieldComponent
+    ],
+    exports: [
+        DatePickerFormFieldComponent
+    ]
 })
 export class DatePickerFormFieldModule { }

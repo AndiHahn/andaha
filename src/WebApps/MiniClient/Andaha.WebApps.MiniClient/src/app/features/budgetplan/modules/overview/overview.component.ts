@@ -2,13 +2,15 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BudgetPlanDto } from 'src/app/api/budgetplan/dtos/BudgetPlanDto';
 import { CostCategoryLabel } from 'src/app/api/budgetplan/dtos/CostCategory';
 import { BudgetplanContextService } from '../../services/budgetplan-context.service';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
-  selector: 'app-overview',
-  templateUrl: './overview.component.html',
-  styleUrls: ['./overview.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-overview',
+    templateUrl: './overview.component.html',
+    styleUrls: ['./overview.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatProgressSpinner, DecimalPipe]
 })
 export class OverviewComponent implements OnInit {
 

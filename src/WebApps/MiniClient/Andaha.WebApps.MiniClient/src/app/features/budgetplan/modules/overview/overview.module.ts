@@ -12,13 +12,11 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    OverviewComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    MatProgressSpinnerModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        MatProgressSpinnerModule,
+        OverviewComponent
+    ]
 })
 export class OverviewModule { }

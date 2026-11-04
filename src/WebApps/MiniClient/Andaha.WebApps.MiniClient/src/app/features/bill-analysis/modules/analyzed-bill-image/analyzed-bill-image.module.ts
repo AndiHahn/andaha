@@ -4,11 +4,11 @@ import { AnalyzedBillImageDialogModule } from './analyzed-bill-image-dialog/anal
 import { AnalyzedBillImageComponent } from './analyzed-bill-image.component';
 
 @NgModule({
-  declarations: [AnalyzedBillImageComponent],
-  imports: [
-    CommonModule,
-    AnalyzedBillImageDialogModule
-  ],
-  exports: [AnalyzedBillImageComponent]
+    imports: [
+        CommonModule,
+        AnalyzedBillImageDialogModule,
+        AnalyzedBillImageComponent
+    ],
+    exports: [AnalyzedBillImageComponent]
 })
 export class AnalyzedBillImageModule { }

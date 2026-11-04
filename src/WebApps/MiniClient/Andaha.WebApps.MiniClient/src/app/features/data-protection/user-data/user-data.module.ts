@@ -11,10 +11,10 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [ UserDataComponent ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes)
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        UserDataComponent
+    ]
 })
 export class UserDataModule { }

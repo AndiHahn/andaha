@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
 import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
 import { PersonContextService } from '../../../services/person-context.service';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PersonForm, getPersonForm } from '../../../functions/person-form-functions';
 import { UpdatePersonDto } from 'src/app/api/work/dtos/PersonUpdateDto';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
@@ -13,18 +13,23 @@ import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/co
 import { Subject, takeUntil } from 'rxjs';
 import { WorkingEntriesContextService } from '../../../services/working-entries-context.service';
 import { WorkingEntryDto } from 'src/app/api/work/dtos/WorkingEntryDto';
-import { Time } from '@angular/common';
+import { Time, DecimalPipe, DatePipe } from '@angular/common';
 import { calculateTimeDifference, createTimeDisplayName } from '../../../functions/date-time-functions';
 import { PersonPaymentDialogService } from '../person-payment-dialog/person-payment-dialog.service';
 import { PageTitleService } from 'src/app/core/page-title/page-title.service';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { WorkEntryListComponent } from '../work-entry-list/work-entry-list.component';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatIcon } from '@angular/material/icon';
+import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe';
 
 @Component({
-  selector: 'app-person-details',
-  templateUrl: './person-details.component.html',
-  styleUrls: ['./person-details.component.scss'],
-  providers: [WorkingEntriesContextService],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-person-details',
+    templateUrl: './person-details.component.html',
+    styleUrls: ['./person-details.component.scss'],
+    providers: [WorkingEntriesContextService],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormsModule, ReactiveFormsModule, MatProgressSpinner, WorkEntryListComponent, MatProgressBar, MatIcon, DecimalPipe, DatePipe, ShowErrorPipe]
 })
 export class PersonDetailsComponent implements OnInit, OnDestroy {
 

@@ -5,14 +5,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
-  declarations: [
-    IncomingConnectionRequestsComponent
-  ],
-  imports: [
-    CommonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-  ],
-  exports: [ IncomingConnectionRequestsComponent ]
+    imports: [
+        CommonModule,
+        MatIconModule,
+        MatProgressSpinnerModule,
+        IncomingConnectionRequestsComponent,
+    ],
+    exports: [IncomingConnectionRequestsComponent]
 })
 export class IncomingConnectionRequestsModule { }

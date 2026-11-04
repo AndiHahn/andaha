@@ -1,17 +1,21 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { TimeRange } from '../../../../../shared/models/TimeRange';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DATE_TYPE_SEGMENT_LABELS, DateType, DateTypeLabelMapping } from './DateType';
 import moment from 'moment';
 import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-providers';
+import { MatSelect, MatOption } from '@angular/material/select';
+import { MatIcon } from '@angular/material/icon';
+import { MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker } from '@angular/material/datepicker';
+import { DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-timerange-selection',
-  templateUrl: './timerange-selection.component.html',
-  styleUrls: ['./timerange-selection.component.scss'],
-  providers: GERMAN_DATE_PROVIDERS,
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-timerange-selection',
+    templateUrl: './timerange-selection.component.html',
+    styleUrls: ['./timerange-selection.component.scss'],
+    providers: GERMAN_DATE_PROVIDERS,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormsModule, ReactiveFormsModule, MatSelect, MatOption, MatIcon, MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker, DatePipe]
 })
 export class TimerangeSelectionComponent implements OnInit, OnChanges {
 

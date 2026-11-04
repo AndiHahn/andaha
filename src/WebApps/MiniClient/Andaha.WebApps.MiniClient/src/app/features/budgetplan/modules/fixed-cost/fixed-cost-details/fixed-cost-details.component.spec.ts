@@ -55,19 +55,18 @@ describe('FixedCostDetailsComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-            declarations: [FixedCostDetailsComponent],
-            imports: [ReactiveFormsModule, ShowErrorModule, MatSelectModule, NoopAnimationsModule],
-            schemas: [NO_ERRORS_SCHEMA],
-            providers: [
-                { provide: Router, useValue: router },
-                { provide: MatSnackBar, useValue: snackbar },
-                { provide: FixedCostContextService, useValue: context },
-                { provide: PageTitleService, useValue: pageTitle },
-                { provide: ConfirmationDialogService, useValue: {} },
-                { provide: FixedCostHistoryDialogService, useValue: {} },
-                { provide: ActivatedRoute, useValue: { snapshot: { params: { id: 'fc-1' }, children: [], parent: null } } }
-            ]
-        }).compileComponents();
+    imports: [ReactiveFormsModule, ShowErrorModule, MatSelectModule, NoopAnimationsModule, FixedCostDetailsComponent],
+    schemas: [NO_ERRORS_SCHEMA],
+    providers: [
+        { provide: Router, useValue: router },
+        { provide: MatSnackBar, useValue: snackbar },
+        { provide: FixedCostContextService, useValue: context },
+        { provide: PageTitleService, useValue: pageTitle },
+        { provide: ConfirmationDialogService, useValue: {} },
+        { provide: FixedCostHistoryDialogService, useValue: {} },
+        { provide: ActivatedRoute, useValue: { snapshot: { params: { id: 'fc-1' }, children: [], parent: null } } }
+    ]
+}).compileComponents();
 
         fixture = TestBed.createComponent(FixedCostDetailsComponent);
     });

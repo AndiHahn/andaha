@@ -1,11 +1,10 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
-  selector: 'app-data-protection',
-  templateUrl: './data-protection.component.html',
-  styleUrls: ['./data-protection.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-data-protection',
+    templateUrl: './data-protection.component.html',
+    styleUrls: ['./data-protection.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager
 })
 export class DataProtectionComponent implements OnInit {
 

@@ -46,26 +46,25 @@ describe('PersonDetailsComponent', () => {
         entries.loading.mockReturnValue(new Subject<boolean>());
 
         await TestBed.configureTestingModule({
-            declarations: [PersonDetailsComponent],
-            imports: [ReactiveFormsModule, ShowErrorModule, NoopAnimationsModule],
-            schemas: [NO_ERRORS_SCHEMA],
-            providers: [
-                { provide: Router, useValue: {
-                        navigateByUrl: vi.fn().mockName("Router.navigateByUrl")
-                    } },
-                { provide: MatSnackBar, useValue: {
-                        openFromComponent: vi.fn().mockName("MatSnackBar.openFromComponent")
-                    } },
-                { provide: PersonContextService, useValue: context },
-                { provide: PageTitleService, useValue: {
-                        set: vi.fn().mockName("PageTitleService.set"),
-                        setAction: vi.fn().mockName("PageTitleService.setAction")
-                    } },
-                { provide: ConfirmationDialogService, useValue: {} },
-                { provide: PersonPaymentDialogService, useValue: {} },
-                { provide: ActivatedRoute, useValue: { snapshot: { params: { id: 'p-1' }, children: [], parent: null } } }
-            ]
-        })
+    imports: [ReactiveFormsModule, ShowErrorModule, NoopAnimationsModule, PersonDetailsComponent],
+    schemas: [NO_ERRORS_SCHEMA],
+    providers: [
+        { provide: Router, useValue: {
+                navigateByUrl: vi.fn().mockName("Router.navigateByUrl")
+            } },
+        { provide: MatSnackBar, useValue: {
+                openFromComponent: vi.fn().mockName("MatSnackBar.openFromComponent")
+            } },
+        { provide: PersonContextService, useValue: context },
+        { provide: PageTitleService, useValue: {
+                set: vi.fn().mockName("PageTitleService.set"),
+                setAction: vi.fn().mockName("PageTitleService.setAction")
+            } },
+        { provide: ConfirmationDialogService, useValue: {} },
+        { provide: PersonPaymentDialogService, useValue: {} },
+        { provide: ActivatedRoute, useValue: { snapshot: { params: { id: 'p-1' }, children: [], parent: null } } }
+    ]
+})
             .overrideComponent(PersonDetailsComponent, {
             set: { providers: [{ provide: WorkingEntriesContextService, useValue: entries }] }
         })

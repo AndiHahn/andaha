@@ -18,24 +18,22 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    BillListComponent,
-    BillListFilterComponent,
-    BillListItemComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    MatPaginatorModule,
-    MatProgressBarModule,
-    MatIconModule,
-    ScrollingModule,
-    MatDialogModule
-  ],
-  providers: [],
-  exports: [
-    BillListFilterComponent,
-    BillListItemComponent
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        MatPaginatorModule,
+        MatProgressBarModule,
+        MatIconModule,
+        ScrollingModule,
+        MatDialogModule,
+        BillListComponent,
+        BillListFilterComponent,
+        BillListItemComponent
+    ],
+    providers: [],
+    exports: [
+        BillListFilterComponent,
+        BillListItemComponent
+    ]
 })
 export class BillListModule { }

@@ -5,13 +5,11 @@ import { ErrorSnackbarComponent } from './error-snackbar/error-snackbar.componen
 import { InformationSnackbarComponent } from './information-snackbar/information-snackbar.component';
 
 @NgModule({
-  declarations: [
-    ErrorSnackbarComponent,
-    InformationSnackbarComponent
-  ],
-  imports: [
-    CommonModule,
-    MatIconModule
-  ]
+    imports: [
+        CommonModule,
+        MatIconModule,
+        ErrorSnackbarComponent,
+        InformationSnackbarComponent
+    ]
 })
 export class AppSnackbarModule {}

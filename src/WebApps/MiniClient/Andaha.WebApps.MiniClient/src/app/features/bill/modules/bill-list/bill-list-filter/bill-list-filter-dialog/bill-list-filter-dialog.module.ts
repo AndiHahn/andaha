@@ -9,18 +9,16 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
-  declarations: [
-    BillListFilterDialogComponent
-  ],
-  imports: [
-    CommonModule,
-    DialogModule,
-    MatDialogModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatIconModule
-  ]
+    imports: [
+        CommonModule,
+        DialogModule,
+        MatDialogModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatIconModule,
+        BillListFilterDialogComponent
+    ]
 })
 export class BillListFilterDialogModule { }

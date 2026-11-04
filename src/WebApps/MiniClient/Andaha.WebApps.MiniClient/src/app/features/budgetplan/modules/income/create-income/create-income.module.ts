@@ -18,20 +18,18 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    CreateIncomeComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    MatSelectModule,
-    FormsModule,
-    ReactiveFormsModule,
-    AppSnackbarModule,
-    MatSnackBarModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    ShowErrorModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        MatSelectModule,
+        FormsModule,
+        ReactiveFormsModule,
+        AppSnackbarModule,
+        MatSnackBarModule,
+        MatIconModule,
+        MatProgressSpinnerModule,
+        ShowErrorModule,
+        CreateIncomeComponent
+    ]
 })
 export class CreateIncomeModule { }

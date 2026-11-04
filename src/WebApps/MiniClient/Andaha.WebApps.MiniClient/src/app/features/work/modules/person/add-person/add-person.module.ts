@@ -17,19 +17,17 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    AddPersonComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    FormsModule,
-    ReactiveFormsModule,
-    AppSnackbarModule,
-    MatSnackBarModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    ShowErrorModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        FormsModule,
+        ReactiveFormsModule,
+        AppSnackbarModule,
+        MatSnackBarModule,
+        MatIconModule,
+        MatProgressSpinnerModule,
+        ShowErrorModule,
+        AddPersonComponent
+    ]
 })
 export class AddPersonModule { }

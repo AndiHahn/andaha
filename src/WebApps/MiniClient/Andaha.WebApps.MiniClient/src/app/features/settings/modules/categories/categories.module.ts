@@ -27,24 +27,22 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    CategoriesComponent,
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    MatIconModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatProgressSpinnerModule,
-    DragDropModule
-  ],
-  providers: [
-    ConfirmationDialogService,
-    {
-      provide: 'dialog',
-      useValue: MatDialog
-    }
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        MatIconModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatProgressSpinnerModule,
+        DragDropModule,
+        CategoriesComponent
+    ],
+    providers: [
+        ConfirmationDialogService,
+        {
+            provide: 'dialog',
+            useValue: MatDialog
+        }
+    ]
 })
 export class CategoriesModule { }

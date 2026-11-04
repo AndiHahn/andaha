@@ -18,20 +18,18 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    CreateFixedCostComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    MatSelectModule,
-    FormsModule,
-    ReactiveFormsModule,
-    AppSnackbarModule,
-    MatSnackBarModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    ShowErrorModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        MatSelectModule,
+        FormsModule,
+        ReactiveFormsModule,
+        AppSnackbarModule,
+        MatSnackBarModule,
+        MatIconModule,
+        MatProgressSpinnerModule,
+        ShowErrorModule,
+        CreateFixedCostComponent
+    ]
 })
 export class CreateFixedCostModule { }

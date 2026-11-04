@@ -17,20 +17,20 @@ describe('ExpensesComponent', () => {
         expenses$ = new BehaviorSubject<ExpenseDto[] | undefined>([expense('A', 10.10), expense('B', 5.20)]);
 
         TestBed.configureTestingModule({
-            declarations: [ExpensesComponent],
-            schemas: [NO_ERRORS_SCHEMA],
-            providers: [
-                {
-                    provide: ExpenseContextService,
-                    useValue: {
-                        expenses: () => expenses$,
-                        availableTimeRange: () => new BehaviorSubject(undefined),
-                        loadExpenses: vi.fn().mockName('loadExpenses')
-                    }
-                },
-                { provide: BillCategoryContextService, useValue: { categories: () => of([]) } }
-            ]
-        });
+    imports: [ExpensesComponent],
+    schemas: [NO_ERRORS_SCHEMA],
+    providers: [
+        {
+            provide: ExpenseContextService,
+            useValue: {
+                expenses: () => expenses$,
+                availableTimeRange: () => new BehaviorSubject(undefined),
+                loadExpenses: vi.fn().mockName('loadExpenses')
+            }
+        },
+        { provide: BillCategoryContextService, useValue: { categories: () => of([]) } }
+    ]
+});
         TestBed.overrideTemplate(ExpensesComponent, '');
         fixture = TestBed.createComponent(ExpensesComponent);
         component = fixture.componentInstance;

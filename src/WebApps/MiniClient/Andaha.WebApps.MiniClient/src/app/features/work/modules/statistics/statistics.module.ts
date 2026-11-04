@@ -15,16 +15,14 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    StatisticsComponent,
-    WorktimeComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    MatProgressSpinnerModule,
-    DatePickerFormFieldModule,
-    TimerangeSelectionModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        MatProgressSpinnerModule,
+        DatePickerFormFieldModule,
+        TimerangeSelectionModule,
+        StatisticsComponent,
+        WorktimeComponent
+    ]
 })
 export class StatisticsModule { }

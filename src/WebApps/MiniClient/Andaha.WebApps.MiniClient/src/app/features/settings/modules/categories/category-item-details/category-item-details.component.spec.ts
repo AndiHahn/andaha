@@ -43,22 +43,21 @@ describe('CategoryItemDetailsComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-            declarations: [CategoryItemDetailsComponent],
-            imports: [ReactiveFormsModule, ShowErrorModule, MatSelectModule, NoopAnimationsModule],
-            schemas: [NO_ERRORS_SCHEMA],
-            providers: [
-                { provide: Router, useValue: {
-                        navigateByUrl: vi.fn().mockName("Router.navigateByUrl")
-                    } },
-                { provide: MatSnackBar, useValue: {
-                        openFromComponent: vi.fn().mockName("MatSnackBar.openFromComponent")
-                    } },
-                { provide: BillCategoryContextService, useValue: context },
-                { provide: PageTitleService, useValue: pageTitle },
-                { provide: ConfirmationDialogService, useValue: {} },
-                { provide: ActivatedRoute, useValue: { snapshot: { params: { id: 'cat-1' }, children: [], parent: null } } }
-            ]
-        }).compileComponents();
+    imports: [ReactiveFormsModule, ShowErrorModule, MatSelectModule, NoopAnimationsModule, CategoryItemDetailsComponent],
+    schemas: [NO_ERRORS_SCHEMA],
+    providers: [
+        { provide: Router, useValue: {
+                navigateByUrl: vi.fn().mockName("Router.navigateByUrl")
+            } },
+        { provide: MatSnackBar, useValue: {
+                openFromComponent: vi.fn().mockName("MatSnackBar.openFromComponent")
+            } },
+        { provide: BillCategoryContextService, useValue: context },
+        { provide: PageTitleService, useValue: pageTitle },
+        { provide: ConfirmationDialogService, useValue: {} },
+        { provide: ActivatedRoute, useValue: { snapshot: { params: { id: 'cat-1' }, children: [], parent: null } } }
+    ]
+}).compileComponents();
 
         fixture = TestBed.createComponent(CategoryItemDetailsComponent);
     });

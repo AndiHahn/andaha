@@ -10,20 +10,18 @@ import { ShowErrorModule } from "src/app/shared/form-field/show-error.module";
 import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
-  declarations: [
-    AddConnectionDialogComponent
-  ],
-  imports: [
-    CommonModule,
-    BrowserModule,
-    ReactiveFormsModule,
-    FormsModule,
-    BrowserAnimationsModule,
-    MatProgressSpinnerModule,
-    DialogModule,
-    ShowErrorModule,
-    MatDialogModule
-  ],
-  providers: [ ]
+    imports: [
+        CommonModule,
+        BrowserModule,
+        ReactiveFormsModule,
+        FormsModule,
+        BrowserAnimationsModule,
+        MatProgressSpinnerModule,
+        DialogModule,
+        ShowErrorModule,
+        MatDialogModule,
+        AddConnectionDialogComponent
+    ],
+    providers: []
 })
 export class AddConnectionDialogModule { }

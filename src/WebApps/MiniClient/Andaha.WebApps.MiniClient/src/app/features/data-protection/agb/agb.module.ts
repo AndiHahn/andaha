@@ -11,12 +11,10 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    AgbComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes)
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        AgbComponent
+    ]
 })
 export class AgbModule { }

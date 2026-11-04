@@ -18,13 +18,13 @@ describe('BillListFilterComponent search', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [BillListFilterComponent],
-            schemas: [NO_ERRORS_SCHEMA],
-            providers: [
-                { provide: BillListFilterDialogService, useValue: { openDialog: () => Promise.resolve(undefined) } },
-                { provide: BillCategoryContextService, useValue: { categories: () => of([]) } }
-            ]
-        }).compileComponents();
+    imports: [BillListFilterComponent],
+    schemas: [NO_ERRORS_SCHEMA],
+    providers: [
+        { provide: BillListFilterDialogService, useValue: { openDialog: () => Promise.resolve(undefined) } },
+        { provide: BillCategoryContextService, useValue: { categories: () => of([]) } }
+    ]
+}).compileComponents();
 
         fixture = TestBed.createComponent(BillListFilterComponent);
         component = fixture.componentInstance;

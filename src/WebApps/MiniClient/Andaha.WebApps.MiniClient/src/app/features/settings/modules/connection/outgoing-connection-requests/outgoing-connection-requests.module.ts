@@ -4,13 +4,11 @@ import { OutgoingConnectionRequestsComponent } from './outgoing-connection-reque
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
-  declarations: [
-    OutgoingConnectionRequestsComponent
-  ],
-  imports: [
-    CommonModule,
-    MatProgressSpinnerModule,
-  ],
-  exports: [ OutgoingConnectionRequestsComponent ]
+    imports: [
+        CommonModule,
+        MatProgressSpinnerModule,
+        OutgoingConnectionRequestsComponent,
+    ],
+    exports: [OutgoingConnectionRequestsComponent]
 })
 export class OutgoingConnectionRequestsModule { }

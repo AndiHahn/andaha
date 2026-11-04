@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { FormGroup, FormGroupDirective } from '@angular/forms';
+import { FormGroup, FormGroupDirective, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CostCategory, CostCategoryLabel } from 'src/app/api/budgetplan/dtos/CostCategory';
 import { Duration, DurationLabel } from 'src/app/api/budgetplan/dtos/Duration';
@@ -7,13 +7,17 @@ import { FixedCostCreateDto } from 'src/app/api/budgetplan/dtos/FixedCostCreateD
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { FixedCostContextService } from '../../../services/fixed-cost-context.service';
 import { FixedCostForm, getEmptyForm } from '../functions/fixed-cost-form-functions';
+import { MatSelect, MatOption } from '@angular/material/select';
+import { MatIcon } from '@angular/material/icon';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe';
 
 @Component({
-  selector: 'app-create-fixed-cost',
-  templateUrl: './create-fixed-cost.component.html',
-  styleUrls: ['./create-fixed-cost.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-create-fixed-cost',
+    templateUrl: './create-fixed-cost.component.html',
+    styleUrls: ['./create-fixed-cost.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormsModule, ReactiveFormsModule, MatSelect, MatOption, MatIcon, MatProgressSpinner, ShowErrorPipe]
 })
 export class CreateFixedCostComponent implements OnInit {
 

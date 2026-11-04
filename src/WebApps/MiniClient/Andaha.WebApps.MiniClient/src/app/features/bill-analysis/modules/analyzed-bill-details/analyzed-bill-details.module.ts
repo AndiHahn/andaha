@@ -15,14 +15,14 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [AnalyzedBillDetailsComponent],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    AnalyzedBillImageModule,
-    MatProgressBarModule,
-    MatSnackBarModule,
-    AppSnackbarModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        AnalyzedBillImageModule,
+        MatProgressBarModule,
+        MatSnackBarModule,
+        AppSnackbarModule,
+        AnalyzedBillDetailsComponent
+    ]
 })
 export class AnalyzedBillDetailsModule { }

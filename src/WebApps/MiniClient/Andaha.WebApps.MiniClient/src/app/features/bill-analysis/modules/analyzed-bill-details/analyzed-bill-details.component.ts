@@ -9,13 +9,16 @@ import { SubCategoryDto } from 'src/app/api/shopping/dtos/SubCategoryDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { confidencePercent, resolveAnalyzedCategory } from '../../functions/analyzed-bill-functions';
 import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { AnalyzedBillImageComponent } from '../analyzed-bill-image/analyzed-bill-image.component';
+import { DecimalPipe, DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-analyzed-bill-details',
-  templateUrl: './analyzed-bill-details.component.html',
-  styleUrls: ['./analyzed-bill-details.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-analyzed-bill-details',
+    templateUrl: './analyzed-bill-details.component.html',
+    styleUrls: ['./analyzed-bill-details.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatProgressBar, AnalyzedBillImageComponent, DecimalPipe, DatePipe]
 })
 export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
   bill?: BillAnalyzedDto;
