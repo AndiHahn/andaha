@@ -3,7 +3,7 @@
 | Field | Value |
 |-------|-------|
 | ID | US-0006 |
-| Status | In Review <!-- Open / In Progress / In Review / Done --> |
+| Status | Done <!-- Open / In Progress / In Review / Done --> |
 | Created | 2026-11-03 |
 | Design Doc | [design.md](./design.md) |
 
