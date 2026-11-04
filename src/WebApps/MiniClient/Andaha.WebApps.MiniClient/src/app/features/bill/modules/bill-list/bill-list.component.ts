@@ -15,7 +15,9 @@ import { BillListItemComponent } from './bill-list-item/bill-list-item.component
 import { QuickEntryDockComponent } from '../../quick-entry/quick-entry-dock/quick-entry-dock.component';
 import { QuickEntryService } from '../../quick-entry/quick-entry.service';
 import { ScanService } from '../../scan/scan.service';
-import { takeSharedImage } from '../../scan/shared-image';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
+import { SHARED_IMAGE_FAILED, readLaunchIntent, takeSharedImage } from '../../scan/shared-image';
 
 @Component({
     selector: 'app-bill-list',
@@ -32,6 +34,7 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   private scanService = inject(ScanService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private snackbar = inject(MatSnackBar);
 
   billDataSource = new BillDataSource();
   pixelHeightPerItem = 64;
@@ -175,15 +178,13 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  // App-Shortcut „Rechnung eintragen“ (/bill/list?quick=1) und Share Target (/bill/list?shared=1):
+  // App-Shortcut „Rechnung eintragen“ (/bill/list?quick=1) und Share Target (/bill/list?shared=1 bzw. =0):
   // Parameter erst entfernen (replaceUrl), dann handeln, sonst ersetzt die Navigation den History-Eintrag
   // des Sheets (OverlayBackService) bzw. die Scan-Navigation. Ein geteiltes Bild wird auch ohne
   // Parameter abgeholt (z. B. wenn der Login-Redirect ?shared=1 verloren hat); der Cache-Eintrag
   // überlebt den Redirect und wird beim ersten Öffnen der Liste genau einmal verarbeitet.
   private handleLaunchIntent(): void {
-    const params = this.route.snapshot.queryParamMap;
-    const quick = params.get('quick') === '1';
-    const shared = params.get('shared') === '1';
+    const { quick, shared } = readLaunchIntent(this.route.snapshot.queryParamMap);
     const clear = quick || shared
       ? this.router.navigate([], { relativeTo: this.route, queryParams: { quick: null, shared: null }, queryParamsHandling: 'merge', replaceUrl: true })
       : Promise.resolve(true);
@@ -191,6 +192,10 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
     void clear.finally(async () => {
       if (quick) {
         this.quickEntry.open();
+      }
+      // geteilt, aber ohne brauchbares Bild (custom-sw.js): melden statt still verwerfen (AC38)
+      if (shared === 'failed') {
+        openErrorSnackbar(SHARED_IMAGE_FAILED, this.snackbar);
       }
       const image = await takeSharedImage();
       if (image) {
