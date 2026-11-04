@@ -31,7 +31,7 @@ describe('QuickEntryState', () => {
     expect(u.missing()).toEqual(['shop']);
     expect(u.hint()).toBe('Shop wählen');
   });
-  it('can save and collapses the keypad when nothing is missing, in either order', () => {
+  it('can save in either order; selecting the tile last folds the keypad', () => {
     const a = new QuickEntryState();
     a.pressKey('1'); a.pressKey(','); a.pressKey('5');
     expect(a.keypadOpen()).toBe(true);
@@ -48,7 +48,23 @@ describe('QuickEntryState', () => {
     b.selectTile(tile());
     expect(b.keypadOpen()).toBe(true);
     b.pressKey('9');
-    expect(b.keypadOpen()).toBe(false);
+    // Tastatur bleibt offen, solange der Betrag eingegeben wird
+    expect(b.canSave()).toBe(true);
+    expect(b.keypadOpen()).toBe(true);
+  });
+  it('typing never folds the keypad, also when editing after reopening', () => {
+    const s = new QuickEntryState();
+    s.selectTile(tile());
+    for (const key of ['6', ',', '8', '0'] as const) {
+      s.pressKey(key);
+    }
+    expect(s.amountText()).toBe('6,80');
+    expect(s.keypadOpen()).toBe(true);
+    s.selectTile(tile({ key: 't|2' }));
+    expect(s.keypadOpen()).toBe(false);
+    s.openKeypad();
+    s.pressKey('del');
+    expect(s.keypadOpen()).toBe(true);
   });
   it('selectShop completes a choose-shop tile and collapses the keypad', () => {
     const s = new QuickEntryState();

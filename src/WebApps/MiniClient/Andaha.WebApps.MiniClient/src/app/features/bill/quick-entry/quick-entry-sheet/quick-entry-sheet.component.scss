@@ -44,11 +44,23 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 2px 16px 16px;
+  // unten 12 px: Platz für die nach unten überstehende Trefferfläche der Datumszeile
+  padding: 2px 16px 12px;
 
-  // Tastatur eingeklappt (b, c, e) und „Andere …“ (d)
-  &.compact, &.other { padding-bottom: 20px; }
+  // „Andere …“ (d)
   &.other { gap: 14px; }
+}
+
+// Speichern und Hinweis: außerhalb des Scrollbereichs, direkt über der Tastatur
+.foot {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 16px 16px;
+
+  // Tastatur eingeklappt (b, c, d, e)
+  &.compact { padding-bottom: 20px; }
 }
 
 // g · Entwurf-Zeile: 13 muted, Stift primary, rechts „Verwerfen“
@@ -125,7 +137,8 @@
 // Desktop-Dialog (04): Kopf 12/8/0/20, Inhalt 6/20/20, Aktionen „Abbrechen | Speichern“ rechtsbündig
 :host(.dialog) {
   .sh { padding: 12px 8px 0 20px; }
-  .form { padding: 6px 20px 20px; }
+  .form { padding: 6px 20px 12px; }
+  .foot { padding: 0 20px 20px; }
   .save { flex: none; }
   .need { text-align: right; }
 }

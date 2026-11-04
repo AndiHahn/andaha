@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, InjectionToken, NgZone, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { formatDate } from '@angular/common';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -9,7 +9,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatOption } from '@angular/material/core';
 import { MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { Observable, catchError, map, of, switchMap } from 'rxjs';
+import { Observable, catchError, combineLatest, filter, map, of, switchMap, take, timeout } from 'rxjs';
 import { generateGuid } from 'src/app/api/functions/api-utils';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillCreateDto } from 'src/app/api/shopping/dtos/BillCreateDto';
@@ -41,6 +41,19 @@ import { QuickDateRowComponent } from '../quick-date-row/quick-date-row.componen
 const MAX_SHOP_CHIPS = 5;
 const MAX_SHOP_SUGGESTIONS = 6;
 const DAY_BILLS_PAGE_SIZE = 100;
+
+/** So lange wartet die Wiederherstellung eines Entwurfs höchstens auf Vorlagen, Vorschläge und Kategorien */
+export const QUICK_ENTRY_RESTORE_TIMEOUT_MS = new InjectionToken<number>('QUICK_ENTRY_RESTORE_TIMEOUT_MS', {
+  providedIn: 'root',
+  factory: () => 4000
+});
+
+/** Ohne Uhrzeit gespeichert: Mitternacht in UTC (Datum ohne Zeit vom Server) oder lokal (Datum gewählt) */
+function hasTime(date: Date): boolean {
+  const utcMidnight = date.getUTCHours() === 0 && date.getUTCMinutes() === 0 && date.getUTCSeconds() === 0;
+  const localMidnight = date.getHours() === 0 && date.getMinutes() === 0 && date.getSeconds() === 0;
+  return !utcMidnight && !localMidnight;
+}
 
 /**
  * Schnellerfassung (v2 `02-schnellerfassung` a–g, AC8–AC19, AC21): mobil als Bottom Sheet mit eigener
@@ -75,7 +88,8 @@ export class QuickEntrySheetComponent {
 
   readonly state = new QuickEntryState();
 
-  readonly categories = toSignal(inject(BillCategoryContextService).categories(), { initialValue: [] as CategoryDto[] });
+  private readonly categoryContext = inject(BillCategoryContextService);
+  readonly categories = toSignal(this.categoryContext.categories(), { initialValue: [] as CategoryDto[] });
   private readonly templates = toSignal(this.templateContext.templates(), { initialValue: [] });
   private readonly suggestions = toSignal(this.templateContext.suggestions(), { initialValue: [] });
   readonly tiles = computed(() => buildTiles(this.templates(), this.suggestions(), this.categories()));
@@ -131,7 +145,7 @@ export class QuickEntrySheetComponent {
     if (!bill) {
       return '';
     }
-    const time = bill.date.getHours() === 0 && bill.date.getMinutes() === 0 ? '' : ` um ${formatDate(bill.date, 'HH:mm', 'de')}`;
+    const time = hasTime(bill.date) ? ` um ${formatDate(bill.date, 'HH:mm', 'de')}` : '';
     return `${bill.shopName} · ${formatAmount(bill.price)} €${time}. Trotzdem speichern?`;
   });
 
@@ -147,18 +161,21 @@ export class QuickEntrySheetComponent {
       this.state.date.set(fromDayKey(draft.date) ?? new Date());
       this.pendingDraft = draft;
       this.restored.set(true);
-    }
 
-    // Auswahl des Entwurfs übernehmen, sobald Kategorien und Kacheln da sind
-    effect(() => {
-      const categories = this.categories();
-      const tiles = this.tiles();
-      const draft = this.pendingDraft;
-      if (!draft || categories.length === 0 || (draft.tileKey !== null && tiles.length === 0)) {
-        return;
-      }
-      untracked(() => this.applyDraftSelection(draft, categories, tiles));
-    });
+      // Auswahl des Entwurfs übernehmen, sobald Vorlagen, Vorschläge und Kategorien geladen sind; ohne
+      // Backend (offline) nach einer Wartezeit mit dem, was da ist. Der Zeitgeber läuft außerhalb der Zone.
+      // Wählt der Benutzer vorher selbst, verfällt die Auswahl des Entwurfs (pendingDraft = null).
+      const zone = inject(NgZone);
+      const ready$ = combineLatest([
+        this.templateContext.loaded().pipe(filter(loaded => loaded)),
+        this.categoryContext.categories().pipe(filter(categories => categories.length > 0))
+      ]).pipe(
+        take(1),
+        map(() => true),
+        timeout({ first: inject(QUICK_ENTRY_RESTORE_TIMEOUT_MS), with: () => of(false) }),
+        takeUntilDestroyed());
+      zone.runOutsideAngular(() => ready$.subscribe(() => zone.run(() => this.applyPendingDraft())));
+    }
 
     // Gewählte Kachel verschwindet (z. B. Vorschlag gerade angeheftet): gleichwertige Kachel markieren
     effect(() => {
@@ -198,6 +215,7 @@ export class QuickEntrySheetComponent {
   }
 
   onSelectTile(tile: QuickTile): void {
+    this.pendingDraft = null;
     if (tile.key === this.selectedKey()) {
       return;
     }
@@ -210,16 +228,19 @@ export class QuickEntrySheetComponent {
   }
 
   onSelectShopChip(name: string): void {
+    this.pendingDraft = null;
     this.customShop.set(false);
     this.state.selectShop(name);
   }
 
   onSelectCustomShop(): void {
+    this.pendingDraft = null;
     this.customShop.set(true);
     this.state.selectShop(this.shopQuery());
   }
 
   onShopQuery(value: string): void {
+    this.pendingDraft = null;
     this.shopQuery.set(value);
     this.state.selectShop(value);
   }
@@ -238,6 +259,7 @@ export class QuickEntrySheetComponent {
   }
 
   onSelectOther(): void {
+    this.pendingDraft = null;
     this.state.selectOther();
     this.customShop.set(false);
     this.shopQuery.set('');
@@ -245,10 +267,12 @@ export class QuickEntrySheetComponent {
   }
 
   onCategoryChange(categoryId: string | null): void {
+    this.pendingDraft = null;
     this.state.selectCategory(categoryId, null);
   }
 
   onSubCategoryChange(subCategoryId: string | null): void {
+    this.pendingDraft = null;
     this.state.selectCategory(this.state.categoryId(), subCategoryId);
   }
 
@@ -414,6 +438,13 @@ export class QuickEntrySheetComponent {
       // kein häufiger Shop oder ein eigener aus dem Entwurf: gleich das freie Feld
       this.shopQuery.set(wanted);
       this.onSelectCustomShop();
+    }
+  }
+
+  private applyPendingDraft(): void {
+    const draft = this.pendingDraft;
+    if (draft) {
+      this.applyDraftSelection(draft, this.categories(), this.tiles());
     }
   }
 

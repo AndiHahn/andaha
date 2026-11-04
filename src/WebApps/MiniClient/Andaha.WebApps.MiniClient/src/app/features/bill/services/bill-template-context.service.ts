@@ -14,6 +14,7 @@ export class BillTemplateContextService {
 
   private templates$ = new BehaviorSubject<BillTemplateDto[]>([]);
   private suggestions$ = new BehaviorSubject<BillSuggestionDto[]>([]);
+  private loaded$ = new BehaviorSubject<boolean>(false);
 
   constructor() {
     this.contextService.backendReady().subscribe(ready => {
@@ -31,14 +32,36 @@ export class BillTemplateContextService {
     return this.suggestions$.asObservable();
   }
 
+  /**
+   * true, sobald Vorlagen und Vorschläge einmal beide geladen (oder fehlgeschlagen) sind; bleibt
+   * danach true. Vorher sind die leeren Listen nur der Startwert.
+   */
+  loaded(): Observable<boolean> {
+    return this.loaded$.asObservable();
+  }
+
   refresh(): void {
+    let pending = 2;
+    const settled = () => {
+      if (--pending === 0 && !this.loaded$.value) {
+        this.loaded$.next(true);
+      }
+    };
     this.api.list().subscribe({
       next: templates => this.templates$.next(templates),
-      error: error => console.error('Loading bill templates failed', error)
+      error: error => {
+        console.error('Loading bill templates failed', error);
+        settled();
+      },
+      complete: settled
     });
     this.api.suggestions().subscribe({
       next: suggestions => this.suggestions$.next(suggestions),
-      error: error => console.error('Loading bill suggestions failed', error)
+      error: error => {
+        console.error('Loading bill suggestions failed', error);
+        settled();
+      },
+      complete: settled
     });
   }
 

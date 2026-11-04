@@ -3,7 +3,7 @@ import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { provideRouter, Router } from '@angular/router';
-import { Observable, of, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, of, throwError } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { BillSuggestionDto } from 'src/app/api/shopping/dtos/BillSuggestionDto';
@@ -19,7 +19,7 @@ import { ShopStatsContextService } from '../../services/shop-stats-context.servi
 import { QuickEntryDraft } from '../logic/draft-store';
 import { toDayKey } from '../logic/quick-entry-state';
 import { QuickEntryDraftService } from '../quick-entry-draft.service';
-import { QuickEntrySheetComponent } from './quick-entry-sheet.component';
+import { QUICK_ENTRY_RESTORE_TIMEOUT_MS, QuickEntrySheetComponent } from './quick-entry-sheet.component';
 
 const categories: CategoryDto[] = [
   {
@@ -61,6 +61,10 @@ interface SetupOptions {
   draft?: QuickEntryDraft | null;
   dayBills?: () => Observable<PagedResultDto<BillDto>>;
   frequentShops?: string[];
+  templates$?: Observable<BillTemplateDto[]>;
+  suggestions$?: Observable<BillSuggestionDto[]>;
+  loaded$?: Observable<boolean>;
+  restoreTimeoutMs?: number;
 }
 
 describe('QuickEntrySheetComponent', () => {
@@ -97,8 +101,14 @@ describe('QuickEntrySheetComponent', () => {
         { provide: BillCategoryContextService, useValue: { categories: () => of(categories) } },
         {
           provide: BillTemplateContextService,
-          useValue: { templates: () => of(templates), suggestions: () => of(suggestions), save: saveTemplate, pin, hide }
+          useValue: {
+            templates: () => options.templates$ ?? of(templates),
+            suggestions: () => options.suggestions$ ?? of(suggestions),
+            loaded: () => options.loaded$ ?? of(true),
+            save: saveTemplate, pin, hide
+          }
         },
+        { provide: QUICK_ENTRY_RESTORE_TIMEOUT_MS, useValue: options.restoreTimeoutMs ?? 4000 },
         {
           provide: ShopStatsContextService,
           useValue: { shopNames: () => ['Café Central', 'Billa'], frequentShops, recordLocal }
@@ -295,6 +305,29 @@ describe('QuickEntrySheetComponent', () => {
     expect(addBill).toHaveBeenCalledTimes(1);
   });
 
+  it('duplicate hint leaves out the time for a bill stored without time (UTC midnight)', async () => {
+    const today = new Date();
+    const utcMidnight = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+    await setup({ dayBills: () => of({ values: [bill({ date: utcMidnight })], totalCount: 1 }) });
+    fixture.componentInstance.onDateChange(new Date(utcMidnight));
+    await type('6,80');
+    await click(byText('[role="radio"]', 'Bäcker Ruetz'));
+
+    const warn = host.querySelector<HTMLElement>('.warn[role="status"]')!;
+    expect(warn.textContent).toContain('Bäcker Ruetz · 6,80 €. Trotzdem speichern?');
+    expect(warn.textContent).not.toContain(' um ');
+  });
+
+  it('tile first, then typing: the keypad stays open while typing and Speichern is enabled', async () => {
+    await setup();
+    await click(byText('[role="radio"]', 'Bäcker Ruetz'));
+    await type('6,80');
+    expect(host.querySelector('.amount')!.textContent).toContain('6,80');
+    expect(host.querySelector('app-amount-keypad')).not.toBeNull();
+    expect(saveButton().disabled).toBe(false);
+    expect(host.querySelector('.need')).toBeNull();
+  });
+
   it('does not warn for a different amount', async () => {
     await setup({ dayBills: () => of({ values: [bill({})], totalCount: 1 }) });
     await type('6,90');
@@ -398,6 +431,85 @@ describe('QuickEntrySheetComponent', () => {
     });
     expect(byText('[role="radio"]', 'Bäcker Ruetz').getAttribute('aria-checked')).toBe('true');
     expect(saveButton().disabled).toBe(false);
+  });
+
+  describe('draft restore while templates and suggestions are still loading', () => {
+    const thaliaDraft = (): QuickEntryDraft => ({
+      amountText: '12,99', tileKey: 's|thalia|c2|s2', shopName: 'Thalia', categoryId: 'c2', subCategoryId: 's2',
+      date: toDayKey(new Date()), savedAt: Date.now()
+    });
+    let templates$: BehaviorSubject<BillTemplateDto[]>;
+    let suggestions$: BehaviorSubject<BillSuggestionDto[]>;
+    let loaded$: BehaviorSubject<boolean>;
+
+    async function setupLoading(extra: SetupOptions = {}): Promise<void> {
+      templates$ = new BehaviorSubject<BillTemplateDto[]>([]);
+      suggestions$ = new BehaviorSubject<BillSuggestionDto[]>([]);
+      loaded$ = new BehaviorSubject(false);
+      await setup({ draft: thaliaDraft(), templates$, suggestions$, loaded$, ...extra });
+    }
+
+    async function settle(): Promise<void> {
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+    }
+
+    it('restores a suggestion tile when templates arrive first', async () => {
+      await setupLoading();
+      templates$.next(templates);
+      await settle();
+      suggestions$.next(suggestions);
+      loaded$.next(true);
+      await settle();
+      expect(byText('[role="radio"]', 'Thalia').getAttribute('aria-checked')).toBe('true');
+      expect(saveButton().disabled).toBe(false);
+    });
+
+    it('restores a suggestion tile when suggestions arrive first', async () => {
+      await setupLoading();
+      suggestions$.next(suggestions);
+      await settle();
+      templates$.next(templates);
+      loaded$.next(true);
+      await settle();
+      expect(byText('[role="radio"]', 'Thalia').getAttribute('aria-checked')).toBe('true');
+    });
+
+    it('both loads failed: keeps the amount, drops the tile and persists the own choice of the user', async () => {
+      await setupLoading();
+      loaded$.next(true);
+      await settle();
+      expect(host.querySelector('.amount')!.textContent).toContain('12,99');
+      expect(all('[role="radio"][aria-checked="true"]')).toEqual([]);
+
+      await click(byText('button', 'Andere …'));
+      fixture.destroy();
+      const saved = draftService.save.mock.calls.at(-1)![0];
+      expect(saved.tileKey).toBeNull();
+      expect(saved.categoryId).toBeNull();
+      expect(saved.shopName).toBeNull();
+    });
+
+    it('a tile picked before loading finished is not overridden by the draft', async () => {
+      await setupLoading();
+      templates$.next(templates);
+      await settle();
+      await click(byText('[role="radio"]', 'Bäcker Ruetz'));
+      suggestions$.next(suggestions);
+      loaded$.next(true);
+      await settle();
+      expect(byText('[role="radio"]', 'Bäcker Ruetz').getAttribute('aria-checked')).toBe('true');
+      expect(byText('[role="radio"]', 'Thalia').getAttribute('aria-checked')).toBe('false');
+    });
+
+    it('stops waiting after the timeout (backend never ready)', async () => {
+      await setupLoading({ restoreTimeoutMs: 20 });
+      suggestions$.next(suggestions);
+      await new Promise(resolve => setTimeout(resolve, 60));
+      await settle();
+      expect(byText('[role="radio"]', 'Thalia').getAttribute('aria-checked')).toBe('true');
+    });
   });
 
   it('drops a draft tile whose template was deleted, keeping the amount', async () => {

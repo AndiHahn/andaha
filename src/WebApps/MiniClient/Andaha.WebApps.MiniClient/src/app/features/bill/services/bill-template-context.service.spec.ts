@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { Subject, of } from 'rxjs';
 import { BillTemplateApiService } from 'src/app/api/shopping/bill-template-api.service';
 import { ContextService } from 'src/app/core/context.service';
 import { BillTemplateContextService } from './bill-template-context.service';
@@ -58,5 +58,45 @@ describe('BillTemplateContextService', () => {
     expect(api.delete).toHaveBeenCalledWith('t1');
     expect(api.hideSuggestion).toHaveBeenCalled();
     expect(api.updateOrder).toHaveBeenCalledWith(['a']);
+  });
+  it('loaded() turns true only after templates and suggestions both arrived, in either order', () => {
+    for (const order of [['list', 'suggestions'], ['suggestions', 'list']] as const) {
+      TestBed.resetTestingModule();
+      const responses = { list: new Subject<unknown[]>(), suggestions: new Subject<unknown[]>() };
+      const svc = create({ list: () => responses.list, suggestions: () => responses.suggestions });
+      const values: boolean[] = [];
+      svc.loaded().subscribe(v => values.push(v));
+      expect(values).toEqual([false]);
+      responses[order[0]].next([]);
+      responses[order[0]].complete();
+      expect(values).toEqual([false]);
+      responses[order[1]].next([]);
+      responses[order[1]].complete();
+      expect(values).toEqual([false, true]);
+    }
+  });
+
+  it('loaded() also turns true when the requests fail', () => {
+    const responses = { list: new Subject<unknown[]>(), suggestions: new Subject<unknown[]>() };
+    const svc = create({ list: () => responses.list, suggestions: () => responses.suggestions });
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    let loaded = false;
+    svc.loaded().subscribe(v => loaded = v);
+    responses.list.error(new Error('offline'));
+    expect(loaded).toBe(false);
+    responses.suggestions.error(new Error('offline'));
+    expect(loaded).toBe(true);
+  });
+
+  it('loaded() stays false while the backend is not ready', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: BillTemplateApiService, useValue: { list: vi.fn(), suggestions: vi.fn() } },
+        { provide: ContextService, useValue: { backendReady: () => of(false) } }
+      ]
+    });
+    let loaded: boolean | undefined;
+    TestBed.inject(BillTemplateContextService).loaded().subscribe(v => loaded = v);
+    expect(loaded).toBe(false);
   });
 });

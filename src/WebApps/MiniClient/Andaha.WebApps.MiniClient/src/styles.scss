@@ -696,7 +696,6 @@ body .cdk-drag-preview.andaha-drag-item {
   --mat-dialog-supporting-text-color: rgba(0, 0, 0, .87);
 }
 
-.cdk-overlay-container .andaha-sheet,
 // Bottom Sheet (MatBottomSheet über SheetService, v2 „Schnell-Sheet“): surface, Radius 20 oben, Schatten
 // wie Sheets; der Inhalt (Komponente) bringt Griff, Kopf und Abstände selbst mit
 .cdk-overlay-container .andaha-sheet .mat-bottom-sheet-container {
@@ -746,6 +745,7 @@ body .cdk-drag-preview.andaha-drag-item {
   .mat-mdc-menu-item .mat-icon.pin-icon { color: var(--pri); }
 }
 
+.cdk-overlay-container .andaha-sheet,
 .cdk-overlay-container .andaha-dialog {
   .mat-mdc-dialog-container {
     --mat-dialog-container-color: var(--surface);

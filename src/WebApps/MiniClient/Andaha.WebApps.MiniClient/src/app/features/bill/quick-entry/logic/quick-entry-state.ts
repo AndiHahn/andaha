@@ -74,9 +74,9 @@ export class QuickEntryState {
     }
   });
 
+  /** Tippen klappt die Tastatur nie ein: sie bleibt offen, solange der Betrag aktiv ist (v2) */
   pressKey(key: AmountKey): void {
     this.amountText.update(current => appendKey(current, key));
-    this.collapseIfComplete();
   }
 
   selectTile(tile: QuickTile): void {
@@ -125,6 +125,7 @@ export class QuickEntryState {
     this.keypadOpen.set(true);
   }
 
+  /** Auswahl von Kachel bzw. Shop bei schon gültigem Betrag: Tastatur macht Platz */
   private collapseIfComplete(): void {
     if (!this.other() && this.canSave()) {
       this.keypadOpen.set(false);

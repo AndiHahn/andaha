@@ -2,6 +2,7 @@
 :host {
   display: flex;
   flex: none;
+  min-width: 0;
 }
 
 .amount {
@@ -38,6 +39,7 @@
 // Desktop-Dialog (04): großes Feld 64 px, Wert 36/600, Suffix 20
 .amount-field {
   flex: 1;
+  min-width: 0;
   height: 64px;
   border-radius: 10px;
   background: var(--surface);
@@ -49,9 +51,11 @@
 
   &:focus-within { border-color: var(--pri); box-shadow: 0 0 0 3px var(--pri-ring); }
 
+  // Breite 0 + flex: Das Feld richtet sich nach dem Dialog, nicht nach seiner Standardbreite (size)
   input {
     all: unset;
     flex: 1;
+    width: 0;
     min-width: 0;
     font-size: 36px;
     font-weight: 600;
