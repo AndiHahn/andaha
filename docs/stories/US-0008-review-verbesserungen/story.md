@@ -83,6 +83,14 @@ Setzt US-0006 und US-0007 voraus (Tabs, Snackbar, Sheet-Verhalten, Vibrieren).
 - Bibliotheks-APIs (z. B. Diagramme, Web Share API) per Context7 bzw. MDN nachschlagen.
 - Offene Punkte aus US-0006: toter Routen-Provider `NgxMatTimepickerModule.setLocale` in `person-details.routes.ts` (Route `working-entry/:entry-id` wird nie angesteuert); Zeitauswahl-Buttons englisch („CANCEL“/„OK“); Zahlungszeile zeigt „08:00 h h“; fest kodierte M2-Farben in `styles.scss` als Tokens nach `_andaha-tokens.scss`; zeitabhängige Specs laufen unter Last in Timeouts (vor CI-Tests `testTimeout` anheben); bekannte NG0100 in Ausgaben/Statistik (Monats-Select zeigt Vormonat) und Warnung „ngModel mit formControl“ in den Kategorie-Details.
 - Offene Punkte aus US-0007 (Backend, Shopping): Beim Löschen der eigenen Standardkategorie ordnet `DeleteBillCategoryCommandHandler` die Rechnungen der gerade gelöschten Kategorie zu (`SingleAsync(IsDefault)` liefert dieselbe Kategorie; vgl. AC27). Die Bill-Create/Update-Handler sind nicht darauf geprüft, ob `CategoryId`/`SubCategoryId` einer fremden Kategorie angegeben werden kann (Besitzprüfung wie bei den Vorlagen-Validatoren ergänzen).
+- Beobachtungen aus der UI-Prüfung von US-0007 (2026-11-04):
+  - Beim ersten Login eines neuen Kontos entstehen die Standardkategorien doppelt. Jede Seite ruft `GET /api/billcategory` zweimal gleichzeitig auf, und das Anlegen der Standardkategorien ist nicht gegen diese Parallelität abgesichert. Der Testbenutzer test2 hat deshalb doppelte Kategorien.
+  - Rechnungen, die zwischen 23:00 und 24:00 Ortszeit gespeichert werden, bekommen das Datum des Folgetags. „Heute“ sendet den Zeitpunkt jetzt, und `shared/utils/utils.ts` wandelt ihn mit `moment(...).utc(true)` um. Zusammen mit AC22 lösen.
+  - Das große Rechnungsformular und das Vorlagenformular zeigen bei ungültigen Feldern keinen Text, nur einen roten Rahmen und einen deaktivierten Speichern-Button.
+  - Der Duplikat-Hinweis der Schnellerfassung zeigt keine Uhrzeit. Nach „Andere …“ klappt das Tastenfeld zu, und auf dem Desktop verliert das Betragsfeld den Fokus.
+  - Auf `/settings/*` erscheint bei 1440 px ein Zurück-Pfeil, den Design v2 (04) nicht hat.
+  - Ausgeblendete Vorschläge lassen sich nicht wieder einblenden, dafür gibt es keinen Endpoint.
+  - Neuladen löscht den History-Zustand des aktuellen Eintrags: `AuthService` ruft `oauthService.tryLogin()` auf, und angular-oauth2-oidc macht dabei `history.replaceState(null, …)`. Dadurch geht die Spur `appTrail` aus US-0007 verloren, und nach Neuladen und Speichern zeigt Zurück die Liste einmal doppelt. Möglicher Ansatz: `tryLogin({ preventClearHashAfterLogin: true })`, wenn die URL keinen `code` enthält (Auth-Änderung, darum eigens prüfen).
 
 ## Out of Scope
 
