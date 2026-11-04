@@ -55,6 +55,9 @@ export class BillApiService {
     const formData = new FormData();
     const createDtoData = getRecordOfProperties<BillCreateDto>(dto);
     for (const key in createDtoData) {
+      if (createDtoData[key] == null) {
+        continue; // sonst landet der Text "undefined" im Formular
+      }
       formData.set(key, createDtoData[key]);
     }
 
@@ -68,6 +71,9 @@ export class BillApiService {
     const formData = new FormData();
     const updateDtoData = getRecordOfProperties<BillUpdateDto>(dto);
     for (const key in updateDtoData) {
+      if (updateDtoData[key] == null) {
+        continue;
+      }
       formData.set(key, updateDtoData[key]);
     }
 

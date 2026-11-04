@@ -4,6 +4,11 @@
       <div class="loading">
         <mat-spinner diameter="40" />
       </div>
+    } @else if (failed() && rows().length === 0 && suggestions().length === 0) {
+      <div class="empty" role="alert">
+        <p>Vorlagen und Vorschläge konnten nicht geladen werden.</p>
+        <button type="button" class="btn sec2 retry" (click)="retry()">Erneut versuchen</button>
+      </div>
     } @else {
       <h2 class="sect first">Angeheftet<span>Reihenfolge wie im Sheet</span></h2>
       @if (rows().length === 0) {

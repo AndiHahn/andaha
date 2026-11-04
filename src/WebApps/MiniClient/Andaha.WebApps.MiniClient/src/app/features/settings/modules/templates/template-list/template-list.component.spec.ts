@@ -29,7 +29,7 @@ describe('TemplateListComponent', () => {
   let service: { reorder: ReturnType<typeof vi.fn>; pin: ReturnType<typeof vi.fn> };
   let snackbar: { openFromComponent: ReturnType<typeof vi.fn> };
 
-  async function setup(t: BillTemplateDto[] = templates, s: BillSuggestionDto[] = suggestions) {
+  async function setup(t: BillTemplateDto[] = templates, s: BillSuggestionDto[] = suggestions, failed = false) {
     snackbar = { openFromComponent: vi.fn() };
     await TestBed.configureTestingModule({
       imports: [TemplateListComponent],
@@ -44,6 +44,8 @@ describe('TemplateListComponent', () => {
             pin: vi.fn().mockResolvedValue({}),
             templates: () => new BehaviorSubject(t),
             suggestions: () => new BehaviorSubject(s),
+            refresh: vi.fn(),
+            loadFailed: () => of(failed),
             loaded: () => of(true)
           }
         }
@@ -101,6 +103,24 @@ describe('TemplateListComponent', () => {
     const t = text(fixture.nativeElement);
     expect(t).toContain('Noch keine Vorlagen');
     expect(t).toContain('Noch keine Vorschläge');
+  });
+
+  it('does not list suggestions that a template already covers', async () => {
+    const covered: BillSuggestionDto[] = [
+      { shopName: 'Bäcker Ruetz', categoryId: 'c1', subCategoryId: 's1', count: 4 },
+      { shopName: 'Billa', categoryId: 'c1', subCategoryId: null, count: 3 },
+      suggestions[0]
+    ];
+    await setup(templates, covered);
+    const rows = Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('.suggestion'));
+    expect(rows.map(r => text(r.querySelector('.t')!))).toEqual(['Thalia']);
+  });
+
+  it('shows an error with retry when loading failed', async () => {
+    await setup([], [], true);
+    expect(text(fixture.nativeElement)).toContain('konnten nicht geladen werden');
+    (fixture.nativeElement.querySelector('button.retry') as HTMLButtonElement).click();
+    expect(TestBed.inject(BillTemplateContextService).refresh).toHaveBeenCalled();
   });
 
   it('offers adding a template', async () => {

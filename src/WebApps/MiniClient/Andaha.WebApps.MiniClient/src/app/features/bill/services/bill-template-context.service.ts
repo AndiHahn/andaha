@@ -15,6 +15,7 @@ export class BillTemplateContextService {
   private templates$ = new BehaviorSubject<BillTemplateDto[]>([]);
   private suggestions$ = new BehaviorSubject<BillSuggestionDto[]>([]);
   private loaded$ = new BehaviorSubject<boolean>(false);
+  private loadFailed$ = new BehaviorSubject<boolean>(false);
 
   constructor() {
     this.contextService.backendReady().subscribe(ready => {
@@ -40,17 +41,27 @@ export class BillTemplateContextService {
     return this.loaded$.asObservable();
   }
 
+  /** true, wenn das letzte Laden von Vorlagen oder Vorschlägen fehlgeschlagen ist */
+  loadFailed(): Observable<boolean> {
+    return this.loadFailed$.asObservable();
+  }
+
   refresh(): void {
     let pending = 2;
+    let failed = false;
     const settled = () => {
-      if (--pending === 0 && !this.loaded$.value) {
-        this.loaded$.next(true);
+      if (--pending === 0) {
+        this.loadFailed$.next(failed);
+        if (!this.loaded$.value) {
+          this.loaded$.next(true);
+        }
       }
     };
     this.api.list().subscribe({
       next: templates => this.templates$.next(templates),
       error: error => {
         console.error('Loading bill templates failed', error);
+        failed = true;
         settled();
       },
       complete: settled
@@ -59,6 +70,7 @@ export class BillTemplateContextService {
       next: suggestions => this.suggestions$.next(suggestions),
       error: error => {
         console.error('Loading bill suggestions failed', error);
+        failed = true;
         settled();
       },
       complete: settled

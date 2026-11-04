@@ -1,6 +1,16 @@
 <div class="page">
   <div class="body">
-    @if (!ready()) {
+    @if (!ready() && failed() && templateId !== null) {
+      <div class="state" role="alert">
+        <p>Die Vorlage konnte nicht geladen werden.</p>
+        <button type="button" class="btn sec2 retry" (click)="retry()">Erneut versuchen</button>
+      </div>
+    } @else if (!ready() && categories().length === 0 && loaded()) {
+      <div class="state">
+        <p>Lege zuerst eine Kategorie an, bevor du eine Vorlage erstellst.</p>
+        <a class="btn sec2" routerLink="/settings/categories">Zu den Kategorien</a>
+      </div>
+    } @else if (!ready()) {
       <div class="loading">
         <mat-spinner diameter="40" />
       </div>

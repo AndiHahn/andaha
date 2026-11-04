@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, provideRouter } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
 import { BillTemplateDto } from 'src/app/api/shopping/dtos/BillTemplateDto';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
@@ -24,17 +24,16 @@ describe('TemplateEditComponent', () => {
   let snackbar: { openFromComponent: ReturnType<typeof vi.fn> };
   let confirm: boolean;
 
-  async function setup(id: string | null, list: BillTemplateDto[] = [existing]) {
+  async function setup(id: string | null, list: BillTemplateDto[] = [existing], cats: CategoryDto[] = categories, failed = false) {
     confirm = true;
-    router = { navigateByUrl: vi.fn() };
     snackbar = { openFromComponent: vi.fn() };
     await TestBed.configureTestingModule({
       imports: [TemplateEditComponent, NoopAnimationsModule],
       providers: [
-        { provide: Router, useValue: router },
+        provideRouter([]),
         { provide: MatSnackBar, useValue: snackbar },
         { provide: ActivatedRoute, useValue: { snapshot: { params: id ? { id } : {}, children: [], parent: null } } },
-        { provide: BillCategoryContextService, useValue: { categories: () => of(categories) } },
+        { provide: BillCategoryContextService, useValue: { categories: () => of(cats) } },
         {
           provide: ConfirmationDialogService,
           useValue: { openDialog: vi.fn().mockImplementation(() => Promise.resolve({ afterClosed: () => of(confirm) })) }
@@ -45,11 +44,15 @@ describe('TemplateEditComponent', () => {
             save: vi.fn().mockResolvedValue(undefined),
             remove: vi.fn().mockResolvedValue(undefined),
             templates: () => new BehaviorSubject(list),
+            refresh: vi.fn(),
+            loadFailed: () => of(failed),
             loaded: () => of(true)
           }
         }
       ]
     }).compileComponents();
+    router = TestBed.inject(Router) as never;
+    vi.spyOn(router as unknown as Router, 'navigateByUrl').mockResolvedValue(true);
     service = TestBed.inject(BillTemplateContextService) as unknown as typeof service;
     fixture = TestBed.createComponent(TemplateEditComponent);
     fixture.detectChanges();
@@ -86,6 +89,35 @@ describe('TemplateEditComponent', () => {
     fixture.componentInstance.form.patchValue({ shopMode: 'fixed', shopName: ' Bäcker ', categoryId: 'c2' });
     await fixture.componentInstance.onSave();
     expect(service.save).toHaveBeenCalledWith(null, { name: undefined, shopName: 'Bäcker', categoryId: 'c2', subCategoryId: null });
+  });
+
+  it('creates a choose-shop template without touching the shop field', async () => {
+    await setup(null);
+    (fixture.nativeElement.querySelectorAll('input[type=radio]')[1] as HTMLInputElement).click();
+    fixture.detectChanges();
+    fixture.componentInstance.form.patchValue({ categoryId: 'c1' });
+    await fixture.componentInstance.onSave();
+    expect(service.save).toHaveBeenCalledWith(null, { name: undefined, shopName: null, categoryId: 'c1', subCategoryId: null });
+  });
+
+  it('clearing the name of an existing template sends no name', async () => {
+    await setup('t1');
+    fixture.componentInstance.form.patchValue({ name: '' });
+    await fixture.componentInstance.onSave();
+    expect(service.save).toHaveBeenCalledWith('t1', { name: undefined, shopName: 'Billa', categoryId: 'c1', subCategoryId: 's1' });
+  });
+
+  it('explains that a category is needed first when there are none', async () => {
+    await setup(null, [], []);
+    expect(fixture.nativeElement.textContent).toContain('Lege zuerst eine Kategorie an');
+    expect(fixture.nativeElement.querySelector('a[href="/settings/categories"]')).not.toBeNull();
+  });
+
+  it('shows an error with retry when loading the templates failed', async () => {
+    await setup('t1', [existing], categories, true);
+    expect(fixture.nativeElement.textContent).toContain('konnte nicht geladen werden');
+    (fixture.nativeElement.querySelector('button.retry') as HTMLButtonElement).click();
+    expect(TestBed.inject(BillTemplateContextService).refresh).toHaveBeenCalled();
   });
 
   it('does not save while the shop is missing for a fixed shop', async () => {

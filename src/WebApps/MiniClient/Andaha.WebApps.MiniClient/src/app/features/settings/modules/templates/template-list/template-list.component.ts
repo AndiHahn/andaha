@@ -10,6 +10,7 @@ import { BillTemplateDto } from 'src/app/api/shopping/dtos/BillTemplateDto';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillTemplateContextService } from 'src/app/features/bill/services/bill-template-context.service';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
+import { isSuggestionCovered } from 'src/app/features/bill/quick-entry/logic/tiles';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 
 interface TemplateRow {
@@ -43,6 +44,7 @@ export class TemplateListComponent {
   private suggestionDtos = toSignal(this.templateContext.suggestions(), { initialValue: [] as BillSuggestionDto[] });
 
   readonly loaded = toSignal(this.templateContext.loaded(), { initialValue: false });
+  readonly failed = toSignal(this.templateContext.loadFailed(), { initialValue: false });
 
   readonly rows = computed<TemplateRow[]>(() => this.templates()
     .slice()
@@ -62,7 +64,7 @@ export class TemplateListComponent {
       };
     }));
 
-  readonly suggestions = computed<SuggestionRow[]>(() => this.suggestionDtos().map(s => {
+  readonly suggestions = computed<SuggestionRow[]>(() => this.suggestionDtos().filter(s => !isSuggestionCovered(s, this.templates())).map(s => {
     const category = this.categories().find(c => c.id === s.categoryId);
     const sub = category?.subCategories.find(c => c.id === s.subCategoryId);
     return {
@@ -72,6 +74,10 @@ export class TemplateListComponent {
       color: category?.color ?? null
     };
   }));
+
+  retry(): void {
+    this.templateContext.refresh();
+  }
 
   async drop(event: CdkDragDrop<TemplateRow[]>): Promise<void> {
     if (event.previousIndex === event.currentIndex) {

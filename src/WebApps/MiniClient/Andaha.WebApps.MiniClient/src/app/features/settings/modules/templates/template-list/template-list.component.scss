@@ -23,9 +23,15 @@
   padding-top: 30px;
 }
 
+// Abschnittskopf (Mockup .sect): 13/600 muted, 20 px oben, 8 px unten, 16 px seitlich, Linie darunter
 .sect {
   display: flex;
   justify-content: space-between;
+  margin: 0;
+  padding: 20px 16px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mut);
   border-bottom: 1px solid var(--line);
 
   span { font-weight: 500; }

@@ -1,7 +1,7 @@
 import { CategoryDto } from '../../../../api/shopping/dtos/CategoryDto';
 import { BillSuggestionDto } from '../../../../api/shopping/dtos/BillSuggestionDto';
 import { BillTemplateDto } from '../../../../api/shopping/dtos/BillTemplateDto';
-import { buildTiles } from './tiles';
+import { buildTiles, isSuggestionCovered } from './tiles';
 
 const categories: CategoryDto[] = [
   { id: 'c1', name: 'Lebensmittel', color: '#111111', order: 0, includeToStatistics: true, isDefault: false,
@@ -67,5 +67,21 @@ describe('buildTiles', () => {
 
   it('returns an empty list without input', () => {
     expect(buildTiles([], [], categories)).toEqual([]);
+  });
+});
+
+describe('isSuggestionCovered', () => {
+  const s = { shopName: 'Billa', categoryId: 'c1', subCategoryId: null, count: 3 };
+  const t = (shopName: string | null, subCategoryId: string | null = null) =>
+    ({ id: 't', name: null, shopName, categoryId: 'c1', subCategoryId, sortOrder: 0 });
+
+  it('is covered by a choose-shop or same-shop template in the same category', () => {
+    expect(isSuggestionCovered(s, [t(null)])).toBe(true);
+    expect(isSuggestionCovered(s, [t(' billa ')])).toBe(true);
+  });
+
+  it('is not covered by another shop or subcategory', () => {
+    expect(isSuggestionCovered(s, [t('Spar')])).toBe(false);
+    expect(isSuggestionCovered(s, [t(null, 's1')])).toBe(false);
   });
 });

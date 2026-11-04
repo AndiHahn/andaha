@@ -5,7 +5,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatOption, MatSelect, MatSelectTrigger } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { combineLatest, filter, firstValueFrom, take } from 'rxjs';
 import { BillTemplateCreateDto, BillTemplateDto } from 'src/app/api/shopping/dtos/BillTemplateDto';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
@@ -31,7 +31,7 @@ function notBlank(control: AbstractControl): ValidationErrors | null {
   templateUrl: './template-edit.component.html',
   styleUrls: ['./template-edit.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [ReactiveFormsModule, MatSelect, MatSelectTrigger, MatOption, MatIcon, MatProgressSpinner, ShowErrorPipe]
+  imports: [RouterLink, ReactiveFormsModule, MatSelect, MatSelectTrigger, MatOption, MatIcon, MatProgressSpinner, ShowErrorPipe]
 })
 export class TemplateEditComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -47,10 +47,13 @@ export class TemplateEditComponent implements OnInit {
   readonly form = new FormGroup({
     name: new FormControl('', { nonNullable: true }),
     shopMode: new FormControl<ShopMode>('fixed', { nonNullable: true }),
-    shopName: new FormControl('', { nonNullable: true, validators: [notBlank] }),
+    shopName: new FormControl('', { nonNullable: true }),
     categoryId: new FormControl<string | null>(null, [Validators.required]),
     subCategoryId: new FormControl<string | null>(null)
   });
+
+  readonly loaded = toSignal(this.templateContext.loaded(), { initialValue: false });
+  readonly failed = toSignal(this.templateContext.loadFailed(), { initialValue: false });
 
   readonly ready = signal(false);
   readonly isSaving = signal(false);
@@ -78,9 +81,10 @@ export class TemplateEditComponent implements OnInit {
     });
     this.updateShopValidator();
 
-    combineLatest([this.categories$, this.templateContext.templates(), this.templateContext.loaded()]).pipe(
+    combineLatest([this.categories$, this.templateContext.templates(), this.templateContext.loaded(), this.templateContext.loadFailed()]).pipe(
       // Die Standardkategorie existiert immer, eine leere Liste heisst: noch nicht geladen
-      filter(([categories, , loaded]) => loaded && categories.length > 0),
+      // Beim Anlegen werden nur die Kategorien gebraucht, beim Bearbeiten auch die Vorlagen
+      filter(([categories, , loaded, failed]) => (this.templateId === null || (loaded && !failed)) && categories.length > 0),
       take(1),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(([categories, templates]) => {
@@ -97,6 +101,10 @@ export class TemplateEditComponent implements OnInit {
       this.fill(template, categories);
       this.ready.set(true);
     });
+  }
+
+  retry(): void {
+    this.templateContext.refresh();
   }
 
   async onSave(): Promise<void> {
@@ -157,9 +165,9 @@ export class TemplateEditComponent implements OnInit {
   private updateShopValidator(): void {
     const shopName = this.form.controls.shopName;
     if (this.form.controls.shopMode.value === 'fixed') {
-      shopName.addValidators(notBlank);
+      shopName.setValidators(notBlank);
     } else {
-      shopName.removeValidators(notBlank);
+      shopName.clearValidators();
     }
     shopName.updateValueAndValidity();
   }

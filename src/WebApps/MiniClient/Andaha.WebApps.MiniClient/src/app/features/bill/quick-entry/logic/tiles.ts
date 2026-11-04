@@ -38,6 +38,17 @@ function resolve(categories: CategoryDto[], categoryId: string, subCategoryId: s
   return sub ? { category, subCategoryName: sub.name } : null;
 }
 
+/**
+ * Eine Vorlage deckt einen Vorschlag ab: gleiche Kategorie und Unterkategorie, und der Shop ist fest und gleich
+ * oder wird beim Erfassen gewählt. Gilt im Sheet und auf der Vorlagen-Seite.
+ */
+export function isSuggestionCovered(s: BillSuggestionDto, templates: BillTemplateDto[]): boolean {
+  return templates.some(t =>
+    t.categoryId === s.categoryId
+    && (t.subCategoryId ?? null) === (s.subCategoryId ?? null)
+    && (!t.shopName?.trim() || norm(t.shopName) === norm(s.shopName)));
+}
+
 export function buildTiles(templates: BillTemplateDto[], suggestions: BillSuggestionDto[], categories: CategoryDto[], max = 6): QuickTile[] {
   const tiles: QuickTile[] = [];
 
@@ -62,14 +73,9 @@ export function buildTiles(templates: BillTemplateDto[], suggestions: BillSugges
     });
   }
 
-  const covers = (s: BillSuggestionDto) => templates.some(t =>
-    t.categoryId === s.categoryId
-    && (t.subCategoryId ?? null) === (s.subCategoryId ?? null)
-    && (!t.shopName?.trim() || norm(t.shopName) === norm(s.shopName)));
-
   for (const s of suggestions) {
     const resolved = resolve(categories, s.categoryId, s.subCategoryId);
-    if (!resolved || covers(s)) {
+    if (!resolved || isSuggestionCovered(s, templates)) {
       continue;
     }
     const shopName = s.shopName.trim();
