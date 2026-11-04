@@ -1,5 +1,6 @@
 ﻿using Andaha.Services.Shopping.Requests.Bill;
 using Andaha.Services.Shopping.Requests.BillCategory;
+using Andaha.Services.Shopping.Requests.BillTemplate;
 using Andaha.Services.Shopping.Requests.Expense;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -13,6 +14,8 @@ public static class ProgramEndpointExtensions
         app.MapBillEndpoint();
 
         app.MapBillCategoryEndpoint();
+
+        app.MapBillTemplateEndpoint();
 
         app.MapExpenseEndpoint();
 

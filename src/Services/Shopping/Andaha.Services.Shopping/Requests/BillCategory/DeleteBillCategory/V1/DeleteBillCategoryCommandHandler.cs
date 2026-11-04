@@ -25,6 +25,8 @@ internal class DeleteBillCategoryCommandHandler : IRequestHandler<DeleteBillCate
         var category = await dbContext.BillCategory
             .SingleAsync(category => category.Id == request.Id, cancellationToken);
 
+        await RemoveTemplatesAndHiddenSuggestionsAsync(request.Id, cancellationToken);
+
         dbContext.BillCategory.Remove(category);
 
         await UpdateBillsForDeletedCategoryAsync(userId, request.Id, cancellationToken);
@@ -32,6 +34,23 @@ internal class DeleteBillCategoryCommandHandler : IRequestHandler<DeleteBillCate
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return Results.NoContent();
+    }
+
+    // No cascade delete on these relations (multiple cascade paths), so clean up explicitly.
+    private async Task RemoveTemplatesAndHiddenSuggestionsAsync(
+        Guid removedCategoryId,
+        CancellationToken cancellationToken)
+    {
+        var templates = await this.dbContext.BillTemplate
+            .Where(template => template.CategoryId == removedCategoryId)
+            .ToListAsync(cancellationToken);
+
+        var hiddenSuggestions = await this.dbContext.HiddenBillSuggestion
+            .Where(suggestion => suggestion.CategoryId == removedCategoryId)
+            .ToListAsync(cancellationToken);
+
+        this.dbContext.BillTemplate.RemoveRange(templates);
+        this.dbContext.HiddenBillSuggestion.RemoveRange(hiddenSuggestions);
     }
 
     private async Task UpdateBillsForDeletedCategoryAsync(

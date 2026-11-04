@@ -23,6 +23,10 @@ public class ShoppingDbContext : DbContext
 
     public DbSet<AnalyzeBillProcessingState> AnalyzeBillProcessingState { get; set; } = null!;
 
+    public DbSet<BillTemplate> BillTemplate { get; set; } = null!;
+
+    public DbSet<HiddenBillSuggestion> HiddenBillSuggestion { get; set; } = null!;
+
 
     public ShoppingDbContext(
         DbContextOptions<ShoppingDbContext> options)

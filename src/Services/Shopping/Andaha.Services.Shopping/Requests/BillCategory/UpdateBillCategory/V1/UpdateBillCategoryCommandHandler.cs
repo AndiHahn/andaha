@@ -51,6 +51,10 @@ internal class UpdateBillCategoryCommandHandler : IRequestHandler<UpdateBillCate
             existingCategory.UpdateSubCategory(subCategory.Id!.Value, subCategory.Name, subCategory.Order);
         }
 
+        await CleanUpReferencesToRemovedSubCategoriesAsync(
+            subCategoriesToDelete.Select(subCategory => subCategory.Id).ToList(),
+            cancellationToken);
+
         foreach (var subCategory in subCategoriesToDelete)
         {
             existingCategory.RemoveSubCategory(subCategory.Id);
@@ -59,5 +63,31 @@ internal class UpdateBillCategoryCommandHandler : IRequestHandler<UpdateBillCate
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return Results.NoContent();
+    }
+
+    // No cascade delete on these relations (multiple cascade paths), so clean up explicitly.
+    private async Task CleanUpReferencesToRemovedSubCategoriesAsync(
+        IReadOnlyCollection<Guid> removedSubCategoryIds,
+        CancellationToken cancellationToken)
+    {
+        if (removedSubCategoryIds.Count == 0)
+        {
+            return;
+        }
+
+        var templates = await dbContext.BillTemplate
+            .Where(template => template.SubCategoryId != null && removedSubCategoryIds.Contains(template.SubCategoryId.Value))
+            .ToListAsync(cancellationToken);
+
+        foreach (var template in templates)
+        {
+            template.ClearSubCategory();
+        }
+
+        var hiddenSuggestions = await dbContext.HiddenBillSuggestion
+            .Where(suggestion => suggestion.SubCategoryId != null && removedSubCategoryIds.Contains(suggestion.SubCategoryId.Value))
+            .ToListAsync(cancellationToken);
+
+        dbContext.HiddenBillSuggestion.RemoveRange(hiddenSuggestions);
     }
 }
