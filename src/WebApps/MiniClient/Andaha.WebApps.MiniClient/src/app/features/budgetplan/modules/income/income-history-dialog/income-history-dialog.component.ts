@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DurationLabel } from 'src/app/api/budgetplan/dtos/Duration';
 import { IncomeHistoryDto } from 'src/app/api/budgetplan/dtos/IncomeHistoryDto';
@@ -9,6 +9,7 @@ import { IncomeHistoryDialogData } from './IncomeHistoryDialogData';
   selector: 'app-income-history-dialog',
   templateUrl: './income-history-dialog.component.html',
   styleUrls: ['./income-history-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class IncomeHistoryDialogComponent implements OnInit {

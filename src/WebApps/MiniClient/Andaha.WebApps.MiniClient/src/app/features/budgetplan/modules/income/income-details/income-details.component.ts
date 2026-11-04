@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,6 +20,7 @@ import { IncomeForm } from '../functions/income-form-functions';
   selector: 'app-income-details',
   templateUrl: './income-details.component.html',
   styleUrls: ['./income-details.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class IncomeDetailsComponent implements OnInit, OnDestroy {

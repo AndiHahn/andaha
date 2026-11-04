@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ConnectionDto } from 'src/app/api/collaboration/dtos/ConnectionDto';
 import { CollaborationContextService } from 'src/app/services/collaboration-context.service';
 
@@ -6,6 +6,7 @@ import { CollaborationContextService } from 'src/app/services/collaboration-cont
   selector: 'app-active-connections',
   templateUrl: './active-connections.component.html',
   styleUrls: ['./active-connections.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ActiveConnectionsComponent implements OnInit {

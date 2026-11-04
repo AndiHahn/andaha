@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CreateWorkingEntriesDto } from 'src/app/api/work/dtos/CreateWorkingEntriesDto';
 import { WorkingEntryForm, getEmptyWorkingEntryForm } from '../../../functions/working-entry-form-functions';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -16,6 +16,7 @@ import { formatTime } from 'src/app/api/functions/api-utils';
   selector: 'app-add-working-entry',
   templateUrl: './add-working-entry.component.html',
   styleUrls: ['./add-working-entry.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AddWorkingEntryComponent implements OnInit {

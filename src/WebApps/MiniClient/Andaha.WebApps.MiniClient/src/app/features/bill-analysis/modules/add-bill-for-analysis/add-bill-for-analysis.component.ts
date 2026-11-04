@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { blobToDataUrl } from 'src/app/shared/utils/file-utils';
@@ -9,6 +9,7 @@ import { openErrorSnackbar, openInformationSnackbar } from 'src/app/shared/snack
   selector: 'app-add-bill-for-analysis',
   templateUrl: './add-bill-for-analysis.component.html',
   styleUrls: ['./add-bill-for-analysis.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AddBillForAnalysisComponent {

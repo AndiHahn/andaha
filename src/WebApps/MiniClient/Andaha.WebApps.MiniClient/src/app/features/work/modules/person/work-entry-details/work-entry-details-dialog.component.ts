@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { WorkingEntryForm, getWorkingEntryForm } from '../../../functions/working-entry-form-functions';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/ConfirmationDialogData';
@@ -19,6 +19,7 @@ import { formatTime } from 'src/app/api/functions/api-utils';
   selector: 'app-work-entry-details-dialog',
   templateUrl: './work-entry-details-dialog.component.html',
   styleUrls: ['./work-entry-details-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class WorkEntryDetailsDialogComponent implements OnInit {

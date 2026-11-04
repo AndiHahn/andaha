@@ -1,10 +1,11 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { AnalyzedBillImageDialogService } from './analyzed-bill-image-dialog/analyzed-bill-image-dialog.service';
 
 @Component({
   selector: 'app-analyzed-bill-image',
   templateUrl: './analyzed-bill-image.component.html',
   styleUrls: ['./analyzed-bill-image.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AnalyzedBillImageComponent {

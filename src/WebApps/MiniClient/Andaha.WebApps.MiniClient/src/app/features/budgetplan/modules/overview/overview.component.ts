@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BudgetPlanDto } from 'src/app/api/budgetplan/dtos/BudgetPlanDto';
 import { CostCategoryLabel } from 'src/app/api/budgetplan/dtos/CostCategory';
 import { BudgetplanContextService } from '../../services/budgetplan-context.service';
@@ -7,6 +7,7 @@ import { BudgetplanContextService } from '../../services/budgetplan-context.serv
   selector: 'app-overview',
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class OverviewComponent implements OnInit {

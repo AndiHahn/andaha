@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { IncomeDto } from 'src/app/api/budgetplan/dtos/IncomeDto';
 import { IncomeContextService } from '../../services/income-context.service';
 
@@ -6,6 +6,7 @@ import { IncomeContextService } from '../../services/income-context.service';
   selector: 'app-income',
   templateUrl: './income.component.html',
   styleUrls: ['./income.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class IncomeComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BillAnalyzedDto } from 'src/app/api/shopping/dtos/BillAnalyzedDto';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { SubCategoryDto } from 'src/app/api/shopping/dtos/SubCategoryDto';
@@ -8,6 +8,7 @@ import { confidencePercent, resolveAnalyzedCategory } from '../../../functions/a
   selector: 'app-analyzed-bill-list-item',
   templateUrl: './analyzed-bill-list-item.component.html',
   styleUrls: ['./analyzed-bill-list-item.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AnalyzedBillListItemComponent implements OnInit {

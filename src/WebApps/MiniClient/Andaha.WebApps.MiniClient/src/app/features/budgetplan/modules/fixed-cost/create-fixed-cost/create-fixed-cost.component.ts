@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup, FormGroupDirective } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CostCategory, CostCategoryLabel } from 'src/app/api/budgetplan/dtos/CostCategory';
@@ -12,6 +12,7 @@ import { FixedCostForm, getEmptyForm } from '../functions/fixed-cost-form-functi
   selector: 'app-create-fixed-cost',
   templateUrl: './create-fixed-cost.component.html',
   styleUrls: ['./create-fixed-cost.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class CreateFixedCostComponent implements OnInit {

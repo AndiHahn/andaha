@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_SNACK_BAR_DATA, MatSnackBarRef } from '@angular/material/snack-bar';
 
 export interface InformationSnackbarData {
@@ -10,6 +10,7 @@ export interface InformationSnackbarData {
   selector: 'app-information-snackbar',
   templateUrl: './information-snackbar.component.html',
   styleUrls: ['./information-snackbar.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class InformationSnackbarComponent {

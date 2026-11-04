@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { finalize, take } from 'rxjs/operators';
 import { ExpenseContextService } from '../bill/services/expense-context.service';
 import { PersonContextService } from '../work/services/person-context.service';
@@ -7,6 +7,7 @@ import { PersonContextService } from '../work/services/person-context.service';
   selector: 'app-export',
   templateUrl: './export.component.html',
   styleUrls: ['./export.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ExportComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
 import { createTimeDisplayName } from '../../../functions/date-time-functions';
 import { Time } from '@angular/common';
@@ -7,6 +7,7 @@ import { Time } from '@angular/common';
   selector: 'app-person-list',
   templateUrl: './person-list.component.html',
   styleUrls: ['./person-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class PersonListComponent implements OnInit {

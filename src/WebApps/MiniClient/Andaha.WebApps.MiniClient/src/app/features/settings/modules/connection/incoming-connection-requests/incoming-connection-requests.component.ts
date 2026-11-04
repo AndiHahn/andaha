@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ConnectionRequestDto } from 'src/app/api/collaboration/dtos/ConnectionRequestDto';
 import { CollaborationContextService } from 'src/app/services/collaboration-context.service';
 
@@ -6,6 +6,7 @@ import { CollaborationContextService } from 'src/app/services/collaboration-cont
   selector: 'app-incoming-connection-requests',
   templateUrl: './incoming-connection-requests.component.html',
   styleUrls: ['./incoming-connection-requests.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class IncomingConnectionRequestsComponent implements OnInit {

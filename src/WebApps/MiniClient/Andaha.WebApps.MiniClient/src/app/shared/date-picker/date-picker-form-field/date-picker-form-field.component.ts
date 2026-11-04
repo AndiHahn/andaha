@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-providers';
 
@@ -7,6 +7,7 @@ import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-pr
   templateUrl: './date-picker-form-field.component.html',
   styleUrls: ['./date-picker-form-field.component.scss'],
   providers: GERMAN_DATE_PROVIDERS,
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class DatePickerFormFieldComponent implements OnInit {

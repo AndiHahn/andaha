@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { WorkingEntryDto } from 'src/app/api/work/dtos/WorkingEntryDto';
 import { getTotalWorkingTimeString } from '../../../functions/date-time-functions';
 import { WorkEntryDetailsDialogService } from '../work-entry-details/work-entry-details-dialog.service';
@@ -8,6 +8,7 @@ import { WorkingEntriesContextService } from '../../../services/working-entries-
   selector: 'app-work-entry-list',
   templateUrl: './work-entry-list.component.html',
   styleUrls: ['./work-entry-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class WorkEntryListComponent implements OnInit {

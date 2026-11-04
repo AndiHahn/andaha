@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CostCategory } from 'src/app/api/budgetplan/dtos/CostCategory';
 import { FixedCostDto } from 'src/app/api/budgetplan/dtos/FixedCostDto';
 import { FixedCostContextService } from '../../services/fixed-cost-context.service';
@@ -11,6 +11,7 @@ interface CostCategoryDictionary {
   selector: 'app-fixed-cost',
   templateUrl: './fixed-cost.component.html',
   styleUrls: ['./fixed-cost.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class FixedCostComponent implements OnInit {

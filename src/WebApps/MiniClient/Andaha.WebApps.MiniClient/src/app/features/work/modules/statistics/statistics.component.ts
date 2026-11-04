@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { TimeRange, mapTimeRangeDto } from 'src/app/shared/models/TimeRange';
 import { StatisticsContextService } from '../../services/statistics-context.service';
 import { StatisticsDto } from 'src/app/api/work/dtos/StatisticsDto';
@@ -11,6 +11,7 @@ import { FullStatisticsDto } from 'src/app/api/work/dtos/FullStatisticsDto';
   selector: 'app-statistics',
   templateUrl: './statistics.component.html',
   styleUrls: ['./statistics.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class StatisticsComponent implements OnInit {

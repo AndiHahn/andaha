@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { PageEvent } from '@angular/material/paginator';
@@ -12,6 +12,7 @@ import { BillCategoryContextService } from 'src/app/services/bill-category-conte
   selector: 'app-analyzed-bill-list',
   templateUrl: './analyzed-bill-list.component.html',
   styleUrls: ['./analyzed-bill-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AnalyzedBillListComponent implements OnInit, AfterViewInit, OnDestroy {

@@ -652,7 +652,8 @@ body .mat-mdc-progress-bar.mat-primary {
   .mdc-radio { padding: 0; }
   .mdc-radio .mdc-radio__native-control { top: -10px; left: -10px; right: auto; }
   .mdc-form-field { font: inherit; letter-spacing: inherit; color: inherit; }
-  .mdc-form-field > label { padding-left: 8px; }
+  // Material 22: Beschriftung ist ein span.mdc-label im label.mdc-form-field (vorher label.mdc-label)
+  .mdc-form-field > .mdc-label { padding-left: 8px; }
 
   // Fokusflaeche nur bei Tastaturfokus (Material 14); MDC zeigt sie auch nach Mausklick
   &:not(.cdk-keyboard-focused) .mdc-radio__native-control:focus + .mdc-radio__background::before { opacity: 0; transform: scale(0); }
@@ -670,8 +671,8 @@ body .mat-mdc-progress-bar.mat-primary {
   // Auf 76,9 % verkleinert und mittig (2,54 px Rand ab Kachelkante, abzgl. 1,5 px Rahmen).
   .mdc-checkbox__checkmark { inset: 1.04px; width: auto; }
   .mdc-checkbox__checkmark-path { stroke-width: 2.6px; }
-  .mdc-form-field > label { padding-left: 12px; font-size: 15px; line-height: 24px; color: var(--fg); }
-  &.mat-mdc-checkbox-disabled label { color: var(--mut); }
+  .mdc-form-field > .mdc-label { padding-left: 12px; font-size: 15px; line-height: 24px; color: var(--fg); }
+  &.mat-mdc-checkbox-disabled .mdc-label { color: var(--mut); }
 
   // Fokusflaeche nur bei Tastaturfokus (Material 14); MDC zeigt sie auch nach Mausklick
   &:not(.cdk-keyboard-focused) .mdc-checkbox .mdc-checkbox__native-control:not([disabled]):focus ~ .mdc-checkbox__ripple { opacity: 0; }

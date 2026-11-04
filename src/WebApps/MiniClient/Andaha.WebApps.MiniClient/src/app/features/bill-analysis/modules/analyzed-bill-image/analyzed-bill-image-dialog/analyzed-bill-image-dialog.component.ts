@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { blobToDataUrl } from 'src/app/shared/utils/file-utils';
@@ -9,6 +9,7 @@ import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
   selector: 'app-analyzed-bill-image-dialog',
   templateUrl: './analyzed-bill-image-dialog.component.html',
   styleUrls: ['./analyzed-bill-image-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AnalyzedBillImageDialogComponent {

@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
@@ -11,6 +11,7 @@ import { BillImageDialogData } from './BillImageDialogData';
   selector: 'app-bill-image-dialog',
   templateUrl: './bill-image-dialog.component.html',
   styleUrls: ['./bill-image-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class BillImageDialogComponent {

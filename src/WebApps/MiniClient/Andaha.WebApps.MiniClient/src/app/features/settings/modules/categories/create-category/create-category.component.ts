@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { CategoryForm, createEmptyForm } from '../functions/form-functions';
 import { Router } from '@angular/router';
@@ -13,6 +13,7 @@ import { CategoryCreateDto } from 'src/app/api/shopping/dtos/CategoryCreateDto';
   selector: 'app-create-category',
   templateUrl: './create-category.component.html',
   styleUrls: ['./create-category.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class CreateCategoryComponent implements OnInit {

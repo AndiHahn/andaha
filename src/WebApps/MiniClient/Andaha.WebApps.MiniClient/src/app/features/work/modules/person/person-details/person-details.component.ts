@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
 import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
@@ -23,6 +23,7 @@ import { PageTitleService } from 'src/app/core/page-title/page-title.service';
   templateUrl: './person-details.component.html',
   styleUrls: ['./person-details.component.scss'],
   providers: [WorkingEntriesContextService],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class PersonDetailsComponent implements OnInit, OnDestroy {

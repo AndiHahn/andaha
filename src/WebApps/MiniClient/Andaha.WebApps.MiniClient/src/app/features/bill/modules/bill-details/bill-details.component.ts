@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-providers';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -24,6 +24,7 @@ import { MatSelectChange } from '@angular/material/select';
   templateUrl: './bill-details.component.html',
   styleUrls: ['./bill-details.component.scss'],
   providers: GERMAN_DATE_PROVIDERS,
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class BillDetailsComponent implements OnInit, OnDestroy {

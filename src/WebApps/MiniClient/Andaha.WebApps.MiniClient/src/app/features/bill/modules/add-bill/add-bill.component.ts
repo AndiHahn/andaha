@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup, FormGroupDirective } from '@angular/forms';
 import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-providers';
 import { generateGuid } from 'src/app/api/functions/api-utils';
@@ -19,6 +19,7 @@ import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
   templateUrl: './add-bill.component.html',
   styleUrls: ['./add-bill.component.scss'],
   providers: GERMAN_DATE_PROVIDERS,
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AddBillComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject, takeUntil } from 'rxjs';
@@ -14,6 +14,7 @@ import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/sh
   selector: 'app-analyzed-bill-details',
   templateUrl: './analyzed-bill-details.component.html',
   styleUrls: ['./analyzed-bill-details.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {

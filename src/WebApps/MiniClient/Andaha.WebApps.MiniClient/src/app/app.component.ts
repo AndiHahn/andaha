@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AuthService } from './core/auth.service';
 import { BillContextService } from './features/bill/services/bill-context.service';
 import { map, shareReplay } from 'rxjs/operators';
@@ -11,6 +11,7 @@ import { AppUpdateService } from './core/app-update.service';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AppComponent implements OnInit {

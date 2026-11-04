@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { ExpenseDto } from 'src/app/api/shopping/dtos/ExpenseDto';
@@ -10,6 +10,7 @@ import { mapTimeRangeDto, TimeRange } from '../../../../shared/models/TimeRange'
   selector: 'app-expenses',
   templateUrl: './expenses.component.html',
   styleUrls: ['./expenses.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ExpensesComponent implements OnInit {

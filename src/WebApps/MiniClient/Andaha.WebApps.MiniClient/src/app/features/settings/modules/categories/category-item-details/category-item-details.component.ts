@@ -1,6 +1,6 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -21,6 +21,7 @@ import { CategoryForm, createSubCategoryForm, createCategoryForm, SubCategoryFor
   selector: 'app-category-item-details',
   templateUrl: './category-item-details.component.html',
   styleUrls: ['./category-item-details.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class CategoryItemDetailsComponent implements OnInit, OnDestroy {

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { ImageSnippet } from '../add-bill-image-dialog/add-bill-image-dialog.component';
 import { AddBillImageDialogService } from '../add-bill-image-dialog/add-bill-image-dialog.service';
@@ -9,6 +9,7 @@ import { BillImageDialogData } from '../bill-image-dialog/BillImageDialogData';
   selector: 'app-bill-image',
   templateUrl: './bill-image.component.html',
   styleUrls: ['./bill-image.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class BillImageComponent {

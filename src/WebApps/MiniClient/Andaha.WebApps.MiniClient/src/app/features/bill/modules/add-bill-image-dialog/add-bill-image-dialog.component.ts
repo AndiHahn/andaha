@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatRadioChange } from '@angular/material/radio';
 import { blobToDataUrl } from 'src/app/shared/utils/file-utils';
@@ -17,6 +17,7 @@ enum UploadSelection {
   selector: 'app-add-bill-image-dialog',
   templateUrl: './add-bill-image-dialog.component.html',
   styleUrls: ['./add-bill-image-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AddBillImageDialogComponent {

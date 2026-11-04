@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DurationLabel } from 'src/app/api/budgetplan/dtos/Duration';
 import { FixedCostHistoryDto } from 'src/app/api/budgetplan/dtos/FixedCostHistoryDto';
@@ -9,6 +9,7 @@ import { FixedCostHistoryDialogData } from './FixedCostHistoryDialogData';
   selector: 'app-fixed-cost-history-dialog',
   templateUrl: './fixed-cost-history-dialog.component.html',
   styleUrls: ['./fixed-cost-history-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class FixedCostHistoryDialogComponent implements OnInit {

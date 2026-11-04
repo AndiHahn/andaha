@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { ExpenseSubCategoryDto } from 'src/app/api/shopping/dtos/ExpenseSubCategoryDto';
@@ -8,6 +8,7 @@ import { ChartDetailsDialogData } from './ChartDetailsDialogData';
   selector: 'app-chart-details-dialog',
   templateUrl: './chart-details-dialog.component.html',
   styleUrls: ['./chart-details-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ChartDetailsDialogComponent implements OnInit {

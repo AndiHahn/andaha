@@ -1,10 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 
 @Component({
   selector: 'app-bill-list-item',
   templateUrl: './bill-list-item.component.html',
   styleUrls: ['./bill-list-item.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class BillListItemComponent implements OnInit {

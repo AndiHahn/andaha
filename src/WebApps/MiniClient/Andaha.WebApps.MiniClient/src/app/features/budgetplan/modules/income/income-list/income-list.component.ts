@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { DurationLabel } from 'src/app/api/budgetplan/dtos/Duration';
 import { IncomeDto } from 'src/app/api/budgetplan/dtos/IncomeDto';
 
@@ -6,6 +6,7 @@ import { IncomeDto } from 'src/app/api/budgetplan/dtos/IncomeDto';
   selector: 'app-income-list',
   templateUrl: './income-list.component.html',
   styleUrls: ['./income-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class IncomeListComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BillListFilterDialogData } from './BillListFilterDialogData';
 import {FormControl} from '@angular/forms';
@@ -9,6 +9,7 @@ import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-pr
   templateUrl: './bill-list-filter-dialog.component.html',
   styleUrls: ['./bill-list-filter-dialog.component.scss'],
   providers: GERMAN_DATE_PROVIDERS,
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class BillListFilterDialogComponent implements OnInit {

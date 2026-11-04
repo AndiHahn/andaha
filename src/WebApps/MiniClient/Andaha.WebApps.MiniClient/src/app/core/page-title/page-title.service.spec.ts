@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { firstValueFrom } from 'rxjs';
 import { PageTitleService } from './page-title.service';
 
-@Component({ template: '', standalone: false })
+@Component({ template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class DummyComponent { }
 
 describe('PageTitleService', () => {

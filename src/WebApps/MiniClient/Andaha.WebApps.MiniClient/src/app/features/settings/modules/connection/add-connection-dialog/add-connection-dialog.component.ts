@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { CollaborationContextService } from 'src/app/services/collaboration-context.service';
@@ -7,6 +7,7 @@ import { CollaborationContextService } from 'src/app/services/collaboration-cont
   selector: 'app-add-connection-dialog',
   templateUrl: './add-connection-dialog.component.html',
   styleUrls: ['./add-connection-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AddConnectionDialogComponent implements OnInit {

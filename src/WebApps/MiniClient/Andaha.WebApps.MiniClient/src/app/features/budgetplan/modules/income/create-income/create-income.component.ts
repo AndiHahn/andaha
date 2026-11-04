@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup, FormGroupDirective } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Duration, DurationLabel } from 'src/app/api/budgetplan/dtos/Duration';
@@ -11,6 +11,7 @@ import { IncomeForm, getEmptyForm } from '../functions/income-form-functions';
   selector: 'app-create-income',
   templateUrl: './create-income.component.html',
   styleUrls: ['./create-income.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class CreateIncomeComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { merge, of, Subject, timer } from 'rxjs';
 import { distinctUntilChanged, map, skip, startWith, switchMap, takeUntil } from 'rxjs/operators';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
@@ -17,6 +17,7 @@ interface CategorySelection {
   selector: 'app-bill-list-filter',
   templateUrl: './bill-list-filter.component.html',
   styleUrls: ['./bill-list-filter.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class BillListFilterComponent implements OnInit, OnDestroy {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
@@ -11,6 +11,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   selector: 'app-categories',
   templateUrl: './categories.component.html',
   styleUrls: ['./categories.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class CategoriesComponent implements OnInit {

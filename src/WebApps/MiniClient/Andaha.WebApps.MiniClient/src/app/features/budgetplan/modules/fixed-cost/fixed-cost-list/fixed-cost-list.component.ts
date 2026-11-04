@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CostCategory, CostCategoryLabel } from 'src/app/api/budgetplan/dtos/CostCategory';
 import { DurationLabel } from 'src/app/api/budgetplan/dtos/Duration';
 import { FixedCostDto } from 'src/app/api/budgetplan/dtos/FixedCostDto';
@@ -7,6 +7,7 @@ import { FixedCostDto } from 'src/app/api/budgetplan/dtos/FixedCostDto';
   selector: 'app-fixed-cost-list',
   templateUrl: './fixed-cost-list.component.html',
   styleUrls: ['./fixed-cost-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class FixedCostListComponent implements OnInit {

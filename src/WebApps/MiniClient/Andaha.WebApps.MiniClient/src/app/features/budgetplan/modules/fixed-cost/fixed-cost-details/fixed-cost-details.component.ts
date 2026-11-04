@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -21,6 +21,7 @@ import { FixedCostForm } from '../functions/fixed-cost-form-functions';
   selector: 'app-fixed-cost-details',
   templateUrl: './fixed-cost-details.component.html',
   styleUrls: ['./fixed-cost-details.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class FixedCostDetailsComponent implements OnInit, OnDestroy {

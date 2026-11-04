@@ -1,6 +1,6 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { CdkScrollable, ScrollDispatcher } from '@angular/cdk/scrolling';
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { filter, takeUntil } from 'rxjs/operators';
 import { PageEvent } from '@angular/material/paginator';
 import { BillContextService } from '../../services/bill-context.service';
@@ -13,6 +13,7 @@ import { BillListDateFilter } from './bill-list-filter/BillListDateFilter';
   selector: 'app-bill-list',
   templateUrl: './bill-list.component.html',
   styleUrls: ['./bill-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {

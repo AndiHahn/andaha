@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, OnInit, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ChartOptions } from 'chart.js';
@@ -14,6 +14,7 @@ import { TimeRange } from '../../../../../shared/models/TimeRange';
   selector: 'app-chart',
   templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ChartComponent implements OnInit, OnChanges {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { PersonForm, getEmptyPersonForm } from '../../../functions/person-form-functions';
 import { FormGroup, FormGroupDirective } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
   selector: 'app-add-person',
   templateUrl: './add-person.component.html',
   styleUrls: ['./add-person.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AddPersonComponent implements OnInit {
