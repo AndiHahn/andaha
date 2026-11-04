@@ -29,6 +29,15 @@
         ],
         "createdAt": "2026-11-03T21:21:48.392Z",
         "reason": "Selection wrapper around phone frames on the presentation board, not product UI"
+      },
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "src/WebApps/MiniClient/Andaha.WebApps.MiniClient/src/app/features/bill/modules/photo-picker/photo-picker.component.html"
+        ],
+        "createdAt": "2026-11-04T19:06:50.410Z",
+        "reason": "agent: img src is an Angular [src] binding to an object URL of the chosen photo, not empty"
       }
     ]
   }
