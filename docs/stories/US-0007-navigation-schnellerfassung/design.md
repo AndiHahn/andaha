@@ -162,3 +162,12 @@ Komponenten- und Dateinamen im Rahmen der Projektkonventionen; ob `QuickEntrySta
 10. Entwurf verfällt nach 24 h; Vibrieren 30 ms.
 11. Schnellerfassung speichert über den bestehenden Offline-Weg (funktioniert damit auch ohne Netz).
 12. EXIF-gedrehte kleine JPEGs werden neu kodiert.
+
+## 9. Abweichungen
+
+### Task 12: App-Shortcut und Share Target (AC37, AC38)
+
+- Umsetzung wie in 5.4. Zusätzlich: Ohne Bilddatei (leeres Formular oder Nicht-Bild) leitet der Service Worker auf `/bill/list` (ohne `shared=1`) um, das Bild wird nicht gecacht. Der Dateiname wird im Cache-Eintrag als Header `X-File-Name` mitgegeben.
+- `BillListComponent` prüft beim Start immer, ob ein geteiltes Bild im Cache liegt (auch ohne `shared=1`); `quick`/`shared` werden per `replaceUrl` entfernt, bevor Sheet bzw. Scan starten.
+- Prüfung am Produktions-Build (Port 4300, http-server, Playwright, ohne Login): Build enthält `custom-sw.js`, `ngsw-worker.js`, `ngsw.json` (hasht `custom-sw.js`), keine neuen Warnungen; Deploy-Tokens (`#{authClientId}#` u. a.) unverändert. `manifest.webmanifest` enthält Shortcut und Share Target mit den Soll-Werten. `custom-sw.js` per `navigator.serviceWorker.register` in einer Seite ohne App registriert (Login auf 4300 nicht möglich): `POST /share-target?ngsw-bypass=true` mit Bild → Weiterleitung auf `/bill/list?shared=1`, Bild (Typ `image/png`) im Cache `share-target` unter `/shared-image`; mit Textdatei → `/bill/list`, nichts gecacht.
+- Grenzen: Der echte Ablauf `?quick=1`/`?shared=1` in der App (Sheet öffnet, Scan startet) sowie die Installation als PWA mit System-Share-Sheet sind am Produktions-Build nicht prüfbar (B2C nur auf 4200, Service Worker nur in Produktion); `?quick=1` und `?shared=1` werden am Dev-Server auf 4200 mit manuell in den Cache gelegtem Bild geprüft.

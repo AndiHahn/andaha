@@ -15,6 +15,7 @@ import { BillListItemComponent } from './bill-list-item/bill-list-item.component
 import { QuickEntryDockComponent } from '../../quick-entry/quick-entry-dock/quick-entry-dock.component';
 import { QuickEntryService } from '../../quick-entry/quick-entry.service';
 import { ScanService } from '../../scan/scan.service';
+import { takeSharedImage } from '../../scan/shared-image';
 
 @Component({
     selector: 'app-bill-list',
@@ -80,7 +81,7 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.initSubscriptions();
     this.initItemSize();
-    this.openQuickEntryFromUrl();
+    this.handleLaunchIntent();
   }
 
   openQuickEntry(): void {
@@ -174,14 +175,28 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  // App-Shortcut „Rechnung eintragen“ (/bill/list?quick=1): Parameter erst entfernen (replaceUrl), dann
-  // das Sheet öffnen, sonst ersetzt die Navigation den History-Eintrag des Sheets (OverlayBackService)
-  private openQuickEntryFromUrl(): void {
-    if (this.route.snapshot.queryParamMap.get('quick') !== '1') {
-      return;
-    }
-    void this.router.navigate([], { relativeTo: this.route, queryParams: { quick: null }, queryParamsHandling: 'merge', replaceUrl: true })
-      .finally(() => this.quickEntry.open());
+  // App-Shortcut „Rechnung eintragen“ (/bill/list?quick=1) und Share Target (/bill/list?shared=1):
+  // Parameter erst entfernen (replaceUrl), dann handeln, sonst ersetzt die Navigation den History-Eintrag
+  // des Sheets (OverlayBackService) bzw. die Scan-Navigation. Ein geteiltes Bild wird auch ohne
+  // Parameter abgeholt (z. B. wenn der Login-Redirect ?shared=1 verloren hat); der Cache-Eintrag
+  // überlebt den Redirect und wird beim ersten Öffnen der Liste genau einmal verarbeitet.
+  private handleLaunchIntent(): void {
+    const params = this.route.snapshot.queryParamMap;
+    const quick = params.get('quick') === '1';
+    const shared = params.get('shared') === '1';
+    const clear = quick || shared
+      ? this.router.navigate([], { relativeTo: this.route, queryParams: { quick: null, shared: null }, queryParamsHandling: 'merge', replaceUrl: true })
+      : Promise.resolve(true);
+
+    void clear.finally(async () => {
+      if (quick) {
+        this.quickEntry.open();
+      }
+      const image = await takeSharedImage();
+      if (image) {
+        await this.scanService.start(image);
+      }
+    });
   }
 
   private initSubscriptions(): void {

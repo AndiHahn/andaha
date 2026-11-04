@@ -34,6 +34,7 @@
               "src/favicon.ico",
               "src/assets",
               "src/manifest.webmanifest",
+              "src/custom-sw.js",
               "src/staticwebapp.config.json"
             ],
             "styles": [

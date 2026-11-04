@@ -56,7 +56,7 @@ export const appConfig: ApplicationConfig = {
       useFactory: storageFactory
     },
     provideAnimations(),
-    provideServiceWorker('ngsw-worker.js', {
+    provideServiceWorker('custom-sw.js', {
       enabled: environment.production,
       // Register the ServiceWorker as soon as the application is stable
       // or after 30 seconds (whichever comes first).
