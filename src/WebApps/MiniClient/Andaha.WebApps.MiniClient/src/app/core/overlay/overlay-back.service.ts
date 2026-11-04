@@ -1,5 +1,7 @@
 import { DestroyRef, DOCUMENT, Injectable, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationCancel, NavigationEnd, NavigationError, NavigationSkipped, Router, Event as RouterEvent } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
 
 interface OverlayEntry {
   id: number;
@@ -19,6 +21,13 @@ interface HistoryPosition {
 const TRAVERSAL_TIMEOUT = 1000;
 /** So lange nach dem Start einer Navigation weg von der App kein history.back */
 const LEAVING_TIMEOUT = 5000;
+/** Höchstens so lange auf das Ende der Router-Navigation eines popstate warten */
+const ROUTER_SETTLE_TIMEOUT = 2000;
+
+function isNavigationDone(event: RouterEvent): boolean {
+  return event instanceof NavigationEnd || event instanceof NavigationCancel
+    || event instanceof NavigationError || event instanceof NavigationSkipped;
+}
 
 function numberOf(state: unknown, key: 'overlayBase' | 'overlayBack'): number | null {
   const value = (state as Record<string, unknown> | null)?.[key];
@@ -47,6 +56,11 @@ function positionOf(state: unknown): HistoryPosition {
  *
  * Der Router sieht diese popstate-Ereignisse nur als Navigation auf dieselbe URL und überspringt sie;
  * Dialoge und Sheets schließen nicht selbst bei popstate (`closeOnNavigation: false`).
+ *
+ * Der Router spielt jedes popstate einen Task später nach und schreibt dabei (replaceUrl) den Zustand
+ * des erreichten Eintrags samt `overlayBack` per replaceState in den *dann aktuellen* Eintrag. Ein
+ * Schritt weiter zurück wartet deshalb, bis diese Navigation abgeschlossen ist; landet ein eigener
+ * Schritt trotzdem auf einem Eintrag mit fremdem Marker, wird der Marker danach entfernt.
  * Ids steigen über Neuladen hinweg (Zeitbasis).
  */
 @Injectable({ providedIn: 'root' })
@@ -163,6 +177,7 @@ export class OverlayBackService {
     if (this.ownTraversal) {
       // popstate des eigenen history.back: schließt nichts
       this.settle();
+      this.afterRouterIdle(() => this.stripStaleMarker());
       return;
     }
 
@@ -177,15 +192,68 @@ export class OverlayBackService {
     if (landed.marker === 0 || Date.now() < this.leavingUntil) {
       return;
     }
-    // gelandet auf einem Overlay-Eintrag: offen → bleiben; geschlossen oder unbekannt → weiter zurück
-    const top = this.stack.at(-1);
-    if (top?.id === landed.marker) {
-      if (top.released) {
-        this.traverse(-this.popReleasedRun());
-      }
-    } else {
-      this.traverse(-1);
+    // gelandet auf einem Overlay-Eintrag: offen → bleiben; geschlossen oder unbekannt → weiter zurück,
+    // aber erst nach der Router-Navigation dieses popstate (sonst schreibt sie den Marker in den
+    // Eintrag, auf dem der eigene Schritt landet)
+    if (this.isOpenOverlay(landed.marker)) {
+      return;
     }
+    this.afterRouterIdle(() => this.whenIdle(() => this.stepPastClosedEntry(landed.marker)));
+  }
+
+  private stepPastClosedEntry(marker: number): void {
+    // inzwischen weiter navigiert, ein Overlay geöffnet oder die App verlassen: nichts tun
+    if (numberOf(this.window.history.state, 'overlayBack') !== marker || Date.now() < this.leavingUntil
+      || this.isOpenOverlay(marker)) {
+      return;
+    }
+    const top = this.stack.at(-1);
+    this.traverse(top?.id === marker ? -this.popReleasedRun() : -1);
+  }
+
+  /** Eigener Schritt gelandet: ein Marker, der zu keinem offenen Overlay gehört, kam vom Router. */
+  private stripStaleMarker(): void {
+    const state = this.window.history.state as Record<string, unknown> | null;
+    const marker = numberOf(state, 'overlayBack');
+    if (marker === null || this.isOpenOverlay(marker)) {
+      return;
+    }
+    const cleaned = { ...state };
+    delete cleaned['overlayBack'];
+    this.window.history.replaceState(cleaned, '');
+  }
+
+  private isOpenOverlay(marker: number): boolean {
+    return this.stack.some(entry => entry.id === marker && !entry.released);
+  }
+
+  /**
+   * Führt `step` aus, wenn der Router die Navigation zu einem gerade eingetroffenen popstate
+   * abgeschlossen hat. Er startet sie per setTimeout (HistoryStateManager); zwei Tasks später ist sie
+   * gestartet (currentNavigation gesetzt) oder gar nicht nötig gewesen.
+   */
+  private afterRouterIdle(step: () => void): void {
+    const deadline = Date.now() + ROUTER_SETTLE_TIMEOUT;
+    let done = false;
+    let waiting: Subscription | null = null;
+    let fallback: ReturnType<typeof setTimeout> | undefined;
+
+    const check = () => {
+      waiting?.unsubscribe();
+      waiting = null;
+      clearTimeout(fallback);
+      if (done) {
+        return;
+      }
+      if (this.router.currentNavigation() && Date.now() < deadline) {
+        waiting = this.router.events.pipe(filter(isNavigationDone), take(1)).subscribe(() => setTimeout(check));
+        fallback = setTimeout(check, deadline - Date.now());
+        return;
+      }
+      done = true;
+      step();
+    };
+    setTimeout(() => setTimeout(check));
   }
 
   private settle(): void {

@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { NavigationEnd, NavigationSkipped, Router, Event as RouterEvent } from '@angular/router';
+import { Subject } from 'rxjs';
 import { OverlayBackService } from './overlay-back.service';
 
 /**
@@ -46,6 +47,57 @@ class FakeHistory {
   }
 }
 
+/**
+ * Minimaler Router wie HistoryStateManager/navigateToSyncWithBrowser: spielt jedes popstate einen Task
+ * später nach; bei anderer URL schreibt er nach `replay` ms (replaceUrl) die Nicht-Router-Schlüssel des
+ * erreichten Zustands samt neuer navigationId in den *dann aktuellen* Eintrag. Die URL steht in den
+ * Testzuständen unter `url`.
+ */
+class FakeRouter {
+  readonly events = new Subject<RouterEvent>();
+  url = '/a';
+  /** Dauer der Navigation (ms); null = Router hört nicht auf popstate (wie vor der ersten Navigation) */
+  replay: number | null = null;
+  /** History-Index, in den jede Navigation ihren Zustand geschrieben hat */
+  readonly writes: number[] = [];
+  private navigation: { id: number; timer: ReturnType<typeof setTimeout> } | null = null;
+  private nextId = 100;
+
+  constructor(private readonly fake: FakeHistory) {}
+
+  readonly currentNavigation = () => this.navigation;
+
+  readonly onPopState = (event: PopStateEvent) => {
+    if (this.replay !== null && !this.fake.disposed) {
+      setTimeout(() => this.syncWithBrowser(event.state as Record<string, unknown>));
+    }
+  };
+
+  private syncWithBrowser(state: Record<string, unknown>): void {
+    const id = this.nextId++;
+    const url = state['url'] as string;
+    // eine neue Navigation verdrängt die laufende, bevor diese geschrieben hat
+    if (this.navigation) {
+      clearTimeout(this.navigation.timer);
+      this.navigation = null;
+    }
+    if (url === this.url) {
+      this.events.next(new NavigationSkipped(id, url, 'same url'));
+      return;
+    }
+    const timer = setTimeout(() => {
+      const copy = { ...state };
+      delete copy['navigationId'];
+      this.fake.replace({ ...copy, navigationId: id });
+      this.writes.push(this.fake.index);
+      this.url = url;
+      this.navigation = null;
+      this.events.next(new NavigationEnd(id, url, url));
+    }, this.replay!);
+    this.navigation = { id, timer };
+  }
+}
+
 function tick(): Promise<void> {
   // verschachtelte Timer drosselt Chrome auf >= 4 ms
   return new Promise(resolve => setTimeout(resolve, 20));
@@ -56,6 +108,7 @@ describe('OverlayBackService', () => {
   let fake: FakeHistory;
   let backSpy: ReturnType<typeof vi.spyOn>;
   let goSpy: ReturnType<typeof vi.spyOn>;
+  let router: FakeRouter;
 
   beforeEach(() => {
     fake = new FakeHistory();
@@ -65,12 +118,17 @@ describe('OverlayBackService', () => {
     backSpy = vi.spyOn(history, 'back').mockImplementation(() => fake.go(-1));
     goSpy = vi.spyOn(history, 'go').mockImplementation(delta => fake.go(delta ?? 0));
 
-    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    router = new FakeRouter(fake);
+    // wie Location: registriert vor dem Service
+    window.addEventListener('popstate', router.onPopState);
+
+    TestBed.configureTestingModule({ providers: [{ provide: Router, useValue: router }] });
     service = TestBed.inject(OverlayBackService);
   });
 
   afterEach(() => {
     fake.disposed = true;
+    window.removeEventListener('popstate', router.onPopState);
     vi.restoreAllMocks();
     TestBed.resetTestingModule();
   });
@@ -309,5 +367,65 @@ describe('OverlayBackService', () => {
 
     expect(backSpy).not.toHaveBeenCalled();
     expect(goSpy).not.toHaveBeenCalled();
+  });
+
+  // Fix Runde 2: der Router schreibt beim Nachspielen des popstate den Zustand des erreichten
+  // Overlay-Eintrags in den dann aktuellen Eintrag; der Schritt weiter zurück wartet auf ihn
+  it('waits for the router replay before stepping past a closed overlay entry', async () => {
+    router.replay = 10;
+    fake.entries = [{ navigationId: 0, url: '/p' }, { navigationId: 1, url: '/a' }];
+    fake.index = 1;
+    const release = service.register(() => undefined);
+    fake.push({ navigationId: 2, url: '/b' });
+    router.url = '/b';
+    release();
+    await tick();
+
+    // Zurück von B: landet auf dem verwaisten Eintrag über A, Router navigiert nach /a
+    await fake.userBack();
+    await vi.waitFor(() => expect(fake.index).toBe(1));
+    await tick();
+
+    // der Router hat in den Overlay-Eintrag (Index 2) geschrieben, nicht in A, und nur einmal
+    expect(router.writes).toEqual([2]);
+    expect(router.url).toBe('/a');
+    expect(fake.entries[1]).not.toHaveProperty('overlayBack');
+    expect(backSpy).toHaveBeenCalledTimes(1);
+
+    // später: von einer neuen Seite C zurück hält auf A, ohne weiterzuspringen
+    fake.push({ navigationId: 3, url: '/c' });
+    router.url = '/c';
+    await fake.userBack();
+    await tick();
+    await tick();
+
+    expect(fake.index).toBe(1);
+    expect(backSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('removes a marker the router left on the entry an own step landed on', async () => {
+    fake.entries = [{ navigationId: 0, url: '/p' }, { navigationId: 1, url: '/a' }];
+    fake.index = 1;
+    const release = service.register(() => undefined);
+    const marker = (fake.entries[2] as { overlayBack: number }).overlayBack;
+    // Router-Nachspiel trifft den Eintrag, auf dem der eigene Schritt landet
+    backSpy.mockImplementationOnce(() => {
+      fake.go(-1);
+      fake.replace({ ...(fake.state as object), overlayBack: marker, navigationId: 7 });
+    });
+
+    release();
+    await tick();
+    await tick();
+
+    expect(fake.index).toBe(1);
+    expect(fake.entries[1]).not.toHaveProperty('overlayBack');
+    expect(fake.entries[1]).toEqual(expect.objectContaining({ navigationId: 7, url: '/a', overlayBase: expect.any(Number) }));
+
+    // von einer neuen Seite zurück hält auf A
+    fake.push({ navigationId: 8, url: '/c' });
+    await fake.userBack();
+    await tick();
+    expect(fake.index).toBe(1);
   });
 });
