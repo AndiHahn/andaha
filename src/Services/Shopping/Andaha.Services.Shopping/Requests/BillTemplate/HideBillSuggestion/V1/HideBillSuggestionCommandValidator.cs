@@ -18,6 +18,7 @@ public class HideBillSuggestionCommandValidator : AbstractValidator<HideBillSugg
         this.identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
 
         RuleFor(command => command.ShopName)
+            .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .Must(shopName => shopName.Trim().Length is > 0 and <= 200)
             .WithMessage("Shop name must not be empty or longer than 200 characters.");

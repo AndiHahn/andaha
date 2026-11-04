@@ -150,4 +150,8 @@ public class BillTemplateValidatorTests
     [Fact]
     public async Task Update_order_with_additional_foreign_id_is_rejected()
         => Assert.False(await ValidateOrder(ids => ids));
+
+    [Fact]
+    public async Task Update_order_with_null_ids_is_rejected_without_exception()
+        => Assert.False(await ValidateOrder(_ => null!));
 }

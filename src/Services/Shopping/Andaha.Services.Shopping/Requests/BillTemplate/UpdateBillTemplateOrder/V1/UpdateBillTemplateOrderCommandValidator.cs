@@ -18,6 +18,7 @@ public class UpdateBillTemplateOrderCommandValidator : AbstractValidator<UpdateB
         this.identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
 
         RuleFor(command => command.Ids)
+            .Cascade(CascadeMode.Stop)
             .NotNull()
             .Must(ids => ids.Distinct().Count() == ids.Length)
             .WithMessage("Each template id must only appear once.");

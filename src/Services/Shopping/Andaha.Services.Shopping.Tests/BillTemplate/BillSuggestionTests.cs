@@ -227,4 +227,23 @@ public class BillSuggestionTests
             Assert.True(valid.IsValid);
         }
     }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public async Task Hide_suggestion_with_null_or_blank_shop_name_is_rejected_without_exception(string? shopName)
+    {
+        var (context, connection) = TestDb.CreateShopping();
+        using (connection)
+        using (context)
+        {
+            var f = Seed(context);
+            var validator = new HideBillSuggestionCommandValidator(f.Context, f.Identity);
+
+            var result = await validator.ValidateAsync(new HideBillSuggestionCommand(shopName!, f.K1, null));
+
+            Assert.False(result.IsValid);
+        }
+    }
 }
