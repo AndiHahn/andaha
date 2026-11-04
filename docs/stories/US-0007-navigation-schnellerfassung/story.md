@@ -90,6 +90,7 @@ Setzt US-0006 (Angular 22) voraus.
 - Neue Backend-Teile (Shopping-Service): Vorlagen (CRUD + Reihenfolge), Vorschläge, ausgeblendete Vorschläge, häufigste Shops je Kategorie, Analyse verwerfen, ggf. Paginierung.
 - Bildverkleinerung gibt es teilweise schon (`shared/utils/image-utils.ts`, US-0005).
 - Bibliotheks-APIs per Context7 nachschlagen.
+- Offene Punkte aus US-0006 (Foto-Dialog, wird hier ersetzt): kein Ladezustand während der Bildverkleinerung (`uploading` ungenutzt), Umschalten der Option während der Verkleinerung setzt das Bild unter der anderen Option. `compressImage` lässt ein JPEG innerhalb der Kantenlänge unverändert; ein kleines JPEG mit EXIF-Drehung behält dann das EXIF-Tag statt gedrehter Pixel (für AC29 prüfen).
 
 ## Out of Scope
 
