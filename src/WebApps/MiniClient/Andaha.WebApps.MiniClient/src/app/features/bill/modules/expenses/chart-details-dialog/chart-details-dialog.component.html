@@ -11,7 +11,7 @@
         Keine Kosten von Subkategorien verfügbar.
       </div>
     }
-    @for (expense of subCategoryExpenses; track expense) {
+    @for (expense of subCategoryExpenses; track expense.subCategory) {
       <div class="kv">
         <span class="k">{{ expense?.subCategory }}</span>
         <span class="v">{{ truncate(2, expense.costs) | number:'1.2-2':'de' }} €</span>

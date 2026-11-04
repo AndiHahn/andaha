@@ -18,7 +18,7 @@
 
 <!-- Eigene Legende: Zeile oeffnet die Details der eigenen Kategorie, das Auge blendet sie im Diagramm aus/ein -->
 <div class="legend">
-  @for (expense of expenses; track expense) {
+  @for (expense of expenses; track expense.category) {
     <div class="lg" [class.hidden]="isHidden(expense)">
       <button type="button" class="lg-main" (click)="openDetails(expense)">
         <span class="dot" [class.dot-light]="colorOf(expense) == 'white'"
