@@ -39,15 +39,18 @@ button {
   font-weight: 600;
 }
 
-// Unsichtbares Feld, an dem der Datepicker hängt (geöffnet über „Datum wählen“)
-.picker-anchor {
+// Unsichtbares Feld, an dem der Datepicker hängt (geöffnet über „Datum wählen“). Spezifischer als
+// die globale Feldregel `.field .field-box input { all: unset }`, damit es auch im großen Formular verborgen bleibt.
+.meta input.picker-anchor {
   position: absolute;
   left: 0;
   bottom: 0;
   width: 1px;
   height: 1px;
+  margin: 0;
   opacity: 0;
   border: 0;
   padding: 0;
+  overflow: hidden;
   pointer-events: none;
 }
