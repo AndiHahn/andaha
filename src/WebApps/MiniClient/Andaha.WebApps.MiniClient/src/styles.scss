@@ -429,6 +429,9 @@ body.mat-app-background {
   padding: 6px 0;
   max-height: 256px;
   flex: none;
+  // Material 22: Einblend-Animation mit fill-mode forwards laesst ein transform stehen (Text dann in
+  // Graustufen geglaettet); nach dem Einblenden wie bis 21 ohne transform. Ausblenden unveraendert.
+  &.mat-select-panel-animations-enabled:not(.mat-select-panel-exit) { animation-fill-mode: backwards; }
   // Material 18 setzt am Panel keine Typografie mehr (14/20, Textfarbe); 15 hatte die MDC-Menueflaeche (16/24, Schwarz)
   font-size: 16px;
   line-height: 24px;
@@ -473,7 +476,7 @@ body.mat-app-background {
 
 // Datepicker
 .cdk-overlay-container .mat-datepicker-content {
-  // Ab Material 17/18 setzt das Komponenten-CSS die Heute-Markierung ueber Tokens (Regel unten greift nicht mehr)
+  // Heute-Markierung: ab Material 17/18 setzt das Komponenten-CSS die Randfarbe nur noch ueber diesen Token
   --mat-datepicker-calendar-date-today-outline-color: var(--pri);
   // Material 20 faerbt den Monat/Jahr-Button ueber den Token (.87); bis 19 schwarz
   --mat-datepicker-calendar-period-button-text-color: #000;
@@ -510,7 +513,8 @@ body.mat-app-background {
 .cdk-overlay-container .mat-calendar-body-cell { font-size: 13.3333px; }
 
 // Monatspfeile: Material 18 zeichnet ein SVG-Icon (kraeftiger), bis 15 waren es 2-px-Rahmen (::after).
-// Wie 15 nachgebaut; die Drehung des Zurueck-Buttons (180 Grad) setzt Material weiterhin selbst.
+// Wie 15 nachgebaut. Die Richtung kommt allein aus den ::after-Regeln unten; Material dreht die Buttons
+// ab 18 nur noch unter [dir=rtl] um 180 Grad.
 .cdk-overlay-container .mat-calendar-previous-button,
 .cdk-overlay-container .mat-calendar-next-button {
   svg { display: none; }
@@ -530,10 +534,6 @@ body.mat-app-background {
 .cdk-overlay-container .mat-calendar-body-selected {
   background-color: var(--pri);
   color: var(--on-pri);
-}
-
-.cdk-overlay-container .mat-calendar-body-today:not(.mat-calendar-body-selected) {
-  border-color: var(--pri);
 }
 
 .cdk-overlay-container .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
@@ -872,8 +872,8 @@ body .cdk-drag-preview.andaha-drag-item {
 // Drawer/Sidebar des Shells (Mobile 304 px, Desktop 248 px), Markup in app.component.html
 .side {
   // Breite, Flaeche und Text setzt Material ab 17/18 im Komponenten-CSS ueber Tokens.
-  // Den Schatten setzte Material schon bis 15 selbst (Elevation 16, als Seitenleiste keiner);
-  // box-shadow hier wirkt nicht und bleibt nur als Absicht aus dem Redesign stehen.
+  // Den Schatten setzt Material selbst (Elevation 16, schon bis 15); ein eigener box-shadow hier wirkte nie.
+  // (Absicht aus dem Redesign war 12px 0 40px var(--sh5).)
   --mat-sidenav-container-width: 304px;
   --mat-sidenav-container-background-color: var(--surface);
   --mat-sidenav-container-text-color: var(--fg);
@@ -881,7 +881,6 @@ body .cdk-drag-preview.andaha-drag-item {
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
   border-right: 0;
-  box-shadow: 12px 0 40px var(--sh5);
 
   &.side-desktop {
     --mat-sidenav-container-width: 248px;

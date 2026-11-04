@@ -46,6 +46,10 @@
               ]
             },
             "serviceWorker": "ngsw-config.json",
+            "allowedCommonJsDependencies": [
+              "moment",
+              "moment/locale/de"
+            ],
             "browser": "src/main.ts"
           },
           "configurations": {
