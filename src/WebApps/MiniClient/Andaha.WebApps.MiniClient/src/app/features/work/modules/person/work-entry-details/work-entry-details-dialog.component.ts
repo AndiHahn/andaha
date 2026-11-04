@@ -6,7 +6,7 @@ import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/co
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { WorkingEntryDto } from 'src/app/api/work/dtos/WorkingEntryDto';
 import { getTotalWorkingTimeString } from '../../../functions/date-time-functions';
-import * as moment from 'moment';
+import moment from 'moment';
 import { Time } from '@angular/common';
 import { WorkEntryDetailsDialogData } from './WorkEntryDetailsDialogData';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';

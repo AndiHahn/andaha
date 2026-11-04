@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { TimeRange } from '../../../../../shared/models/TimeRange';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { DATE_TYPE_SEGMENT_LABELS, DateType, DateTypeLabelMapping } from './DateType';
-import * as moment from 'moment';
+import moment from 'moment';
 import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-providers';
 
 @Component({

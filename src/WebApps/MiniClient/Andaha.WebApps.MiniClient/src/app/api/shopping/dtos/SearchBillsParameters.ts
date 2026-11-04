@@ -1,4 +1,4 @@
-import * as moment from "moment";
+import moment from "moment";
 import { HttpParam } from "../../common-dtos/HttpParam";
 import { getPagingHttpParams, PagingParameters } from "../../common-dtos/PagingParameters";
 
