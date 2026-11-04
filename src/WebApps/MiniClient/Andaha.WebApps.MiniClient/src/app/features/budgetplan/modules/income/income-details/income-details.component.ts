@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { PageTitleService } from 'src/app/core/page-title/page-title.service';
 import { Duration, DurationLabel } from 'src/app/api/budgetplan/dtos/Duration';
@@ -10,6 +10,7 @@ import { IncomeUpdateDto } from 'src/app/api/budgetplan/dtos/IncomeUpdateDto';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/ConfirmationDialogData';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
+import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
 import { IncomeContextService } from '../../../services/income-context.service';
 import { IncomeHistoryDialogService } from '../income-history-dialog/income-history-dialog.service';
@@ -29,7 +30,7 @@ import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe'
     imports: [MatProgressBar, FormsModule, ReactiveFormsModule, MatSelect, MatOption, MatIcon, MatProgressSpinner, ShowErrorPipe]
 })
 export class IncomeDetailsComponent implements OnInit, OnDestroy {
-  private router = inject(Router);
+  private historyTrail = inject(HistoryTrailService);
   private route = inject(ActivatedRoute);
   private snackbar = inject(MatSnackBar);
   private confirmationDialog = inject(ConfirmationDialogService);
@@ -55,14 +56,14 @@ export class IncomeDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const incomeId = getParametersFromRouteRecursive(this.route.snapshot)["id"];
     if (!incomeId) {
-      leaveDetailNotFound(this.router, this.snackbar, '/budgetplan/income');
+      leaveDetailNotFound(this.historyTrail, this.snackbar, '/budgetplan/income');
       return;
     }
 
     this.incomeContextService.byId(incomeId).pipe(takeUntil(this.destroy$)).subscribe({
       next: income => {
         if (!income) {
-          leaveDetailNotFound(this.router, this.snackbar, '/budgetplan/income');
+          leaveDetailNotFound(this.historyTrail, this.snackbar, '/budgetplan/income');
           return;
         }
 
@@ -152,7 +153,8 @@ export class IncomeDetailsComponent implements OnInit, OnDestroy {
       {
         next: _ => {
           this.isDeleting = false;
-          this.router.navigateByUrl('/budgetplan/income');
+          // zurück zur Liste; Zurück führt danach nicht auf den gelöschten Eintrag
+          this.historyTrail.leaveTo('/budgetplan/income');
         },
         error: _ => {
           this.isDeleting = false;

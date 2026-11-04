@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
 import { PageTitleService } from 'src/app/core/page-title/page-title.service';
@@ -16,6 +17,7 @@ import { PersonPaymentDialogService } from '../person-payment-dialog/person-paym
 import { PersonDetailsComponent } from './person-details.component';
 
 describe('PersonDetailsComponent', () => {
+    let historyTrail: { leaveTo: ReturnType<typeof vi.fn> };
     let fixture: ComponentFixture<PersonDetailsComponent>;
     let persons$: BehaviorSubject<PersonDto[] | undefined>;
     let context: MockedObject<PersonContextService>;
@@ -30,6 +32,7 @@ describe('PersonDetailsComponent', () => {
     };
 
     beforeEach(async () => {
+        historyTrail = { leaveTo: vi.fn() };
         persons$ = new BehaviorSubject<PersonDto[] | undefined>([person]);
         context = {
             byId: vi.fn().mockName("PersonContextService.byId"),
@@ -52,6 +55,7 @@ describe('PersonDetailsComponent', () => {
         { provide: Router, useValue: {
                 navigateByUrl: vi.fn().mockName("Router.navigateByUrl")
             } },
+        { provide: HistoryTrailService, useValue: historyTrail },
         { provide: MatSnackBar, useValue: {
                 openFromComponent: vi.fn().mockName("MatSnackBar.openFromComponent")
             } },

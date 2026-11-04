@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-providers';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
@@ -12,6 +12,7 @@ import { BillContextService } from 'src/app/features/bill/services/bill-context.
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/ConfirmationDialogData';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
+import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
 import { BillForm, getBillForm } from '../../functions/bill-form-functions';
 import { BillCategoryDto } from 'src/app/api/shopping/dtos/BillCategoryDto';
@@ -35,7 +36,7 @@ import { ShowErrorPipe } from '../../../../shared/form-field/show-error.pipe';
 })
 export class BillDetailsComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
+  private historyTrail = inject(HistoryTrailService);
   private snackbar = inject(MatSnackBar);
   private confirmationDialog = inject(ConfirmationDialogService);
   private billContextService = inject(BillContextService);
@@ -63,14 +64,14 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const billId = getParametersFromRouteRecursive(this.route.snapshot)["id"];
     if (!billId) {
-      leaveDetailNotFound(this.router, this.snackbar, '/bill/list');
+      leaveDetailNotFound(this.historyTrail, this.snackbar, '/bill/list');
       return;
     }
 
     this.billContextService.loadBillById(billId).pipe(takeUntil(this.destroy$)).subscribe({
       next: bill => {
         if (!bill) {
-          leaveDetailNotFound(this.router, this.snackbar, '/bill/list');
+          leaveDetailNotFound(this.historyTrail, this.snackbar, '/bill/list');
           return;
         }
 
@@ -172,7 +173,8 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
       {
         next: _ => {
           this.isDeleting = false;
-          this.router.navigateByUrl('/bill/list');
+          // zurück zur Liste; Zurück führt danach nicht auf den gelöschten Eintrag
+          this.historyTrail.leaveTo('/bill/list');
         },
         error: _ => {
           this.isDeleting = false;

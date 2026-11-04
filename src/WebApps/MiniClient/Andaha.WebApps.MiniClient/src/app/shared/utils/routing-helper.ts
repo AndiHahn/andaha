@@ -1,5 +1,6 @@
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { ActivatedRouteSnapshot, Router } from "@angular/router";
+import { ActivatedRouteSnapshot } from "@angular/router";
+import { HistoryTrailService } from "src/app/core/navigation/history-trail.service";
 import { openInformationSnackbar } from "../snackbar/snackbar-functions";
 
 export interface RouteParameterLike {
@@ -24,7 +25,11 @@ export function getParametersFromRouteRecursive<T extends RouteParameterLike>(
   return parameters as any;
 }
 
-export function leaveDetailNotFound(router: Router, snackbar: MatSnackBar, listUrl: string): void {
+/**
+ * Detailseite ohne (noch vorhandenen) Eintrag verlassen: zurück zur Liste, wenn sie darunter liegt,
+ * sonst ersetzt die Liste die Seite. Nie ein neuer Eintrag, sonst führte Zurück wieder hierher (I1).
+ */
+export function leaveDetailNotFound(historyTrail: HistoryTrailService, snackbar: MatSnackBar, listUrl: string): void {
   openInformationSnackbar('Eintrag wurde nicht gefunden.', snackbar);
-  router.navigateByUrl(listUrl);
+  historyTrail.leaveTo(listUrl);
 }

@@ -8,6 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { Subject, of, throwError } from 'rxjs';
 import { CostCategory } from 'src/app/api/budgetplan/dtos/CostCategory';
 import { Duration } from 'src/app/api/budgetplan/dtos/Duration';
@@ -22,6 +23,7 @@ import { ShowErrorPipe } from 'src/app/shared/form-field/show-error.pipe';
 registerLocaleData(localeDe, 'de');
 
 describe('FixedCostDetailsComponent', () => {
+    let historyTrail: { leaveTo: ReturnType<typeof vi.fn> };
     let fixture: ComponentFixture<FixedCostDetailsComponent>;
     let byId$: Subject<FixedCostDto | undefined>;
     let router: MockedObject<Router>;
@@ -37,6 +39,7 @@ describe('FixedCostDetailsComponent', () => {
     };
 
     beforeEach(async () => {
+        historyTrail = { leaveTo: vi.fn() };
         byId$ = new Subject<FixedCostDto | undefined>();
         router = {
             navigateByUrl: vi.fn().mockName("Router.navigateByUrl")
@@ -59,6 +62,7 @@ describe('FixedCostDetailsComponent', () => {
     schemas: [NO_ERRORS_SCHEMA],
     providers: [
         { provide: Router, useValue: router },
+        { provide: HistoryTrailService, useValue: historyTrail },
         { provide: MatSnackBar, useValue: snackbar },
         { provide: FixedCostContextService, useValue: context },
         { provide: PageTitleService, useValue: pageTitle },
@@ -93,7 +97,7 @@ describe('FixedCostDetailsComponent', () => {
         fixture.detectChanges();
         byId$.next(undefined);
         byId$.complete();
-        expect(router.navigateByUrl).toHaveBeenCalledWith('/budgetplan/fixedcost');
+        expect(historyTrail.leaveTo).toHaveBeenCalledWith('/budgetplan/fixedcost');
         expect(snackbar.openFromComponent).toHaveBeenCalled();
     });
 

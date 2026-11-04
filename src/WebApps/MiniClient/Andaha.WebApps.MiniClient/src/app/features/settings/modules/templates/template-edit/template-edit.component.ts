@@ -5,16 +5,17 @@ import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatOption, MatSelect, MatSelectTrigger } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { combineLatest, filter, firstValueFrom, take } from 'rxjs';
 import { BillTemplateCreateDto, BillTemplateDto } from 'src/app/api/shopping/dtos/BillTemplateDto';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
+import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { BillTemplateContextService } from 'src/app/features/bill/services/bill-template-context.service';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { ShowErrorPipe } from 'src/app/shared/form-field/show-error.pipe';
-import { openErrorSnackbar, openInformationSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
-import { getParametersFromRouteRecursive } from 'src/app/shared/utils/routing-helper';
+import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
+import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
 
 const LIST_URL = '/settings/templates';
 
@@ -35,7 +36,7 @@ function notBlank(control: AbstractControl): ValidationErrors | null {
 })
 export class TemplateEditComponent implements OnInit {
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
+  private historyTrail = inject(HistoryTrailService);
   private snackbar = inject(MatSnackBar);
   private confirmationDialog = inject(ConfirmationDialogService);
   private templateContext = inject(BillTemplateContextService);
@@ -94,8 +95,7 @@ export class TemplateEditComponent implements OnInit {
       }
       const template = templates.find(t => t.id === this.templateId);
       if (!template) {
-        openInformationSnackbar('Eintrag wurde nicht gefunden.', this.snackbar);
-        this.router.navigateByUrl(LIST_URL);
+        leaveDetailNotFound(this.historyTrail, this.snackbar, LIST_URL);
         return;
       }
       this.fill(template, categories);
@@ -122,7 +122,8 @@ export class TemplateEditComponent implements OnInit {
     this.isSaving.set(true);
     try {
       await this.templateContext.save(this.templateId, dto);
-      this.router.navigateByUrl(LIST_URL);
+      // zurück zur Liste statt eines zweiten Listen-Eintrags über dem Formular (I1/I2)
+      this.historyTrail.leaveTo(LIST_URL);
     } catch {
       openErrorSnackbar('Vorlage konnte nicht gespeichert werden.', this.snackbar);
     } finally {
@@ -141,7 +142,8 @@ export class TemplateEditComponent implements OnInit {
     this.isDeleting.set(true);
     try {
       await this.templateContext.remove(this.templateId);
-      this.router.navigateByUrl(LIST_URL);
+      // Zurück führt danach nicht auf die gelöschte Vorlage (I1)
+      this.historyTrail.leaveTo(LIST_URL);
     } catch {
       openErrorSnackbar('Vorlage konnte nicht gelöscht werden.', this.snackbar);
     } finally {

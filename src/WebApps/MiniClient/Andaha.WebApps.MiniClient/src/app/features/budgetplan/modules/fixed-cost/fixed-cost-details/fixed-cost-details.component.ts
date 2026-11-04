@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { PageTitleService } from 'src/app/core/page-title/page-title.service';
 import { CostCategory, CostCategoryLabel } from 'src/app/api/budgetplan/dtos/CostCategory';
@@ -11,6 +11,7 @@ import { FixedCostUpdateDto } from 'src/app/api/budgetplan/dtos/FixedCostUpdateD
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/ConfirmationDialogData';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
+import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
 import { FixedCostContextService } from '../../../services/fixed-cost-context.service';
 import { FixedCostHistoryDialogService } from '../fixed-cost-history-dialog/fixed-cost-history-dialog.service';
@@ -30,7 +31,7 @@ import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe'
     imports: [MatProgressBar, FormsModule, ReactiveFormsModule, MatSelect, MatOption, MatIcon, MatProgressSpinner, ShowErrorPipe]
 })
 export class FixedCostDetailsComponent implements OnInit, OnDestroy {
-  private router = inject(Router);
+  private historyTrail = inject(HistoryTrailService);
   private route = inject(ActivatedRoute);
   private snackbar = inject(MatSnackBar);
   private confirmationDialog = inject(ConfirmationDialogService);
@@ -59,14 +60,14 @@ export class FixedCostDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const fixedCostId = getParametersFromRouteRecursive(this.route.snapshot)["id"];
     if (!fixedCostId) {
-      leaveDetailNotFound(this.router, this.snackbar, '/budgetplan/fixedcost');
+      leaveDetailNotFound(this.historyTrail, this.snackbar, '/budgetplan/fixedcost');
       return;
     }
 
     this.fixedCostContextService.byId(fixedCostId).pipe(takeUntil(this.destroy$)).subscribe({
       next: fixedCost => {
         if (!fixedCost) {
-          leaveDetailNotFound(this.router, this.snackbar, '/budgetplan/fixedcost');
+          leaveDetailNotFound(this.historyTrail, this.snackbar, '/budgetplan/fixedcost');
           return;
         }
 
@@ -156,7 +157,8 @@ export class FixedCostDetailsComponent implements OnInit, OnDestroy {
       {
         next: _ => {
           this.isDeleting = false;
-          this.router.navigateByUrl('/budgetplan/fixedcost');
+          // zurück zur Liste; Zurück führt danach nicht auf den gelöschten Eintrag
+          this.historyTrail.leaveTo('/budgetplan/fixedcost');
         },
         error: _ => {
           this.isDeleting = false;

@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
+import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
 import { PersonContextService } from '../../../services/person-context.service';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -32,7 +33,7 @@ import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe'
     imports: [FormsModule, ReactiveFormsModule, MatProgressSpinner, WorkEntryListComponent, MatProgressBar, MatIcon, DecimalPipe, DatePipe, ShowErrorPipe]
 })
 export class PersonDetailsComponent implements OnInit, OnDestroy {
-  private router = inject(Router);
+  private historyTrail = inject(HistoryTrailService);
   private route = inject(ActivatedRoute);
   private snackbar = inject(MatSnackBar);
   private contextService = inject(PersonContextService);
@@ -57,14 +58,14 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const personId = getParametersFromRouteRecursive(this.route.snapshot)["id"];
     if (!personId) {
-      leaveDetailNotFound(this.router, this.snackbar, '/work/person');
+      leaveDetailNotFound(this.historyTrail, this.snackbar, '/work/person');
       return;
     }
 
     this.contextService.byId(personId).pipe(takeUntil(this.destroy$)).subscribe({
       next: person => {
         if (!person) {
-          leaveDetailNotFound(this.router, this.snackbar, '/work/person');
+          leaveDetailNotFound(this.historyTrail, this.snackbar, '/work/person');
           return;
         }
 
@@ -161,7 +162,8 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
       {
         next: _ => {
           this.isDeleting = false;
-          this.router.navigateByUrl('/work/person');
+          // zurück zur Liste; Zurück führt danach nicht auf den gelöschten Eintrag
+          this.historyTrail.leaveTo('/work/person');
         },
         error: _ => {
           this.isDeleting = false;

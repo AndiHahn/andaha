@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormArray, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { PageTitleService } from 'src/app/core/page-title/page-title.service';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
@@ -13,6 +13,7 @@ import { BillCategoryContextService } from 'src/app/services/bill-category-conte
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/ConfirmationDialogData';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
+import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
 import { getAllColors } from '../functions/category-functions';
 import { CategoryForm, createSubCategoryForm, createCategoryForm, SubCategoryForm } from '../functions/form-functions';
@@ -33,7 +34,7 @@ import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe'
 })
 export class CategoryItemDetailsComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
+  private historyTrail = inject(HistoryTrailService);
   private snackbar = inject(MatSnackBar);
   private confirmationDialog = inject(ConfirmationDialogService);
   private categoryContextService = inject(BillCategoryContextService);
@@ -66,14 +67,14 @@ export class CategoryItemDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const categoryId = getParametersFromRouteRecursive(this.route.snapshot)["id"];
     if (!categoryId) {
-      leaveDetailNotFound(this.router, this.snackbar, '/settings/categories');
+      leaveDetailNotFound(this.historyTrail, this.snackbar, '/settings/categories');
       return;
     }
 
     this.categoryContextService.categoryById(categoryId).pipe(takeUntil(this.destroy$)).subscribe({
       next: category => {
         if (!category) {
-          leaveDetailNotFound(this.router, this.snackbar, '/settings/categories');
+          leaveDetailNotFound(this.historyTrail, this.snackbar, '/settings/categories');
           return;
         }
 
@@ -199,7 +200,8 @@ export class CategoryItemDetailsComponent implements OnInit, OnDestroy {
       {
         next: _ => {
           this.isDeleting = false;
-          this.router.navigateByUrl('/settings/categories');
+          // zurück zur Liste; Zurück führt danach nicht auf den gelöschten Eintrag
+          this.historyTrail.leaveTo('/settings/categories');
         },
         error: _ => {
           this.isDeleting = false;

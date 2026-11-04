@@ -1,10 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Router, provideRouter } from '@angular/router';
+import { ActivatedRoute, provideRouter } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
 import { BillTemplateDto } from 'src/app/api/shopping/dtos/BillTemplateDto';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
+import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { BillTemplateContextService } from 'src/app/features/bill/services/bill-template-context.service';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
@@ -20,18 +21,20 @@ const existing: BillTemplateDto = { id: 't1', name: 'Wocheneinkauf', shopName: '
 describe('TemplateEditComponent', () => {
   let fixture: ComponentFixture<TemplateEditComponent>;
   let service: { save: ReturnType<typeof vi.fn>; remove: ReturnType<typeof vi.fn> };
-  let router: { navigateByUrl: ReturnType<typeof vi.fn> };
+  let historyTrail: { leaveTo: ReturnType<typeof vi.fn> };
   let snackbar: { openFromComponent: ReturnType<typeof vi.fn> };
   let confirm: boolean;
 
   async function setup(id: string | null, list: BillTemplateDto[] = [existing], cats: CategoryDto[] = categories, failed = false) {
     confirm = true;
     snackbar = { openFromComponent: vi.fn() };
+    historyTrail = { leaveTo: vi.fn() };
     await TestBed.configureTestingModule({
       imports: [TemplateEditComponent, NoopAnimationsModule],
       providers: [
         provideRouter([]),
         { provide: MatSnackBar, useValue: snackbar },
+        { provide: HistoryTrailService, useValue: historyTrail },
         { provide: ActivatedRoute, useValue: { snapshot: { params: id ? { id } : {}, children: [], parent: null } } },
         { provide: BillCategoryContextService, useValue: { categories: () => of(cats) } },
         {
@@ -51,8 +54,6 @@ describe('TemplateEditComponent', () => {
         }
       ]
     }).compileComponents();
-    router = TestBed.inject(Router) as never;
-    vi.spyOn(router as unknown as Router, 'navigateByUrl').mockResolvedValue(true);
     service = TestBed.inject(BillTemplateContextService) as unknown as typeof service;
     fixture = TestBed.createComponent(TemplateEditComponent);
     fixture.detectChanges();
@@ -72,7 +73,7 @@ describe('TemplateEditComponent', () => {
     fixture.componentInstance.form.patchValue({ shopMode: 'choose' });
     await fixture.componentInstance.onSave();
     expect(service.save).toHaveBeenCalledWith('t1', { name: 'Wocheneinkauf', shopName: null, categoryId: 'c1', subCategoryId: 's1' });
-    expect(router.navigateByUrl).toHaveBeenCalledWith('/settings/templates');
+    expect(historyTrail.leaveTo).toHaveBeenCalledWith('/settings/templates');
   });
 
   it('chooses the segment by radio and hides the shop field', async () => {
@@ -138,14 +139,14 @@ describe('TemplateEditComponent', () => {
     service.save.mockRejectedValue(new Error('offline'));
     await fixture.componentInstance.onSave();
     expect(snackbar.openFromComponent).toHaveBeenCalled();
-    expect(router.navigateByUrl).not.toHaveBeenCalled();
+    expect(historyTrail.leaveTo).not.toHaveBeenCalled();
   });
 
   it('asks before deleting and then removes', async () => {
     await setup('t1');
     await fixture.componentInstance.onDelete();
     expect(service.remove).toHaveBeenCalledWith('t1');
-    expect(router.navigateByUrl).toHaveBeenCalledWith('/settings/templates');
+    expect(historyTrail.leaveTo).toHaveBeenCalledWith('/settings/templates');
   });
 
   it('keeps the template when the deletion is not confirmed', async () => {
@@ -162,6 +163,6 @@ describe('TemplateEditComponent', () => {
 
   it('leaves to the list when the template does not exist', async () => {
     await setup('nope');
-    expect(router.navigateByUrl).toHaveBeenCalledWith('/settings/templates');
+    expect(historyTrail.leaveTo).toHaveBeenCalledWith('/settings/templates');
   });
 });

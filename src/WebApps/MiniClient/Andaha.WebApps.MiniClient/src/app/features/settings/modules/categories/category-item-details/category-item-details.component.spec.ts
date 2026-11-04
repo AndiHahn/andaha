@@ -6,6 +6,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { of } from 'rxjs';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { CategoryUpdateDto } from 'src/app/api/shopping/dtos/CategoryUpdateDto';
@@ -17,6 +18,7 @@ import { createSubCategoryForm } from '../functions/form-functions';
 import { CategoryItemDetailsComponent } from './category-item-details.component';
 
 describe('CategoryItemDetailsComponent', () => {
+    let historyTrail: { leaveTo: ReturnType<typeof vi.fn> };
     let fixture: ComponentFixture<CategoryItemDetailsComponent>;
     let context: MockedObject<BillCategoryContextService>;
 
@@ -31,6 +33,7 @@ describe('CategoryItemDetailsComponent', () => {
     };
 
     beforeEach(async () => {
+        historyTrail = { leaveTo: vi.fn() };
         context = {
             categoryById: vi.fn().mockName("BillCategoryContextService.categoryById"),
             getCategoryById: vi.fn().mockName("BillCategoryContextService.getCategoryById"),
@@ -49,6 +52,7 @@ describe('CategoryItemDetailsComponent', () => {
         { provide: Router, useValue: {
                 navigateByUrl: vi.fn().mockName("Router.navigateByUrl")
             } },
+        { provide: HistoryTrailService, useValue: historyTrail },
         { provide: MatSnackBar, useValue: {
                 openFromComponent: vi.fn().mockName("MatSnackBar.openFromComponent")
             } },
