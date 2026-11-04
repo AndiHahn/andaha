@@ -5,6 +5,9 @@
       <a class="mrow" [routerLink]="link.path">
         <mat-icon aria-hidden="true">{{ link.icon }}</mat-icon>
         <span class="label">{{ link.label }}</span>
+        @if (link.counter === 'templates') {
+          <span class="side">{{ templateCount() }}</span>
+        }
         <mat-icon class="chev" aria-hidden="true">chevron_right</mat-icon>
       </a>
     }

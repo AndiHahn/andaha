@@ -1,0 +1,100 @@
+<div class="page">
+  <div class="body">
+    @if (!ready()) {
+      <div class="loading">
+        <mat-spinner diameter="40" />
+      </div>
+    } @else {
+      <form class="form-body" [formGroup]="form" (ngSubmit)="onSave()">
+        <label class="field">
+          <span class="field-label">Name</span>
+          <span class="field-box">
+            <input formControlName="name" name="name" placeholder="Optional" autocomplete="off">
+          </span>
+          <span class="field-hint">Steht auf der Kachel. Leer lassen = Shopname.</span>
+        </label>
+
+        <div class="field">
+          <span class="field-label" id="template-shop-label">Shop</span>
+          <div class="segment" role="radiogroup" aria-labelledby="template-shop-label">
+            <label>
+              <input type="radio" formControlName="shopMode" name="shopMode" value="fixed">
+              <span>Fester Shop</span>
+            </label>
+            <label>
+              <input type="radio" formControlName="shopMode" name="shopMode" value="choose">
+              <span>Beim Erfassen wählen</span>
+            </label>
+          </div>
+          @if (form.controls.shopMode.value === 'choose') {
+            <span class="field-hint">Vorausgewählt wird dein häufigster Shop in dieser Kategorie.</span>
+          }
+        </div>
+
+        @if (form.controls.shopMode.value === 'fixed') {
+          <label class="field" [class.invalid]="form.controls.shopName | showError">
+            <span class="field-label">Shopname</span>
+            <span class="field-box">
+              <input formControlName="shopName" name="shopName" required autocomplete="off"
+                [attr.aria-invalid]="form.controls.shopName | showError">
+            </span>
+          </label>
+        }
+
+        <div class="field" [class.invalid]="form.controls.categoryId | showError">
+          <span class="field-label">Kategorie</span>
+          <span class="field-box">
+            <mat-select formControlName="categoryId" aria-label="Kategorie" placeholder="Kategorie wählen">
+              @if (category; as selected) {
+                <mat-select-trigger>
+                  <span class="opt">
+                    <i class="dot" [class.dot-light]="selected.color === 'white'" [style.background]="selected.color"></i>
+                    <span>{{ selected.name }}</span>
+                  </span>
+                </mat-select-trigger>
+              }
+              @for (c of categories(); track c.id) {
+                <mat-option [value]="c.id">
+                  <span class="opt">
+                    <i class="dot" [class.dot-light]="c.color === 'white'" [style.background]="c.color"></i>
+                    <span>{{ c.name }}</span>
+                  </span>
+                </mat-option>
+              }
+            </mat-select>
+            <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
+          </span>
+        </div>
+
+        <div class="field">
+          <span class="field-label">Unterkategorie</span>
+          <span class="field-box">
+            <mat-select formControlName="subCategoryId" aria-label="Unterkategorie" placeholder="Keine">
+              <mat-option [value]="null">Keine</mat-option>
+              @for (s of category?.subCategories ?? []; track s.id) {
+                <mat-option [value]="s.id">{{ s.name }}</mat-option>
+              }
+            </mat-select>
+            <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
+          </span>
+        </div>
+      </form>
+    }
+  </div>
+
+  <div class="actions">
+    @if (templateId) {
+      <button type="button" class="btn del icon-only" aria-label="Vorlage löschen"
+        [disabled]="isSaving() || isDeleting() || !ready()" (click)="onDelete()">
+        <mat-icon aria-hidden="true">delete</mat-icon>
+      </button>
+    }
+    <button type="button" class="btn pri grow" [disabled]="isSaving() || isDeleting() || !ready()" (click)="onSave()">
+      @if (!isSaving()) {
+        <mat-icon aria-hidden="true">check</mat-icon><span>Speichern</span>
+      } @else {
+        <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
+      }
+    </button>
+  </div>
+</div>

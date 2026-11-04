@@ -24,6 +24,8 @@ export interface NavLink {
   label: string;
   icon: string;
   path: string;
+  /** Zähler rechts neben dem Eintrag (Mehr-Seite), z. B. Anzahl der Vorlagen */
+  counter?: 'templates';
 }
 
 export const NAV_AREAS: readonly NavArea[] = [
@@ -75,6 +77,7 @@ export const NAV_AREAS: readonly NavArea[] = [
 /** Einträge unter „Mehr“: Abschnitt „Einstellungen“ (Mehr-Seite) bzw. Gruppe „Mehr“ (Sidebar) */
 export const MORE_SETTINGS: readonly NavLink[] = [
   { label: 'Kategorien', icon: 'category', path: '/settings/categories' },
+  { label: 'Vorlagen', icon: 'article', path: '/settings/templates', counter: 'templates' },
   { label: 'Verbindungen', icon: 'link', path: '/settings/connections' }
 ];
 

@@ -27,6 +27,11 @@ export const routes: Routes = [
         path: 'categories',
         data: { title: 'Kategorien', back: '/more' },
         loadChildren: () => import('./modules/categories/categories.routes').then(m => m.routes)
+      },
+      {
+        path: 'templates',
+        data: { title: 'Vorlagen', back: '/more' },
+        loadChildren: () => import('./modules/templates/templates.routes').then(m => m.routes)
       }
     ]
   }

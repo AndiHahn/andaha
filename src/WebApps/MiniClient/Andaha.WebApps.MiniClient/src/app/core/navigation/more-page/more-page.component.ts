@@ -1,6 +1,9 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
+import { map } from 'rxjs';
+import { BillTemplateContextService } from 'src/app/features/bill/services/bill-template-context.service';
 import { LEGAL_LINKS, MORE_DATA, MORE_SETTINGS } from '../nav-areas';
 
 /** Seite „Mehr“ (v2, 01-navigation): alles, was nicht täglich gebraucht wird. */
@@ -18,4 +21,6 @@ export class MorePageComponent {
   ];
 
   readonly legalLinks = LEGAL_LINKS;
+
+  readonly templateCount = toSignal(inject(BillTemplateContextService).templates().pipe(map(t => t.length)), { initialValue: 0 });
 }

@@ -1,0 +1,59 @@
+<div class="page">
+  <div class="body">
+    @if (!loaded()) {
+      <div class="loading">
+        <mat-spinner diameter="40" />
+      </div>
+    } @else {
+      <h2 class="sect first">Angeheftet<span>Reihenfolge wie im Sheet</span></h2>
+      @if (rows().length === 0) {
+        <div class="empty">Noch keine Vorlagen angelegt. Mit „Vorlage hinzufügen“ oder „Anheften“ bei einem Vorschlag entsteht die erste.</div>
+      }
+      <div class="list" cdkDropList (cdkDropListDropped)="drop($event)">
+        @for (row of rows(); track row.id) {
+          <div cdkDrag class="trow drag-item andaha-drag-item">
+            <span class="drag" cdkDragHandle aria-label="Verschieben">
+              <mat-icon aria-hidden="true">drag_indicator</mat-icon>
+            </span>
+            <a class="main" [routerLink]="row.id">
+              <span class="t">{{ row.title }}</span>
+              <span class="s">
+                @if (row.color) {
+                  <i class="dot" [class.dot-light]="row.color === 'white'" [style.background]="row.color"></i>
+                }{{ row.subtitle }}
+              </span>
+            </a>
+            <mat-icon class="chev" aria-hidden="true">chevron_right</mat-icon>
+          </div>
+        }
+      </div>
+
+      <h2 class="sect">Vorschläge<span>aus den letzten 90 Tagen</span></h2>
+      @if (suggestions().length === 0) {
+        <div class="empty">Noch keine Vorschläge. Sie entstehen aus deinen häufigsten Rechnungen.</div>
+      }
+      @for (row of suggestions(); track row.key) {
+        <div class="trow suggestion">
+          <div class="main">
+            <span class="t">{{ row.suggestion.shopName }}</span>
+            <span class="s">
+              @if (row.color) {
+                <i class="dot" [class.dot-light]="row.color === 'white'" [style.background]="row.color"></i>
+              }{{ row.subtitle }}
+            </span>
+          </div>
+          <span class="cnt">{{ row.suggestion.count }}×</span>
+          <button type="button" class="act" (click)="pin(row)">
+            <mat-icon aria-hidden="true">bookmark_border</mat-icon>Anheften
+          </button>
+        </div>
+      }
+    }
+  </div>
+
+  <div class="actions">
+    <a class="btn sec2 add" routerLink="create">
+      <mat-icon aria-hidden="true">add</mat-icon><span>Vorlage hinzufügen</span>
+    </a>
+  </div>
+</div>
