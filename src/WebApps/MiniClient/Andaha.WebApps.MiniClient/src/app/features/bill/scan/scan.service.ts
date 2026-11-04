@@ -8,6 +8,7 @@ import { AnalyzeBillResultDto } from 'src/app/api/shopping/dtos/AnalyzeBillResul
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { compressImage } from 'src/app/shared/utils/image-utils';
 import { BillCreatePrefill } from '../models/bill-create-prefill';
+import { PrefillImageStore } from '../services/prefill-image-store.service';
 import { toDayKey } from '../quick-entry/logic/quick-entry-state';
 import { ScanOverlayComponent, ScanOverlayData } from './scan-overlay/scan-overlay.component';
 
@@ -35,8 +36,8 @@ function toIsoDay(value?: string | null): string | undefined {
 }
 
 /** Vorbelegung des großen Formulars aus dem Analyse-Ergebnis; fehlende Felder bleiben undefined */
-export function mapAnalyzeResultToPrefill(result: AnalyzeBillResultDto, image: File): BillCreatePrefill {
-  const prefill: BillCreatePrefill = { image };
+export function mapAnalyzeResultToPrefill(result: AnalyzeBillResultDto, imageKey: string): BillCreatePrefill {
+  const prefill: BillCreatePrefill = { imageKey };
 
   const shopName = result.shopName?.trim();
   if (shopName) {
@@ -74,6 +75,7 @@ export class ScanService {
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
   private readonly snackbar = inject(MatSnackBar);
+  private readonly prefillImages = inject(PrefillImageStore);
 
   private running = false;
 
@@ -93,22 +95,24 @@ export class ScanService {
 
       // ohne Netz scheitert die Analyse sicher: kein Ladezustand, gleich das Formular mit Hinweis
       const outcome: ScanOutcome = navigator.onLine ? await this.analyze(image) : { kind: 'failed' };
-      await this.router.navigate(['/bill/create'], { state: { prefill: this.prefillFor(outcome, image) } });
+      // das Foto im Speicher, nur sein Schlüssel in den Router-State (kein Blob in history.state)
+      const imageKey = this.prefillImages.put(image);
+      await this.router.navigate(['/bill/create'], { state: { prefill: this.prefillFor(outcome, imageKey) } });
     } finally {
       this.running = false;
     }
   }
 
-  private prefillFor(outcome: ScanOutcome, image: File): BillCreatePrefill {
+  private prefillFor(outcome: ScanOutcome, imageKey: string): BillCreatePrefill {
     switch (outcome.kind) {
       case 'success': {
-        const prefill = mapAnalyzeResultToPrefill(outcome.result, image);
-        return hasFields(prefill) ? prefill : { image, notice: 'analysis-failed' };
+        const prefill = mapAnalyzeResultToPrefill(outcome.result, imageKey);
+        return hasFields(prefill) ? prefill : { imageKey, notice: 'analysis-failed' };
       }
       case 'failed':
-        return { image, notice: 'analysis-failed' };
+        return { imageKey, notice: 'analysis-failed' };
       case 'cancelled':
-        return { image };
+        return { imageKey };
     }
   }
 

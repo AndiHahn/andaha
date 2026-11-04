@@ -98,7 +98,12 @@ export class HistoryTrailService {
     // wie der Router (HistoryStateManager.setBrowserUrl): gleiche URL wird ersetzt statt gepusht
     const pushed = !pending.replace && pending.from !== null && pending.from !== event.urlAfterRedirects;
     const trail = pushed ? [pending.from!, ...pending.trail].slice(0, MAX_TRAIL) : pending.trail;
-    const state = this.window.history.state && typeof this.window.history.state === 'object' ? this.window.history.state : {};
+    const state: unknown = this.window.history.state;
+    if (!state || typeof state !== 'object') {
+      // nicht lesbar (null): der Router hat gerade seinen Zustand geschrieben, ein `{ appTrail }` ohne
+      // dessen Schlüssel würde ihn überschreiben. Lieber ohne Spur; leaveTo ersetzt dann den Eintrag.
+      return;
+    }
     this.window.history.replaceState({ ...state, [TRAIL_KEY]: trail }, '');
   }
 }

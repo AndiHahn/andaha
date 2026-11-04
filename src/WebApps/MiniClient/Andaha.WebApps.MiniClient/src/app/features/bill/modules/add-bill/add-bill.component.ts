@@ -31,6 +31,7 @@ import { QuickDateRowComponent } from '../../quick-entry/quick-date-row/quick-da
 import { QuickEntryDraftService } from '../../quick-entry/quick-entry-draft.service';
 import { ShopStatsContextService } from '../../services/shop-stats-context.service';
 import { PhotoPickerComponent } from '../photo-picker/photo-picker.component';
+import { PrefillImageStore } from '../../services/prefill-image-store.service';
 import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 
 /** Desktop-Breakpoint wie AppComponent */
@@ -40,10 +41,21 @@ const MAX_SHOP_OPTIONS = 6;
 const SAVE_FAILED = 'Rechnung konnte nicht gespeichert werden.';
 const ANALYSIS_KEPT = 'Rechnung gespeichert, die Analyse konnte aber nicht entfernt werden.';
 
-/** Vorbelegung aus dem Router-State (`router.navigate(['/bill/create'], { state: { prefill } })`) */
-function readPrefill(): BillCreatePrefill {
-  const prefill = (history.state as { prefill?: unknown } | null)?.prefill;
-  return prefill && typeof prefill === 'object' ? prefill as BillCreatePrefill : {};
+/**
+ * Vorbelegung aus dem Router-State (`router.navigate(['/bill/create'], { state: { prefill } })`), das
+ * Foto dazu aus dem `PrefillImageStore` (nicht im History-State, design.md §9).
+ *
+ * Nach Neuladen ist das Foto weg, das Formular öffnet ohne. Bei einer Übernahme bleibt die Analyse dann
+ * bestehen: das Formular legt eine normale Rechnung an, statt mit der Analyse auch ihr Foto zu löschen.
+ */
+function readPrefill(images: PrefillImageStore): { prefill: BillCreatePrefill; image: File | null } {
+  const raw = (history.state as { prefill?: unknown } | null)?.prefill;
+  const prefill: BillCreatePrefill = raw && typeof raw === 'object' ? { ...raw as BillCreatePrefill } : {};
+  const image = images.get(prefill.imageKey);
+  if (prefill.imageKey && !image) {
+    delete prefill.analyzedBillId;
+  }
+  return { prefill, image };
 }
 
 /**
@@ -73,7 +85,8 @@ export class AddBillComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   readonly form: FormGroup<CreateBillForm> = getCreateBillForm();
-  readonly prefill = readPrefill();
+  private readonly initial = readPrefill(inject(PrefillImageStore));
+  readonly prefill = this.initial.prefill;
   /**
    * Einmal pro Formular (M2): ein zweiter Versuch nach verlorener Antwort legt keine zweite Rechnung an,
    * das Anlegen ist pro ID idempotent (CreateBillCommandHandler liefert die vorhandene zurück).
@@ -285,8 +298,8 @@ export class AddBillComponent implements OnInit {
     if (date) {
       controls.date.setValue(date);
     }
-    if (prefill.image instanceof Blob) {
-      this.photo = prefill.image;
+    if (this.initial.image) {
+      this.photo = this.initial.image;
     }
     if (prefill.categoryId) {
       this.categoryChosen = true;

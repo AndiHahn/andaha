@@ -15,6 +15,7 @@ import { SuccessSnackbarComponent } from 'src/app/shared/snackbar/success-snackb
 import { BillCreatePrefill } from '../../models/bill-create-prefill';
 import { QuickEntryDraftService } from '../../quick-entry/quick-entry-draft.service';
 import { BillContextService } from '../../services/bill-context.service';
+import { PrefillImageStore } from '../../services/prefill-image-store.service';
 import { ShopStatsContextService } from '../../services/shop-stats-context.service';
 import { AddBillComponent } from './add-bill.component';
 
@@ -45,6 +46,8 @@ async function png(width: number, height: number): Promise<File> {
 
 interface SetupOptions {
   prefill?: BillCreatePrefill;
+  /** Foto, das Scan bzw. Übernahme im Speicher übergeben (Schlüssel kommt in den Router-State) */
+  image?: File;
   apiAddBill?: () => Observable<unknown>;
   deleteAnalyzedBill?: () => Observable<void>;
 }
@@ -101,6 +104,11 @@ describe('AddBillComponent', () => {
         { provide: HistoryTrailService, useValue: { leaveTo } }
       ]
     });
+
+    if (options.image) {
+      const imageKey = TestBed.inject(PrefillImageStore).put(options.image);
+      history.replaceState({ prefill: { ...options.prefill, imageKey } }, '');
+    }
 
     // keine echten Snackbars: deren Zeitgeber halten whenStable() sonst 4–5 s auf
     openSnackbar = vi.spyOn(TestBed.inject(MatSnackBar), 'openFromComponent').mockReturnValue(undefined as never);
@@ -232,7 +240,8 @@ describe('AddBillComponent', () => {
   it('fills all fields from the prefill including the photo', async () => {
     const photo = await png(20, 10);
     await setup({
-      prefill: { price: 23.4, shopName: 'Billa', categoryId: 'c1', subCategoryId: 's1', date: '2026-10-30', notes: 'Wochenmarkt', image: photo }
+      prefill: { price: 23.4, shopName: 'Billa', categoryId: 'c1', subCategoryId: 's1', date: '2026-10-30', notes: 'Wochenmarkt' },
+      image: photo
     });
 
     expect(input('price').value).toBe('23,40');
@@ -262,10 +271,26 @@ describe('AddBillComponent', () => {
   });
 
   it('shows the hint when the analysis failed', async () => {
-    await setup({ prefill: { notice: 'analysis-failed', image: await png(20, 10) } });
+    await setup({ prefill: { notice: 'analysis-failed' }, image: await png(20, 10) });
 
     const notice = host.querySelector('[role="status"]')!;
     expect(notice.textContent).toContain('Die Rechnung konnte nicht gelesen werden. Bitte die Felder ausfüllen.');
+    expect(host.querySelector('app-photo-picker img')).toBeTruthy();
+  });
+
+  // design.md §9: das Foto liegt nur im Speicher; nach Neuladen ist es weg, das Formular geht ohne
+  it('opens without the photo after a reload (image key no longer known) and still saves', async () => {
+    await setup({ prefill: { notice: 'analysis-failed', imageKey: 'vor-dem-neuladen' } });
+
+    expect(host.querySelector('app-photo-picker img')).toBeNull();
+    expect(host.querySelector('[role="status"]')!.textContent).toContain('Die Rechnung konnte nicht gelesen werden.');
+
+    await fillValid();
+    await save();
+
+    expect(addBill).toHaveBeenCalledTimes(1);
+    expect(savedDto().image).toBeUndefined();
+    expect(leaveTo).toHaveBeenCalledWith('/bill/list');
   });
 
   it('after saving: snackbar without action, vibration, back to the list', async () => {
@@ -357,6 +382,28 @@ describe('AddBillComponent', () => {
       expect(openSnackbar).toHaveBeenCalledWith(SuccessSnackbarComponent, expect.objectContaining({ data: 'Gespeichert · Billa 9,90 €' }));
       // I1/I2: zurück zur Analyse-Liste, über den gelöschten Analyse-Eintrag hinweg
       expect(leaveTo).toHaveBeenCalledWith('/bill/analysis', 2);
+    });
+
+    it('takes the photo over from memory', async () => {
+      await setup({ prefill, image: await png(20, 10) });
+
+      await save();
+
+      expect((apiAddBill.mock.calls[0][0] as BillCreateDto).image?.type).toBe('image/jpeg');
+      expect(deleteAnalyzedBill).toHaveBeenCalledWith('a1');
+    });
+
+    // design.md §9: nach Neuladen ist das Foto weg; die Analyse samt Foto bleibt dann bestehen und
+    // das Formular legt eine normale Rechnung an, statt das Foto mit der Analyse zu löschen
+    it('keeps the analyzed entry when its photo was lost by a reload', async () => {
+      await setup({ prefill: { ...prefill, imageKey: 'vor-dem-neuladen' } });
+
+      await save();
+
+      expect(apiAddBill).not.toHaveBeenCalled();
+      expect(deleteAnalyzedBill).not.toHaveBeenCalled();
+      expect(savedDto()).toEqual(expect.objectContaining({ price: 9.9, shopName: 'Billa' }));
+      expect(leaveTo).toHaveBeenCalledWith('/bill/list');
     });
 
     it('does not delete the analyzed entry when saving fails', async () => {

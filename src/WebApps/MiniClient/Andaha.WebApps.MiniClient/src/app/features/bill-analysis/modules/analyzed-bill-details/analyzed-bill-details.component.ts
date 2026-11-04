@@ -11,6 +11,7 @@ import { AnalyzedBillContextService } from '../../services/analyzed-bill-context
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { SubCategoryDto } from 'src/app/api/shopping/dtos/SubCategoryDto';
 import { BillCreatePrefill, TAKE_OVER_OFFLINE } from 'src/app/features/bill/models/bill-create-prefill';
+import { PrefillImageStore } from 'src/app/features/bill/services/prefill-image-store.service';
 import { toDayKey } from 'src/app/features/bill/quick-entry/logic/quick-entry-state';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
@@ -46,6 +47,7 @@ export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
   private confirmationDialog = inject(ConfirmationDialogService);
   private analyzedContext = inject(AnalyzedBillContextService);
   private categoryContext = inject(BillCategoryContextService);
+  private prefillImages = inject(PrefillImageStore);
 
   bill?: BillAnalyzedDto;
   category?: CategoryDto;
@@ -105,7 +107,8 @@ export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
         if (!image) {
           return;
         }
-        prefill.image = image;
+        // im Speicher, nur der Schlüssel in den Router-State (kein Blob in history.state)
+        prefill.imageKey = this.prefillImages.put(image);
       }
 
       await this.router.navigate(['/bill/create'], { state: { prefill } });

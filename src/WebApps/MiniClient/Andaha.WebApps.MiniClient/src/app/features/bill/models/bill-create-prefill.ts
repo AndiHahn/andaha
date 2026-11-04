@@ -1,7 +1,7 @@
 /**
  * Vorbelegung des großen Formulars (`/bill/create`), übergeben als Router-State
  * (`router.navigate(['/bill/create'], { state: { prefill } })`): aus „Alle Felder“ der
- * Schnellerfassung, aus dem Scan und aus „Als Rechnung übernehmen“.
+ * Schnellerfassung, aus dem Scan und aus „Als Rechnung übernehmen“. Nur serialisierbare Werte, kein Blob.
  */
 export interface BillCreatePrefill {
   price?: number;
@@ -11,7 +11,11 @@ export interface BillCreatePrefill {
   /** Kalendertag `YYYY-MM-DD` */
   date?: string;
   notes?: string;
-  image?: File;
+  /**
+   * Schlüssel des Fotos im `PrefillImageStore`. Das Foto selbst steht nicht im Router-State: ein Blob in
+   * `history.state` liest Chromium nach einer Traversierung als null (Phase 4 F1/F2, design.md §9).
+   */
+  imageKey?: string;
   /** „Als Rechnung übernehmen“: Formular speichert direkt beim Server und löscht danach diesen Analyse-Eintrag */
   analyzedBillId?: string;
   /** Hinweis über dem Formular (Scan ohne Ergebnis) */

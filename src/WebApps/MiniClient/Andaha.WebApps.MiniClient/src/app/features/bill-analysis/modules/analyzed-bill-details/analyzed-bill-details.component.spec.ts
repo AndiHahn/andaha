@@ -9,6 +9,7 @@ import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { BillImageDialogService } from 'src/app/features/bill/modules/bill-image-dialog/bill-image-dialog.service';
 import { BillCreatePrefill } from 'src/app/features/bill/models/bill-create-prefill';
+import { PrefillImageStore } from 'src/app/features/bill/services/prefill-image-store.service';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { AnalyzedBillContextService } from '../../services/analyzed-bill-context.service';
@@ -174,10 +175,14 @@ describe('AnalyzedBillDetailsComponent', () => {
     expect(navigate).toHaveBeenCalledTimes(1);
     const [commands, extras] = navigate.mock.calls[0] as [unknown[], { state: { prefill: BillCreatePrefill } }];
     expect(commands).toEqual(['/bill/create']);
-    const { image, ...fields } = extras.state.prefill;
+    const { imageKey, ...fields } = extras.state.prefill;
     expect(fields).toEqual({
       analyzedBillId: 'a1', shopName: 'Billa', price: 12.5, date: '2026-11-03', categoryId: 'c1', subCategoryId: 's1'
     });
+    // das Foto geht im Speicher an das Formular, nicht über den History-State (Chromium verliert dort
+    // nach einer Traversierung den ganzen Zustand des Eintrags, Phase 4 F2)
+    expect(Object.values(extras.state.prefill).some(value => value instanceof Blob)).toBe(false);
+    const image = TestBed.inject(PrefillImageStore).get(imageKey);
     expect(image).toBeInstanceOf(File);
     expect(image!.type).toBe('image/jpeg');
     expect(image!.size).toBe(3);
@@ -191,7 +196,7 @@ describe('AnalyzedBillDetailsComponent', () => {
 
     expect(downloadImage).not.toHaveBeenCalled();
     const extras = navigate.mock.calls[0][1] as { state: { prefill: BillCreatePrefill } };
-    expect(extras.state.prefill.image).toBeUndefined();
+    expect(extras.state.prefill.imageKey).toBeUndefined();
     expect(extras.state.prefill.categoryId).toBeUndefined();
     expect(extras.state.prefill.analyzedBillId).toBe('a1');
   });

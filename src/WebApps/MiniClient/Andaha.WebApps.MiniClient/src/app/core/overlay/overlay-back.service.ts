@@ -44,7 +44,8 @@ function positionOf(state: unknown): HistoryPosition {
  * Jedes Overlay bekommt einen History-Eintrag mit gleicher URL und `history.state.overlayBack = <id>`.
  * Der Router-Eintrag darunter wird beim ersten Overlay mit `overlayBase = <id>` markiert (replaceState),
  * die Overlay-Einträge erben die Markierung. So ist jede Stelle der History als (base, marker)
- * geordnet, auch wenn der Router zwischendurch eigene Einträge angelegt hat.
+ * geordnet, auch wenn der Router zwischendurch eigene Einträge angelegt hat. Ist der Zustand des
+ * Router-Eintrags nicht lesbar, bleibt er unangetastet (siehe `push`).
  *
  * - popstate: alle Overlays hinter der erreichten Stelle schließen, oberstes zuerst. Ist die Stelle
  *   der Eintrag eines schon geschlossenen oder unbekannten Overlays (z. B. unter einer Navigation
@@ -169,15 +170,24 @@ export class OverlayBackService {
       return;
     }
     const history = this.window.history;
-    let state: Record<string, unknown> = history.state && typeof history.state === 'object' ? history.state : {};
-    let base = numberOf(state, 'overlayBase');
-    if (base === null) {
+    const current: unknown = history.state;
+    let base = numberOf(current, 'overlayBase');
+    if (current && typeof current === 'object') {
+      if (base === null) {
+        base = this.nextId++;
+        history.replaceState({ ...current, overlayBase: base }, '');
+      }
+    } else {
+      // Zustand nicht lesbar (null oder kein Objekt): Chromium liefert z. B. den Zustand eines Eintrags
+      // mit Blob nach einer Traversierung als null, gespeichert sind navigationId und Spur aber noch.
+      // Ein replaceState würde sie überschreiben. Der Router-Eintrag bleibt deshalb unmarkiert (wie
+      // vor dem ersten Overlay: landet Zurück dort, schließt onPopState alles darüber) und nur der
+      // Overlay-Eintrag trägt eine neue Basis; Ids steigen, die Reihenfolge bleibt erhalten.
       base = this.nextId++;
-      state = { ...state, overlayBase: base };
-      history.replaceState(state, '');
     }
     entry.base = base;
-    history.pushState({ ...state, overlayBack: entry.id }, '');
+    const state = current && typeof current === 'object' ? current : {};
+    history.pushState({ ...state, overlayBase: base, overlayBack: entry.id }, '');
     this.stack.push(entry);
   }
 

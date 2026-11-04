@@ -6,6 +6,7 @@ import { Observable, Subject } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { AnalyzeBillResultDto } from 'src/app/api/shopping/dtos/AnalyzeBillResultDto';
 import { BillCreatePrefill } from '../models/bill-create-prefill';
+import { PrefillImageStore } from '../services/prefill-image-store.service';
 import { SCAN_TIMEOUT_MS, ScanService, mapAnalyzeResultToPrefill } from './scan.service';
 
 async function png(width: number, height: number): Promise<File> {
@@ -27,12 +28,20 @@ const fullResult: AnalyzeBillResultDto = {
   lineItems: []
 };
 
+/** Ein Blob im History-State ist nach einer Traversierung in Chromium nicht mehr lesbar (Phase 4 F1/F2) */
+function containsBlob(value: unknown): boolean {
+  if (value instanceof Blob) {
+    return true;
+  }
+  return !!value && typeof value === 'object' && Object.values(value).some(containsBlob);
+}
+
 describe('mapAnalyzeResultToPrefill', () => {
-  const image = new File(['x'], 'image.jpg', { type: 'image/jpeg' });
+  const imageKey = 'key-1';
 
   it('übernimmt alle Felder, Datum als ISO-Tag', () => {
-    expect(mapAnalyzeResultToPrefill(fullResult, image)).toEqual({
-      image,
+    expect(mapAnalyzeResultToPrefill(fullResult, imageKey)).toEqual({
+      imageKey,
       shopName: 'Billa',
       date: '2026-11-03',
       price: 42.9,
@@ -42,13 +51,13 @@ describe('mapAnalyzeResultToPrefill', () => {
   });
 
   it('nimmt den Kalendertag auch aus einem Zeitstempel mit Zone', () => {
-    expect(mapAnalyzeResultToPrefill({ ...fullResult, date: '2026-10-31T23:30:00+01:00' }, image).date).toBe('2026-10-31');
+    expect(mapAnalyzeResultToPrefill({ ...fullResult, date: '2026-10-31T23:30:00+01:00' }, imageKey).date).toBe('2026-10-31');
   });
 
   it('lässt fehlende Felder undefined', () => {
-    const prefill = mapAnalyzeResultToPrefill({ shopName: null, date: null, totalAmount: null, categoryId: null, subCategoryId: 's1', lineItems: [] }, image);
+    const prefill = mapAnalyzeResultToPrefill({ shopName: null, date: null, totalAmount: null, categoryId: null, subCategoryId: 's1', lineItems: [] }, imageKey);
 
-    expect(prefill.image).toBe(image);
+    expect(prefill.imageKey).toBe(imageKey);
     expect(prefill.shopName).toBeUndefined();
     expect(prefill.date).toBeUndefined();
     expect(prefill.price).toBeUndefined();
@@ -58,7 +67,7 @@ describe('mapAnalyzeResultToPrefill', () => {
   });
 
   it('ignoriert leeren Shopnamen und ungültiges Datum', () => {
-    const prefill = mapAnalyzeResultToPrefill({ ...fullResult, shopName: '  ', date: 'kein Datum' }, image);
+    const prefill = mapAnalyzeResultToPrefill({ ...fullResult, shopName: '  ', date: 'kein Datum' }, imageKey);
 
     expect(prefill.shopName).toBeUndefined();
     expect(prefill.date).toBeUndefined();
@@ -114,7 +123,14 @@ describe('ScanService', () => {
     expect(navigate).toHaveBeenCalledTimes(1);
     const [commands, extras] = navigate.mock.calls[0] as [unknown[], { state: { prefill: BillCreatePrefill } }];
     expect(commands).toEqual(['/bill/create']);
+    // das Foto liegt nicht im History-State (Chromium verliert sonst den ganzen Zustand des Eintrags)
+    expect(containsBlob(extras.state)).toBe(false);
     return extras.state.prefill;
+  }
+
+  /** Foto, das der Scan dem Formular übergeben hat (im Speicher, Schlüssel im Router-State) */
+  function handedOverImage(prefill: BillCreatePrefill): File | null {
+    return TestBed.inject(PrefillImageStore).get(prefill.imageKey);
   }
 
   async function analyzing(): Promise<void> {
@@ -137,9 +153,11 @@ describe('ScanService', () => {
     expect(closeDialog).toHaveBeenCalled();
     // Overlay zu, bevor navigiert wird (closeOnNavigation: false)
     expect(closeDialog.mock.invocationCallOrder[0]).toBeLessThan(navigate.mock.invocationCallOrder[0]);
-    expect(navigatedPrefill()).toEqual({
-      image: sent, shopName: 'Billa', date: '2026-11-03', price: 42.9, categoryId: 'c1', subCategoryId: 's1'
+    const prefill = navigatedPrefill();
+    expect(prefill).toEqual({
+      imageKey: expect.any(String), shopName: 'Billa', date: '2026-11-03', price: 42.9, categoryId: 'c1', subCategoryId: 's1'
     });
+    expect(handedOverImage(prefill)).toBe(sent);
   });
 
   it('Erfolg ohne ein einziges Feld: nur Foto und Hinweis', async () => {
@@ -152,7 +170,7 @@ describe('ScanService', () => {
 
     const prefill = navigatedPrefill();
     expect(prefill.notice).toBe('analysis-failed');
-    expect(prefill.image).toBeInstanceOf(File);
+    expect(handedOverImage(prefill)).toBeInstanceOf(File);
     expect(prefill.shopName).toBeUndefined();
   });
 
@@ -165,7 +183,8 @@ describe('ScanService', () => {
 
     expect(closeDialog).toHaveBeenCalled();
     const prefill = navigatedPrefill();
-    expect(prefill).toEqual({ image: analyzeBill.mock.calls[0][0], notice: 'analysis-failed' });
+    expect(prefill).toEqual({ imageKey: expect.any(String), notice: 'analysis-failed' });
+    expect(handedOverImage(prefill)).toBe(analyzeBill.mock.calls[0][0]);
   });
 
   it('Zeitüberschreitung nach 30 s: Hinweis, Request abbestellt', async () => {
@@ -196,7 +215,8 @@ describe('ScanService', () => {
 
     expect(unsubscribed).toBe(true);
     const prefill = navigatedPrefill();
-    expect(prefill).toEqual({ image: analyzeBill.mock.calls[0][0] });
+    expect(prefill).toEqual({ imageKey: expect.any(String) });
+    expect(handedOverImage(prefill)).toBe(analyzeBill.mock.calls[0][0]);
   });
 
   it('ohne Netz: gleich das Formular mit Foto und Hinweis, kein Overlay', async () => {
@@ -208,7 +228,7 @@ describe('ScanService', () => {
     expect(openDialog).not.toHaveBeenCalled();
     const prefill = navigatedPrefill();
     expect(prefill.notice).toBe('analysis-failed');
-    expect(prefill.image).toBeInstanceOf(File);
+    expect(handedOverImage(prefill)).toBeInstanceOf(File);
   });
 
   it('kein Bild: Fehlermeldung, keine Analyse, keine Navigation', async () => {

@@ -88,6 +88,22 @@ describe('HistoryTrailService', () => {
     expect(service.previousUrls()).toEqual([]);
   });
 
+  // Phase 4 F1/F2: liest sich der Zustand nicht (null), bleibt der gespeicherte stehen, statt durch
+  // `{ appTrail }` ohne die Router-Schlüssel ersetzt zu werden; leaveTo nimmt dann den Ersatz-Weg
+  it('does not overwrite a router state that reads as null', () => {
+    navigate('/bill/list');
+    const replace = vi.mocked(history.replaceState);
+    replace.mockClear();
+
+    extras = {};
+    events.next(new NavigationStart(9, '/bill/create', 'imperative'));
+    state = null as unknown as Record<string, unknown>;
+    events.next(new NavigationEnd(9, '/bill/create', '/bill/create'));
+
+    expect(replace).not.toHaveBeenCalled();
+    expect(service.previousUrls()).toEqual([]);
+  });
+
   it('keeps at most five urls', () => {
     for (const url of ['/1', '/2', '/3', '/4', '/5', '/6', '/7']) {
       navigate(url);

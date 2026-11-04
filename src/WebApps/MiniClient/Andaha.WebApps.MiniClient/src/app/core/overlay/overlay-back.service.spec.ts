@@ -14,12 +14,18 @@ class FakeHistory {
   popDelay = 0;
   /** nach dem Test: verspätete popstate-Ereignisse nicht mehr in den nächsten Test schicken */
   disposed = false;
+  /**
+   * Einträge, deren Zustand sich nicht mehr lesen lässt (liest sich als null, gespeichert bleibt er):
+   * so liefert Chromium nach einer Traversierung den Zustand eines Eintrags mit Blob (Phase 4 F1/F2)
+   */
+  readonly unreadable = new Set<number>();
 
   get state(): unknown {
-    return this.entries[this.index];
+    return this.unreadable.has(this.index) ? null : this.entries[this.index];
   }
 
   replace(state: unknown): void {
+    this.unreadable.delete(this.index);
     this.entries[this.index] = state;
   }
 
@@ -281,6 +287,48 @@ describe('OverlayBackService', () => {
     expect(base).toEqual(expect.any(Number));
     expect(fake.entries[1]).toEqual(expect.objectContaining({ overlayBase: base }));
     expect(fake.entries[2]).toEqual(expect.objectContaining({ overlayBase: base }));
+  });
+
+  // Phase 4 F1/F2: ein unlesbarer Zustand (null) des Router-Eintrags darf seine Router-Schlüssel und
+  // die Spur nicht verlieren; der Eintrag bleibt unmarkiert, Zurück schließt das Overlay trotzdem
+  it('keeps the stored state of a router entry whose state reads as null', async () => {
+    const stored = { navigationId: 1, appTrail: ['/bill/list'] };
+    fake.entries = [stored];
+    fake.unreadable.add(0);
+    const close = vi.fn();
+
+    service.register(close);
+
+    expect(history.replaceState).not.toHaveBeenCalled();
+    expect(fake.entries[0]).toBe(stored);
+    expect(fake.index).toBe(1);
+    expect(fake.entries[1]).toEqual({ overlayBase: expect.any(Number), overlayBack: expect.any(Number) });
+
+    await fake.userBack();
+    expect(close).toHaveBeenCalledTimes(1);
+    expect(fake.index).toBe(0);
+  });
+
+  it('keeps stacked overlays in order above a router entry whose state reads as null', async () => {
+    fake.entries = ['kein Objekt'];
+    const closeLower = vi.fn();
+    const closeUpper = vi.fn();
+
+    service.register(closeLower);
+    service.register(closeUpper);
+
+    expect(history.replaceState).not.toHaveBeenCalled();
+    expect(fake.entries[0]).toBe('kein Objekt');
+    const base = (fake.entries[1] as { overlayBase: number }).overlayBase;
+    expect(fake.entries[2]).toEqual(expect.objectContaining({ overlayBase: base }));
+
+    await fake.userBack();
+    expect(closeUpper).toHaveBeenCalledTimes(1);
+    expect(closeLower).not.toHaveBeenCalled();
+
+    await fake.userBack();
+    expect(closeLower).toHaveBeenCalledTimes(1);
+    expect(fake.index).toBe(0);
   });
 
   // Fix Runde 1, Befund 1: ein unter einer Navigation liegen gebliebener Eintrag darf beim
