@@ -7,7 +7,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { ExpenseDto } from 'src/app/api/shopping/dtos/ExpenseDto';
 import { ChartComponent } from './chart.component';
-import { ChartModule } from './chart.module';
 
 registerLocaleData(localeDe, 'de');
 
@@ -46,7 +45,7 @@ describe('ChartComponent', () => {
         } as unknown as MockedObject<MatDialog>;
         matDialog.open.mockReturnValue({ afterClosed: () => of(undefined) } as any);
         TestBed.configureTestingModule({
-            imports: [ChartModule],
+            imports: [ChartComponent],
             providers: [{ provide: MatDialog, useValue: matDialog }]
         });
         fixture = TestBed.createComponent(ChartComponent);

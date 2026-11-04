@@ -3,42 +3,42 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    loadChildren: () => import('./features/bill/bill.module').then(m => m.BillModule)
+    loadChildren: () => import('./features/bill/bill.routes').then(m => m.routes)
   },
   {
     path: 'analyzed',
-    loadChildren: () => import('./features/bill-analysis/bill-analysis.module').then(m => m.BillAnalysisModule)
+    loadChildren: () => import('./features/bill-analysis/bill-analysis.routes').then(m => m.routes)
   },
   {
     path: 'budgetplan',
-    loadChildren: () => import('./features/budgetplan/budgetplan.module').then(m => m.BudgetplanModule)
+    loadChildren: () => import('./features/budgetplan/budgetplan.routes').then(m => m.routes)
   },
   {
     path: 'work',
-    loadChildren: () => import('./features/work/work.module').then(m => m.WorkModule)
+    loadChildren: () => import('./features/work/work.routes').then(m => m.routes)
   },
   {
     path: 'settings',
-    loadChildren: () => import('./features/settings/settings.module').then(m => m.SettingsModule)
+    loadChildren: () => import('./features/settings/settings.routes').then(m => m.routes)
   },
   {
     path: 'export',
     data: { title: 'Export' },
-    loadChildren: () => import('./features/export/export.module').then(m => m.ExportModule)
+    loadChildren: () => import('./features/export/export.routes').then(m => m.routes)
   },
   {
     path: 'data-protection',
     data: { title: 'Datenschutzerklärung' },
-    loadChildren: () => import('./features/data-protection/data-protection/data-protection.module').then(m => m.DataProtectionModule)
+    loadComponent: () => import('./features/data-protection/data-protection/data-protection.component').then(m => m.DataProtectionComponent)
   },
   {
     path: 'agb',
     data: { title: 'AGB' },
-    loadChildren: () => import('./features/data-protection/agb/agb.module').then(m => m.AgbModule)
+    loadComponent: () => import('./features/data-protection/agb/agb.component').then(m => m.AgbComponent)
   },
   {
     path: 'user-data',
     data: { title: 'Benutzerdaten' },
-    loadChildren: () => import('./features/data-protection/user-data/user-data.module').then(m => m.UserDataModule)
+    loadComponent: () => import('./features/data-protection/user-data/user-data.component').then(m => m.UserDataComponent)
   }
 ];

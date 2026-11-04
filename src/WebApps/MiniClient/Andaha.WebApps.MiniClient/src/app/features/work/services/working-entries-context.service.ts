@@ -4,11 +4,9 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { WorkingEntryDto } from 'src/app/api/work/dtos/WorkingEntryDto';
 import { WorkingEntryApiService } from 'src/app/api/work/working-entry-api.service';
 import { getParametersFromRouteRecursive } from 'src/app/shared/utils/routing-helper';
-import { PersonModule } from '../modules/person/person.module';
 
-@Injectable({
-  providedIn: PersonModule
-})
+// vorher providedIn: PersonModule; jetzt in den Providern der Route 'work/person' (work.routes.ts)
+@Injectable()
 export class WorkingEntriesContextService {
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private workingEntries$: BehaviorSubject<WorkingEntryDto[] | undefined> = new BehaviorSubject<WorkingEntryDto[] | undefined>(undefined);
