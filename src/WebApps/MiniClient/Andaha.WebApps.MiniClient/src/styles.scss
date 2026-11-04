@@ -567,6 +567,15 @@ body.mat-app-background {
   .mdc-snackbar__surface { box-shadow: 0 0 0 1px var(--neg-line), 0 16px 40px -8px var(--sh7); }
 }
 
+// Erfolgs-Snackbar (v2): Flaeche --fg, Text --bg; das Haekchen faerbt die Komponente selbst hell gruen.
+.cdk-overlay-container .mat-mdc-snack-bar-container.andaha-snackbar-success {
+  --mat-snack-bar-container-color: var(--fg);
+  --mat-snack-bar-supporting-text-color: var(--bg);
+  color: var(--bg);
+
+  .mdc-snackbar__surface { box-shadow: 0 16px 40px -8px var(--sh7); }
+}
+
 // Fortschrittsbalken (3 px, Primaer; color="accent" in Templates wird bewusst ueberstimmt).
 // Spur und Indikator beide 3 px (MDC: Hoehe = max(track, active-indicator), Theme-Default 4 px).
 // Spurfarbe ueber den Token --mat-progress-bar-track-color (Material 22, faerbt .mdc-linear-progress__buffer-bar).

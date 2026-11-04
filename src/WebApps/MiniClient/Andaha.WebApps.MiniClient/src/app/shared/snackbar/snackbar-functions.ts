@@ -1,5 +1,6 @@
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
 import { ErrorSnackbarComponent } from './error-snackbar/error-snackbar.component';
+import { SuccessSnackbarComponent } from './success-snackbar/success-snackbar.component';
 import { InformationSnackbarComponent, InformationSnackbarData } from './information-snackbar/information-snackbar.component';
 
 export function openErrorSnackbar(message: string, snackbar: MatSnackBar) {
@@ -15,4 +16,13 @@ export function openInformationSnackbar(
   // duration: null = bleibt stehen (MatSnackBar: 0 = kein Auto-Dismiss)
   const duration = options?.duration === null ? undefined : options?.duration ?? 3000;
   return snackbar.openFromComponent(InformationSnackbarComponent, { data, panelClass: ['andaha-snackbar', 'andaha-snackbar-info'], duration });
+}
+
+export function openSuccessSnackbar(message: string, snackbar: MatSnackBar): void {
+  snackbar.openFromComponent(SuccessSnackbarComponent, {
+    data: message,
+    panelClass: ['andaha-snackbar', 'andaha-snackbar-success'],
+    duration: 4000,
+    politeness: 'polite'
+  });
 }
