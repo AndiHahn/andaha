@@ -14,6 +14,7 @@ using Andaha.Services.Shopping.Infrastructure.Proxies;
 using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
@@ -93,6 +94,8 @@ public static class ProgramExtensions
 
         builder.Services.AddSingleton<IMessageBroker, DaprMessageBroker>();
 
+        builder.Services.TryAddSingleton(TimeProvider.System);
+        builder.Services.AddScoped<IFailedAnalysisImageHandler, FailedAnalysisImageHandler>();
         builder.Services.AddHostedService<AnalyzeBillWorker>();
         builder.Services.AddHostedService<NasBillWorker>();
 

@@ -10,5 +10,9 @@ public interface IAnalysisImageRepository
 
     Task<IReadOnlyCollection<ImageMetadata>> ListImagesAsync(CancellationToken ct = default);
 
-    Task MarkAsProcessedAsync(string name, CancellationToken ct = default);
+    /// <summary>
+    /// Records an analysis attempt: increments <see cref="ImageMetadata.Attempts"/> and sets
+    /// <see cref="ImageMetadata.ClaimedUntilUtc"/> to <paramref name="claimedUntilUtc"/>.
+    /// </summary>
+    Task ClaimAsync(string name, DateTimeOffset claimedUntilUtc, CancellationToken ct = default);
 }
