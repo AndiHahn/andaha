@@ -100,11 +100,17 @@ components:
     textColor: "{colors.fg}"
     typography: "{typography.title}"
     height: "56px"
-  bottom-nav:
+  main-bar:
     backgroundColor: "{colors.bg}"
     textColor: "{colors.faint}"
     height: "64px"
-  bottom-nav-active:
+  main-bar-active:
+    textColor: "{colors.fg}"
+  tabs:
+    backgroundColor: "{colors.bg}"
+    textColor: "{colors.muted}"
+    height: "46px"
+  tabs-active:
     textColor: "{colors.fg}"
   button-primary:
     backgroundColor: "{colors.primary}"
@@ -188,7 +194,7 @@ Mobile first (390 px Referenzbreite), ab 1024 px eine Desktop-Variante mit feste
 | Fläche | `surface` | #FFFDF8 | Eingabefelder, Bottom Sheets, Menüs, Segment aktiv |
 | Erhöht | `raised` | #EFE8DC | Sekundär-Buttons, Icon-Kacheln |
 | Mulde | `well` | #F0EADF | Upload-Fläche, Bildbereich |
-| Aktiv | `active` | #ECE3D4 | aktiver Eintrag im Drawer/in der Sidebar |
+| Aktiv | `active` | #ECE3D4 | aktiver Eintrag in der Sidebar (Desktop) |
 | Linie | `line` | #E0D8CA | Trennung von Bereichen (unter Kopf, über Navigation, Abschnittsköpfe) |
 | Zeilenlinie | `line-row` | #EAE3D7 | zwischen Listenzeilen |
 | Feldrahmen | `line-field` | #D6CDBD | Rahmen von Feldern, Chips, Sekundär-Buttons |
@@ -228,17 +234,28 @@ Formate: Beträge `1.298,60 €`, Datum `28.10.2026`, Zeiten `48 h 30 min` (übe
 
 ## Layout
 
+Navigation nach Design v2 (`v2/README.md`, Mockups `v2/mockups/01-navigation.html` und `04-shortcut-desktop.html`). Bereiche und Tabs stehen an einer Stelle im Code (`core/navigation/nav-areas.ts`); Hauptleiste, Sidebar und Tabs lesen nur daraus.
+
+| Bereich | Tabs | Weitere Seiten |
+|---|---|---|
+| Rechnungen | Liste · Analyse · Statistik | Rechnung, Rechnung hinzufügen, analysierte Rechnung |
+| Haushalt | Übersicht · Fixkosten · Einkommen | Anlege- und Detailseiten |
+| Stunden | Personen · Statistik | Anlege- und Detailseiten |
+| Mehr | keine (eigene Seite) | Kategorien, Vorlagen, Verbindungen, Export, AGB, Datenschutzerklärung, Benutzerdaten |
+
 **Mobile (bis 1023 px):**
-- Kopfzeile 56 px: Menü-Icon (bzw. Zurück-Pfeil auf Detailseiten), Seitentitel, rechts optional Sync-Icon (nur wenn aktiv) und Konto-Button.
-- Inhalt scrollt dazwischen; Seitenrand 16 px.
-- Bereichsnavigation unten 64 px (wie heute pro Feature: Rechnungen, Analyse, Haushaltsplan, Stunden, Einstellungen). Icon 22 px + Label 12 px. Aktiv: Text `fg`, Icon `primary`, 28×2-px-Strich in `primary` an der Oberkante.
-- **Aktionsleiste** direkt über der Bereichsnavigation (12 px Innenabstand, Linie oben): Primär-Button füllt die Breite; zwei Aktionen nebeneinander (`Abbrechen | Speichern`, `Bearbeiten | Löschen`), passen sie nicht, untereinander (Primär oben).
-- Hauptnavigation als Drawer (304 px) von links mit Scrim.
+- Kopfzeile 56 px ohne Menü-Icon und ohne Linie: Titel links mit 16 px Rand (auf Tab-Seiten der Bereichsname), rechts optional eine Seitenaktion (Icon-Button, z. B. „Person hinzufügen“), Sync-Icon (nur wenn aktiv) und Konto-Button. Detail-, Formular- und Mehr-Unterseiten: Zurück-Pfeil links, keine Tabs.
+- Darunter die **Tabs** des Bereichs (nur auf den Tab-Seiten), dann der Inhalt; er scrollt, Seitenrand 16 px.
+- Unten die **Hauptleiste** (64 px) mit Rechnungen · Haushalt · Stunden · Mehr, auf allen Seiten sichtbar. Jeder Bereich ist mit einem Tipp erreichbar; neue Bereiche kommen unter „Mehr“, die Leiste bleibt bei 4.
+- Auf Rechnungen → Liste sitzt zwischen Inhalt und Hauptleiste die **Eingabezeile** (Dock).
+- **Aktionsleiste** direkt über der Hauptleiste (12 px Innenabstand, Linie oben) auf Formular- und Detailseiten: Primär-Button füllt die Breite; zwei Aktionen nebeneinander (`Abbrechen | Speichern`, `Bearbeiten | Löschen`), passen sie nicht, untereinander (Primär oben).
+- Listen mit „Hinzufügen“ (Fixkosten, Einkommen, Personen) haben statt einer Aktionsleiste einen **FAB** rechts unten.
+- Kein Drawer.
 
 **Desktop (ab 1024 px):**
-- Sidebar 248 px fest sichtbar (`mat-sidenav mode="side" opened`), Hintergrund `side`, Rechtliches unten.
+- Sidebar 248 px fest sichtbar (`mat-sidenav mode="side" opened`), Hintergrund `side`: „Andaha“, Rechnungen, Haushalt, Stunden, darunter Gruppe „Mehr“ (Kategorien, Vorlagen, Verbindungen, Export), Rechtliches unten. Keine Hauptleiste.
 - Kopf: Seitentitel 28 px links, rechts Sync-Status, Benutzername und Konto-Button.
-- Bereichsnavigation wird zu Tabs unter dem Titel (2-px-Unterstrich in `primary`).
+- Tabs unter dem Titel, linksbündig (48 px, 2-px-Unterstrich in `primary`).
 - Inhalt max. 1120 px breit, 40 px Seitenrand. Listen dürfen zur Tabelle werden (Rechnungen: Datum | Shop | Kategorie | Herkunft | Preis).
 - Aktionsleiste: Buttons nicht über die volle Breite, sondern rechtsbündig am Formularende.
 
@@ -254,7 +271,7 @@ Schatten nur bei Ebenen, die über dem Inhalt liegen:
 - gezogenes Element (Drag & Drop): `0 10px 24px -8px rgba(60,40,20,.22)`
 - aktives Segment: `0 1px 2px rgba(60,40,20,.14)`
 
-Scrim hinter Sheets und Drawer: `rgba(40,30,18,.38)`.
+Scrim hinter Sheets und Dialogen: `rgba(40,30,18,.38)`.
 
 ## Shapes
 
@@ -292,7 +309,19 @@ Scrim hinter Sheets und Drawer: `rgba(40,30,18,.38)`.
 
 **Bottom Sheet (alle bisherigen Vollbild-Dialoge auf Mobile):** `surface`, Radius 20 oben, Griff 36×4 `grab`, Titel 18/600 links, Schließen-Icon rechts, Inhalt 16 px Rand, Primär-Button unten. Auf Desktop als zentrierter Dialog (max. 480 px, Radius 16).
 
-**Drawer:** 304 px, `surface`. Kopf: „Andaha“ 24/700, darunter Benutzername 14 `muted` + Sync-Icon. Einträge 52 px, Icon + Text 15/500; aktiv `active` + Icon `primary`. Unten Links AGB · Datenschutzerklärung · Benutzerdaten (13, unterstrichen, `muted`).
+**Hauptleiste (Mobile):** 64 px, `bg`, Linie `line` oben, 4 gleich breite Einträge: Icon 22 px über Label 12/500, inaktiv `faint`. Aktiv: Text `fg`, Icon `primary`, 28×2-px-Strich in `primary` an der Oberkante, `aria-current="page"`. Icons: Rechnungen `receipt_long`, Haushalt `account_balance_wallet`, Stunden `group`, Mehr `more_horiz`. Aktiv ist der Bereich, zu dem die URL gehört (`/settings`, `/export` und Rechtliches gehören zu Mehr).
+
+**Tabs:** 46 px hoch, gleich breit verteilt (8 px Rand links/rechts), Text 15/500 `muted`, aktiv 15/600 `fg` mit 2-px-Unterstrich `primary` (16 px eingerückt), Linie `line` unten. `role="tablist"`, aktiver Tab `aria-selected="true"`. Jeder Tab hat eine eigene URL; Wechsel per Tipp oder Wischen. Zähler-Badge 20 px (Pill), `secondary-soft` / `secondary-text`, 12/600, nur wenn > 0 (Analyse: Anzahl offener Analysen). Desktop: linksbündig unter dem Titel, 48 px, Innenabstand 0 14 px, Unterstrich 10 px eingerückt.
+
+**Eingabezeile (Dock):** Leiste über der Hauptleiste, nur auf Rechnungen → Liste: `bg`, Linie oben, Innenabstand 10/16/12. Feld 52 px (Radius 12, Plus-Icon `primary`, Platzhalter „Neue Rechnung: Betrag“, Suffix €), daneben Kamera-Knopf 52×52 (`raised`, Innenrand `line-field`, Icon `primary`). Desktop: über der Tabelle neben „Scannen“ und der Suche.
+
+**Schnell-Sheet:** Bottom Sheet (siehe unten) mit Titel „Neue Rechnung“: Betrag im Stil `amount` mit eigener Zifferntastatur, Kacheln (Vorlagen und Vorschläge) im 2-Spalten-Raster, Datum, Speichern. Desktop: zentrierter Dialog 480 px, normale Tastatur. Details in `v2/README.md`.
+
+**FAB:** Material `mat-fab` (`color="primary"`), 56 px, Radius 16, Icon `add`, rechts unten mit 16 px Rand über der Hauptleiste, Schatten wie gezogenes Element. Immer mit `aria-label` („Fixkosten hinzufügen“, „Einkommen hinzufügen“, „Arbeitszeiten hinzufügen“). Die Liste darüber lässt unten 88 px frei. Öffnet die bestehende Anlege-Seite.
+
+**Mehr-Seite:** Abschnittsköpfe 13/600 `muted` mit Linie `line` unten („Einstellungen“, „Daten“), Zeilen 56 px mit Icon 22 `muted`, Text 16/500, rechts optional Zähler 14 `muted` und Chevron `dim`. Darunter Rechtliches als unterstrichene Links 13 `muted` (AGB · Datenschutzerklärung · Benutzerdaten).
+
+**Sidebar (Desktop):** 248 px, `side`, Linie rechts. Kopf: „Andaha“ 24/700. Einträge 44 px, Radius 10, Icon 20 + Text 15/500 `fg2`; aktiv `active` + Text `fg` + Icon `primary`. Gruppenkopf „Mehr“ 12/600 `muted`. Unten Rechtliches (13, unterstrichen, `muted`) mit Linie oben.
 
 **Leer- und Ladezustände:** Leertext 14 `faint`, 16 px eingerückt, direkt im Abschnitt („Keine Ausgaben.“). Laden: 3-px-Fortschrittsbalken unter der Kopfzeile nur beim initialen Laden von Listen; beim Speichern im Button.
 
