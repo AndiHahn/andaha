@@ -1,4 +1,5 @@
 import type { MockedObject } from "vitest";
+import { TestBed } from '@angular/core/testing';
 import { Subject, of, throwError } from 'rxjs';
 import { BillCreateDto } from 'src/app/api/shopping/dtos/BillCreateDto';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
@@ -8,6 +9,18 @@ import { PagedResultDto } from 'src/app/api/common-dtos/PagedResultDto';
 import { ContextService } from 'src/app/core/context.service';
 import { BillCacheService } from './bill-cache.service';
 import { BillContextService } from './bill-context.service';
+
+// inject()-Migration: Abhaengigkeiten kommen per TestBed, die Instanz wird wie vorher direkt erzeugt
+function createBillContextService(billApi: unknown, contextService: unknown, cacheService: unknown): BillContextService {
+    TestBed.configureTestingModule({
+        providers: [
+            { provide: BillApiService, useValue: billApi },
+            { provide: ContextService, useValue: contextService },
+            { provide: BillCacheService, useValue: cacheService }
+        ]
+    });
+    return TestBed.runInInjectionContext(() => new BillContextService());
+}
 
 function createBill(id: string, day: number): BillDto {
     return {
@@ -57,7 +70,7 @@ describe('BillContextService search', () => {
         cacheService.billAdded.mockReturnValue(new Subject<void>());
         cacheService.getBillsToSync.mockResolvedValue([]);
 
-        service = new BillContextService(billApi as unknown as BillApiService, contextService as unknown as ContextService, cacheService as unknown as BillCacheService);
+        service = createBillContextService(billApi as unknown as BillApiService, contextService as unknown as ContextService, cacheService as unknown as BillCacheService);
         service.bills().subscribe(b => currentBills = b);
         service.loading().subscribe(l => loadingValues.push(l));
     });
@@ -221,7 +234,7 @@ describe('BillContextService local save and sync', () => {
         cacheService.saveNewBillLocal.mockResolvedValue();
         cacheService.removeBillLocal.mockImplementation(id => { pending = pending.filter(b => b.id !== id); return Promise.resolve(); });
 
-        service = new BillContextService(billApi, contextService as unknown as ContextService, cacheService);
+        service = createBillContextService(billApi, contextService as unknown as ContextService, cacheService);
         service.syncing().subscribe(s => syncingValues.push(s));
         service.bills().subscribe(b => currentBills = b);
         service.totalResults().subscribe(t => totalResults = t);
@@ -395,7 +408,7 @@ describe('BillContextService loadBillById', () => {
         cacheService.billAdded.mockReturnValue(new Subject<void>());
         cacheService.getBillsToSync.mockResolvedValue([]);
 
-        service = new BillContextService(billApi, contextService as unknown as ContextService, cacheService as unknown as BillCacheService);
+        service = createBillContextService(billApi, contextService as unknown as ContextService, cacheService as unknown as BillCacheService);
     });
 
     afterEach(() => service.ngOnDestroy());
@@ -445,7 +458,7 @@ describe('BillContextService updateBill', () => {
         cacheService.billAdded.mockReturnValue(new Subject<void>());
         cacheService.getBillsToSync.mockResolvedValue([]);
 
-        service = new BillContextService(billApi, contextService as unknown as ContextService, cacheService as unknown as BillCacheService);
+        service = createBillContextService(billApi, contextService as unknown as ContextService, cacheService as unknown as BillCacheService);
     });
 
     afterEach(() => service.ngOnDestroy());

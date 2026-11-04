@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { WorkingEntryDto } from 'src/app/api/work/dtos/WorkingEntryDto';
 import { getTotalWorkingTimeString } from '../../../functions/date-time-functions';
 import { WorkEntryDetailsDialogService } from '../work-entry-details/work-entry-details-dialog.service';
@@ -13,14 +13,12 @@ import { DatePipe } from '@angular/common';
     imports: [DatePipe]
 })
 export class WorkEntryListComponent implements OnInit {
+  private workEntryContextService = inject(WorkingEntriesContextService);
+  private workEntryDetailsDialogService = inject(WorkEntryDetailsDialogService);
+
 
   @Input()
   workEntries!: WorkingEntryDto[];
-
-  constructor(
-    private workEntryContextService: WorkingEntriesContextService,
-    private workEntryDetailsDialogService: WorkEntryDetailsDialogService
-  ) { }
 
   ngOnInit(): void {
     if (!this.workEntries) {

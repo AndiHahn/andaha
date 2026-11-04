@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { createHttpParameters } from '../functions/api-utils';
@@ -12,10 +12,12 @@ import { RequestAccountConnectionRequest } from './dtos/RequestAccountConnection
   providedIn: 'root'
 })
 export class CollaborationApiService {
+  private httpClient = inject(HttpClient);
+
   private endpointUrl: string;
   private apiVersion: string = "1.0";
 
-  constructor(private httpClient: HttpClient) {
+  constructor() {
     if (environment.useMonolithApi) {
       this.endpointUrl = constructPath(environment.monolithApiBaseUrl, 'api');
     } else if (environment.useGateway) {

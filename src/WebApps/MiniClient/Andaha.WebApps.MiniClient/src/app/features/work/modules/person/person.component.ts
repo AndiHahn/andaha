@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
 import { PersonContextService } from '../../services/person-context.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
@@ -14,10 +14,10 @@ import { MatIcon } from '@angular/material/icon';
     imports: [MatProgressSpinner, PersonListComponent, RouterLink, MatIcon]
 })
 export class PersonComponent implements OnInit {
+  private personContextService = inject(PersonContextService);
+
 
   persons?: PersonDto[];
-
-  constructor(private personContextService: PersonContextService) { }
 
   ngOnInit(): void {
     this.initSubscriptions();

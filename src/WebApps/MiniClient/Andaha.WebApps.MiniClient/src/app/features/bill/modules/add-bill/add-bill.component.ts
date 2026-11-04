@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormGroup, FormGroupDirective, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-providers';
 import { generateGuid } from 'src/app/api/functions/api-utils';
@@ -27,6 +27,10 @@ import { ShowErrorPipe } from '../../../../shared/form-field/show-error.pipe';
     imports: [FormsModule, ReactiveFormsModule, BillImageComponent, MatSelect, MatSelectTrigger, MatOption, MatIcon, MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker, ShowErrorPipe]
 })
 export class AddBillComponent implements OnInit {
+  private billContextService = inject(BillContextService);
+  private billCategoryContextService = inject(BillCategoryContextService);
+  private snackbar = inject(MatSnackBar);
+
   numberRegex: string = '^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$';
 
   form: FormGroup<BillForm>;
@@ -39,11 +43,7 @@ export class AddBillComponent implements OnInit {
 
   isSaving: boolean = false;
   
-  constructor(
-    private billContextService: BillContextService,
-    private billCategoryContextService: BillCategoryContextService,
-    private snackbar: MatSnackBar
-    ) {
+  constructor() {
     this.form = getEmptyBillForm();
   }
 

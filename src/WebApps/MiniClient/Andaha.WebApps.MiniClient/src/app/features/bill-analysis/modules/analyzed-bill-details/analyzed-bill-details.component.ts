@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject, takeUntil } from 'rxjs';
@@ -21,6 +21,12 @@ import { DecimalPipe, DatePipe } from '@angular/common';
     imports: [MatProgressBar, AnalyzedBillImageComponent, DecimalPipe, DatePipe]
 })
 export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private snackbar = inject(MatSnackBar);
+  private analyzedContext = inject(AnalyzedBillContextService);
+  private categoryContext = inject(BillCategoryContextService);
+
   bill?: BillAnalyzedDto;
   isLoading: boolean = false;
   category?: CategoryDto;
@@ -28,15 +34,6 @@ export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
   confidence: number | null = null;
 
   private destroy$ = new Subject<void>();
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private snackbar: MatSnackBar,
-    private analyzedContext: AnalyzedBillContextService,
-    private categoryContext: BillCategoryContextService
-  ) {
-  }
 
   ngOnInit(): void {
     const billId = getParametersFromRouteRecursive(this.route.snapshot)['id'];

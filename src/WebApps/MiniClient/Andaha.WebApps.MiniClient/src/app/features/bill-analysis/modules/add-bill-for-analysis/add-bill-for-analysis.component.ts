@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { blobToDataUrl } from 'src/app/shared/utils/file-utils';
@@ -16,11 +16,12 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
     imports: [MatIcon, MatProgressBar, MatProgressSpinner]
 })
 export class AddBillForAnalysisComponent {
+  private billApi = inject(BillApiService);
+  private snack = inject(MatSnackBar);
+
   selectedFile?: File;
   uploading: boolean = false;
   previewUrl?: string;
-
-  constructor(private billApi: BillApiService, private snack: MatSnackBar) {}
 
   onFileSelected(event: any) {
     const file = event.target.files?.[0] as File | undefined;

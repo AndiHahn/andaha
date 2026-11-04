@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { WorkingEntryForm, getWorkingEntryForm } from '../../../functions/working-entry-form-functions';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/ConfirmationDialogData';
@@ -31,6 +31,12 @@ import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe'
     imports: [DialogComponent, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, DatePickerFormFieldComponent, TimePickerFormFieldComponent, MatProgressBar, MatIcon, MatProgressSpinner, ShowErrorPipe]
 })
 export class WorkEntryDetailsDialogComponent implements OnInit {
+  private snackbar = inject(MatSnackBar);
+  private apiService = inject(WorkingEntryApiService);
+  private confirmationDialog = inject(ConfirmationDialogService);
+  private dialogRef = inject<MatDialogRef<WorkEntryDetailsDialogComponent>>(MatDialogRef);
+  private data = inject<WorkEntryDetailsDialogData>(MAT_DIALOG_DATA);
+
 
   form: FormGroup<WorkingEntryForm>;
 
@@ -40,13 +46,9 @@ export class WorkEntryDetailsDialogComponent implements OnInit {
   isDeleting: boolean = false;
   isEditing: boolean = false;
 
-  constructor(
-    private snackbar: MatSnackBar,
-    private apiService: WorkingEntryApiService,
-    private confirmationDialog: ConfirmationDialogService,
-    private dialogRef: MatDialogRef<WorkEntryDetailsDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) private data: WorkEntryDetailsDialogData
-  ) {
+  constructor() {
+    const data = this.data;
+
     this.workingEntry = data.workEntry;
 
     this.form = this.createForm();

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { AuthService } from './core/auth.service';
 import { BillContextService } from './features/bill/services/bill-context.service';
 import { map, shareReplay } from 'rxjs/operators';
@@ -20,6 +20,11 @@ import { AsyncPipe } from '@angular/common';
     imports: [MatSidenavContainer, MatSidenav, MatIcon, RouterLink, RouterLinkActive, MatSidenavContent, MatMenuTrigger, MatMenu, MatMenuItem, RouterOutlet, AsyncPipe]
 })
 export class AppComponent implements OnInit {
+  private appUpdateService = inject(AppUpdateService);
+  private authService = inject(AuthService);
+  private billContextService = inject(BillContextService);
+  private breakpointObserver = inject(BreakpointObserver);
+
   title = 'Andaha.WebApps.MiniClient';
 
   isDisabled = true;
@@ -33,12 +38,9 @@ export class AppComponent implements OnInit {
   readonly back$: Observable<string | null>;
   readonly action$: Observable<HeaderAction | null>;
 
-  constructor(
-    private appUpdateService: AppUpdateService,
-    private authService: AuthService,
-    private billContextService: BillContextService,
-    private breakpointObserver: BreakpointObserver,
-    pageTitleService: PageTitleService) {
+  constructor() {
+    const pageTitleService = inject(PageTitleService);
+
     this.isDesktop$ = this.breakpointObserver.observe('(min-width: 1024px)').pipe(
       map(state => state.matches),
       shareReplay({ bufferSize: 1, refCount: true }));

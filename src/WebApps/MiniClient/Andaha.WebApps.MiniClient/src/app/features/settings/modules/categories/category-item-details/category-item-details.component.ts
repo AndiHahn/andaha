@@ -1,6 +1,6 @@
 import { CdkDragDrop, CdkDropList, CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormArray, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -32,6 +32,13 @@ import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe'
     imports: [FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, ColorItemComponent, MatOption, MatIcon, MatCheckbox, CdkDropList, CdkDrag, CdkDragHandle, MatProgressBar, MatProgressSpinner, ShowErrorPipe]
 })
 export class CategoryItemDetailsComponent implements OnInit, OnDestroy {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private snackbar = inject(MatSnackBar);
+  private confirmationDialog = inject(ConfirmationDialogService);
+  private categoryContextService = inject(BillCategoryContextService);
+  private pageTitleService = inject(PageTitleService);
+
 
   form!: FormGroup<CategoryForm>;
   
@@ -52,14 +59,7 @@ export class CategoryItemDetailsComponent implements OnInit, OnDestroy {
     return this.form.controls.subCategories;
   }
   
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private snackbar: MatSnackBar,
-    private confirmationDialog: ConfirmationDialogService,
-    private categoryContextService: BillCategoryContextService,
-    private pageTitleService: PageTitleService
-  ) {
+  constructor() {
     this.colors = getAllColors();
   }
 

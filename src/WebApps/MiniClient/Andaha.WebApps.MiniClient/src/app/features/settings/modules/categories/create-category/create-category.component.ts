@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CategoryForm, createEmptyForm } from '../functions/form-functions';
 import { Router } from '@angular/router';
@@ -23,6 +23,10 @@ import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe'
     imports: [FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, ColorItemComponent, MatOption, MatIcon, MatCheckbox, MatProgressSpinner, ShowErrorPipe]
 })
 export class CreateCategoryComponent implements OnInit {
+  private router = inject(Router);
+  private snackbar = inject(MatSnackBar);
+  private categoryContextService = inject(BillCategoryContextService);
+
   
   form: FormGroup<CategoryForm>;
   
@@ -32,11 +36,7 @@ export class CreateCategoryComponent implements OnInit {
 
   colors: string[];
   
-  constructor(
-    private router: Router,
-    private snackbar: MatSnackBar,
-    private categoryContextService: BillCategoryContextService
-  ) {
+  constructor() {
     this.form = createEmptyForm();
     this.includeToStatisticsCheckbox = true;
     this.colors = getAllColors();

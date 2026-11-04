@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { ImageSnippet } from '../add-bill-image-dialog/add-bill-image-dialog.component';
 import { AddBillImageDialogService } from '../add-bill-image-dialog/add-bill-image-dialog.service';
@@ -14,6 +14,9 @@ import { MatIcon } from '@angular/material/icon';
     imports: [MatIcon]
 })
 export class BillImageComponent {
+  private imageDialogService = inject(BillImageDialogService);
+  private addImageDialogService = inject(AddBillImageDialogService);
+
 
   @Input()
   bill?: BillDto;
@@ -29,10 +32,6 @@ export class BillImageComponent {
 
   @Output()
   imageSelected: EventEmitter<ImageSnippet> = new EventEmitter();
-  
-  constructor(
-    private imageDialogService: BillImageDialogService,
-    private addImageDialogService: AddBillImageDialogService) { }
 
   onAddImageClick(): void {
     this.addImageDialogService.openDialog().then(dialogRef => dialogRef.afterClosed().subscribe(

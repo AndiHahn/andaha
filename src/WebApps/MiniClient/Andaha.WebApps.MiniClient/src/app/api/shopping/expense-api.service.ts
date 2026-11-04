@@ -1,5 +1,5 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { createHttpParameters } from '../functions/api-utils';
@@ -11,10 +11,12 @@ import { mapTimeRangeDtoRaw, TimeRangeDto, TimeRangeDtoRaw } from '../common-dto
   providedIn: 'root'
 })
 export class ExpenseApiService {
+  private httpClient = inject(HttpClient);
+
   private endpointUrl: string;
   private apiVersion: string = "1.0";
 
-  constructor(private httpClient: HttpClient) {
+  constructor() {
     if (environment.useMonolithApi) {
       this.endpointUrl = constructPath(environment.monolithApiBaseUrl, 'api', 'expense');
     } else if (environment.useGateway) {

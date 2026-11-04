@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { afterFirstLoad } from 'src/app/shared/utils/load-state';
 import { FixedCostCreateDto } from 'src/app/api/budgetplan/dtos/FixedCostCreateDto';
@@ -11,15 +11,15 @@ import { ContextService } from 'src/app/core/context.service';
   providedIn: 'root'
 })
 export class FixedCostContextService {
+  private contextService = inject(ContextService);
+  private fixedCostApiService = inject(FixedCostApiService);
+
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private fixedCosts$: BehaviorSubject<FixedCostDto[] | undefined> = new BehaviorSubject<FixedCostDto[] | undefined>(undefined);
   private loadState$ = new ReplaySubject<'loaded' | 'failed'>(1);
   private backendIsReady: boolean = false;
 
-  constructor(
-    private contextService: ContextService,
-    private fixedCostApiService: FixedCostApiService
-  ) {
+  constructor() {
     this.fetchFixedCosts();
     this.initSubscriptions();
   }

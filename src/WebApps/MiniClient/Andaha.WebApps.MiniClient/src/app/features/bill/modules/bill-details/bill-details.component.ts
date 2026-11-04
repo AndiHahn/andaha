@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-providers';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -35,6 +35,13 @@ import { ShowErrorPipe } from '../../../../shared/form-field/show-error.pipe';
     imports: [BillImageComponent, FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, MatOption, MatIcon, MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker, MatProgressBar, MatProgressSpinner, DecimalPipe, DatePipe, ShowErrorPipe]
 })
 export class BillDetailsComponent implements OnInit, OnDestroy {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private snackbar = inject(MatSnackBar);
+  private confirmationDialog = inject(ConfirmationDialogService);
+  private billContextService = inject(BillContextService);
+  private billCategoryContextService = inject(BillCategoryContextService);
+
 
   form!: FormGroup<BillForm>;
 
@@ -52,16 +59,6 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
   isExternal: boolean = false;
 
   private destroy$: Subject<void> = new Subject<void>();
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private snackbar: MatSnackBar,
-    private confirmationDialog: ConfirmationDialogService,
-    private billContextService: BillContextService,
-    private billCategoryContextService: BillCategoryContextService
-  ) {
-  }
 
   ngOnInit(): void {
     const billId = getParametersFromRouteRecursive(this.route.snapshot)["id"];

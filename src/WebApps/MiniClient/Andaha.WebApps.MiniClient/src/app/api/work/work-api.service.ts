@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { constructPath } from '../functions/functions';
 import { Observable } from 'rxjs';
@@ -8,9 +8,11 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class WorkApiService {
+  private httpClient = inject(HttpClient);
+
   private endpointUrl: string;
 
-  constructor(private httpClient: HttpClient) {
+  constructor() {
     if (environment.useMonolithApi) {
       this.endpointUrl = constructPath(environment.monolithApiBaseUrl, 'api');
     } else if (environment.useGateway) {

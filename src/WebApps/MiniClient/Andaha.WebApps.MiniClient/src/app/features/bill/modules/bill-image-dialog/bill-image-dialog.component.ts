@@ -1,4 +1,4 @@
-import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogContent } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
@@ -21,6 +21,10 @@ import { MatIcon } from '@angular/material/icon';
     imports: [DialogComponent, CdkScrollable, MatDialogContent, PinchZoomComponent, MatProgressSpinner, MatProgressBar, MatIcon]
 })
 export class BillImageDialogComponent {
+  private snackbar = inject(MatSnackBar);
+  private billApiService = inject(BillApiService);
+  private dialogRef = inject<MatDialogRef<BillImageDialogComponent, boolean | undefined>>(MatDialogRef);
+
 
   bill: BillDto;
 
@@ -30,12 +34,9 @@ export class BillImageDialogComponent {
   isDeleting: boolean = false;
   imageWidth: number;
 
-  constructor(
-    private snackbar: MatSnackBar,
-    private billApiService: BillApiService,
-    private dialogRef: MatDialogRef<BillImageDialogComponent, boolean | undefined>,
-    @Inject(MAT_DIALOG_DATA) data: BillImageDialogData
-  ) {
+  constructor() {
+    const data = inject<BillImageDialogData>(MAT_DIALOG_DATA);
+
     const padding = 24;
     const windowWidth = window.innerWidth;
     this.imageWidth = windowWidth - (2 * padding);

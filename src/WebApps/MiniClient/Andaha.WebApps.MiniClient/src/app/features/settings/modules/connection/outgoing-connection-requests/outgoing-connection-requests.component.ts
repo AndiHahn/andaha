@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { ConnectionRequestDto } from 'src/app/api/collaboration/dtos/ConnectionRequestDto';
 import { CollaborationContextService } from 'src/app/services/collaboration-context.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
@@ -11,11 +11,11 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
     imports: [MatProgressSpinner]
 })
 export class OutgoingConnectionRequestsComponent implements OnInit {
+  private collaborationContextService = inject(CollaborationContextService);
+
 
   loading: boolean = false;
   connectionRequests?: ConnectionRequestDto[];
-  
-  constructor(private collaborationContextService: CollaborationContextService) { }
 
   ngOnInit(): void {
     this.initSubscriptions();

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { AnalyzedBillImageDialogService } from './analyzed-bill-image-dialog/analyzed-bill-image-dialog.service';
 
 @Component({
@@ -8,13 +8,11 @@ import { AnalyzedBillImageDialogService } from './analyzed-bill-image-dialog/ana
     changeDetection: ChangeDetectionStrategy.Eager
 })
 export class AnalyzedBillImageComponent {
+  private imageDialogService = inject(AnalyzedBillImageDialogService);
+
 
   @Input()
   billId?: string;
-
-  constructor(
-    private imageDialogService: AnalyzedBillImageDialogService
-  ) { }
 
   onShowImageClick(): void {
     if (!this.billId) {

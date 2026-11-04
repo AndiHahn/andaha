@@ -5,13 +5,12 @@
     [initialDateFilter]="initialDateFilter"
     (searchTextChanged)="onSearchInput($event)"
     (categoryFilterChanged)="onCategoryFilterChanged($event)"
-    (dateFilterChanged)="onDateFilterChanged($event)" >
-  </app-bill-list-filter>
+    (dateFilterChanged)="onDateFilterChanged($event)"  />
 </div>
 
 <div class="progress-slot">
   @if (loading) {
-    <mat-progress-bar mode="indeterminate" color="accent"></mat-progress-bar>
+    <mat-progress-bar mode="indeterminate" color="accent" />
   }
 </div>
 
@@ -31,17 +30,15 @@
 
 <cdk-virtual-scroll-viewport #viewport class="list" [itemSize]="pixelHeightPerItem">
   <a *cdkVirtualFor="let bill of billDataSource" class="bill-link" routerLink="/bill/{{bill.id}}">
-    <app-bill-list-item [bill]="bill"></app-bill-list-item>
+    <app-bill-list-item [bill]="bill" />
   </a>
 </cdk-virtual-scroll-viewport>
 
 <div style="display: none;">
-  <mat-paginator
-    class="paginator"
+  <mat-paginator class="paginator"
     [length]="totalResults"
     [pageSize]="pageSize"
     [pageSizeOptions]="[20, 50, 100]"
     aria-label="Select page"
-    (page)="onPageChange($event)">
-  </mat-paginator>
+    (page)="onPageChange($event)" />
 </div>

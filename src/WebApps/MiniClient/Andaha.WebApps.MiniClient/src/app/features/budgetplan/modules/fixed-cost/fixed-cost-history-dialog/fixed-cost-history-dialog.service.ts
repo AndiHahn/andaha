@@ -1,5 +1,5 @@
 import { ComponentType } from '@angular/cdk/portal';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { getDialogBaseConfig } from 'src/app/shared/dialog/dialog-functions';
 import { FixedCostHistoryDialogComponent } from './fixed-cost-history-dialog.component';
@@ -9,8 +9,8 @@ import { FixedCostHistoryDialogData } from './FixedCostHistoryDialogData';
   providedIn: 'root'
 })
 export class FixedCostHistoryDialogService {
+  private dialog = inject(MatDialog);
 
-  constructor(private dialog: MatDialog) { }
 
   async openDialog(data: FixedCostHistoryDialogData): Promise<MatDialogRef<FixedCostHistoryDialogComponent, boolean | undefined>> {
     const chunk = await import(`./fixed-cost-history-dialog.component`);

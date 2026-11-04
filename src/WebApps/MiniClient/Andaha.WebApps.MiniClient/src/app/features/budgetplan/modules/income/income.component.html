@@ -2,14 +2,13 @@
   <div class="body">
     @if (!incomes) {
       <div class="loading">
-        <mat-spinner diameter="40"></mat-spinner>
+        <mat-spinner diameter="40" />
       </div>
     }
 
     @if (incomes) {
       <div>
-        <app-income-list [incomes]="incomes">
-        </app-income-list>
+        <app-income-list [incomes]="incomes" />
       </div>
     }
   </div>

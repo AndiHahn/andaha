@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { afterFirstLoad } from 'src/app/shared/utils/load-state';
 import { IncomeCreateDto } from 'src/app/api/budgetplan/dtos/IncomeCreateDto';
@@ -11,15 +11,15 @@ import { ContextService } from 'src/app/core/context.service';
   providedIn: 'root'
 })
 export class IncomeContextService {
+  private contextService = inject(ContextService);
+  private incomeApiService = inject(IncomeApiService);
+
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private incomes$: BehaviorSubject<IncomeDto[] | undefined> = new BehaviorSubject<IncomeDto[] | undefined>(undefined);
   private loadState$ = new ReplaySubject<'loaded' | 'failed'>(1);
   private backendIsReady: boolean = false;
 
-  constructor(
-    private contextService: ContextService,
-    private incomeApiService: IncomeApiService
-  ) {
+  constructor() {
     this.fetchIncomes();
     this.initSubscriptions();
   }

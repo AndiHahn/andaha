@@ -18,7 +18,7 @@
               @if (selectedColor) {
                 <mat-select-trigger>
                   <span class="color-opt">
-                    <app-color-item [color]="selectedColor"></app-color-item>
+                    <app-color-item [color]="selectedColor" />
                     <span class="color-name">{{ selectedColor }}</span>
                   </span>
                 </mat-select-trigger>
@@ -26,7 +26,7 @@
               @for (color of colors; track color) {
                 <mat-option [value]="color">
                   <span class="color-opt">
-                    <app-color-item [color]="color"></app-color-item>
+                    <app-color-item [color]="color" />
                     <span class="color-name">{{ color }}</span>
                   </span>
                 </mat-option>
@@ -94,7 +94,7 @@
     -->
     <div class="progress-slot">
       @if (isDeleting || isLoading || !category) {
-        <mat-progress-bar mode="indeterminate" color="accent"></mat-progress-bar>
+        <mat-progress-bar mode="indeterminate" color="accent" />
       }
     </div>
 
@@ -105,7 +105,7 @@
             <mat-icon>edit</mat-icon><span>Bearbeiten</span>
           }
           @if (isSaving) {
-            <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+            <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
           }
         </button>
         <button type="button" class="btn del" (click)="onDeleteClick()"
@@ -125,7 +125,7 @@
             <mat-icon>check</mat-icon><span>Speichern</span>
           }
           @if (isSaving) {
-            <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+            <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
           }
         </button>
       </div>

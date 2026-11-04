@@ -1,4 +1,5 @@
 import type { MockedObject } from "vitest";
+import { TestBed } from '@angular/core/testing';
 import { BehaviorSubject, Subject, of, throwError } from 'rxjs';
 import { FixedCostApiService } from 'src/app/api/budgetplan/fixedcost-api.service';
 import { FixedCostDto } from 'src/app/api/budgetplan/dtos/FixedCostDto';
@@ -23,7 +24,13 @@ describe('FixedCostContextService byId', () => {
             backendReady: vi.fn().mockName("ContextService.backendReady")
         };
         contextService.backendReady.mockReturnValue(backendReady.asObservable());
-        return new FixedCostContextService(contextService as unknown as ContextService, api);
+        TestBed.configureTestingModule({
+            providers: [
+                { provide: ContextService, useValue: contextService },
+                { provide: FixedCostApiService, useValue: api }
+            ]
+        });
+        return TestBed.runInInjectionContext(() => new FixedCostContextService());
     }
 
     beforeEach(() => {

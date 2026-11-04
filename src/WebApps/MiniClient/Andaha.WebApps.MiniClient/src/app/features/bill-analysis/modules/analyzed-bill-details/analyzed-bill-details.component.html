@@ -1,7 +1,7 @@
 <div class="page">
   <div class="progress-slot">
     @if (!bill) {
-      <mat-progress-bar mode="indeterminate" color="accent"></mat-progress-bar>
+      <mat-progress-bar mode="indeterminate" color="accent" />
     }
   </div>
   @if (bill) {
@@ -36,7 +36,7 @@
         }
       </div>
       <div class="photo-well">
-        <app-analyzed-bill-image [billId]="bill.id"></app-analyzed-bill-image>
+        <app-analyzed-bill-image [billId]="bill.id" />
       </div>
     </div>
   }

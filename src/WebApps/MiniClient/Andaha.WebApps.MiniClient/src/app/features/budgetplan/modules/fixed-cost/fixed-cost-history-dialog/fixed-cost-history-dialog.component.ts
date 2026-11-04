@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogContent } from '@angular/material/dialog';
 import { DurationLabel } from 'src/app/api/budgetplan/dtos/Duration';
 import { FixedCostHistoryDto } from 'src/app/api/budgetplan/dtos/FixedCostHistoryDto';
@@ -17,15 +17,16 @@ import { DecimalPipe, DatePipe } from '@angular/common';
     imports: [DialogComponent, CdkScrollable, MatDialogContent, MatProgressSpinner, DecimalPipe, DatePipe]
 })
 export class FixedCostHistoryDialogComponent implements OnInit {
+  private fixedCostApiService = inject(FixedCostApiService);
+
 
   historyEntries?: FixedCostHistoryDto[];
 
   durationLabel = DurationLabel;
   
-  constructor(
-    private fixedCostApiService: FixedCostApiService,
-    @Inject(MAT_DIALOG_DATA) data: FixedCostHistoryDialogData
-  ) {
+  constructor() {
+    const data = inject<FixedCostHistoryDialogData>(MAT_DIALOG_DATA);
+
     this.fetchHistory(data.fixedCostId);
   }
 

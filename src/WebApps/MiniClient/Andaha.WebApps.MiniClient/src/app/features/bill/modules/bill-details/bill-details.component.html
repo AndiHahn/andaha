@@ -13,8 +13,7 @@
       }
       <div class="photo-wrap">
         <app-bill-image [bill]="bill" [editing]="isEditing" [saving]="isSaving"
-          (imageSelected)="onImageSelected($event)">
-        </app-bill-image>
+          (imageSelected)="onImageSelected($event)" />
       </div>
       <!--
       LESEMODUS: WERTEZEILEN
@@ -89,7 +88,7 @@
               <span class="field-label">Unterkategorie</span>
               <span class="field-box">
                 <mat-select formControlName="subCategory" aria-label="Unterkategorie">
-                  <mat-option></mat-option>
+                  <mat-option />
                   @for (subCategory of billSubCategories; track subCategory) {
                     <mat-option [value]="subCategory">
                       {{subCategory?.name}}
@@ -107,7 +106,7 @@
               <mat-datepicker-toggle class="suffix" [for]="picker" [aria-label]="'Kalender öffnen'">
                 <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
               </mat-datepicker-toggle>
-              <mat-datepicker #picker></mat-datepicker>
+              <mat-datepicker #picker />
             </span>
             <span class="field-hint" id="bill-details-date-hint">DD.MM.YYYY</span>
           </label>
@@ -121,7 +120,7 @@
   -->
   <div class="progress-slot">
     @if (isDeleting || isLoading || !bill) {
-      <mat-progress-bar mode="indeterminate" color="accent"></mat-progress-bar>
+      <mat-progress-bar mode="indeterminate" color="accent" />
     }
   </div>
 
@@ -132,7 +131,7 @@
           <mat-icon>edit</mat-icon><span>Bearbeiten</span>
         }
         @if (isSaving) {
-          <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+          <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
         }
       </button>
       <button type="button" class="btn del" (click)="onDeleteClick()"
@@ -152,7 +151,7 @@
           <mat-icon>check</mat-icon><span>Speichern</span>
         }
         @if (isSaving) {
-          <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+          <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
         }
       </button>
     </div>

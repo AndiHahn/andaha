@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { MatDialogRef, MatDialogContent } from '@angular/material/dialog';
 import { MatRadioChange, MatRadioGroup, MatRadioButton } from '@angular/material/radio';
 import { blobToDataUrl } from 'src/app/shared/utils/file-utils';
@@ -24,6 +24,8 @@ enum UploadSelection {
     imports: [DialogComponent, CdkScrollable, MatDialogContent, MatRadioGroup, MatRadioButton, MatIcon]
 })
 export class AddBillImageDialogComponent {
+  private dialogRef = inject<MatDialogRef<AddBillImageDialogComponent, ImageSnippet>>(MatDialogRef);
+
 
   uploadSelection = UploadSelection;
 
@@ -35,9 +37,7 @@ export class AddBillImageDialogComponent {
 
   uploading: boolean = false;
 
-  constructor(
-    private dialogRef: MatDialogRef<AddBillImageDialogComponent, ImageSnippet>
-  ) {
+  constructor() {
     const padding = 24;
     const windowWidth = window.innerWidth;
     this.maxPreviewWidth = windowWidth - (2 * padding);

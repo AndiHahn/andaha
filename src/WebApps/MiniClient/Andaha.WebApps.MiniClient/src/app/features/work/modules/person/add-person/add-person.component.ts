@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { PersonForm, getEmptyPersonForm } from '../../../functions/person-form-functions';
 import { FormGroup, FormGroupDirective, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -18,16 +18,16 @@ import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe'
     imports: [FormsModule, ReactiveFormsModule, MatIcon, MatProgressSpinner, ShowErrorPipe]
 })
 export class AddPersonComponent implements OnInit {
+  private snackbar = inject(MatSnackBar);
+  private router = inject(Router);
+  private personContextService = inject(PersonContextService);
+
   
   form: FormGroup<PersonForm>;
 
   isSaving: boolean = false;
   
-  constructor(
-    private snackbar: MatSnackBar,
-    private router: Router,
-    private personContextService: PersonContextService
-  ) {
+  constructor() {
     this.form = getEmptyPersonForm();
   }
 

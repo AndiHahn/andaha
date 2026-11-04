@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, OnInit, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, OnInit, SimpleChanges, ChangeDetectionStrategy, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ChartOptions } from 'chart.js';
@@ -24,6 +24,8 @@ import { DecimalPipe } from '@angular/common';
     providers: [provideCharts(withDefaultRegisterables())]
 })
 export class ChartComponent implements OnInit, OnChanges {
+  private matDialog = inject(MatDialog);
+
 
   @Input()
   expenses!: ExpenseDto[];
@@ -74,9 +76,6 @@ export class ChartComponent implements OnInit, OnChanges {
       }
     }
   };
-
-  constructor(
-    private matDialog: MatDialog) {}
 
   ngOnInit(): void {
     if (!this.expenses) {

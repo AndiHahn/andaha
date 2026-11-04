@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ChangeDetectionStrategy, inject } from '@angular/core';
 import { TimeRange } from '../../../../../shared/models/TimeRange';
 import { UntypedFormBuilder, UntypedFormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DATE_TYPE_SEGMENT_LABELS, DateType, DateTypeLabelMapping } from './DateType';
@@ -18,6 +18,8 @@ import { DatePipe } from '@angular/common';
     imports: [FormsModule, ReactiveFormsModule, MatSelect, MatOption, MatIcon, MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker, DatePipe]
 })
 export class TimerangeSelectionComponent implements OnInit, OnChanges {
+  private fb = inject(UntypedFormBuilder);
+
 
   @Input()
   availableTimeRange!: TimeRange;
@@ -42,8 +44,7 @@ export class TimerangeSelectionComponent implements OnInit, OnChanges {
   customFromDate?: Date;
   customToDate?: Date;
 
-  constructor(
-    private fb: UntypedFormBuilder) {
+  constructor() {
     this.selectedDateType = DateType.Month;
 
     this.form = this.fb.group({

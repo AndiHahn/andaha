@@ -2,7 +2,7 @@
 <div class="page">
   <div class="progress-slot">
     @if (!fixedCost) {
-      <mat-progress-bar mode="indeterminate" color="accent"></mat-progress-bar>
+      <mat-progress-bar mode="indeterminate" color="accent" />
     }
   </div>
 
@@ -57,7 +57,7 @@
           <mat-icon>edit</mat-icon><span>Bearbeiten</span>
         }
         @if (isSaving) {
-          <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+          <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
         }
       </button>
       <button type="button" class="btn del" (click)="onDeleteClick()"
@@ -77,7 +77,7 @@
           <mat-icon>check</mat-icon><span>Speichern</span>
         }
         @if (isSaving) {
-          <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+          <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
         }
       </button>
     </div>

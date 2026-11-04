@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogContent } from '@angular/material/dialog';
 import { ConfirmationDialogData } from './ConfirmationDialogData';
 import { DialogComponent } from '../dialog/dialog.component';
@@ -12,13 +12,15 @@ import { CdkScrollable } from '@angular/cdk/scrolling';
     imports: [DialogComponent, CdkScrollable, MatDialogContent]
 })
 export class ConfirmationDialogComponent {
+  dialogRef = inject<MatDialogRef<ConfirmationDialogComponent>>(MatDialogRef);
+  data = inject<ConfirmationDialogData>(MAT_DIALOG_DATA);
+
 
   dialogData: ConfirmationDialogData;
 
-  constructor(
-    public dialogRef: MatDialogRef<ConfirmationDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ConfirmationDialogData
-  ) {
+  constructor() {
+    const data = this.data;
+
     this.dialogData = data;
   }
 

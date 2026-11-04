@@ -2,7 +2,7 @@
   <div class="body">
     @if (!persons) {
       <div class="loading">
-        <mat-spinner diameter="40"></mat-spinner>
+        <mat-spinner diameter="40" />
       </div>
     }
 
@@ -13,7 +13,7 @@
     }
 
     @if (persons) {
-      <app-person-list [persons]="persons"></app-person-list>
+      <app-person-list [persons]="persons" />
     }
   </div>
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CostCategory } from 'src/app/api/budgetplan/dtos/CostCategory';
 import { FixedCostDto } from 'src/app/api/budgetplan/dtos/FixedCostDto';
 import { FixedCostContextService } from '../../services/fixed-cost-context.service';
@@ -19,14 +19,14 @@ interface CostCategoryDictionary {
     imports: [MatProgressSpinner, FixedCostListComponent, RouterLink, MatIcon]
 })
 export class FixedCostComponent implements OnInit {
+  private fixedCostContextService = inject(FixedCostContextService);
+
 
   fixedCosts?: CostCategoryDictionary;
 
   costCategoryOptions = Object.values(CostCategory);
 
-  constructor(
-    private fixedCostContextService: FixedCostContextService
-  ) {
+  constructor() {
     this.initSubscriptions();
   }
 

@@ -30,7 +30,7 @@
 
     <div class="progress-slot">
       @if (uploading) {
-        <mat-progress-bar mode="indeterminate" color="accent"></mat-progress-bar>
+        <mat-progress-bar mode="indeterminate" color="accent" />
       }
     </div>
 
@@ -40,7 +40,7 @@
           <mat-icon>cloud_upload</mat-icon><span>Hochladen</span>
         }
         @if (uploading) {
-          <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Hochladen</span>
+          <mat-spinner class="btn-spinner" [diameter]="18" /><span>Hochladen</span>
         }
       </button>
     </div>

@@ -1,4 +1,4 @@
-import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogContent } from '@angular/material/dialog';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { blobToDataUrl } from 'src/app/shared/utils/file-utils';
@@ -16,16 +16,17 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
     imports: [DialogComponent, CdkScrollable, MatDialogContent, MatProgressSpinner]
 })
 export class AnalyzedBillImageDialogComponent {
+  private dialogRef = inject<MatDialogRef<AnalyzedBillImageDialogComponent>>(MatDialogRef);
+  private billApiService = inject(BillApiService);
+  private snackbar = inject(MatSnackBar);
+
   billId: string;
   imageSrc?: string;
   isLoading: boolean = false;
 
-  constructor(
-    private dialogRef: MatDialogRef<AnalyzedBillImageDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) data: any,
-    private billApiService: BillApiService,
-    private snackbar: MatSnackBar
-  ) {
+  constructor() {
+    const data = inject(MAT_DIALOG_DATA);
+
     this.billId = data.billId;
     this.fetchImage();
   }

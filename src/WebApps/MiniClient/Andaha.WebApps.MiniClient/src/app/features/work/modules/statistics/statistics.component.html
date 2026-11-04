@@ -4,8 +4,7 @@
   @if (availableTimeRange) {
     <div class="timerange-container">
       <app-timerange-selection [availableTimeRange]="availableTimeRange"
-        (selectionChanged)="timeSelectionChanged($event)">
-      </app-timerange-selection>
+        (selectionChanged)="timeSelectionChanged($event)" />
     </div>
   }
 
@@ -17,7 +16,7 @@
 
   @if (isLoading) {
     <div class="action-container">
-      <mat-spinner diameter="40"></mat-spinner>
+      <mat-spinner diameter="40" />
     </div>
   }
 

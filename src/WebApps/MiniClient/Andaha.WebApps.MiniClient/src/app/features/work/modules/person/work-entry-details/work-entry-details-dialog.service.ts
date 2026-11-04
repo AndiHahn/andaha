@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { WorkEntryDetailsDialogData } from './WorkEntryDetailsDialogData';
 import { WorkEntryDetailsDialogComponent } from './work-entry-details-dialog.component';
@@ -9,8 +9,8 @@ import { getDialogBaseConfig } from 'src/app/shared/dialog/dialog-functions';
   providedIn: 'root'
 })
 export class WorkEntryDetailsDialogService {
+  private dialog = inject(MatDialog);
 
-  constructor(private dialog: MatDialog) { }
 
   async openDialog(data: WorkEntryDetailsDialogData): Promise<MatDialogRef<WorkEntryDetailsDialogComponent, boolean>> {
     const chunk = await import(`./work-entry-details-dialog.component`);

@@ -2,7 +2,7 @@
   <div class="body">
     @if (isLoading) {
       <div class="loading">
-        <mat-spinner diameter="40"></mat-spinner>
+        <mat-spinner diameter="40" />
       </div>
     }
 
@@ -55,7 +55,7 @@
             <mat-icon>check</mat-icon><span>Speichern</span>
           }
           @if (isSaving) {
-            <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+            <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
           }
         </button>
       </div>

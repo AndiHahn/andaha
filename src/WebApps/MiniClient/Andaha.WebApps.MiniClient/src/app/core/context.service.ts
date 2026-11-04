@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { BudgetPlanApiService } from '../api/budgetplan/budgetplan-api.service';
 import { CollaborationApiService } from '../api/collaboration/collaboration-api.service';
@@ -10,6 +10,11 @@ import { WorkApiService } from '../api/work/work-api.service';
   providedIn: 'root'
 })
 export class ContextService {
+  private shoppingApiService = inject(ShoppingApiService);
+  private collaborationApiService = inject(CollaborationApiService);
+  private budgetPlanApiService = inject(BudgetPlanApiService);
+  private workApiService = inject(WorkApiService);
+
   private backendReady$ = new BehaviorSubject<boolean>(false);
 
   private userIsLoggedInInternal: boolean = false;
@@ -18,12 +23,9 @@ export class ContextService {
   private budgetplanApiAwakeInternal: boolean = false;
   private workApiAwakeInternal: boolean = false;
 
-  constructor(
-    authService: AuthService,
-    private shoppingApiService: ShoppingApiService,
-    private collaborationApiService: CollaborationApiService,
-    private budgetPlanApiService: BudgetPlanApiService,
-    private workApiService: WorkApiService) {
+  constructor() {
+      const authService = inject(AuthService);
+
 
       this.wakeUpBackendServices();
 

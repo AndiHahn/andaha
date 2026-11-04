@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { ExpenseDto } from 'src/app/api/shopping/dtos/ExpenseDto';
@@ -17,6 +17,9 @@ import { ChartComponent } from './chart/chart.component';
     imports: [TimerangeSelectionComponent, MatProgressSpinner, ChartComponent]
 })
 export class ExpensesComponent implements OnInit {
+  private expenseContextService = inject(ExpenseContextService);
+  private categoryContextService = inject(BillCategoryContextService);
+
 
   availableTimeRange?: TimeRange;
   expenses: ExpenseDto[] = [];
@@ -28,10 +31,6 @@ export class ExpensesComponent implements OnInit {
   sum: number = 0.0;
 
   selectedTimeRange?: TimeRange;
-
-  constructor(
-    private expenseContextService: ExpenseContextService,
-    private categoryContextService: BillCategoryContextService) { }
 
   ngOnInit(): void {
     this.initSubscriptions();

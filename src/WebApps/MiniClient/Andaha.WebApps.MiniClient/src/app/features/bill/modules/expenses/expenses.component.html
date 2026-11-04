@@ -1,12 +1,11 @@
 <div class="page">
   @if (availableTimeRange) {
     <app-timerange-selection [availableTimeRange]="availableTimeRange"
-      (selectionChanged)="timeSelectionChanged($event)">
-    </app-timerange-selection>
+      (selectionChanged)="timeSelectionChanged($event)" />
   }
   @if (!availableTimeRange) {
     <div class="loading">
-      <mat-spinner diameter="40"></mat-spinner>
+      <mat-spinner diameter="40" />
     </div>
   }
 
@@ -18,15 +17,13 @@
 
   @if (isLoading) {
     <div class="loading">
-      <mat-spinner diameter="40"></mat-spinner>
+      <mat-spinner diameter="40" />
     </div>
   }
 
   <!-- Ring, Summe und Legende (ersetzt die bisherige Summen-/Kategorienliste, umsetzung.md Statistik) -->
   @if (!isLoading && expenses.length > 0 && categories.length > 0) {
-    <app-chart
-      [expenses]="expenses" [categories]="categories" [selectedTimeRange]="selectedTimeRange" [sum]="sum"
-      [hiddenCategories]="hiddenCategories" (visibilityToggled)="toggleCategory($event)">
-    </app-chart>
+    <app-chart [expenses]="expenses" [categories]="categories" [selectedTimeRange]="selectedTimeRange" [sum]="sum"
+      [hiddenCategories]="hiddenCategories" (visibilityToggled)="toggleCategory($event)" />
   }
 </div>

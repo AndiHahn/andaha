@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormGroup, FormGroupDirective, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Duration, DurationLabel } from 'src/app/api/budgetplan/dtos/Duration';
@@ -19,6 +19,9 @@ import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe'
     imports: [FormsModule, ReactiveFormsModule, MatSelect, MatOption, MatIcon, MatProgressSpinner, ShowErrorPipe]
 })
 export class CreateIncomeComponent implements OnInit {
+  private snackbar = inject(MatSnackBar);
+  private incomeContextService = inject(IncomeContextService);
+
 
   form: FormGroup<IncomeForm>;
 
@@ -27,10 +30,7 @@ export class CreateIncomeComponent implements OnInit {
 
   isSaving: boolean = false;
   
-  constructor(
-    private snackbar: MatSnackBar,
-    private incomeContextService: IncomeContextService
-  ) {
+  constructor() {
     this.form = getEmptyForm();
   }
 

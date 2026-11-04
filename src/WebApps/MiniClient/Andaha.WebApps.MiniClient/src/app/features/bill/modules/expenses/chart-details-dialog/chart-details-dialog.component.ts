@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogContent } from '@angular/material/dialog';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { ExpenseSubCategoryDto } from 'src/app/api/shopping/dtos/ExpenseSubCategoryDto';
@@ -20,7 +20,9 @@ export class ChartDetailsDialogComponent implements OnInit {
   sum: number;
   subCategoryExpenses: ExpenseSubCategoryDto[];
 
-  constructor(@Inject(MAT_DIALOG_DATA) data: ChartDetailsDialogData) {
+  constructor() {
+    const data = inject<ChartDetailsDialogData>(MAT_DIALOG_DATA);
+
     this.categoryName = data.expense.category;
     this.sum = data.expense.costs;
     this.subCategoryExpenses = data.expense.subCategories;

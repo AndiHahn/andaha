@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { constructPath, constructVersionedPath } from '../functions/functions';
@@ -12,10 +12,12 @@ import { CategoryOrderDto } from './dtos/CategoryOrderDto';
   providedIn: 'root'
 })
 export class BillCategoryApiService {
+  private httpClient = inject(HttpClient);
+
   private endpointUrl: string;
   private apiVersion: string = "1.0";
 
-  constructor(private httpClient: HttpClient) {
+  constructor() {
     if (environment.useMonolithApi) {
       this.endpointUrl = constructPath(environment.monolithApiBaseUrl, 'api', 'billcategory');
     } else if (environment.useGateway) {

@@ -17,7 +17,7 @@
           @if (form.controls.color.value) {
             <mat-select-trigger>
               <span class="color-opt">
-                <app-color-item [color]="form.controls.color.value"></app-color-item>
+                <app-color-item [color]="form.controls.color.value" />
                 <span class="color-name">{{ form.controls.color.value }}</span>
               </span>
             </mat-select-trigger>
@@ -25,7 +25,7 @@
           @for (color of colors; track color) {
             <mat-option [value]="color">
               <span class="color-opt">
-                <app-color-item [color]="color"></app-color-item>
+                <app-color-item [color]="color" />
                 <span class="color-name">{{ color }}</span>
               </span>
             </mat-option>
@@ -53,7 +53,7 @@
         <mat-icon>check</mat-icon><span>Speichern</span>
       }
       @if (isSaving) {
-        <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+        <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
       }
     </button>
   </div>

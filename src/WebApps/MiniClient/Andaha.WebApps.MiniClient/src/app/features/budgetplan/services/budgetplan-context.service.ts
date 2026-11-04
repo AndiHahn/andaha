@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { BudgetPlanApiService } from 'src/app/api/budgetplan/budgetplan-api.service';
 import { BudgetPlanDto } from 'src/app/api/budgetplan/dtos/BudgetPlanDto';
@@ -10,16 +10,16 @@ import { IncomeContextService } from './income-context.service';
   providedIn: 'root'
 })
 export class BudgetplanContextService {
+  private contextService = inject(ContextService);
+  private budgetPlanApiService = inject(BudgetPlanApiService);
+  private incomeContextService = inject(IncomeContextService);
+  private fixedCostContextService = inject(FixedCostContextService);
+
 
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private budgetPlan$: BehaviorSubject<BudgetPlanDto | undefined> = new BehaviorSubject<BudgetPlanDto | undefined>(undefined);
   
-  constructor(
-    private contextService: ContextService,
-    private budgetPlanApiService: BudgetPlanApiService,
-    private incomeContextService: IncomeContextService,
-    private fixedCostContextService: FixedCostContextService
-  ) {
+  constructor() {
     this.fetchBudgetPlan();
     this.initSubscriptions();
   }

@@ -1,33 +1,25 @@
 <app-dialog [title]="'Eintrag bearbeiten'">
   <mat-dialog-content>
     <form class="form" [formGroup]="form">
-      <app-date-picker-form-field
-        [control]="form.controls.date"
-        label="Datum">
-      </app-date-picker-form-field>
+      <app-date-picker-form-field [control]="form.controls.date"
+        label="Datum" />
 
       <!-- Start/Ende/Pause als 3er-Reihe wie in "Arbeitszeiten hinzufuegen" -->
       <div class="times">
-        <app-time-picker-form-field
-          label="Startzeit"
+        <app-time-picker-form-field label="Startzeit"
           [defaultTime]="getNgxTime(form.controls.fromTime)"
           (timeChanged)="setFormTime(form.controls.fromTime, $event)"
-          [disabled]="!isEditing">
-        </app-time-picker-form-field>
+          [disabled]="!isEditing" />
 
-        <app-time-picker-form-field
-          label="Endzeit"
+        <app-time-picker-form-field label="Endzeit"
           [defaultTime]="getNgxTime(form.controls.untilTime)"
           (timeChanged)="setFormTime(form.controls.untilTime, $event)"
-          [disabled]="!isEditing">
-        </app-time-picker-form-field>
+          [disabled]="!isEditing" />
 
-        <app-time-picker-form-field
-          label="Pause"
+        <app-time-picker-form-field label="Pause"
           [defaultTime]="getNgxTime(form.controls.break)"
           (timeChanged)="setFormTime(form.controls.break, $event)"
-          [disabled]="!isEditing">
-        </app-time-picker-form-field>
+          [disabled]="!isEditing" />
       </div>
 
       <div class="net">
@@ -46,7 +38,7 @@
 
   <div class="progress-slot">
     @if (isDeleting) {
-      <mat-progress-bar mode="indeterminate" color="accent"></mat-progress-bar>
+      <mat-progress-bar mode="indeterminate" color="accent" />
     }
   </div>
 
@@ -57,7 +49,7 @@
           <mat-icon>edit</mat-icon><span>Bearbeiten</span>
         }
         @if (isSaving) {
-          <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+          <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
         }
       </button>
       <button type="button" class="btn del" (click)="onDeleteClick()" [disabled]="isEditing || isDeleting || isSaving">
@@ -76,7 +68,7 @@
           <mat-icon>check</mat-icon><span>Speichern</span>
         }
         @if (isSaving) {
-          <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+          <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
         }
       </button>
     </div>

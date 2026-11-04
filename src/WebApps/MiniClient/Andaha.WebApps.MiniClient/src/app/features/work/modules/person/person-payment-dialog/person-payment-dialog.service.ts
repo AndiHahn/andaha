@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { PersonPaymentDialogData } from './PersonPaymentDialogData';
 import { PersonPaymentDialogComponent } from './person-payment-dialog.component';
@@ -9,8 +9,8 @@ import { getDialogBaseConfig } from 'src/app/shared/dialog/dialog-functions';
   providedIn: 'root'
 })
 export class PersonPaymentDialogService {
+  private dialog = inject(MatDialog);
 
-  constructor(private dialog: MatDialog) { }
 
   async openDialog(data: PersonPaymentDialogData): Promise<MatDialogRef<PersonPaymentDialogComponent, string>> {
     const chunk = await import(`./person-payment-dialog.component`);

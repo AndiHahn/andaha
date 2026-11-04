@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -30,6 +30,14 @@ import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe'
     imports: [MatProgressBar, FormsModule, ReactiveFormsModule, MatSelect, MatOption, MatIcon, MatProgressSpinner, ShowErrorPipe]
 })
 export class FixedCostDetailsComponent implements OnInit, OnDestroy {
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private snackbar = inject(MatSnackBar);
+  private confirmationDialog = inject(ConfirmationDialogService);
+  private fixedCostContextService = inject(FixedCostContextService);
+  private fixedCostHistoryDialogService = inject(FixedCostHistoryDialogService);
+  private pageTitleService = inject(PageTitleService);
+
 
   form!: FormGroup<FixedCostForm>;
 
@@ -47,17 +55,6 @@ export class FixedCostDetailsComponent implements OnInit, OnDestroy {
 
   durationOptions = Object.values(Duration);
   durationLabel = DurationLabel;
-  
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private snackbar: MatSnackBar,
-    private confirmationDialog: ConfirmationDialogService,
-    private fixedCostContextService: FixedCostContextService,
-    private fixedCostHistoryDialogService: FixedCostHistoryDialogService,
-    private pageTitleService: PageTitleService
-  ) {
-  }
 
   ngOnInit(): void {
     const fixedCostId = getParametersFromRouteRecursive(this.route.snapshot)["id"];

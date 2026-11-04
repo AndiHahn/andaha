@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
 import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
@@ -32,6 +32,15 @@ import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe'
     imports: [FormsModule, ReactiveFormsModule, MatProgressSpinner, WorkEntryListComponent, MatProgressBar, MatIcon, DecimalPipe, DatePipe, ShowErrorPipe]
 })
 export class PersonDetailsComponent implements OnInit, OnDestroy {
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private snackbar = inject(MatSnackBar);
+  private contextService = inject(PersonContextService);
+  private confirmationDialog = inject(ConfirmationDialogService);
+  private personPaymentDialogService = inject(PersonPaymentDialogService);
+  private workingEntryContextService = inject(WorkingEntriesContextService);
+  private pageTitleService = inject(PageTitleService);
+
 
   form!: FormGroup<PersonForm>;
   
@@ -44,18 +53,6 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
 
   private destroy$: Subject<void> = new Subject<void>();
-
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private snackbar: MatSnackBar,
-    private contextService: PersonContextService, 
-    private confirmationDialog: ConfirmationDialogService,
-    private personPaymentDialogService: PersonPaymentDialogService,
-    private workingEntryContextService: WorkingEntriesContextService,
-    private pageTitleService: PageTitleService
-  ) {
-  }
 
   ngOnInit(): void {
     const personId = getParametersFromRouteRecursive(this.route.snapshot)["id"];

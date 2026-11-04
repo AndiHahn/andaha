@@ -88,11 +88,11 @@
       }
       @if (!workingEntries || isLoading) {
         <div class="loading">
-          <mat-spinner diameter="40"></mat-spinner>
+          <mat-spinner diameter="40" />
         </div>
       }
       @if (workingEntries && !isLoading) {
-        <app-work-entry-list [workEntries]="workingEntries!"></app-work-entry-list>
+        <app-work-entry-list [workEntries]="workingEntries!" />
       }
     </div>
   }
@@ -102,7 +102,7 @@
   -->
   <div class="progress-slot">
     @if (isDeleting || !person) {
-      <mat-progress-bar mode="indeterminate" color="accent"></mat-progress-bar>
+      <mat-progress-bar mode="indeterminate" color="accent" />
     }
   </div>
 
@@ -119,7 +119,7 @@
           <mat-icon>edit</mat-icon><span>Bearbeiten</span>
         }
         @if (isSaving) {
-          <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+          <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
         }
       </button>
       <button type="button" class="btn del sq" aria-label="Löschen" (click)="onDeleteClick()"
@@ -139,7 +139,7 @@
           <mat-icon>check</mat-icon><span>Speichern</span>
         }
         @if (isSaving) {
-          <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+          <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
         }
       </button>
     </div>

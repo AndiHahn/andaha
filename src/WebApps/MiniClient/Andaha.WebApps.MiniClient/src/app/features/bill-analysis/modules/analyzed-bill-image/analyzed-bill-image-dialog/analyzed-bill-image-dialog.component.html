@@ -2,7 +2,7 @@
   <mat-dialog-content>
     @if (isLoading) {
       <div class="action-container">
-        <mat-progress-spinner mode="indeterminate" [diameter]="40"></mat-progress-spinner>
+        <mat-progress-spinner mode="indeterminate" [diameter]="40" />
       </div>
     }
     @if (!isLoading && imageSrc) {

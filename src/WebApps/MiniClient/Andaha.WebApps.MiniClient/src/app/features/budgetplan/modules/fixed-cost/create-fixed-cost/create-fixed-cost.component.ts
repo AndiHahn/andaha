@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormGroup, FormGroupDirective, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CostCategory, CostCategoryLabel } from 'src/app/api/budgetplan/dtos/CostCategory';
@@ -20,6 +20,9 @@ import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe'
     imports: [FormsModule, ReactiveFormsModule, MatSelect, MatOption, MatIcon, MatProgressSpinner, ShowErrorPipe]
 })
 export class CreateFixedCostComponent implements OnInit {
+  private snackbar = inject(MatSnackBar);
+  private fixedCostContextService = inject(FixedCostContextService);
+
 
   form: FormGroup<FixedCostForm>;
 
@@ -31,10 +34,7 @@ export class CreateFixedCostComponent implements OnInit {
 
   isSaving: boolean = false;
   
-  constructor(
-    private snackbar: MatSnackBar,
-    private fixedCostContextService: FixedCostContextService
-  ) {
+  constructor() {
     this.form = getEmptyForm();
   }
 

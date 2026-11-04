@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { AddConnectionDialogService } from './add-connection-dialog/add-connection-dialog.service';
 import { ActiveConnectionsComponent } from './active-connections/active-connections.component';
 import { MatIcon } from '@angular/material/icon';
@@ -13,8 +13,8 @@ import { OutgoingConnectionRequestsComponent } from './outgoing-connection-reque
     imports: [ActiveConnectionsComponent, MatIcon, IncomingConnectionRequestsComponent, OutgoingConnectionRequestsComponent]
 })
 export class ConnectionComponent implements OnInit {
+  private addConnectionDialogFactory = inject(AddConnectionDialogService);
 
-  constructor(private addConnectionDialogFactory: AddConnectionDialogService) { }
 
   ngOnInit(): void {
   }

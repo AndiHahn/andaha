@@ -1,5 +1,5 @@
 import { ComponentType } from '@angular/cdk/portal';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AddConnectionDialogComponent } from './add-connection-dialog.component';
 import { getDialogBaseConfig } from "src/app/shared/dialog/dialog-functions";
@@ -8,8 +8,8 @@ import { getDialogBaseConfig } from "src/app/shared/dialog/dialog-functions";
   providedIn: 'root'
 })
 export class AddConnectionDialogService {
+  private dialog = inject(MatDialog);
 
-  constructor(private dialog: MatDialog) { }
 
   async openDialog(): Promise<MatDialogRef<AddConnectionDialogComponent>> {
     const chunk = await import(`./add-connection-dialog.component`);

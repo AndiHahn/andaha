@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CreateWorkingEntriesDto } from 'src/app/api/work/dtos/CreateWorkingEntriesDto';
 import { WorkingEntryForm, getEmptyWorkingEntryForm } from '../../../functions/working-entry-form-functions';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -27,6 +27,10 @@ import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe'
     imports: [FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, MatInput, MatOption, MatIcon, DatePickerFormFieldComponent, TimePickerFormFieldComponent, MatProgressSpinner, ShowErrorPipe]
 })
 export class AddWorkingEntryComponent implements OnInit {
+  private snackbar = inject(MatSnackBar);
+  private personContextService = inject(PersonContextService);
+  private contextService = inject(WorkingEntriesContextGlobalService);
+
 
   form: FormGroup<WorkingEntryForm>;
 
@@ -35,11 +39,7 @@ export class AddWorkingEntryComponent implements OnInit {
 
   isSaving: boolean = false;
 
-  constructor(
-    private snackbar: MatSnackBar,
-    private personContextService: PersonContextService,
-    private contextService: WorkingEntriesContextGlobalService
-  ) {
+  constructor() {
     this.form = getEmptyWorkingEntryForm();
   }
 

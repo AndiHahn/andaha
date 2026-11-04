@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { TimeRangeDto } from 'src/app/api/common-dtos/TimeRangeDto';
 import { FullStatisticsDto } from 'src/app/api/work/dtos/FullStatisticsDto';
@@ -11,15 +11,15 @@ import { TimeRange } from 'src/app/shared/models/TimeRange';
   providedIn: 'root'
 })
 export class StatisticsContextService {
+  private contextService = inject(ContextService);
+  private apiService = inject(StatisticsApiService);
+
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private availableTimeRange$: BehaviorSubject<TimeRangeDto | undefined> = new BehaviorSubject<TimeRangeDto | undefined>(undefined);
   private statistics$: BehaviorSubject<StatisticsDto | undefined> = new BehaviorSubject<StatisticsDto | undefined>(undefined);
   private fullStatistics$: BehaviorSubject<FullStatisticsDto | undefined> = new BehaviorSubject<FullStatisticsDto | undefined>(undefined);
 
-  constructor(
-    private contextService: ContextService,
-    private apiService: StatisticsApiService
-  ) {
+  constructor() {
     this.initSubscriptions();
     this.fetchTimeRange();
   }

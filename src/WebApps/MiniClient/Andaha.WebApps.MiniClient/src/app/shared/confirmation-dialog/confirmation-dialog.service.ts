@@ -1,5 +1,5 @@
 import { ComponentType } from '@angular/cdk/portal';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from './confirmation-dialog.component';
 import { ConfirmationDialogData } from './ConfirmationDialogData';
@@ -9,8 +9,8 @@ import { getDialogBaseConfig } from "../dialog/dialog-functions";
   providedIn: 'root'
 })
 export class ConfirmationDialogService {
+  private dialog = inject(MatDialog);
 
-  constructor(private dialog: MatDialog) { }
 
   async openDialog(data: ConfirmationDialogData): Promise<MatDialogRef<ConfirmationDialogComponent>> {
     const chunk = await import(`./confirmation-dialog.component`);

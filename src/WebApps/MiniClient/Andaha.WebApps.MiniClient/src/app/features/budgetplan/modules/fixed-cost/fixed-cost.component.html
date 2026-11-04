@@ -2,15 +2,13 @@
   <div class="body">
     @if (!fixedCosts) {
       <div class="loading">
-        <mat-spinner diameter="40"></mat-spinner>
+        <mat-spinner diameter="40" />
       </div>
     }
 
     @if (fixedCosts) {
       @for (costCategoryOption of costCategoryOptions; track costCategoryOption) {
-        <app-fixed-cost-list
-          [category]="costCategoryOption" [fixedCosts]="fixedCosts[costCategoryOption.toString()]">
-        </app-fixed-cost-list>
+        <app-fixed-cost-list [category]="costCategoryOption" [fixedCosts]="fixedCosts[costCategoryOption.toString()]" />
       }
     }
   </div>

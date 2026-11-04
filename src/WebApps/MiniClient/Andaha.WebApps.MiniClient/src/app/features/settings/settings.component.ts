@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { AddConnectionDialogService } from './modules/connection/add-connection-dialog/add-connection-dialog.service';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
@@ -11,9 +11,8 @@ import { MatIcon } from '@angular/material/icon';
     imports: [RouterOutlet, RouterLink, RouterLinkActive, MatIcon]
 })
 export class SettingsComponent implements OnInit {
+  private addConnectionDialogFactory = inject(AddConnectionDialogService);
 
-  constructor(
-    private addConnectionDialogFactory: AddConnectionDialogService) { }
 
   ngOnInit(): void {
   }

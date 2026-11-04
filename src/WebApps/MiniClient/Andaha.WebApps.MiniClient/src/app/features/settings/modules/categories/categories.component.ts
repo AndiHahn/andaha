@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
@@ -19,6 +19,9 @@ import { NgStyle } from '@angular/common';
     imports: [MatProgressSpinner, CdkDropList, CdkDrag, CdkDragHandle, MatIcon, RouterLink, NgStyle]
 })
 export class CategoriesComponent implements OnInit {
+  private snackbar = inject(MatSnackBar);
+  private categoryContextService = inject(BillCategoryContextService);
+
 
   categories?: CategoryDto[];
   tmpCategories?: CategoryDto[];
@@ -26,10 +29,6 @@ export class CategoriesComponent implements OnInit {
   isSaving: boolean = false;
   isEditing: boolean = false;
   isLoading: boolean = false;
-
-  constructor(
-    private snackbar: MatSnackBar,
-    private categoryContextService: BillCategoryContextService) { }
 
   ngOnInit(): void {
     this.initSubscriptions();

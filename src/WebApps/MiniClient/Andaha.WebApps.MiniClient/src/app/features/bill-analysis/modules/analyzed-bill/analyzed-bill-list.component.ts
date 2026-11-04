@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { PageEvent, MatPaginator } from '@angular/material/paginator';
@@ -19,6 +19,10 @@ import { AnalyzedBillListItemComponent } from './analyzed-bill-list-item/analyze
     imports: [MatProgressBar, CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf, RouterLink, AnalyzedBillListItemComponent, MatPaginator]
 })
 export class AnalyzedBillListComponent implements OnInit, AfterViewInit, OnDestroy {
+  private scrollDispatcher = inject(ScrollDispatcher);
+  private analyzedBillContextService = inject(AnalyzedBillContextService);
+  private categoryContext = inject(BillCategoryContextService);
+
   billDataSource = new AnalyzedBillDataSource();
   pixelHeightPerItem = 64;
   categories: CategoryDto[] = [];
@@ -33,12 +37,6 @@ export class AnalyzedBillListComponent implements OnInit, AfterViewInit, OnDestr
   timeoutHandler?: any;
 
   private destroy$: Subject<void> = new Subject();
-
-  constructor(
-    private scrollDispatcher: ScrollDispatcher,
-    private analyzedBillContextService: AnalyzedBillContextService,
-    private categoryContext: BillCategoryContextService) {
-  }
 
   ngOnInit(): void {
     this.initSubscriptions();

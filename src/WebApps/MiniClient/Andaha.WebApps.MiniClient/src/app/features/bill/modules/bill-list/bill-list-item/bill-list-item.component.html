@@ -11,11 +11,11 @@
       <span class="cat">{{ bill.category.name }}@if (bill.subCategory) {
         <span class="sub"> · {{ bill.subCategory.name }}</span>
       }</span>
-      <ng-container *ngTemplateOutlet="origin"></ng-container>
+      <ng-container *ngTemplateOutlet="origin" />
     </div>
   </div>
   <div class="origin-cell">
-    <ng-container *ngTemplateOutlet="origin"></ng-container>
+    <ng-container *ngTemplateOutlet="origin" />
   </div>
   <div class="amt">{{ bill.price | number:'1.2-2':'de' }}<small>€</small></div>
 </div>

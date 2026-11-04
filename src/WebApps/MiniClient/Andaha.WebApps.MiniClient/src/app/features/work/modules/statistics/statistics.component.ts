@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { TimeRange, mapTimeRangeDto } from 'src/app/shared/models/TimeRange';
 import { StatisticsContextService } from '../../services/statistics-context.service';
 import { StatisticsDto } from 'src/app/api/work/dtos/StatisticsDto';
@@ -17,6 +17,8 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
     imports: [TimerangeSelectionComponent, MatProgressSpinner]
 })
 export class StatisticsComponent implements OnInit {
+  private contextService = inject(StatisticsContextService);
+
 
   availableTimeRange?: TimeRange;
   statistics?: StatisticsDto;
@@ -27,9 +29,7 @@ export class StatisticsComponent implements OnInit {
 
   dateType = DateType;
 
-  constructor(
-    private contextService: StatisticsContextService
-  ) {
+  constructor() {
     this.initSubscriptions();
   }
 

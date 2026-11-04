@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogContent } from '@angular/material/dialog';
 import { BillListFilterDialogData } from './BillListFilterDialogData';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -17,14 +17,15 @@ import { MatIcon } from '@angular/material/icon';
     imports: [DialogComponent, CdkScrollable, MatDialogContent, MatDatepickerInput, FormsModule, ReactiveFormsModule, MatDatepickerToggle, MatIcon, MatDatepickerToggleIcon, MatDatepicker]
 })
 export class BillListFilterDialogComponent implements OnInit {
+  private dialogRef = inject<MatDialogRef<BillListFilterDialogComponent>>(MatDialogRef);
+
 
   dateFrom: FormControl = new FormControl();
   dateUntil: FormControl = new FormControl();
 
-  constructor(
-    private dialogRef: MatDialogRef<BillListFilterDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) data: BillListFilterDialogData
-  ) {
+  constructor() {
+    const data = inject<BillListFilterDialogData>(MAT_DIALOG_DATA);
+
     if (data.from) {
       this.dateFrom.setValue(data.from);
     }

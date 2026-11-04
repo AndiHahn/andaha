@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { BillCreateCacheItem, BillCreateDto } from '../../../api/shopping/dtos/BillCreateDto';
 import { dataUrlToBase64, fileDataUriToBlob, imageBlobToFile } from '../../../shared/utils/file-utils';
@@ -9,13 +9,15 @@ import { PendingBillStore } from './pending-bill-store.service';
   providedIn: 'root'
 })
 export class BillCacheService {
+  private pendingBillStore = inject(PendingBillStore);
+
   private billAdded$: Subject<void> = new Subject();
 
   private LEGACY_BILLS_CACHE_KEY: string = 'Bills|New';
 
   private migration: Promise<void>;
 
-  constructor(private pendingBillStore: PendingBillStore) {
+  constructor() {
     this.migration = this.migrateLegacyBills();
   }
 

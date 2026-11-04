@@ -1,8 +1,20 @@
 import { mapPersonDtoRawList } from 'src/app/api/work/dtos/PersonDto';
+import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { PersonApiService } from 'src/app/api/work/person-api.service';
 import { ContextService } from 'src/app/core/context.service';
 import { PersonContextService } from './person-context.service';
+
+// inject()-Migration: Abhaengigkeiten kommen per TestBed, die Instanz wird wie vorher direkt erzeugt
+function createPersonContextService(api: PersonApiService): PersonContextService {
+  TestBed.configureTestingModule({
+    providers: [
+      { provide: ContextService, useValue: { backendReady: () => of(false) } },
+      { provide: PersonApiService, useValue: api }
+    ]
+  });
+  return TestBed.runInInjectionContext(() => new PersonContextService());
+}
 
 describe('PersonContextService downloadPersonInformations', () => {
   it('emits even when the result is produced synchronously', () => {
@@ -10,9 +22,7 @@ describe('PersonContextService downloadPersonInformations', () => {
       listPersons: () => of([]),
       export: () => of({ body: null, headers: undefined } as any)
     } as unknown as PersonApiService;
-    const service = new PersonContextService(
-      { backendReady: () => of(false) } as unknown as ContextService,
-      api);
+    const service = createPersonContextService(api);
 
     let emissions = 0;
     service.downloadPersonInformations().subscribe(() => emissions++);
@@ -32,9 +42,7 @@ describe('PersonContextService addPayment', () => {
       listPersons: () => of(mapPersonDtoRawList([rawPerson(++calls == 1 ? '00:00:00' : '05:00:00')])),
       payPerson: () => of(void 0)
     } as unknown as PersonApiService;
-    const service = new PersonContextService(
-      { backendReady: () => of(false) } as unknown as ContextService,
-      api);
+    const service = createPersonContextService(api);
 
     let emissions = 0;
     service.addPayment('p1', { payedHours: '02:00:00' } as any).subscribe(() => emissions++);
@@ -50,9 +58,7 @@ describe('PersonContextService addPayment', () => {
       listPersons: () => ++calls == 1 ? of(mapPersonDtoRawList([rawPerson('00:00:00')])) : throwError(() => new Error('offline')),
       payPerson: () => of(void 0)
     } as unknown as PersonApiService;
-    const service = new PersonContextService(
-      { backendReady: () => of(false) } as unknown as ContextService,
-      api);
+    const service = createPersonContextService(api);
 
     let emissions = 0;
     let errors = 0;

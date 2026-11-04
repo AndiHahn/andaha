@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { CreateWorkingEntriesDto } from 'src/app/api/work/dtos/CreateWorkingEntriesDto';
 import { WorkingEntryApiService } from 'src/app/api/work/working-entry-api.service';
@@ -7,9 +7,8 @@ import { WorkingEntryApiService } from 'src/app/api/work/working-entry-api.servi
   providedIn: 'root'
 })
 export class WorkingEntriesContextGlobalService {
-  constructor(
-    private apiService: WorkingEntryApiService
-  ) { }
+  private apiService = inject(WorkingEntryApiService);
+
 
   createEntries(dto: CreateWorkingEntriesDto): Observable<void> {
     const returnSubject = new Subject<void>();
