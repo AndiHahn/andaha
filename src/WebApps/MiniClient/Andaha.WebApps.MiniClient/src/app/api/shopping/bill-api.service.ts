@@ -10,6 +10,8 @@ import { BillCreateDto } from './dtos/BillCreateDto';
 import { BillDto, BillDtoRaw, mapBillDtoRaw, mapPagedBillDtoResultRaw } from './dtos/BillDto';
 import { BillUpdateDto } from './dtos/BillUpdateDto';
 import { BillAnalyzedDto, BillAnalyzedDtoRaw, mapBillAnalyzedDtoRaw } from './dtos/BillAnalyzedDto';
+import { AnalyzeBillResultDto } from './dtos/AnalyzeBillResultDto';
+import { mapShopStatDtoRaw, ShopStatDto, ShopStatDtoRaw } from './dtos/ShopStatDto';
 import { getSearchBillsHttpParams, SearchBillsParameters } from './dtos/SearchBillsParameters';
 
 @Injectable({
@@ -122,5 +124,27 @@ export class BillApiService {
 
     return this.httpClient.get<BillAnalyzedDtoRaw[]>(url, { params: httpParameters })
       .pipe(map(raw => raw.map(mapBillAnalyzedDtoRaw)));
+  }
+
+  analyzeBill(file: File): Observable<AnalyzeBillResultDto> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'analyze');
+
+    const formData = new FormData();
+    formData.set('file', file);
+
+    return this.httpClient.post<AnalyzeBillResultDto>(url, formData);
+  }
+
+  deleteAnalyzedBill(id: string): Observable<void> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'analyzed', id);
+
+    return this.httpClient.delete<void>(url);
+  }
+
+  getShopStats(): Observable<ShopStatDto[]> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'shop-stats');
+
+    return this.httpClient.get<ShopStatDtoRaw[]>(url)
+      .pipe(map(raw => raw.map(mapShopStatDtoRaw)));
   }
 }
