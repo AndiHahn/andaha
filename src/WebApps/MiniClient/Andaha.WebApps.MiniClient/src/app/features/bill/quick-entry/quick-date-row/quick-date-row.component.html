@@ -1,0 +1,15 @@
+<div class="meta">
+  <button type="button" class="date-btn" [matMenuTriggerFor]="dateMenu" appMenuBack aria-label="Datum ändern">
+    <mat-icon aria-hidden="true">calendar_today</mat-icon><span>{{ label }}</span>
+  </button>
+  <input class="picker-anchor" tabindex="-1" aria-hidden="true"
+    [matDatepicker]="picker" [max]="today" [value]="date" (dateChange)="onPicked($event)">
+  <mat-datepicker #picker [touchUi]="touchUi" />
+  <button type="button" class="lnk" (click)="allFields.emit()">Alle Felder</button>
+</div>
+
+<mat-menu #dateMenu="matMenu">
+  <button mat-menu-item (click)="setToday()">Heute</button>
+  <button mat-menu-item (click)="setYesterday()">Gestern</button>
+  <button mat-menu-item (click)="pickDate()">Datum wählen</button>
+</mat-menu>

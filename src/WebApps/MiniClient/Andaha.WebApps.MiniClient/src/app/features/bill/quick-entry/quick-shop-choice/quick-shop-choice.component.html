@@ -1,0 +1,24 @@
+<div class="shoprow">
+  <span class="lbl" id="quick-shop-label">Shop<span class="lbl-hint">häufigste zuerst</span></span>
+  <div class="seg" role="radiogroup" aria-labelledby="quick-shop-label" data-no-swipe>
+    @for (shop of shops; track shop) {
+      @let on = !custom && selected === shop;
+      <button type="button" class="chip sm" role="radio" [class.on]="on" [attr.aria-checked]="on" (click)="selectShop.emit(shop)">
+        @if (on) {
+          <mat-icon aria-hidden="true">check</mat-icon>
+        }<span class="label">{{ shop }}</span>
+      </button>
+    }
+    <button type="button" class="chip sm" role="radio" [class.on]="custom" [attr.aria-checked]="custom" (click)="selectCustom.emit()">
+      @if (custom) {
+        <mat-icon aria-hidden="true">check</mat-icon>
+      }<span class="label">Anderer …</span>
+    </button>
+  </div>
+  @if (custom) {
+    <span class="box">
+      <input name="customShop" type="text" autocomplete="off" aria-label="Shopname" placeholder="Shopname"
+        [value]="query" (input)="onInput($event)" (focus)="inputFocus.emit()" [matAutocomplete]="autocomplete">
+    </span>
+  }
+</div>

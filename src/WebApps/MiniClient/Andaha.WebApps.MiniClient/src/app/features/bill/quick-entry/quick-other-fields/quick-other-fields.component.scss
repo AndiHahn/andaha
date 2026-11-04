@@ -1,0 +1,58 @@
+// v2 d · „Andere …“: Felder wie global .field (Fokus mit Ring), Schalter 44 × 26 (an: primary)
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--fg);
+  text-align: left;
+  cursor: pointer;
+
+  small {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--faint);
+    margin-top: 2px;
+  }
+}
+
+.tr {
+  margin-left: auto;
+  width: 44px;
+  height: 26px;
+  border-radius: 13px;
+  background: var(--pri);
+  position: relative;
+  flex: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 21px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--surface);
+    transition: left .15s ease-out;
+  }
+
+  &.off { background: var(--line3); }
+  &.off::after { left: 3px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tr::after { transition: none; }
+}

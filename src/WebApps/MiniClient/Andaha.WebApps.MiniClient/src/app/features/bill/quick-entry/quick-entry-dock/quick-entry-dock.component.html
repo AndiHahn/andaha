@@ -1,0 +1,12 @@
+<div class="dock">
+  <button type="button" class="in" aria-label="Neue Rechnung, Betrag eingeben" (click)="openEntry.emit()">
+    <mat-icon aria-hidden="true">add</mat-icon>
+    <span class="ph">Neue Rechnung: Betrag</span>
+    <span class="sfx">€</span>
+  </button>
+  @if (layout === 'mobile') {
+    <button type="button" class="cam" aria-label="Rechnung scannen" (click)="scan.emit()">
+      <mat-icon aria-hidden="true">photo_camera</mat-icon>
+    </button>
+  }
+</div>

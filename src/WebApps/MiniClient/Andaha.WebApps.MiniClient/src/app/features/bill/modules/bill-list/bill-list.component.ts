@@ -10,24 +10,31 @@ import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillListDateFilter } from './bill-list-filter/BillListDateFilter';
 import { BillListFilterComponent } from './bill-list-filter/bill-list-filter.component';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BillListItemComponent } from './bill-list-item/bill-list-item.component';
+import { QuickEntryDockComponent } from '../../quick-entry/quick-entry-dock/quick-entry-dock.component';
+import { QuickEntryService } from '../../quick-entry/quick-entry.service';
 
 @Component({
     selector: 'app-bill-list',
     templateUrl: './bill-list.component.html',
     styleUrls: ['./bill-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [BillListFilterComponent, MatProgressBar, CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf, RouterLink, BillListItemComponent, MatPaginator]
+    imports: [BillListFilterComponent, MatProgressBar, CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf, RouterLink, BillListItemComponent, MatPaginator, QuickEntryDockComponent]
 })
 export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   private scrollDispatcher = inject(ScrollDispatcher);
   private billContextService = inject(BillContextService);
   private breakpointObserver = inject(BreakpointObserver);
-
+  private quickEntry = inject(QuickEntryService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   billDataSource = new BillDataSource();
   pixelHeightPerItem = 64;
+  isDesktop = false;
+  /** gerade gespeicherte Rechnung, deren Zeile kurz hervorgehoben ist (v2) */
+  lastAddedId: string | null = null;
 
   totalCount?: number;
   loading: boolean = false;
@@ -71,6 +78,16 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.initSubscriptions();
     this.initItemSize();
+    this.openQuickEntryFromUrl();
+  }
+
+  openQuickEntry(): void {
+    this.quickEntry.open();
+  }
+
+  // Kamera-Knopf: bis zum Scan-Ablauf (Task 11) das große Formular mit Foto
+  onScan(): void {
+    void this.router.navigate(['/bill/create']);
   }
 
   ngOnDestroy(): void {
@@ -147,12 +164,31 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   private initItemSize(): void {
     this.breakpointObserver.observe('(min-width: 1024px)').pipe(takeUntil(this.destroy$)).subscribe(
       {
-        next: state => this.pixelHeightPerItem = state.matches ? 52 : 64
+        next: state => {
+          this.isDesktop = state.matches;
+          this.pixelHeightPerItem = state.matches ? 52 : 64;
+        }
       }
     );
   }
 
+  // App-Shortcut „Rechnung eintragen“ (/bill/list?quick=1): Parameter erst entfernen (replaceUrl), dann
+  // das Sheet öffnen, sonst ersetzt die Navigation den History-Eintrag des Sheets (OverlayBackService)
+  private openQuickEntryFromUrl(): void {
+    if (this.route.snapshot.queryParamMap.get('quick') !== '1') {
+      return;
+    }
+    void this.router.navigate([], { relativeTo: this.route, queryParams: { quick: null }, queryParamsHandling: 'merge', replaceUrl: true })
+      .finally(() => this.quickEntry.open());
+  }
+
   private initSubscriptions(): void {
+    this.billContextService.lastAddedId().pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: id => this.lastAddedId = id
+      }
+    );
+
     this.billContextService.bills().pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: result => {

@@ -1,0 +1,65 @@
+// v2: Betrag im Stil amount (44/600, global .big), Platzhalter dim, Cursor 2 px primary
+:host {
+  display: flex;
+  flex: none;
+}
+
+.amount {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: var(--fg);
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  .ph0 { color: var(--dim); }
+}
+
+.caret {
+  width: 2px;
+  height: 38px;
+  background: var(--pri);
+  margin-left: 2px;
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret { animation: none; }
+}
+
+// Desktop-Dialog (04): großes Feld 64 px, Wert 36/600, Suffix 20
+.amount-field {
+  flex: 1;
+  height: 64px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px 0 14px;
+
+  &:focus-within { border-color: var(--pri); box-shadow: 0 0 0 3px var(--pri-ring); }
+
+  input {
+    all: unset;
+    flex: 1;
+    min-width: 0;
+    font-size: 36px;
+    font-weight: 600;
+    letter-spacing: -.025em;
+    color: var(--fg);
+
+    &::placeholder { color: var(--dim); }
+  }
+
+  .sfx { font-size: 20px; color: var(--mut); }
+}

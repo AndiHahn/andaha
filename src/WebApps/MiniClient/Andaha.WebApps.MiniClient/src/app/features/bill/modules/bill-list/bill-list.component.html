@@ -5,7 +5,11 @@
     [initialDateFilter]="initialDateFilter"
     (searchTextChanged)="onSearchInput($event)"
     (categoryFilterChanged)="onCategoryFilterChanged($event)"
-    (dateFilterChanged)="onDateFilterChanged($event)"  />
+    (dateFilterChanged)="onDateFilterChanged($event)">
+    @if (isDesktop) {
+      <app-quick-entry-dock filterLead layout="desktop" (openEntry)="openQuickEntry()" />
+    }
+  </app-bill-list-filter>
 </div>
 
 <div class="progress-slot">
@@ -30,9 +34,13 @@
 
 <cdk-virtual-scroll-viewport #viewport class="list" [itemSize]="pixelHeightPerItem">
   <a *cdkVirtualFor="let bill of billDataSource" class="bill-link" routerLink="/bill/{{bill.id}}">
-    <app-bill-list-item [bill]="bill" />
+    <app-bill-list-item [bill]="bill" [isNew]="bill.id === lastAddedId" />
   </a>
 </cdk-virtual-scroll-viewport>
+
+@if (!isDesktop) {
+  <app-quick-entry-dock (openEntry)="openQuickEntry()" (scan)="onScan()" />
+}
 
 <div style="display: none;">
   <mat-paginator class="paginator"

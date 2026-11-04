@@ -1,0 +1,131 @@
+// Schnell-Sheet nach v2 `02-schnellerfassung` (a–g); Desktop-Dialog nach `04-shortcut-desktop`.
+// Panel in styles.scss (.andaha-sheet / .andaha-dialog), Teile in den quick-*-Komponenten.
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: inherit;
+  position: relative;
+}
+
+.grab {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--grab);
+  margin: 10px auto 2px;
+  flex: none;
+  position: relative;
+
+  // Griff zum Wegwischen (appSheetDrag): Trefferfläche größer als der Strich
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -10px -60px -8px;
+  }
+}
+
+.sh {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px 0 16px;
+
+  h2 { margin: 0; font-size: 18px; font-weight: 600; }
+}
+
+.close-btn { color: var(--mut); }
+
+.form {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 2px 16px 16px;
+
+  // Tastatur eingeklappt (b, c, e) und „Andere …“ (d)
+  &.compact, &.other { padding-bottom: 20px; }
+  &.other { gap: 14px; }
+}
+
+// g · Entwurf-Zeile: 13 muted, Stift primary, rechts „Verwerfen“
+.restored {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--mut);
+
+  .mat-icon { width: 16px; height: 16px; font-size: 16px; line-height: 16px; color: var(--pri); }
+}
+
+.link {
+  margin: -12px 0 -12px auto;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  padding: 0 4px;
+  font: inherit;
+  color: var(--pri);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+// e · Duplikat-Hinweis: secondary-soft, Text secondary-text 13, Radius 10, Icon 18
+.warn {
+  flex: none;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--sec-soft);
+  color: var(--sec-text);
+  font-size: 13px;
+  line-height: 1.4;
+
+  .mat-icon { width: 18px; height: 18px; font-size: 18px; line-height: 18px; flex: none; margin-top: 1px; }
+  b { display: block; font-weight: 600; }
+}
+
+.actions-row {
+  flex: none;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.save {
+  flex: 1;
+
+  &:disabled { opacity: .45; }
+}
+
+.need {
+  flex: none;
+  font-size: 12px;
+  color: var(--faint);
+  text-align: center;
+  margin-top: -6px;
+}
+
+// Anker des Vorschlag-Menüs: links 24 px, Breite des Menüs in styles.scss
+.menu-anchor {
+  position: absolute;
+  left: 24px;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+// Desktop-Dialog (04): Kopf 12/8/0/20, Inhalt 6/20/20, Aktionen „Abbrechen | Speichern“ rechtsbündig
+:host(.dialog) {
+  .sh { padding: 12px 8px 0 20px; }
+  .form { padding: 6px 20px 20px; }
+  .save { flex: none; }
+  .need { text-align: right; }
+}

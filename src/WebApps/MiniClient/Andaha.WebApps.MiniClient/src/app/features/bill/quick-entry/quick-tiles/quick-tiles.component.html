@@ -1,0 +1,20 @@
+<div class="tiles">
+  <div class="group" role="radiogroup" aria-label="Vorlage">
+    @for (tile of tiles; track tile.key) {
+      <button #tileEl type="button" class="tile" role="radio"
+        [class.on]="tile.key === selectedKey"
+        [attr.aria-checked]="tile.key === selectedKey"
+        appLongPress (longPress)="onLongPress(tile, tileEl)"
+        (click)="selectTile.emit(tile)">
+        @if (tile.pinned) {
+          <mat-icon class="pin" aria-hidden="true">bookmark</mat-icon>
+        }
+        <b>{{ tile.title }}</b>
+        <span class="sub"><i class="dot" [class.dot-light]="tile.color == 'white'" [style.background]="tile.color"></i>{{ tile.subtitle }}</span>
+      </button>
+    }
+  </div>
+  <button type="button" class="tile other" (click)="selectOther.emit()">
+    <mat-icon aria-hidden="true">add</mat-icon>Andere …
+  </button>
+</div>

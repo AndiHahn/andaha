@@ -1,4 +1,4 @@
-<div class="row bill-row">
+<div class="row bill-row" [class.is-new]="isNew">
   <div class="date">
     <b>{{ bill.date | date:'dd':undefined:'de' }}</b>
     <span>{{ bill.date | date:'LLL':undefined:'de' }}</span>

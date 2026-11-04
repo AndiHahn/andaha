@@ -16,6 +16,7 @@ $andaha-raised:       #EFE8DC; // Sekundär-Buttons, Icon-Kacheln
 $andaha-well:         #F0EADF; // Upload-Fläche, Bildbereich
 $andaha-side:         #F1EBE1; // Desktop-Sidebar
 $andaha-active:       #ECE3D4; // aktiver Eintrag in Drawer/Sidebar
+$andaha-keypad:       #DCD5C9; // Fläche der eigenen Zifferntastatur (v2)
 
 // Linien
 $andaha-line:         #E0D8CA; // Trennlinien zwischen Bereichen
@@ -94,6 +95,7 @@ $andaha-breakpoint-desktop: 1024px;
   --menu: #{$andaha-surface};
   --act: #{$andaha-active};
   --seg-on: #{$andaha-surface};
+  --kb: #{$andaha-keypad};
 
   --line: #{$andaha-line};
   --line2: #{$andaha-line-row};

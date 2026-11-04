@@ -14,6 +14,10 @@ export class BillListItemComponent implements OnInit {
 
   @Input()
   bill!: BillDto;
+
+  /** gerade gespeichert: Zeile kurz hervorgehoben (v2 „Hervorgehobene neue Zeile“) */
+  @Input()
+  isNew = false;
   
   constructor() { }
 

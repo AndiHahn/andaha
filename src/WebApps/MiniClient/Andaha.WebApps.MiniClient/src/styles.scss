@@ -549,6 +549,14 @@ body.mat-app-background {
   .mdc-snackbar__label { padding: 0; }
 }
 
+// Rechnungen → Liste mobil (v2 „Snackbar“): unten über dem Dock, 12 px Rand. Dock 75 px (1 + 10 + 52 + 12),
+// Hauptleiste 64 px; die Klasse setzt quick-entry-dock.component, solange es sichtbar ist.
+@media (max-width: 1023.98px) {
+  html.quick-dock-visible .cdk-overlay-container .mat-mdc-snack-bar-container {
+    margin-bottom: calc(12px + 75px + 64px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
 // Material 18: mobil (.mat-mdc-snack-bar-handset) 100vw; Breite wie oben, sonst ragt die Snackbar rechts hinaus
 .cdk-overlay-container .mat-mdc-snack-bar-handset .mat-mdc-snack-bar-container { width: calc(100% - 24px); }
 
@@ -689,6 +697,55 @@ body .cdk-drag-preview.andaha-drag-item {
 }
 
 .cdk-overlay-container .andaha-sheet,
+// Bottom Sheet (MatBottomSheet über SheetService, v2 „Schnell-Sheet“): surface, Radius 20 oben, Schatten
+// wie Sheets; der Inhalt (Komponente) bringt Griff, Kopf und Abstände selbst mit
+.cdk-overlay-container .andaha-sheet .mat-bottom-sheet-container {
+  --mat-bottom-sheet-container-shape: 20px;
+  --mat-bottom-sheet-container-background-color: var(--surface);
+  --mat-bottom-sheet-container-text-color: var(--fg);
+  --mat-bottom-sheet-container-text-font: #{$andaha-font};
+  --mat-bottom-sheet-container-text-size: 16px;
+  --mat-bottom-sheet-container-text-line-height: normal;
+  --mat-bottom-sheet-container-text-weight: 400;
+  --mat-bottom-sheet-container-text-tracking: normal;
+  padding: 0 0 env(safe-area-inset-bottom, 0px);
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -12px 40px var(--sh5);
+  max-height: 90vh;
+  max-height: 90dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  > * {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+}
+
+// Kontextmenü eines Vorschlags im Schnell-Sheet (v2 „Kontextmenü“): so breit wie das Sheet minus 2 × 24 px,
+// Kopf „Vorschlag“ + Kombination, Einträge 48 px; „Anheften“ mit Lesezeichen in primary
+.cdk-overlay-container .mat-mdc-menu-panel.quick-suggestion-menu {
+  width: calc(100vw - 48px);
+  max-width: 432px;
+  border-radius: 14px !important;
+
+  .menu-head {
+    padding: 10px 16px 8px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--line2);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--mut);
+
+    b { display: block; color: var(--fg); font-size: 15px; font-weight: 600; }
+  }
+
+  .mat-mdc-menu-item { min-height: 48px; font-weight: 500; }
+  .mat-mdc-menu-item .mat-icon { width: 20px; height: 20px; font-size: 20px; color: var(--mut); }
+  .mat-mdc-menu-item .mat-icon.pin-icon { color: var(--pri); }
+}
+
 .cdk-overlay-container .andaha-dialog {
   .mat-mdc-dialog-container {
     --mat-dialog-container-color: var(--surface);

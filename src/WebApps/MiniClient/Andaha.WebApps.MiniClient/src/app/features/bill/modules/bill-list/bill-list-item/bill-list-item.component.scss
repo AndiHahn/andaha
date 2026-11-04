@@ -8,6 +8,23 @@
   min-height: 0;
 }
 
+// Gerade gespeichert (v2): primary-soft, blendet nach ca. 2 s aus
+.bill-row.is-new {
+  animation: new-row 2.4s ease-out both;
+}
+
+@keyframes new-row {
+  0%, 75% { background-color: var(--pri-soft); }
+  100% { background-color: transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bill-row.is-new {
+    animation: none;
+    background-color: var(--pri-soft);
+  }
+}
+
 .date-full,
 .origin-cell {
   display: none;

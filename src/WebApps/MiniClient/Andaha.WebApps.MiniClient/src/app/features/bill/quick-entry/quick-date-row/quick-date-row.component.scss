@@ -1,0 +1,53 @@
+// Datumszeile (v2): Kalender-Icon 18 muted, Text 14 fg2, rechts „Alle Felder“ (primary, 600).
+// Touch-Ziele 44 px bei 20 px Zeilenhöhe: negative Ränder halten den Abstand wie im Mockup.
+:host {
+  display: block;
+  flex: none;
+  margin: -12px 0;
+}
+
+.meta {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--fg2);
+}
+
+button {
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.date-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  .mat-icon { width: 18px; height: 18px; font-size: 18px; line-height: 18px; color: var(--mut); }
+}
+
+.lnk {
+  margin-left: auto;
+  color: var(--pri);
+  font-weight: 600;
+}
+
+// Unsichtbares Feld, an dem der Datepicker hängt (geöffnet über „Datum wählen“)
+.picker-anchor {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  border: 0;
+  padding: 0;
+  pointer-events: none;
+}

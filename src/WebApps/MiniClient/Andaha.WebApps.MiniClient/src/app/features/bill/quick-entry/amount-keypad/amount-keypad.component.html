@@ -1,0 +1,8 @@
+<div class="kb" role="group" aria-label="Zifferntastatur">
+  @for (digit of digits; track digit) {
+    <button type="button" class="key" (click)="key.emit(digit)">{{ digit }}</button>
+  }
+  <button type="button" class="key fn" aria-label="Löschen" (click)="key.emit('del')">
+    <mat-icon aria-hidden="true">backspace</mat-icon>
+  </button>
+</div>

@@ -1,0 +1,78 @@
+// v2 „Eingabezeile (Dock)“: bg, Linie oben, Innenabstand 10/16/12; Feld 52 px (Radius 12, Plus primary,
+// Suffix €), daneben Kamera-Knopf 52 × 52, raised mit Innenrand line-field, Icon primary
+:host {
+  display: block;
+  flex: none;
+}
+
+.dock {
+  display: flex;
+  gap: 8px;
+  padding: 10px 16px 12px;
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+}
+
+.in {
+  flex: 1;
+  min-width: 0;
+  height: 52px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--line3);
+  color: var(--fg);
+  font: inherit;
+  font-size: 16px;
+  padding: 0 12px 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  cursor: pointer;
+
+  .mat-icon { width: 20px; height: 20px; font-size: 20px; line-height: 20px; color: var(--pri); flex: none; }
+
+  .ph {
+    flex: 1;
+    color: var(--faint);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sfx { color: var(--mut); }
+}
+
+.cam {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--raised);
+  box-shadow: inset 0 0 0 1px var(--line3);
+  color: var(--pri);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+}
+
+// Desktop (04): Feld 44 px neben der Suche, ohne eigene Leiste
+:host(.desktop) {
+  flex: 1 1 320px;
+  max-width: 380px;
+
+  .dock {
+    padding: 0;
+    border-top: 0;
+    background: transparent;
+  }
+
+  .in {
+    height: 44px;
+    border-radius: 10px;
+    font-size: 15px;
+  }
+}

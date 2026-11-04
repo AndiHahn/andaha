@@ -1,0 +1,46 @@
+<label class="field">
+  <span class="field-label">Shopname</span>
+  <span class="field-box">
+    <input name="shopName" type="text" autocomplete="off" enterkeyhint="next"
+      [value]="query" (input)="onInput($event)" (focus)="inputFocus.emit()" [matAutocomplete]="autocomplete">
+  </span>
+  <span class="field-hint">Vorschläge aus deinen bisherigen Shops beim Tippen</span>
+</label>
+
+<div class="field">
+  <span class="field-label" id="quick-category-label">Kategorie</span>
+  <span class="field-box">
+    @if (category) {
+      <span class="dot" [class.dot-light]="category.color == 'white'" [style.background]="category.color"></span>
+    }
+    <mat-select aria-labelledby="quick-category-label" placeholder="Kategorie wählen"
+      [value]="category?.id ?? null" (selectionChange)="categoryChange.emit($event.value)">
+      @for (option of categories; track option.id) {
+        <mat-option [value]="option.id">{{ option.name }}</mat-option>
+      }
+    </mat-select>
+    <mat-icon aria-hidden="true">expand_more</mat-icon>
+  </span>
+</div>
+
+@if (category?.subCategories?.length) {
+  <div class="field">
+    <span class="field-label" id="quick-subcategory-label">Unterkategorie</span>
+    <span class="field-box">
+      <mat-select aria-labelledby="quick-subcategory-label" placeholder="Keine"
+        [value]="subCategoryId" (selectionChange)="subCategoryChange.emit($event.value)">
+        <mat-option [value]="null">Keine</mat-option>
+        @for (sub of category!.subCategories; track sub.id) {
+          <mat-option [value]="sub.id">{{ sub.name }}</mat-option>
+        }
+      </mat-select>
+      <mat-icon aria-hidden="true">expand_more</mat-icon>
+    </span>
+  </div>
+}
+
+<button type="button" class="switch" role="switch" aria-label="Als Vorlage merken"
+  [attr.aria-checked]="saveAsTemplate" (click)="saveAsTemplateChange.emit(!saveAsTemplate)">
+  <span>Als Vorlage merken<small>Erscheint künftig oben im Sheet</small></span>
+  <span class="tr" [class.off]="!saveAsTemplate" aria-hidden="true"></span>
+</button>

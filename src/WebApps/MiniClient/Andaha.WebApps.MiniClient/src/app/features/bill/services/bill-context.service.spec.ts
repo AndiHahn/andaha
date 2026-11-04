@@ -258,6 +258,28 @@ describe('BillContextService local save and sync', () => {
         expect(totalResults).toBe(1);
     });
 
+    it('lastAddedId marks the saved bill for about 2 s, then clears', async () => {
+        const values: (string | null)[] = [];
+        service.lastAddedId().subscribe(id => values.push(id));
+
+        await service.addBill(createDto('n1'), category);
+        expect(values).toEqual([null, 'n1']);
+
+        await vi.advanceTimersByTimeAsync(2999);
+        expect(values.at(-1)).toBe('n1');
+        await vi.advanceTimersByTimeAsync(1);
+        expect(values.at(-1)).toBeNull();
+    });
+
+    it('lastAddedId stays empty when the local save fails', async () => {
+        const values: (string | null)[] = [];
+        service.lastAddedId().subscribe(id => values.push(id));
+        cacheService.saveNewBillLocal.mockRejectedValue(new Error('quota'));
+
+        await expect(service.addBill(createDto('n1'), category)).rejects.toThrow();
+        expect(values).toEqual([null]);
+    });
+
     it('sync failure resets syncing', async () => {
         billApi.addBill.mockReturnValue(throwError(() => new Error('500')));
 

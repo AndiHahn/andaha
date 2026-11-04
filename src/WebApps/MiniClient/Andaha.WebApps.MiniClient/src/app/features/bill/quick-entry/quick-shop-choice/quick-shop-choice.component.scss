@@ -1,0 +1,66 @@
+// v2 c · Shop-Auswahl: Fläche well, Radius 12, Label „Shop“ + „häufigste zuerst“, Chips 36 px
+:host {
+  display: block;
+  flex: none;
+}
+
+.shoprow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px 12px;
+  border-radius: 12px;
+  background: var(--well);
+}
+
+.lbl {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mut);
+}
+
+.lbl-hint {
+  color: var(--faint);
+  font-weight: 400;
+}
+
+.seg {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  // Platz für den Fokusring im Scroll-Container
+  padding: 3px;
+  margin: -3px;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.chip.sm {
+  height: 36px;
+  padding: 0 12px;
+}
+
+.box {
+  height: 44px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line3);
+  display: flex;
+  align-items: center;
+  padding: 0 12px 0 14px;
+
+  &:focus-within { border-color: var(--pri); box-shadow: 0 0 0 3px var(--pri-ring); }
+
+  input {
+    all: unset;
+    flex: 1;
+    min-width: 0;
+    font-size: 16px;
+    color: var(--fg);
+
+    &::placeholder { color: var(--faint); }
+  }
+}

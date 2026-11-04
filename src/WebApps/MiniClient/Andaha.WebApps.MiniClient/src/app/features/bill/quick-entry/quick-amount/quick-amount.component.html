@@ -1,0 +1,22 @@
+@if (mode === 'input') {
+  <label class="amount-field">
+    <input name="amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00" aria-label="Betrag"
+      [value]="text" (input)="onInput($event)" (keydown.enter)="submitted.emit()">
+    <span class="sfx">€</span>
+  </label>
+} @else {
+  <button type="button" class="big amount"
+    [attr.aria-label]="'Betrag ' + (display || '0,00') + ' €'"
+    [attr.aria-expanded]="keypadOpen"
+    (click)="openKeypad.emit()">
+    @if (display) {
+      <span class="val">{{ display }}</span>
+    } @else {
+      <span class="ph0">0,00</span>
+    }
+    @if (keypadOpen) {
+      <span class="caret" aria-hidden="true"></span>
+    }
+    <small>€</small>
+  </button>
+}

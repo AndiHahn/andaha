@@ -1,0 +1,98 @@
+// v2 „Schnell-Sheet“: 2 Spalten, 8 px Abstand; Kachel min. 56 px, Radius 12, surface, Rahmen line-field;
+// Titel 15/600, darunter 12 muted mit Kategoriepunkt 7 px; angeheftet: Lesezeichen 14 px primary oben rechts
+:host {
+  display: block;
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+// Die Gruppe trägt nur die Semantik, die Kacheln liegen im Raster der .tiles
+.group {
+  display: contents;
+}
+
+.tile {
+  min-width: 0;
+  min-height: 56px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line3);
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  position: relative;
+  cursor: pointer;
+  // langer Druck: keine Textauswahl, kein Doppeltipp-Zoom
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+
+  b {
+    font-size: 15px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 18px;
+  }
+
+  .sub {
+    font-size: 12px;
+    color: var(--mut);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+  }
+
+  .pin {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+    line-height: 14px;
+    color: var(--pri);
+  }
+
+  &.on {
+    background: var(--pri-soft);
+    border-color: var(--pri-line);
+
+    b { color: var(--pri-chip); }
+  }
+}
+
+// „Andere …“: volle Breite, 44 px, gestrichelt, Plus-Icon
+.tile.other {
+  grid-column: span 2;
+  min-height: 44px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--fg2);
+  font-size: 15px;
+  font-weight: 500;
+  border-style: dashed;
+
+  .mat-icon { width: 18px; height: 18px; font-size: 18px; line-height: 18px; }
+}

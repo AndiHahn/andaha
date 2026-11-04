@@ -1,5 +1,5 @@
 import { QuickTile } from './tiles';
-import { QuickEntryState } from './quick-entry-state';
+import { fromDayKey, QuickEntryState, toDayKey } from './quick-entry-state';
 
 const tile = (p: Partial<QuickTile> = {}): QuickTile => ({
   key: 't|1', kind: 'template', templateId: '1', title: 'Rewe', subtitle: 'Lebensmittel', categoryId: 'c1', subCategoryId: null,
@@ -73,5 +73,78 @@ describe('QuickEntryState', () => {
     s.selectTile(tile());
     expect(s.missing()).toEqual(['amount']);
     expect(s.canSave()).toBe(false);
+  });
+  it('"Andere …" needs a shop and a category instead of a tile and keeps the keypad closed', () => {
+    const s = new QuickEntryState();
+    s.pressKey('4');
+    s.selectTile(tile());
+    s.selectOther();
+    expect(s.other()).toBe(true);
+    expect(s.tile()).toBeNull();
+    expect(s.shopName()).toBeNull();
+    expect(s.keypadOpen()).toBe(false);
+    expect(s.missing()).toEqual(['shop', 'category']);
+    expect(s.hint()).toBe('Shop wählen');
+    s.selectShop('Café Central');
+    expect(s.hint()).toBe('Kategorie wählen');
+    s.selectCategory('c2', 's2');
+    expect(s.canSave()).toBe(true);
+    expect(s.categoryId()).toBe('c2');
+    expect(s.subCategoryId()).toBe('s2');
+    expect(s.keypadOpen()).toBe(false);
+  });
+  it('"Andere …" without amount and shop asks for both', () => {
+    const s = new QuickEntryState();
+    s.selectOther();
+    expect(s.missing()).toEqual(['amount', 'shop', 'category']);
+    expect(s.hint()).toBe('Betrag eingeben');
+  });
+  it('category and subcategory follow the selected tile', () => {
+    const s = new QuickEntryState();
+    s.selectTile(tile({ categoryId: 'c9', subCategoryId: 's9' }));
+    expect(s.categoryId()).toBe('c9');
+    expect(s.subCategoryId()).toBe('s9');
+  });
+  it('leaving "Andere …" returns to the tiles without a selection', () => {
+    const s = new QuickEntryState();
+    s.selectOther();
+    s.selectShop('X');
+    s.selectCategory('c1', null);
+    s.leaveOther();
+    expect(s.other()).toBe(false);
+    expect(s.shopName()).toBeNull();
+    expect(s.categoryId()).toBeNull();
+    expect(s.keypadOpen()).toBe(true);
+  });
+  it('selecting a tile leaves "Andere …"', () => {
+    const s = new QuickEntryState();
+    s.selectOther();
+    s.selectCategory('c1', null);
+    s.selectTile(tile());
+    expect(s.other()).toBe(false);
+    expect(s.categoryId()).toBe('c1');
+    expect(s.shopName()).toBe('Rewe');
+  });
+  it('reset clears everything and sets the date to today', () => {
+    const s = new QuickEntryState();
+    s.pressKey('4');
+    s.selectTile(tile());
+    s.date.set(new Date(2020, 0, 1));
+    s.reset();
+    expect(s.amountText()).toBe('');
+    expect(s.tile()).toBeNull();
+    expect(s.keypadOpen()).toBe(true);
+    expect(toDayKey(s.date())).toBe(toDayKey(new Date()));
+  });
+});
+
+describe('day keys', () => {
+  it('round-trips a local calendar day', () => {
+    expect(toDayKey(new Date(2026, 10, 3, 23, 59))).toBe('2026-11-03');
+    const d = fromDayKey('2026-11-03');
+    expect(d?.getFullYear()).toBe(2026);
+    expect(d?.getMonth()).toBe(10);
+    expect(d?.getDate()).toBe(3);
+    expect(fromDayKey('kaputt')).toBeNull();
   });
 });

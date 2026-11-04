@@ -1,0 +1,115 @@
+@if (sheetRef) {
+  <div class="grab" aria-hidden="true" [appSheetDrag]="sheetRef"></div>
+}
+<div class="sh">
+  <h2>Neue Rechnung</h2>
+  <button type="button" class="icon-btn close-btn"
+    [attr.aria-label]="state.other() ? 'Zurück zu den Vorlagen' : 'Schließen'"
+    (click)="onHeaderClose()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="form" [class.other]="state.other()" [class.compact]="!dialogMode && !state.keypadOpen()">
+  @if (restored()) {
+    <!-- g · Entwurf wiederhergestellt -->
+    <div class="restored" role="status">
+      <mat-icon aria-hidden="true">edit</mat-icon>Entwurf wiederhergestellt
+      <button type="button" class="link" (click)="discardDraft()">Verwerfen</button>
+    </div>
+  }
+
+  <app-quick-amount
+    [mode]="dialogMode ? 'input' : 'keypad'"
+    [text]="state.amountText()"
+    [display]="amountDisplay()"
+    [keypadOpen]="state.keypadOpen()"
+    (openKeypad)="state.openKeypad()"
+    (textChange)="onAmountText($event)"
+    (submitted)="save()" />
+
+  @if (state.other()) {
+    <!-- d · „Andere …“: Shop und Kategorie frei wählen -->
+    <app-quick-other-fields
+      [categories]="categories()"
+      [category]="selectedCategory()"
+      [subCategoryId]="state.subCategoryId()"
+      [query]="shopQuery()"
+      [saveAsTemplate]="saveAsTemplate()"
+      [autocomplete]="shopAuto"
+      (queryChange)="onShopQuery($event)"
+      (inputFocus)="state.keypadOpen.set(false)"
+      (categoryChange)="onCategoryChange($event)"
+      (subCategoryChange)="onSubCategoryChange($event)"
+      (saveAsTemplateChange)="saveAsTemplate.set($event)" />
+  } @else {
+    <app-quick-tiles
+      [tiles]="tiles()"
+      [selectedKey]="selectedKey()"
+      (selectTile)="onSelectTile($event)"
+      (selectOther)="onSelectOther()"
+      (suggestionPress)="onSuggestionPress($event)" />
+
+    @if (showShopRow()) {
+      <!-- c · Vorlage ohne festen Shop: häufigster Shop vorausgewählt -->
+      <app-quick-shop-choice
+        [shops]="shopChips()"
+        [selected]="state.shopName()"
+        [custom]="customShop()"
+        [query]="shopQuery()"
+        [autocomplete]="shopAuto"
+        (selectShop)="onSelectShopChip($event)"
+        (selectCustom)="onSelectCustomShop()"
+        (queryChange)="onShopQuery($event)"
+        (inputFocus)="state.keypadOpen.set(false)" />
+    }
+  }
+
+  @if (duplicate()) {
+    <!-- e · gleiche Vorlage, gleicher Betrag, gleicher Tag -->
+    <div class="warn" role="status">
+      <mat-icon aria-hidden="true">error</mat-icon>
+      <div><b>Heute schon eingetragen</b>{{ duplicateText() }}</div>
+    </div>
+  }
+
+  <app-quick-date-row [date]="state.date()" [touchUi]="!dialogMode" (dateChange)="onDateChange($event)" (allFields)="openFullForm()" />
+
+  <div class="actions-row">
+    @if (dialogMode) {
+      <button type="button" class="btn sec2" (click)="close()">Abbrechen</button>
+    }
+    <button type="button" class="btn pri save" [disabled]="!state.canSave() || saving()" (click)="save()">
+      <mat-icon aria-hidden="true">check</mat-icon><span class="label">{{ duplicate() ? 'Trotzdem speichern' : 'Speichern' }}</span>
+    </button>
+  </div>
+  @if (state.hint()) {
+    <div class="need">{{ state.hint() }}</div>
+  }
+</div>
+
+@if (!dialogMode && state.keypadOpen()) {
+  <app-amount-keypad (key)="onKey($event)" />
+}
+
+<mat-autocomplete #shopAuto="matAutocomplete" (optionSelected)="onShopOptionSelected($event)">
+  @for (shop of shopOptions(); track shop) {
+    <mat-option [value]="shop">{{ shop }}</mat-option>
+  }
+</mat-autocomplete>
+
+<!-- Kontextmenü eines Vorschlags (langer Druck), unter der gedrückten Kachel -->
+<span class="menu-anchor" [style.top.px]="menuTop()" #menuTrigger="matMenuTrigger"
+  [matMenuTriggerFor]="suggestionMenu" appMenuBack aria-hidden="true"></span>
+<mat-menu #suggestionMenu="matMenu" class="quick-suggestion-menu" [overlapTrigger]="false"
+  [aria-label]="'Vorschlag ' + (menuTile()?.title ?? '')">
+  @if (menuTile(); as tile) {
+    <div class="menu-head">Vorschlag<b>{{ tile.title }} · {{ tile.subtitle }}</b></div>
+    <button mat-menu-item (click)="pinSuggestion(tile)">
+      <mat-icon class="pin-icon">bookmark</mat-icon>Als Vorlage anheften
+    </button>
+    <button mat-menu-item (click)="hideSuggestion(tile)">
+      <mat-icon>remove</mat-icon>Nicht mehr vorschlagen
+    </button>
+  }
+</mat-menu>

@@ -1,0 +1,45 @@
+// v2 „Zifferntastatur“: Fläche --kb, Tasten 46 px surface, Radius 8, 22/500, 3 Spalten, 6 px Abstand
+:host {
+  display: block;
+  flex: none;
+}
+
+.kb {
+  background: var(--kb);
+  padding: 8px 6px 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.key {
+  height: 46px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 1px 0 var(--sh5);
+  color: var(--fg);
+  font: inherit;
+  font-size: 22px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  // schnelles Tippen ohne Doppeltipp-Zoom
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+
+  &:active { background: var(--raised); }
+
+  // Löschen ohne Tastenfläche (Mockup .fn)
+  &.fn {
+    background: transparent;
+    box-shadow: none;
+
+    &:active { background: var(--act); }
+  }
+
+  .mat-icon { width: 22px; height: 22px; font-size: 22px; line-height: 22px; }
+}

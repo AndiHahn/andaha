@@ -11,6 +11,8 @@ import { BillSubCategoryDto } from '../../../api/shopping/dtos/BillSubCategoryDt
 
 // Ein haengender Request darf den Sync nicht dauerhaft blockieren; CreateBill ist idempotent
 const SYNC_REQUEST_TIMEOUT_MS = 60000;
+// Neue Zeile ist nach dem Speichern kurz hervorgehoben (v2: blendet nach ca. 2 s aus, CSS-Animation)
+const LAST_ADDED_HIGHLIGHT_MS = 3000;
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +28,8 @@ export class BillContextService implements OnDestroy {
   private pageSize$: BehaviorSubject<number> = new BehaviorSubject<number>(50);
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private syncing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private lastAddedId$ = new BehaviorSubject<string | null>(null);
+  private lastAddedTimer?: ReturnType<typeof setTimeout>;
 
   private searchText: string = '';
   private categoryFilter?: string[];
@@ -53,6 +57,7 @@ export class BillContextService implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    clearTimeout(this.lastAddedTimer);
     window.removeEventListener('online', this.onOnline);
     document.removeEventListener('visibilitychange', this.onVisibilityChange);
   }
@@ -75,6 +80,11 @@ export class BillContextService implements OnDestroy {
 
   syncing(): Observable<boolean> {
     return this.syncing$.asObservable();
+  }
+
+  /** ID der zuletzt gespeicherten Rechnung, solange ihre Zeile hervorgehoben ist, sonst null */
+  lastAddedId(): Observable<string | null> {
+    return this.lastAddedId$.asObservable();
   }
 
   getSearchText(): string {
@@ -148,6 +158,8 @@ export class BillContextService implements OnDestroy {
       this.totalResults$.next(this.totalResults$.value - 1);
       throw error;
     }
+
+    this.markLastAdded(dto.id);
   }
 
   updateBill(
@@ -331,6 +343,12 @@ export class BillContextService implements OnDestroy {
     bills.sort(this.billCompareDateDescending);
 
     this.bills$.next(bills);
+  }
+
+  private markLastAdded(id: string): void {
+    clearTimeout(this.lastAddedTimer);
+    this.lastAddedId$.next(id);
+    this.lastAddedTimer = setTimeout(() => this.lastAddedId$.next(null), LAST_ADDED_HIGHLIGHT_MS);
   }
 
   private addNewBillToList(bill: BillDto): void {
