@@ -394,7 +394,8 @@ body.mat-app-background {
     .mat-mdc-select:focus-visible { outline: none; }
   }
 
-  .mat-mdc-select { flex: 1; min-width: 0; font: inherit; color: var(--fg); }
+  // Farbe des Werts aus dem Theme-Token (.87 Schwarz, wie Material 14/15), daher hier keine color
+  .mat-mdc-select { flex: 1; min-width: 0; font: inherit; }
   // Triggerhoehe wie Material 14 (1.125em), sonst steht ein eigener mat-select-trigger 1 px hoeher
   .mat-mdc-select-trigger { height: 1.125em; }
   .mat-mdc-select-arrow-wrapper { display: none; }
@@ -428,6 +429,10 @@ body.mat-app-background {
   padding: 6px 0;
   max-height: 256px;
   flex: none;
+  // Material 18 setzt am Panel keine Typografie mehr (14/20, Textfarbe); 15 hatte die MDC-Menueflaeche (16/24, Schwarz)
+  font-size: 16px;
+  line-height: 24px;
+  color: #000;
   width: calc(100% + 32px);
   margin-left: -16px;
 
@@ -465,6 +470,8 @@ body.mat-app-background {
 
 // Datepicker
 .cdk-overlay-container .mat-datepicker-content {
+  // Ab Material 17/18 setzt das Komponenten-CSS die Heute-Markierung ueber Tokens (Regel unten greift nicht mehr)
+  --mat-datepicker-calendar-date-today-outline-color: var(--pri);
   background: var(--surface);
   color: var(--fg);
   border-radius: 12px;
@@ -473,6 +480,12 @@ body.mat-app-background {
 
 // Kalender-Button im Feld: Touch-Ziel 44 px wie bisher (MDC-Icon-Button hat 48 px, die
 // Dichte-Styles des Themes setzen Breite/Hoehe direkt), 20-px-Icon mittig
+.mat-datepicker-toggle.suffix {
+  // Material 18 faerbt den Toggle ueber Tokens (statt .suffix); wie 15 in --mut, auch geoeffnet
+  --mat-datepicker-toggle-icon-color: var(--mut);
+  --mat-datepicker-toggle-active-state-icon-color: var(--mut);
+}
+
 .mat-datepicker-toggle .mat-mdc-icon-button.mat-mdc-button-base {
   width: 44px;
   height: 44px;
@@ -481,6 +494,33 @@ body.mat-app-background {
   // Material setzt outline: none; Ring nach innen, weil der Button fast so hoch ist wie das Feld
   &:focus-visible { outline: 2px solid var(--pri); outline-offset: -2px; }
 }
+
+.cdk-overlay-container .mat-calendar {
+  // Material 18: 13 px und line-height normal aus Tokens; 15 erbte 14/20 vom Body (Kopfzeile 28 statt 22 px hoch)
+  font-size: 14px;
+  line-height: 20px;
+}
+
+// Tage: 15 setzte keine Schriftgroesse (Browser-Standard fuer button, 13,333 px), 18 den Token (13 px)
+.cdk-overlay-container .mat-calendar-body-cell { font-size: 13.3333px; }
+
+// Monatspfeile: Material 18 zeichnet ein SVG-Icon (kraeftiger), bis 15 waren es 2-px-Rahmen (::after).
+// Wie 15 nachgebaut; die Drehung des Zurueck-Buttons (180 Grad) setzt Material weiterhin selbst.
+.cdk-overlay-container .mat-calendar-previous-button,
+.cdk-overlay-container .mat-calendar-next-button {
+  svg { display: none; }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: 15.5px;
+    border: 0 solid currentColor;
+    border-top-width: 2px;
+  }
+}
+.cdk-overlay-container .mat-calendar-previous-button::after { border-left-width: 2px; transform: translateX(2px) rotate(-45deg); }
+.cdk-overlay-container .mat-calendar-next-button::after { border-right-width: 2px; transform: translateX(-2px) rotate(45deg); }
 
 .cdk-overlay-container .mat-calendar-body-selected {
   background-color: var(--pri);
@@ -540,6 +580,9 @@ body.mat-app-background {
   .mdc-snackbar__label { padding: 0; }
 }
 
+// Material 18: mobil (.mat-mdc-snack-bar-handset) 100vw; Breite wie oben, sonst ragt die Snackbar rechts hinaus
+.cdk-overlay-container .mat-mdc-snack-bar-handset .mat-mdc-snack-bar-container { width: calc(100% - 24px); }
+
 .cdk-overlay-container .mat-mdc-snack-bar-container.andaha-snackbar-error {
   --mdc-snackbar-container-color: var(--neg-bg);
   --mdc-snackbar-supporting-text-color: var(--neg-text);
@@ -590,7 +633,7 @@ body .mat-mdc-progress-bar.mat-primary {
   --mdc-radio-unselected-hover-icon-color: var(--line3);
   --mdc-radio-unselected-focus-icon-color: var(--line3);
   --mdc-radio-unselected-pressed-icon-color: var(--line3);
-  --mat-mdc-radio-checked-ripple-color: var(--pri);
+  --mat-radio-checked-ripple-color: var(--pri); // Material 18 (vorher --mat-mdc-radio-checked-ripple-color)
 
   // Wie Material 14: 20-px-Kreis ohne Innenabstand (MDC: 10 px), Text 8 px daneben, Schrift vom Host.
   // Zustandsflaeche (Hover/Fokus) bleibt 40 px um den Kreis, wie der Ripple in Material 14.
@@ -713,7 +756,7 @@ body .cdk-drag-preview.andaha-drag-item {
 
   .mat-mdc-dialog-container {
     --mdc-dialog-container-shape: 20px 20px 0 0;
-    --mdc-dialog-container-elevation: 0 -12px 40px var(--sh5);
+    --mat-dialog-container-elevation-shadow: 0 -12px 40px var(--sh5); // Material 18 (vorher --mdc-dialog-container-elevation)
     max-height: 90vh;
     max-height: 90dvh;
   }
@@ -725,7 +768,7 @@ body .cdk-drag-preview.andaha-drag-item {
 .cdk-overlay-container .andaha-dialog {
   .mat-mdc-dialog-container {
     --mdc-dialog-container-shape: 16px;
-    --mdc-dialog-container-elevation: 0 16px 40px -8px var(--sh7);
+    --mat-dialog-container-elevation-shadow: 0 16px 40px -8px var(--sh7);
     max-height: 90vh;
     max-height: 90dvh;
   }
@@ -741,7 +784,9 @@ body .cdk-drag-preview.andaha-drag-item {
     letter-spacing: normal;
     box-shadow: none; // mat-elevation-z0 der Bibliothek; MDC-FAB setzt seinen Schatten spezifischer
   }
-  .clock-face .mat-mdc-mini-fab.mat-void { color: rgba(0, 0, 0, .87); }
+  // Ziffern .87 Schwarz: ngx-mat-timepicker 18 setzt kein .mat-void mehr, daher ueber den FAB-Token
+  // (gewaehlte Ziffer hat .mat-primary, dort setzt das Theme den Token am Element selbst)
+  .clock-face { --mat-fab-small-foreground-color: rgba(0, 0, 0, .87); }
 
   // Aktionszeile wie .mat-dialog-actions in Material 14 (52 px + 8 px oben/unten, 24 px seitlich)
   .mat-mdc-dialog-actions {
@@ -813,18 +858,22 @@ body .cdk-drag-preview.andaha-drag-item {
 
 // Drawer/Sidebar des Shells (Mobile 304 px, Desktop 248 px), Markup in app.component.html
 .side {
-  width: 304px;
+  // Breite, Flaeche und Text setzt Material ab 17/18 im Komponenten-CSS ueber Tokens.
+  // Den Schatten setzte Material schon bis 15 selbst (Elevation 16, als Seitenleiste keiner);
+  // box-shadow hier wirkt nicht und bleibt nur als Absicht aus dem Redesign stehen.
+  --mat-sidenav-container-width: 304px;
+  --mat-sidenav-container-background-color: var(--surface);
+  --mat-sidenav-container-text-color: var(--fg);
   max-width: 100%;
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  background: var(--surface);
-  color: var(--fg);
   border-right: 0;
   box-shadow: 12px 0 40px var(--sh5);
 
   &.side-desktop {
-    width: 248px;
-    background: var(--side);
+    --mat-sidenav-container-width: 248px;
+    --mat-sidenav-container-background-color: var(--side);
+    --mat-sidenav-container-divider-color: var(--line);
     border-right: 1px solid var(--line);
     box-shadow: none;
   }

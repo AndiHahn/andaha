@@ -1,6 +1,6 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -56,7 +56,6 @@ async function initApp(authService: AuthService): Promise<void> {
     }),
     BrowserAnimationsModule,
     CommonModule,
-    HttpClientModule,
     MatIconModule,
     MatMenuModule,
     MatSidenavModule,
@@ -92,7 +91,8 @@ async function initApp(authService: AuthService): Promise<void> {
       provide: MAT_SELECT_CONFIG,
       useValue: { hideSingleSelectionIndicator: true } as MatSelectConfig
     },
-    DatePipe
+    DatePipe,
+    provideHttpClient(withInterceptorsFromDi())
   ],
   bootstrap: [AppComponent]
 })
