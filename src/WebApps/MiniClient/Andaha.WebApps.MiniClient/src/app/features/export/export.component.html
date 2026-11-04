@@ -3,13 +3,21 @@
 <button type="button" class="ex" (click)="onExportExpensesClick()" [disabled]="exporting !== null">
   <span class="ic"><mat-icon aria-hidden="true">receipt_long</mat-icon></span>
   <span class="tx">Ausgaben exportieren</span>
-  <mat-spinner *ngIf="exporting === 'expenses'" [diameter]="20" aria-label="Export läuft"></mat-spinner>
-  <mat-icon *ngIf="exporting !== 'expenses'" class="dl-icon" aria-hidden="true">download</mat-icon>
+  @if (exporting === 'expenses') {
+    <mat-spinner [diameter]="20" aria-label="Export läuft"></mat-spinner>
+  }
+  @if (exporting !== 'expenses') {
+    <mat-icon class="dl-icon" aria-hidden="true">download</mat-icon>
+  }
 </button>
 
 <button type="button" class="ex" (click)="onExportWorkInformationClick()" [disabled]="exporting !== null">
   <span class="ic"><mat-icon aria-hidden="true">group</mat-icon></span>
   <span class="tx">Personen/Arbeitszeiten exportieren</span>
-  <mat-spinner *ngIf="exporting === 'work'" [diameter]="20" aria-label="Export läuft"></mat-spinner>
-  <mat-icon *ngIf="exporting !== 'work'" class="dl-icon" aria-hidden="true">download</mat-icon>
+  @if (exporting === 'work') {
+    <mat-spinner [diameter]="20" aria-label="Export läuft"></mat-spinner>
+  }
+  @if (exporting !== 'work') {
+    <mat-icon class="dl-icon" aria-hidden="true">download</mat-icon>
+  }
 </button>

@@ -1,14 +1,20 @@
 <div class="page">
   <div class="body">
-    <div *ngIf="!persons" class="loading">
-      <mat-spinner diameter="40"></mat-spinner>
-    </div>
+    @if (!persons) {
+      <div class="loading">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+    }
 
-    <div *ngIf="persons?.length == 0" class="empty">
-      Keine Personen vorhanden.
-    </div>
+    @if (persons?.length == 0) {
+      <div class="empty">
+        Keine Personen vorhanden.
+      </div>
+    }
 
-    <app-person-list *ngIf="persons" [persons]="persons"></app-person-list>
+    @if (persons) {
+      <app-person-list [persons]="persons"></app-person-list>
+    }
   </div>
 
   <div class="actions">

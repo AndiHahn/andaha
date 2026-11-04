@@ -1,8 +1,12 @@
 <app-dialog>
   <mat-dialog-content>
-    <div class="action-container" *ngIf="isLoading">
-      <mat-progress-spinner mode="indeterminate" [diameter]="40"></mat-progress-spinner>
-    </div>
-    <img *ngIf="!isLoading && imageSrc" [src]="imageSrc" alt="Rechnungsfoto" />
+    @if (isLoading) {
+      <div class="action-container">
+        <mat-progress-spinner mode="indeterminate" [diameter]="40"></mat-progress-spinner>
+      </div>
+    }
+    @if (!isLoading && imageSrc) {
+      <img [src]="imageSrc" alt="Rechnungsfoto" />
+    }
   </mat-dialog-content>
 </app-dialog>

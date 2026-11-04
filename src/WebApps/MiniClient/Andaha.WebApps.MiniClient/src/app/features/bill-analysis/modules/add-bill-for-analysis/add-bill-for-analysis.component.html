@@ -1,29 +1,47 @@
 <div class="page">
   <div class="body">
     <label class="well">
-      <span class="preview" *ngIf="previewUrl" aria-hidden="true">
-        <img [src]="previewUrl" alt="">
-      </span>
-      <span class="ic" *ngIf="!previewUrl" aria-hidden="true"><mat-icon>photo_camera</mat-icon></span>
+      @if (previewUrl) {
+        <span class="preview" aria-hidden="true">
+          <img [src]="previewUrl" alt="">
+        </span>
+      }
+      @if (!previewUrl) {
+        <span class="ic" aria-hidden="true"><mat-icon>photo_camera</mat-icon></span>
+      }
       <span class="info">
-        <span class="name" *ngIf="selectedFile">{{ selectedFile.name }}</span>
-        <span class="hint" *ngIf="selectedFile">Tippen, um ein anderes Foto zu wählen</span>
-        <span class="name" *ngIf="!selectedFile">Foto der Rechnung</span>
-        <span class="hint" *ngIf="!selectedFile">Tippen, um ein Foto aufzunehmen oder auszuwählen</span>
+        @if (selectedFile) {
+          <span class="name">{{ selectedFile.name }}</span>
+        }
+        @if (selectedFile) {
+          <span class="hint">Tippen, um ein anderes Foto zu wählen</span>
+        }
+        @if (!selectedFile) {
+          <span class="name">Foto der Rechnung</span>
+        }
+        @if (!selectedFile) {
+          <span class="hint">Tippen, um ein Foto aufzunehmen oder auszuwählen</span>
+        }
       </span>
       <input class="cdk-visually-hidden" type="file" accept="image/*" capture="environment"
-          aria-label="Foto der Rechnung aufnehmen oder auswählen" (change)="onFileSelected($event)" />
-    </label>
-  </div>
+        aria-label="Foto der Rechnung aufnehmen oder auswählen" (change)="onFileSelected($event)" />
+      </label>
+    </div>
 
-  <div class="progress-slot">
-    <mat-progress-bar *ngIf="uploading" mode="indeterminate" color="accent"></mat-progress-bar>
-  </div>
+    <div class="progress-slot">
+      @if (uploading) {
+        <mat-progress-bar mode="indeterminate" color="accent"></mat-progress-bar>
+      }
+    </div>
 
-  <div class="actions">
-    <button type="button" class="btn pri" (click)="upload()" [disabled]="!selectedFile || uploading">
-      <ng-container *ngIf="!uploading"><mat-icon>cloud_upload</mat-icon><span>Hochladen</span></ng-container>
-      <ng-container *ngIf="uploading"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Hochladen</span></ng-container>
-    </button>
+    <div class="actions">
+      <button type="button" class="btn pri" (click)="upload()" [disabled]="!selectedFile || uploading">
+        @if (!uploading) {
+          <mat-icon>cloud_upload</mat-icon><span>Hochladen</span>
+        }
+        @if (uploading) {
+          <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Hochladen</span>
+        }
+      </button>
+    </div>
   </div>
-</div>

@@ -1,14 +1,20 @@
 <div class="master-container">
-  <div *ngIf="loading && !connections">
-    <mat-spinner diameter="40"></mat-spinner>
-  </div>
-  
-  <div class="empty" *ngIf="!loading && connections && connections.length == 0">
-    Keine Verbindungen vorhanden.
-  </div>
+  @if (loading && !connections) {
+    <div>
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  }
+
+  @if (!loading && connections && connections.length == 0) {
+    <div class="empty">
+      Keine Verbindungen vorhanden.
+    </div>
+  }
 </div>
 
-<div class="row" *ngFor="let connection of connections">
-  <span class="t">{{ connection.userEmailAddress }}</span>
-  <span class="st ok"><span class="dot"></span>aktiv</span>
-</div>
+@for (connection of connections; track connection) {
+  <div class="row">
+    <span class="t">{{ connection.userEmailAddress }}</span>
+    <span class="st ok"><span class="dot"></span>aktiv</span>
+  </div>
+}

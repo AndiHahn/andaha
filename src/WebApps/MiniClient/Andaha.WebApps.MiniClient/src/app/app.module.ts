@@ -19,6 +19,7 @@ import { AppSnackbarModule } from './shared/snackbar/snackbar.module';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_SELECT_CONFIG, MatSelectConfig } from '@angular/material/select';
+import { OVERLAY_DEFAULT_CONFIG, OverlayDefaultConfig } from '@angular/cdk/overlay';
 
 registerLocaleData(localeDe);
 
@@ -85,6 +86,12 @@ async function initApp(authService: AuthService): Promise<void> {
     {
       provide: OAuthStorage,
       useFactory: storageFactory
+    },
+    {
+      // CDK 21 rendert Overlays standardmaessig als Popover (Select-Panel inline am Trigger statt im
+      // .cdk-overlay-container); die Overlay-Styles in styles.scss setzen den Container voraus
+      provide: OVERLAY_DEFAULT_CONFIG,
+      useValue: { usePopover: false } as OverlayDefaultConfig
     },
     {
       // MDC-Select (Material 15) zeigt bei Einfachauswahl einen Haken; vorher gab es keinen

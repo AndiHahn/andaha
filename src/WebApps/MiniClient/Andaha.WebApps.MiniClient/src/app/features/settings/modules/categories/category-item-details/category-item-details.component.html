@@ -1,112 +1,133 @@
 <div class="page">
-  <div class="body" *ngIf="category">
-    <!--
+  @if (category) {
+    <div class="body">
+      <!--
       FORM
-    -->
-    <form class="form-body" [formGroup]="form">
-      <label class="field" [class.invalid]="form.controls.name | showError">
-        <span class="field-label">Name der Kategorie</span>
-        <span class="field-box">
-          <input formControlName="name" required [attr.aria-invalid]="form.controls.name | showError">
-        </span>
-      </label>
-
-      <div class="field" [class.invalid]="form.controls.color | showError">
-        <span class="field-label">Farbe</span>
-        <span class="field-box">
-          <mat-select [(ngModel)]="selectedColor" name="color" [formControl]="form.controls.color" aria-label="Farbe">
-            <mat-select-trigger *ngIf="selectedColor">
-              <span class="color-opt">
-                <app-color-item [color]="selectedColor"></app-color-item>
-                <span class="color-name">{{ selectedColor }}</span>
-              </span>
-            </mat-select-trigger>
-            <mat-option *ngFor="let color of colors" [value]="color">
-              <span class="color-opt">
-                <app-color-item [color]="color"></app-color-item>
-                <span class="color-name">{{ color }}</span>
-              </span>
-            </mat-option>
-          </mat-select>
-          <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
-        </span>
-      </div>
-
-      <div class="cb">
-        <mat-checkbox
+      -->
+      <form class="form-body" [formGroup]="form">
+        <label class="field" [class.invalid]="form.controls.name | showError">
+          <span class="field-label">Name der Kategorie</span>
+          <span class="field-box">
+            <input formControlName="name" required [attr.aria-invalid]="form.controls.name | showError">
+          </span>
+        </label>
+        <div class="field" [class.invalid]="form.controls.color | showError">
+          <span class="field-label">Farbe</span>
+          <span class="field-box">
+            <mat-select [(ngModel)]="selectedColor" name="color" [formControl]="form.controls.color" aria-label="Farbe">
+              @if (selectedColor) {
+                <mat-select-trigger>
+                  <span class="color-opt">
+                    <app-color-item [color]="selectedColor"></app-color-item>
+                    <span class="color-name">{{ selectedColor }}</span>
+                  </span>
+                </mat-select-trigger>
+              }
+              @for (color of colors; track color) {
+                <mat-option [value]="color">
+                  <span class="color-opt">
+                    <app-color-item [color]="color"></app-color-item>
+                    <span class="color-name">{{ color }}</span>
+                  </span>
+                </mat-option>
+              }
+            </mat-select>
+            <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
+          </span>
+        </div>
+        <div class="cb">
+          <mat-checkbox
             class="andaha-checkbox"
             [disabled]="!isEditing"
             [checked]="includeToStatisticsCheckbox"
-            (change)="updateIncludeToStatistics()">Aufnehmen in Statistik</mat-checkbox>
+          (change)="updateIncludeToStatistics()">Aufnehmen in Statistik</mat-checkbox>
+        </div>
+      </form>
+      <!--
+      UNTERKATEGORIEN (Mockup 06: Griff | Feld | Löschen-Icon)
+      -->
+      @if (!form.controls.isDefault.value) {
+        <p class="sec">Unterkategorien:</p>
+      }
+      @if (subCategoryForms.length <= 0 && !form.controls.isDefault.value) {
+        <div class="empty">
+          Es sind noch keine Unterkategorien vorhanden. Diese können im Editiermodus mit "Unterkategorie hinzufügen" erstellt werden.
+        </div>
+      }
+      <div cdkDropList (cdkDropListDropped)="drop($event)">
+        @for (subCategoryForm of subCategoryForms.controls; track subCategoryForm; let i = $index) {
+          <div
+            cdkDrag
+            class="sub andaha-drag-item"
+            [cdkDragDisabled]="!isEditing">
+            @if (isEditing) {
+              <span class="grip" cdkDragHandle aria-hidden="true">
+                <mat-icon>drag_indicator</mat-icon>
+              </span>
+            }
+            <label class="field sub-field" [class.invalid]="subCategoryForm.controls.name | showError">
+              <span class="field-box">
+                <input required [readonly]="!isEditing" [formControl]="subCategoryForm.controls.name"
+                  placeholder="Unterkategorie" aria-label="Unterkategorie" [attr.aria-invalid]="subCategoryForm.controls.name | showError">
+                </span>
+              </label>
+              <button type="button" class="icon-btn sub-del" [disabled]="!isEditing"
+                (click)="onDeleteSubCategoryClick(i)" aria-label="Unterkategorie löschen">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+        @if (isEditing && !form.controls.isDefault.value) {
+          <div class="add-sub">
+            <button type="button" class="btn sec2" (click)="onAddSubCategoryClick()"
+              [disabled]="isDeleting || isLoading || isSaving">
+              <mat-icon>add</mat-icon><span>Unterkategorie hinzufügen</span>
+            </button>
+          </div>
+        }
       </div>
-    </form>
+    }
 
     <!--
-      UNTERKATEGORIEN (Mockup 06: Griff | Feld | Löschen-Icon)
+    AKTIONEN
     -->
-    <p class="sec" *ngIf="!form.controls.isDefault.value">Unterkategorien:</p>
-
-    <div class="empty" *ngIf="subCategoryForms.length <= 0 && !form.controls.isDefault.value">
-      Es sind noch keine Unterkategorien vorhanden. Diese können im Editiermodus mit "Unterkategorie hinzufügen" erstellt werden.
+    <div class="progress-slot">
+      @if (isDeleting || isLoading || !category) {
+        <mat-progress-bar mode="indeterminate" color="accent"></mat-progress-bar>
+      }
     </div>
 
-    <div cdkDropList (cdkDropListDropped)="drop($event)">
-      <div
-          cdkDrag
-          class="sub andaha-drag-item"
-          *ngFor="let subCategoryForm of subCategoryForms.controls; index as i"
-          [cdkDragDisabled]="!isEditing">
-        <span *ngIf="isEditing" class="grip" cdkDragHandle aria-hidden="true">
-          <mat-icon>drag_indicator</mat-icon>
-        </span>
-
-        <label class="field sub-field" [class.invalid]="subCategoryForm.controls.name | showError">
-          <span class="field-box">
-            <input required [readonly]="!isEditing" [formControl]="subCategoryForm.controls.name"
-              placeholder="Unterkategorie" aria-label="Unterkategorie" [attr.aria-invalid]="subCategoryForm.controls.name | showError">
-          </span>
-        </label>
-
-        <button type="button" class="icon-btn sub-del" [disabled]="!isEditing"
-            (click)="onDeleteSubCategoryClick(i)" aria-label="Unterkategorie löschen">
-          <mat-icon>delete</mat-icon>
+    @if (category && !isEditing) {
+      <div class="actions">
+        <button type="button" class="btn pri" (click)="onEditClick()" [disabled]="isDeleting || isLoading || isSaving">
+          @if (!isSaving) {
+            <mat-icon>edit</mat-icon><span>Bearbeiten</span>
+          }
+          @if (isSaving) {
+            <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+          }
+        </button>
+        <button type="button" class="btn del" (click)="onDeleteClick()"
+          [disabled]="isEditing || isDeleting || isLoading || isSaving">
+          <mat-icon>delete</mat-icon><span>Löschen</span>
         </button>
       </div>
-    </div>
+    }
 
-    <div class="add-sub" *ngIf="isEditing && !form.controls.isDefault.value">
-      <button type="button" class="btn sec2" (click)="onAddSubCategoryClick()"
-          [disabled]="isDeleting || isLoading || isSaving">
-        <mat-icon>add</mat-icon><span>Unterkategorie hinzufügen</span>
-      </button>
-    </div>
+    @if (category && isEditing) {
+      <div class="actions">
+        <button type="button" class="btn sec2" (click)="onCancelClick()">
+          <mat-icon>close</mat-icon><span>Abbrechen</span>
+        </button>
+        <button type="button" class="btn pri" (click)="onSaveClick()" [disabled]="isSaving">
+          @if (!isSaving) {
+            <mat-icon>check</mat-icon><span>Speichern</span>
+          }
+          @if (isSaving) {
+            <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+          }
+        </button>
+      </div>
+    }
   </div>
-
-  <!--
-    AKTIONEN
-  -->
-  <div class="progress-slot">
-    <mat-progress-bar *ngIf="isDeleting || isLoading || !category" mode="indeterminate" color="accent"></mat-progress-bar>
-  </div>
-
-  <div class="actions" *ngIf="category && !isEditing">
-    <button type="button" class="btn pri" (click)="onEditClick()" [disabled]="isDeleting || isLoading || isSaving">
-      <ng-container *ngIf="!isSaving"><mat-icon>edit</mat-icon><span>Bearbeiten</span></ng-container>
-      <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
-    </button>
-    <button type="button" class="btn del" (click)="onDeleteClick()"
-        [disabled]="isEditing || isDeleting || isLoading || isSaving">
-      <mat-icon>delete</mat-icon><span>Löschen</span>
-    </button>
-  </div>
-
-  <div class="actions" *ngIf="category && isEditing">
-    <button type="button" class="btn sec2" (click)="onCancelClick()">
-      <mat-icon>close</mat-icon><span>Abbrechen</span>
-    </button>
-    <button type="button" class="btn pri" (click)="onSaveClick()" [disabled]="isSaving">
-      <ng-container *ngIf="!isSaving"><mat-icon>check</mat-icon><span>Speichern</span></ng-container>
-      <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
-    </button>
-  </div>
-</div>

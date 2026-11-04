@@ -45,26 +45,40 @@
   </mat-dialog-content>
 
   <div class="progress-slot">
-    <mat-progress-bar *ngIf="isDeleting" mode="indeterminate" color="accent"></mat-progress-bar>
+    @if (isDeleting) {
+      <mat-progress-bar mode="indeterminate" color="accent"></mat-progress-bar>
+    }
   </div>
 
-  <div class="actions" *ngIf="!isEditing">
-    <button type="button" class="btn pri" (click)="onEditClick()" [disabled]="isDeleting || isSaving">
-      <ng-container *ngIf="!isSaving"><mat-icon>edit</mat-icon><span>Bearbeiten</span></ng-container>
-      <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
-    </button>
-    <button type="button" class="btn del" (click)="onDeleteClick()" [disabled]="isEditing || isDeleting || isSaving">
-      <mat-icon>delete</mat-icon><span>Löschen</span>
-    </button>
-  </div>
+  @if (!isEditing) {
+    <div class="actions">
+      <button type="button" class="btn pri" (click)="onEditClick()" [disabled]="isDeleting || isSaving">
+        @if (!isSaving) {
+          <mat-icon>edit</mat-icon><span>Bearbeiten</span>
+        }
+        @if (isSaving) {
+          <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+        }
+      </button>
+      <button type="button" class="btn del" (click)="onDeleteClick()" [disabled]="isEditing || isDeleting || isSaving">
+        <mat-icon>delete</mat-icon><span>Löschen</span>
+      </button>
+    </div>
+  }
 
-  <div class="actions" *ngIf="isEditing">
-    <button type="button" class="btn sec2" (click)="onCancelClick()">
-      <mat-icon>close</mat-icon><span>Abbrechen</span>
-    </button>
-    <button type="button" class="btn pri" (click)="onSaveClick()" [disabled]="isSaving">
-      <ng-container *ngIf="!isSaving"><mat-icon>check</mat-icon><span>Speichern</span></ng-container>
-      <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
-    </button>
-  </div>
+  @if (isEditing) {
+    <div class="actions">
+      <button type="button" class="btn sec2" (click)="onCancelClick()">
+        <mat-icon>close</mat-icon><span>Abbrechen</span>
+      </button>
+      <button type="button" class="btn pri" (click)="onSaveClick()" [disabled]="isSaving">
+        @if (!isSaving) {
+          <mat-icon>check</mat-icon><span>Speichern</span>
+        }
+        @if (isSaving) {
+          <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+        }
+      </button>
+    </div>
+  }
 </app-dialog>

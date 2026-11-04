@@ -1,52 +1,64 @@
 <div class="page">
   <div class="body">
-    <div *ngIf="isLoading" class="loading">
-      <mat-spinner diameter="40"></mat-spinner>
-    </div>
+    @if (isLoading) {
+      <div class="loading">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+    }
 
-    <div *ngIf="!isLoading">
-      <!-- Mockup 06, Kategorien: Musterfeld | Name | Chevron; im Modus "Reihenfolge anpassen" Griff links (cdkDragHandle) -->
-      <div class="list" cdkDropList (cdkDropListDropped)="drop($event)">
-        <div
-            cdkDrag class="drag-item andaha-drag-item"
-            *ngFor="let category of categories; index as i"
-            [cdkDragDisabled]="!isEditing">
-
-          <span *ngIf="isEditing" class="grip" cdkDragHandle aria-hidden="true">
-            <mat-icon>drag_indicator</mat-icon>
-          </span>
-
-          <a class="row" routerLink="{{category.id}}">
-            <span class="sw" [ngStyle]="{ 'background-color': category.color }"></span>
-            <span class="t">{{ category.name }}</span>
-            <mat-icon class="chev" aria-hidden="true">chevron_right</mat-icon>
-          </a>
+    @if (!isLoading) {
+      <div>
+        <!-- Mockup 06, Kategorien: Musterfeld | Name | Chevron; im Modus "Reihenfolge anpassen" Griff links (cdkDragHandle) -->
+        <div class="list" cdkDropList (cdkDropListDropped)="drop($event)">
+          @for (category of categories; track category; let i = $index) {
+            <div
+              cdkDrag class="drag-item andaha-drag-item"
+              [cdkDragDisabled]="!isEditing">
+              @if (isEditing) {
+                <span class="grip" cdkDragHandle aria-hidden="true">
+                  <mat-icon>drag_indicator</mat-icon>
+                </span>
+              }
+              <a class="row" routerLink="{{category.id}}">
+                <span class="sw" [ngStyle]="{ 'background-color': category.color }"></span>
+                <span class="t">{{ category.name }}</span>
+                <mat-icon class="chev" aria-hidden="true">chevron_right</mat-icon>
+              </a>
+            </div>
+          }
         </div>
       </div>
-    </div>
+    }
   </div>
 
   <!--
-    AKTIONEN (Mockup 06: untereinander)
+  AKTIONEN (Mockup 06: untereinander)
   -->
   <div class="actions">
     <a class="btn add" [class.pri]="!isEditing" [class.sec2]="isEditing" routerLink="create">
       <mat-icon>add</mat-icon><span>Hinzufügen</span>
     </a>
 
-    <button *ngIf="!isEditing" type="button" class="btn sec2" (click)="onEditClick()">
-      <mat-icon>swap_vert</mat-icon><span>Reihenfolge anpassen</span>
-    </button>
-
-    <div *ngIf="isEditing" class="edit-row">
-      <button type="button" class="btn sec2" (click)="onCancelClick()">
-        <mat-icon>close</mat-icon><span>Abbrechen</span>
+    @if (!isEditing) {
+      <button type="button" class="btn sec2" (click)="onEditClick()">
+        <mat-icon>swap_vert</mat-icon><span>Reihenfolge anpassen</span>
       </button>
+    }
 
-      <button type="button" class="btn pri" [disabled]="isSaving" (click)="onSaveClick()">
-        <ng-container *ngIf="!isSaving"><mat-icon>check</mat-icon><span>Speichern</span></ng-container>
-        <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
-      </button>
-    </div>
+    @if (isEditing) {
+      <div class="edit-row">
+        <button type="button" class="btn sec2" (click)="onCancelClick()">
+          <mat-icon>close</mat-icon><span>Abbrechen</span>
+        </button>
+        <button type="button" class="btn pri" [disabled]="isSaving" (click)="onSaveClick()">
+          @if (!isSaving) {
+            <mat-icon>check</mat-icon><span>Speichern</span>
+          }
+          @if (isSaving) {
+            <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+          }
+        </button>
+      </div>
+    }
   </div>
 </div>

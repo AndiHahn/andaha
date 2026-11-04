@@ -1,15 +1,25 @@
 <div class="master-container">
-  <div *ngIf="loading && !connectionRequests">
-    <mat-spinner diameter="40"></mat-spinner>
-  </div>
-  
-  <div class="empty" *ngIf="!loading && connectionRequests && connectionRequests.length == 0">
-    Keine ausgehenden Verbindungsanfragen vorhanden.
-  </div>
+  @if (loading && !connectionRequests) {
+    <div>
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  }
+
+  @if (!loading && connectionRequests && connectionRequests.length == 0) {
+    <div class="empty">
+      Keine ausgehenden Verbindungsanfragen vorhanden.
+    </div>
+  }
 </div>
 
-<div class="row" *ngFor="let connectionRequest of connectionRequests">
-  <span class="t">{{ connectionRequest.targetUserEmailAddress }}</span>
-  <span *ngIf="!connectionRequest.declined" class="st wait"><span class="dot"></span>ausstehend</span>
-  <span *ngIf="connectionRequest.declined" class="st no"><span class="dot"></span>abgelehnt</span>
-</div>
+@for (connectionRequest of connectionRequests; track connectionRequest) {
+  <div class="row">
+    <span class="t">{{ connectionRequest.targetUserEmailAddress }}</span>
+    @if (!connectionRequest.declined) {
+      <span class="st wait"><span class="dot"></span>ausstehend</span>
+    }
+    @if (connectionRequest.declined) {
+      <span class="st no"><span class="dot"></span>abgelehnt</span>
+    }
+  </div>
+}

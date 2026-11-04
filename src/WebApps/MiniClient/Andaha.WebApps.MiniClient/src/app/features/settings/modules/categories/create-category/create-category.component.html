@@ -1,6 +1,6 @@
 <div class="page">
   <!--
-    FORM
+  FORM
   -->
   <form class="form-body" [formGroup]="form">
     <label class="field" [class.invalid]="form.controls.name | showError">
@@ -14,18 +14,22 @@
       <span class="field-label">Farbe</span>
       <span class="field-box">
         <mat-select [formControl]="form.controls.color" aria-label="Farbe">
-          <mat-select-trigger *ngIf="form.controls.color.value">
-            <span class="color-opt">
-              <app-color-item [color]="form.controls.color.value"></app-color-item>
-              <span class="color-name">{{ form.controls.color.value }}</span>
-            </span>
-          </mat-select-trigger>
-          <mat-option *ngFor="let color of colors" [value]="color">
-            <span class="color-opt">
-              <app-color-item [color]="color"></app-color-item>
-              <span class="color-name">{{ color }}</span>
-            </span>
-          </mat-option>
+          @if (form.controls.color.value) {
+            <mat-select-trigger>
+              <span class="color-opt">
+                <app-color-item [color]="form.controls.color.value"></app-color-item>
+                <span class="color-name">{{ form.controls.color.value }}</span>
+              </span>
+            </mat-select-trigger>
+          }
+          @for (color of colors; track color) {
+            <mat-option [value]="color">
+              <span class="color-opt">
+                <app-color-item [color]="color"></app-color-item>
+                <span class="color-name">{{ color }}</span>
+              </span>
+            </mat-option>
+          }
         </mat-select>
         <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
       </span>
@@ -33,20 +37,24 @@
 
     <div class="cb">
       <mat-checkbox
-          class="andaha-checkbox"
-          [checked]="includeToStatisticsCheckbox"
-          (change)="updateIncludeToStatistics()">Aufnehmen in Statistik</mat-checkbox>
+        class="andaha-checkbox"
+        [checked]="includeToStatisticsCheckbox"
+      (change)="updateIncludeToStatistics()">Aufnehmen in Statistik</mat-checkbox>
     </div>
   </form>
 
   <!--
-    AKTIONEN
+  AKTIONEN
   -->
   <div class="actions">
     <button type="button" class="btn pri" (click)="onSaveClick()"
-        [disabled]="isSaving || !form.valid">
-      <ng-container *ngIf="!isSaving"><mat-icon>check</mat-icon><span>Speichern</span></ng-container>
-      <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
+      [disabled]="isSaving || !form.valid">
+      @if (!isSaving) {
+        <mat-icon>check</mat-icon><span>Speichern</span>
+      }
+      @if (isSaving) {
+        <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+      }
     </button>
   </div>
 </div>

@@ -588,6 +588,13 @@ body.mat-app-background {
 // Material 18: mobil (.mat-mdc-snack-bar-handset) 100vw; Breite wie oben, sonst ragt die Snackbar rechts hinaus
 .cdk-overlay-container .mat-mdc-snack-bar-handset .mat-mdc-snack-bar-container { width: calc(100% - 24px); }
 
+// Material 20 animiert per CSS mit fill-mode forwards: transform: scale(1) bleibt stehen, der Text
+// wird dadurch in Graustufen geglaettet. Nach dem Einblenden wie bis 19 ohne transform.
+.cdk-overlay-container .mat-mdc-snack-bar-container.mat-snack-bar-container-animations-enabled.mat-snack-bar-container-enter {
+  opacity: 1;
+  animation-fill-mode: backwards;
+}
+
 .cdk-overlay-container .mat-mdc-snack-bar-container.andaha-snackbar-error {
   --mat-snack-bar-container-color: var(--neg-bg);
   --mat-snack-bar-supporting-text-color: var(--neg-text);

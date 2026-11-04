@@ -40,8 +40,12 @@
 
     <div class="actions">
       <button type="submit" class="btn pri" [disabled]="!form.valid || isSaving">
-        <ng-container *ngIf="!isSaving"><mat-icon>check</mat-icon><span>Speichern</span></ng-container>
-        <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
+        @if (!isSaving) {
+          <mat-icon>check</mat-icon><span>Speichern</span>
+        }
+        @if (isSaving) {
+          <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+        }
       </button>
     </div>
   </form>

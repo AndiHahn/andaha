@@ -1,122 +1,147 @@
 <!-- Name als Titel in der Kopfzeile (PageTitleService.set, siehe ngOnInit) -->
 <div class="page">
-  <div class="body" *ngIf="person">
-    <!--
+  @if (person) {
+    <div class="body">
+      <!--
       KENNZAHL-ZEILE (Bezahlt/Offen nur bei Stundensatz > 0, wie bisher)
-    -->
-    <div class="tri">
-      <div>
-        <span>Gesamtstunden</span>
-        <b>{{ getTimeDisplayName(person.totalHours) }}</b>
+      -->
+      <div class="tri">
+        <div>
+          <span>Gesamtstunden</span>
+          <b>{{ getTimeDisplayName(person.totalHours) }}</b>
+        </div>
+        @if (form.controls.hourlyRate.value > 0) {
+          <div>
+            <span>Bezahlte Stunden</span>
+            <b>{{ getTimeDisplayName(person.payedHours) }}</b>
+          </div>
+          <div>
+            <span>Offene Stunden</span>
+            <b class="open">{{ getTimeDisplayName(calculateTimeDifference(person.totalHours, person.payedHours)) }}</b>
+          </div>
+        }
       </div>
-      <ng-container *ngIf="form.controls.hourlyRate.value > 0">
-        <div>
-          <span>Bezahlte Stunden</span>
-          <b>{{ getTimeDisplayName(person.payedHours) }}</b>
-        </div>
-        <div>
-          <span>Offene Stunden</span>
-          <b class="open">{{ getTimeDisplayName(calculateTimeDifference(person.totalHours, person.payedHours)) }}</b>
-        </div>
-      </ng-container>
-    </div>
-
-    <!--
+      <!--
       LESEMODUS: WERTEZEILEN (Werte aus dem Formular, wie bisher angezeigt)
-    -->
-    <ng-container *ngIf="!isEditing">
-      <div class="kv">
-        <span class="k">Stundensatz</span>
-        <span class="v">{{ form.controls.hourlyRate.value | number:'1.2-2':'de' }} €</span>
-      </div>
-      <div class="notes" *ngIf="form.controls.notes.value">
-        <span class="k">Notizen</span>
-        <span class="notes-text">{{ form.controls.notes.value }}</span>
-      </div>
-
-      <p class="sec">Zahlungen</p>
-      <div class="empty" *ngIf="person.payments.length <= 0">Noch keine Zahlungen.</div>
-      <div class="kv" *ngFor="let payment of person.payments">
-        <span class="k">{{ payment.payedAt | date:'dd.MM.yyyy':undefined:'de' }} · {{ getTimeDisplayName(payment.payedHours) }} h</span>
-        <span class="v">
-          {{ payment.payedMoney | number:'1.2-2':'de' }} €
-          <small class="tip" *ngIf="payment.payedTip > 0">davon {{ payment.payedTip | number:'1.2-2':'de' }} € Trinkgeld</small>
-        </span>
-      </div>
-    </ng-container>
-
-    <!--
+      -->
+      @if (!isEditing) {
+        <div class="kv">
+          <span class="k">Stundensatz</span>
+          <span class="v">{{ form.controls.hourlyRate.value | number:'1.2-2':'de' }} €</span>
+        </div>
+        @if (form.controls.notes.value) {
+          <div class="notes">
+            <span class="k">Notizen</span>
+            <span class="notes-text">{{ form.controls.notes.value }}</span>
+          </div>
+        }
+        <p class="sec">Zahlungen</p>
+        @if (person.payments.length <= 0) {
+          <div class="empty">Noch keine Zahlungen.</div>
+        }
+        @for (payment of person.payments; track payment) {
+          <div class="kv">
+            <span class="k">{{ payment.payedAt | date:'dd.MM.yyyy':undefined:'de' }} · {{ getTimeDisplayName(payment.payedHours) }} h</span>
+            <span class="v">
+              {{ payment.payedMoney | number:'1.2-2':'de' }} €
+              @if (payment.payedTip > 0) {
+                <small class="tip">davon {{ payment.payedTip | number:'1.2-2':'de' }} € Trinkgeld</small>
+              }
+            </span>
+          </div>
+        }
+      }
+      <!--
       BEARBEITEN: FORMULAR
-    -->
-    <form *ngIf="isEditing" class="form" [formGroup]="form">
-      <label class="field" [class.invalid]="form.controls.name | showError">
-        <span class="field-label">Name</span>
-        <span class="field-box">
-          <input formControlName="name" required [attr.aria-invalid]="form.controls.name | showError">
-        </span>
-      </label>
-
-      <label class="field" [class.invalid]="form.controls.hourlyRate | showError">
-        <span class="field-label">Stundensatz</span>
-        <span class="field-box">
-          <input formControlName="hourlyRate" type="number" required autocomplete="off" [attr.aria-invalid]="form.controls.hourlyRate | showError">
-          <span class="suffix" aria-hidden="true">€</span>
-        </span>
-      </label>
-
-      <label class="field" [class.invalid]="form.controls.notes | showError">
-        <span class="field-label">Notizen</span>
-        <span class="field-box ta">
-          <textarea formControlName="notes" [attr.aria-invalid]="form.controls.notes | showError"></textarea>
-        </span>
-      </label>
-    </form>
-
-    <!--
+      -->
+      @if (isEditing) {
+        <form class="form" [formGroup]="form">
+          <label class="field" [class.invalid]="form.controls.name | showError">
+            <span class="field-label">Name</span>
+            <span class="field-box">
+              <input formControlName="name" required [attr.aria-invalid]="form.controls.name | showError">
+            </span>
+          </label>
+          <label class="field" [class.invalid]="form.controls.hourlyRate | showError">
+            <span class="field-label">Stundensatz</span>
+            <span class="field-box">
+              <input formControlName="hourlyRate" type="number" required autocomplete="off" [attr.aria-invalid]="form.controls.hourlyRate | showError">
+              <span class="suffix" aria-hidden="true">€</span>
+            </span>
+          </label>
+          <label class="field" [class.invalid]="form.controls.notes | showError">
+            <span class="field-label">Notizen</span>
+            <span class="field-box ta">
+              <textarea formControlName="notes" [attr.aria-invalid]="form.controls.notes | showError"></textarea>
+            </span>
+          </label>
+        </form>
+      }
+      <!--
       ARBEITSZEITEN
-    -->
-    <p class="sec">Arbeitszeiten</p>
-
-    <div class="empty" *ngIf="workingEntries && workingEntries.length <= 0">
-      Es sind noch keine Arbeitszeiten vorhanden.
+      -->
+      <p class="sec">Arbeitszeiten</p>
+      @if (workingEntries && workingEntries.length <= 0) {
+        <div class="empty">
+          Es sind noch keine Arbeitszeiten vorhanden.
+        </div>
+      }
+      @if (!workingEntries || isLoading) {
+        <div class="loading">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+      }
+      @if (workingEntries && !isLoading) {
+        <app-work-entry-list [workEntries]="workingEntries!"></app-work-entry-list>
+      }
     </div>
-
-    <div *ngIf="!workingEntries || isLoading" class="loading">
-      <mat-spinner diameter="40"></mat-spinner>
-    </div>
-
-    <app-work-entry-list *ngIf="workingEntries && !isLoading" [workEntries]="workingEntries!"></app-work-entry-list>
-  </div>
+  }
 
   <!--
-    AKTIONEN
+  AKTIONEN
   -->
   <div class="progress-slot">
-    <mat-progress-bar *ngIf="isDeleting || !person" mode="indeterminate" color="accent"></mat-progress-bar>
+    @if (isDeleting || !person) {
+      <mat-progress-bar mode="indeterminate" color="accent"></mat-progress-bar>
+    }
   </div>
 
-  <div class="actions" *ngIf="person && !isEditing">
-    <button *ngIf="!isEditing && form.controls.hourlyRate.value > 0" type="button" class="btn sec2"
-        (click)="onAddPaymentClick()" [disabled]="isDeleting || isLoading || isSaving">
-      <mat-icon>payments</mat-icon><span>Zahlung</span>
-    </button>
-    <button type="button" class="btn pri" (click)="onEditClick()" [disabled]="isDeleting || isLoading || isSaving">
-      <ng-container *ngIf="!isSaving"><mat-icon>edit</mat-icon><span>Bearbeiten</span></ng-container>
-      <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
-    </button>
-    <button type="button" class="btn del sq" aria-label="Löschen" (click)="onDeleteClick()"
+  @if (person && !isEditing) {
+    <div class="actions">
+      @if (!isEditing && form.controls.hourlyRate.value > 0) {
+        <button type="button" class="btn sec2"
+          (click)="onAddPaymentClick()" [disabled]="isDeleting || isLoading || isSaving">
+          <mat-icon>payments</mat-icon><span>Zahlung</span>
+        </button>
+      }
+      <button type="button" class="btn pri" (click)="onEditClick()" [disabled]="isDeleting || isLoading || isSaving">
+        @if (!isSaving) {
+          <mat-icon>edit</mat-icon><span>Bearbeiten</span>
+        }
+        @if (isSaving) {
+          <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+        }
+      </button>
+      <button type="button" class="btn del sq" aria-label="Löschen" (click)="onDeleteClick()"
         [disabled]="isEditing || isDeleting || isLoading || isSaving">
-      <mat-icon>delete</mat-icon>
-    </button>
-  </div>
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  }
 
-  <div class="actions" *ngIf="person && isEditing">
-    <button type="button" class="btn sec2" (click)="onCancelClick()">
-      <mat-icon>close</mat-icon><span>Abbrechen</span>
-    </button>
-    <button type="button" class="btn pri" (click)="onSaveClick()" [disabled]="isSaving">
-      <ng-container *ngIf="!isSaving"><mat-icon>check</mat-icon><span>Speichern</span></ng-container>
-      <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
-    </button>
-  </div>
+  @if (person && isEditing) {
+    <div class="actions">
+      <button type="button" class="btn sec2" (click)="onCancelClick()">
+        <mat-icon>close</mat-icon><span>Abbrechen</span>
+      </button>
+      <button type="button" class="btn pri" (click)="onSaveClick()" [disabled]="isSaving">
+        @if (!isSaving) {
+          <mat-icon>check</mat-icon><span>Speichern</span>
+        }
+        @if (isSaving) {
+          <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+        }
+      </button>
+    </div>
+  }
 </div>

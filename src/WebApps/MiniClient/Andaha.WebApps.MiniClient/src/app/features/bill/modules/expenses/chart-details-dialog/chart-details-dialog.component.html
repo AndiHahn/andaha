@@ -6,12 +6,16 @@
       <span class="big">{{ truncate(2, sum) | number:'1.2-2':'de' }}<small>€</small></span>
     </div>
 
-    <div *ngIf="subCategoryExpenses.length == 0" class="empty">
-      Keine Kosten von Subkategorien verfügbar.
-    </div>
-    <div class="kv" *ngFor="let expense of subCategoryExpenses">
-      <span class="k">{{ expense?.subCategory }}</span>
-      <span class="v">{{ truncate(2, expense?.costs) | number:'1.2-2':'de' }} €</span>
-    </div>
+    @if (subCategoryExpenses.length == 0) {
+      <div class="empty">
+        Keine Kosten von Subkategorien verfügbar.
+      </div>
+    }
+    @for (expense of subCategoryExpenses; track expense) {
+      <div class="kv">
+        <span class="k">{{ expense?.subCategory }}</span>
+        <span class="v">{{ truncate(2, expense?.costs) | number:'1.2-2':'de' }} €</span>
+      </div>
+    }
   </mat-dialog-content>
 </app-dialog>

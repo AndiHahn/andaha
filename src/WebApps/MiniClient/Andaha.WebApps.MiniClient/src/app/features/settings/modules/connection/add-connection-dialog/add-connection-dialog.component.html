@@ -6,23 +6,31 @@
           <span class="field-label">Email Adresse</span>
           <span class="field-box">
             <input formControlName="emailAddress" email autocomplete="off"
-                   [attr.aria-invalid]="formGroup.controls['emailAddress'] | showError: formDirective"
-                   [attr.aria-describedby]="(formGroup.controls['emailAddress'] | showError: formDirective) ? 'add-connection-email-error' : null">
-          </span>
-          <span class="field-error" id="add-connection-email-error" *ngIf="formGroup.controls['emailAddress'] | showError: formDirective">
-            Keine gültige email Adresse.
-          </span>
-        </label>
+              [attr.aria-invalid]="formGroup.controls['emailAddress'] | showError: formDirective"
+              [attr.aria-describedby]="(formGroup.controls['emailAddress'] | showError: formDirective) ? 'add-connection-email-error' : null">
+            </span>
+            @if (formGroup.controls['emailAddress'] | showError: formDirective) {
+              <span class="field-error" id="add-connection-email-error">
+                Keine gültige email Adresse.
+              </span>
+            }
+          </label>
 
-        <span class="field-error" role="alert" *ngIf="errorMessage">{{ errorMessage }}</span>
+          @if (errorMessage) {
+            <span class="field-error" role="alert">{{ errorMessage }}</span>
+          }
+        </div>
+      </mat-dialog-content>
+
+      <div class="actions">
+        <button type="submit" class="btn pri" [disabled]="isSaving">
+          @if (!isSaving) {
+            <span>Verbindung anfordern</span>
+          }
+          @if (isSaving) {
+            <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+          }
+        </button>
       </div>
-    </mat-dialog-content>
-
-    <div class="actions">
-      <button type="submit" class="btn pri" [disabled]="isSaving">
-        <ng-container *ngIf="!isSaving"><span>Verbindung anfordern</span></ng-container>
-        <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
-      </button>
-    </div>
-  </form>
-</app-dialog>
+    </form>
+  </app-dialog>

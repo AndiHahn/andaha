@@ -11,9 +11,11 @@
       <span class="field-label">Intervall</span>
       <span class="field-box">
         <mat-select formControlName="duration" required aria-label="Intervall">
-          <mat-option *ngFor="let duration of durationOptions" [value]="duration">
-            {{ durationLabel.get(duration) }}
-          </mat-option>
+          @for (duration of durationOptions; track duration) {
+            <mat-option [value]="duration">
+              {{ durationLabel.get(duration) }}
+            </mat-option>
+          }
         </mat-select>
         <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
       </span>
@@ -30,8 +32,12 @@
 
   <div class="actions">
     <button type="submit" class="btn pri" [disabled]="!form.valid || isSaving">
-      <ng-container *ngIf="!isSaving"><mat-icon>check</mat-icon><span>Speichern</span></ng-container>
-      <ng-container *ngIf="isSaving"><mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span></ng-container>
+      @if (!isSaving) {
+        <mat-icon>check</mat-icon><span>Speichern</span>
+      }
+      @if (isSaving) {
+        <mat-spinner class="btn-spinner" [diameter]="18"></mat-spinner><span>Speichert …</span>
+      }
     </button>
   </div>
 </form>

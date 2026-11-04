@@ -18,19 +18,21 @@
 
 <!-- Eigene Legende: Zeile oeffnet die Details der eigenen Kategorie, das Auge blendet sie im Diagramm aus/ein -->
 <div class="legend">
-  <div class="lg" *ngFor="let expense of expenses" [class.hidden]="isHidden(expense)">
-    <button type="button" class="lg-main" (click)="openDetails(expense)">
-      <span class="dot" [class.dot-light]="colorOf(expense) == 'white'"
-            [style.background]="colorOf(expense)"></span>
-      <span class="n">{{ expense?.category }}</span>
-      <span class="p">{{ percentOf(expense) === null ? '–' : (percentOf(expense) | number:'1.0-0':'de') + ' %' }}</span>
-      <span class="a">{{ expense?.costs | number:'1.2-2':'de' }} €</span>
-      <mat-icon class="chev" aria-hidden="true">chevron_right</mat-icon>
-    </button>
-    <button type="button" class="lg-eye"
-            [attr.aria-label]="expense.category + (isHidden(expense) ? ' einblenden' : ' ausblenden')"
-            (click)="visibilityToggled.emit(expense.category)">
-      <mat-icon aria-hidden="true">{{ isHidden(expense) ? 'visibility_off' : 'visibility' }}</mat-icon>
-    </button>
-  </div>
+  @for (expense of expenses; track expense) {
+    <div class="lg" [class.hidden]="isHidden(expense)">
+      <button type="button" class="lg-main" (click)="openDetails(expense)">
+        <span class="dot" [class.dot-light]="colorOf(expense) == 'white'"
+        [style.background]="colorOf(expense)"></span>
+        <span class="n">{{ expense?.category }}</span>
+        <span class="p">{{ percentOf(expense) === null ? '–' : (percentOf(expense) | number:'1.0-0':'de') + ' %' }}</span>
+        <span class="a">{{ expense?.costs | number:'1.2-2':'de' }} €</span>
+        <mat-icon class="chev" aria-hidden="true">chevron_right</mat-icon>
+      </button>
+      <button type="button" class="lg-eye"
+        [attr.aria-label]="expense.category + (isHidden(expense) ? ' einblenden' : ' ausblenden')"
+        (click)="visibilityToggled.emit(expense.category)">
+        <mat-icon aria-hidden="true">{{ isHidden(expense) ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+    </div>
+  }
 </div>

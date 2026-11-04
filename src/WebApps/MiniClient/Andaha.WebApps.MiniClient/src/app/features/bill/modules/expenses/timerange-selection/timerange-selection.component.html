@@ -1,62 +1,73 @@
 <form [formGroup]="form" class="form-container">
   <!-- Datumstyp als Segment aus nativen Radios (design.md 5.3), gleiche Control und gleicher Handler wie das bisherige Select -->
   <div class="segment" role="radiogroup" aria-label="Datumstyp" (click)="$event.stopPropagation();">
-    <label *ngFor="let dateTypeOption of dateTypeOptions">
-      <input type="radio" name="dateType" formControlName="dateType" [value]="dateTypeOption"
-             (ngModelChange)="dateTypeSelectionChanged()">
-      <span>{{ dateTypeSegmentLabels[dateTypeOption] }}</span>
-    </label>
-  </div>
+    @for (dateTypeOption of dateTypeOptions; track dateTypeOption) {
+      <label>
+        <input type="radio" name="dateType" formControlName="dateType" [value]="dateTypeOption"
+          (ngModelChange)="dateTypeSelectionChanged()">
+          <span>{{ dateTypeSegmentLabels[dateTypeOption] }}</span>
+        </label>
+      }
+    </div>
 
-  <div class="field" *ngIf="selectedDateType == dateType.Month">
-    <span class="field-label">Monat</span>
-    <span class="field-box">
-      <mat-select formControlName="monthSelection" aria-label="Monat" (selectionChange)="monthSelectionChanged()"
-                  (click)="$event.stopPropagation();">
-        <mat-option *ngFor="let month of monthSelectOptions" [value]="month">
-          {{ month | date:'LLLL yyyy':'':'de' }}
-        </mat-option>
-      </mat-select>
-      <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
-    </span>
-  </div>
+    @if (selectedDateType == dateType.Month) {
+      <div class="field">
+        <span class="field-label">Monat</span>
+        <span class="field-box">
+          <mat-select formControlName="monthSelection" aria-label="Monat" (selectionChange)="monthSelectionChanged()"
+            (click)="$event.stopPropagation();">
+            @for (month of monthSelectOptions; track month) {
+              <mat-option [value]="month">
+                {{ month | date:'LLLL yyyy':'':'de' }}
+              </mat-option>
+            }
+          </mat-select>
+          <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
+        </span>
+      </div>
+    }
 
-  <div class="field" *ngIf="selectedDateType == dateType.Year">
-    <span class="field-label">Jahr</span>
-    <span class="field-box">
-      <mat-select formControlName="yearSelection" aria-label="Jahr" (selectionChange)="yearSelectionChanged()"
-                  (click)="$event.stopPropagation();">
-        <mat-option *ngFor="let year of yearSelectOptions" [value]="year">
-          {{ year }}
-        </mat-option>
-      </mat-select>
-      <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
-    </span>
-  </div>
+    @if (selectedDateType == dateType.Year) {
+      <div class="field">
+        <span class="field-label">Jahr</span>
+        <span class="field-box">
+          <mat-select formControlName="yearSelection" aria-label="Jahr" (selectionChange)="yearSelectionChanged()"
+            (click)="$event.stopPropagation();">
+            @for (year of yearSelectOptions; track year) {
+              <mat-option [value]="year">
+                {{ year }}
+              </mat-option>
+            }
+          </mat-select>
+          <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
+        </span>
+      </div>
+    }
 
-  <div class="range" *ngIf="selectedDateType == dateType.Custom">
-    <label class="field">
-      <span class="field-label">Von</span>
-      <span class="field-box">
-        <input [matDatepicker]="pickerFrom" formControlName="fromDate" aria-label="Von"
-               (ngModelChange)="customFromDateChanged()">
-        <mat-datepicker-toggle class="suffix" [for]="pickerFrom" [aria-label]="'Kalender öffnen'">
-          <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
-        </mat-datepicker-toggle>
-        <mat-datepicker #pickerFrom></mat-datepicker>
-      </span>
-    </label>
-
-    <label class="field">
-      <span class="field-label">Bis</span>
-      <span class="field-box">
-        <input [matDatepicker]="pickerTo" formControlName="toDate" aria-label="Bis"
-               (ngModelChange)="customToDateChanged()">
-        <mat-datepicker-toggle class="suffix" [for]="pickerTo" [aria-label]="'Kalender öffnen'">
-          <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
-        </mat-datepicker-toggle>
-        <mat-datepicker #pickerTo></mat-datepicker>
-      </span>
-    </label>
-  </div>
-</form>
+    @if (selectedDateType == dateType.Custom) {
+      <div class="range">
+        <label class="field">
+          <span class="field-label">Von</span>
+          <span class="field-box">
+            <input [matDatepicker]="pickerFrom" formControlName="fromDate" aria-label="Von"
+              (ngModelChange)="customFromDateChanged()">
+              <mat-datepicker-toggle class="suffix" [for]="pickerFrom" [aria-label]="'Kalender öffnen'">
+                <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
+              </mat-datepicker-toggle>
+              <mat-datepicker #pickerFrom></mat-datepicker>
+            </span>
+          </label>
+          <label class="field">
+            <span class="field-label">Bis</span>
+            <span class="field-box">
+              <input [matDatepicker]="pickerTo" formControlName="toDate" aria-label="Bis"
+                (ngModelChange)="customToDateChanged()">
+                <mat-datepicker-toggle class="suffix" [for]="pickerTo" [aria-label]="'Kalender öffnen'">
+                  <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
+                </mat-datepicker-toggle>
+                <mat-datepicker #pickerTo></mat-datepicker>
+              </span>
+            </label>
+          </div>
+        }
+      </form>

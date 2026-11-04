@@ -3,5 +3,7 @@
   <div class="message-container">
     <span>{{data.message}}</span>
   </div>
-  <button *ngIf="data.action" type="button" class="snack-action" (click)="runAction()">{{data.action}}</button>
+  @if (data.action) {
+    <button type="button" class="snack-action" (click)="runAction()">{{data.action}}</button>
+  }
 </div>
