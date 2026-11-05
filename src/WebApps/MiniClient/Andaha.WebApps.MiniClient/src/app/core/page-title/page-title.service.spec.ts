@@ -94,6 +94,23 @@ describe('PageTitleService', () => {
         sub.unsubscribe();
     });
 
+    it('setBack overrides the route back target until the next navigation', async () => {
+        await router.navigate(['/bill/42']);
+        service.setBack('/work/person/p-1');
+        await new Promise(resolve => setTimeout(resolve));
+        expect(await firstValueFrom(service.back$)).toBe('/work/person/p-1');
+
+        await router.navigate(['/bill/43']);
+        expect(await firstValueFrom(service.back$)).toBe('/bill/list');
+    });
+
+    it('setBack called during the navigation survives its end', async () => {
+        const navigation = router.navigate(['/bill/42']);
+        service.setBack('/work/person/p-1');
+        await navigation;
+        expect(await firstValueFrom(service.back$)).toBe('/work/person/p-1');
+    });
+
     it('clears header action with explicit null', async () => {
         await router.navigate(['/bill/42']);
         service.setAction({ icon: 'history', label: 'Verlauf anzeigen', run: () => { } });

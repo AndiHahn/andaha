@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { ActivatedRouteSnapshot, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { asapScheduler, BehaviorSubject, Observable } from 'rxjs';
-import { filter, observeOn } from 'rxjs/operators';
+import { observeOn } from 'rxjs/operators';
 
 /** Icon-Button rechts in der Kopfzeile (z. B. Verlauf auf Detailseiten), gilt bis zur nächsten Navigation. */
 export interface HeaderAction {
@@ -25,10 +25,17 @@ export class PageTitleService {
   readonly back$: Observable<string | null> = this.backSubject.asObservable();
   readonly action$: Observable<HeaderAction | null> = this.actionSubject.pipe(observeOn(asapScheduler));
 
+  /** Überschreibt `data.back`, gesetzt von der Seitenkomponente während der Navigation */
+  private backOverride: string | null = null;
+
   constructor() {
-    this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe(() => this.update());
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        this.backOverride = null;
+      } else if (event instanceof NavigationEnd) {
+        this.update();
+      }
+    });
   }
 
   set(title: string): void {
@@ -37,6 +44,16 @@ export class PageTitleService {
 
   setAction(action: HeaderAction | null): void {
     this.actionSubject.next(action);
+  }
+
+  /**
+   * Zurück-Ziel der aktuellen Seite überschreiben (statt `data.back` der Route), z. B. wenn die Seite
+   * von einer Detailseite aus geöffnet wurde. Gilt bis zur nächsten Navigation.
+   */
+  setBack(url: string | null): void {
+    this.backOverride = url;
+    // wie der Titel erst nach dem laufenden Change-Detection-Durchlauf
+    asapScheduler.schedule(() => this.backSubject.next(url));
   }
 
   private update(): void {
@@ -54,7 +71,7 @@ export class PageTitleService {
       route = route.firstChild;
     }
     this.titleSubject.next(title);
-    this.backSubject.next(back);
+    this.backSubject.next(this.backOverride ?? back);
     this.actionSubject.next(null);
   }
 }

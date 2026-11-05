@@ -2,6 +2,8 @@ import { Component, OnInit, ChangeDetectionStrategy, DestroyRef, inject } from '
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CreateWorkingEntriesDto } from 'src/app/api/work/dtos/CreateWorkingEntriesDto';
 import { ActivatedRoute } from '@angular/router';
+import { PageTitleService } from 'src/app/core/page-title/page-title.service';
+import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { catchError, distinctUntilChanged, map, of, switchMap, tap } from 'rxjs';
 import { WorkingEntryDto } from 'src/app/api/work/dtos/WorkingEntryDto';
 import { WorkingEntryApiService } from 'src/app/api/work/working-entry-api.service';
@@ -44,6 +46,12 @@ export class AddWorkingEntryComponent implements OnInit {
   private statisticsContextService = inject(StatisticsContextService);
   private route = inject(ActivatedRoute);
 
+  private pageTitleService = inject(PageTitleService);
+  private historyTrail = inject(HistoryTrailService);
+
+  /** Personenseite, von der die Seite geöffnet wurde (`?person=`), sonst undefined */
+  private personPageUrl?: string;
+
   /** Neuester Eintrag der einzigen gewählten Person (Zeile „Letzter Eintrag“) */
   lastEntry?: WorkingEntryDto;
 
@@ -59,6 +67,13 @@ export class AddWorkingEntryComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // von einer Personenseite geöffnet: Zurück und Speichern führen dorthin, sonst zur Personenliste (data.back)
+    const personId = this.route.snapshot.queryParamMap.get('person');
+    if (personId) {
+      this.personPageUrl = `/work/person/${personId}`;
+      this.pageTitleService.setBack(this.personPageUrl);
+    }
+
     // „Letzter Eintrag“ gibt es nur bei genau einer gewählten Person
     this.form.controls.selectedPersons.valueChanges.pipe(
       map(selected => selected.length === 1 ? selected[0].id : undefined),
@@ -173,6 +188,9 @@ export class AddWorkingEntryComponent implements OnInit {
           this.personContextService.refetch();
           this.statisticsContextService.refreshTimeRange();
           openInformationSnackbar('Arbeitszeit wurde gespeichert', this.snackbar);
+          if (this.personPageUrl) {
+            this.historyTrail.leaveTo(this.personPageUrl);
+          }
         },
         error: _ => {
           this.isSaving = false;

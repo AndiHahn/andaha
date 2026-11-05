@@ -13,6 +13,8 @@ import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 import { PersonContextService } from '../../../services/person-context.service';
 import { StatisticsContextService } from '../../../services/statistics-context.service';
 import { WorkingEntriesContextGlobalService } from '../../../services/working-entries-context-global.service';
+import { PageTitleService } from 'src/app/core/page-title/page-title.service';
+import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { AddWorkingEntryComponent } from './add-working-entry.component';
 
 // Die Picker bringen Overlay und Locale-Dienste mit; die Seite prüft nur, was sie ihnen übergibt.
@@ -44,6 +46,8 @@ describe('AddWorkingEntryComponent', () => {
     let create: { createEntries: ReturnType<typeof vi.fn> };
     let statistics: { refreshTimeRange: ReturnType<typeof vi.fn> };
     let snackbar: { openFromComponent: ReturnType<typeof vi.fn> };
+    let pageTitle: { setBack: ReturnType<typeof vi.fn> };
+    let historyTrail: { leaveTo: ReturnType<typeof vi.fn> };
 
     function host(): HTMLElement {
         return fixture.nativeElement as HTMLElement;
@@ -62,6 +66,8 @@ describe('AddWorkingEntryComponent', () => {
         create = { createEntries: vi.fn().mockReturnValue(of(undefined)) };
         statistics = { refreshTimeRange: vi.fn() };
         snackbar = { openFromComponent: vi.fn() };
+        pageTitle = { setBack: vi.fn() };
+        historyTrail = { leaveTo: vi.fn() };
 
         await TestBed.configureTestingModule({
             imports: [AddWorkingEntryComponent, NoopAnimationsModule],
@@ -72,7 +78,9 @@ describe('AddWorkingEntryComponent', () => {
                 { provide: WorkingEntryApiService, useValue: api },
                 { provide: WorkingEntriesContextGlobalService, useValue: create },
                 { provide: StatisticsContextService, useValue: statistics },
-                { provide: MatSnackBar, useValue: snackbar }
+                { provide: MatSnackBar, useValue: snackbar },
+                { provide: PageTitleService, useValue: pageTitle },
+                { provide: HistoryTrailService, useValue: historyTrail }
             ]
         })
             .overrideComponent(AddWorkingEntryComponent, {
@@ -172,6 +180,25 @@ describe('AddWorkingEntryComponent', () => {
 
         expect(snackbar.openFromComponent.mock.calls[0][1].data).toBe('Arbeitszeit konnte nicht gespeichert werden.');
         expect(statistics.refreshTimeRange).not.toHaveBeenCalled();
+    });
+
+    it('opened with ?person= the back arrow and the save lead to that person page', async () => {
+        await setup('p-2');
+        expect(pageTitle.setBack).toHaveBeenCalledWith('/work/person/p-2');
+
+        component.onSubmit();
+
+        expect(historyTrail.leaveTo).toHaveBeenCalledWith('/work/person/p-2');
+    });
+
+    it('opened without ?person= keeps the persons list as back target and stays after save', async () => {
+        await setup(null);
+        component.form.controls.selectedPersons.setValue([maria]);
+
+        component.onSubmit();
+
+        expect(pageTitle.setBack).not.toHaveBeenCalled();
+        expect(historyTrail.leaveTo).not.toHaveBeenCalled();
     });
 
     it('after save the statistics time range refreshes', async () => {
