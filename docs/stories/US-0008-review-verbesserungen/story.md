@@ -79,6 +79,7 @@ Setzt US-0006 und US-0007 voraus (Tabs, Snackbar, Sheet-Verhalten, Vibrieren).
 ## UI Verification
 
 - 2026-11-05, **PASSED.** Abschlussprüfung bei 390 px und 1440 px gegen alle sichtbaren ACs, design.md und die Mockups 01–03 (`ui-testing/phase4/`), dazu Sichtprüfungen je UI-Task (`ui-testing/task-*`). Erster Lauf: 41 PASS, 1 FAIL (AC25: Farbpunkte nur 8 px groß), behoben in 885bfd0 und nachgeprüft (`ui-testing/phase4/recheck-*`). „Benutzerdaten löschen“ wurde mit Freigabe des Nutzers echt mit test2 ausgeführt: vier DELETE-Aufrufe mit 204 in Reihenfolge, Abmeldung, Wiederholung ebenfalls 204, frische Standardkategorien beim nächsten Login, eine test1-Rechnung in einer test2-Kategorie landete in der Standardkategorie von test1; test1 blieb unverändert. Lokal nicht prüfbar (durch Unit-/Backend-Tests und frühere Sichtprüfungen abgedeckt): Offline-Kaltstart ohne Service Worker, Senden/Annehmen echter Verbindungsanfragen (B2C Graph und Dapr fehlen lokal), echtes Pinch-Zoom und langer Druck auf eine Kachel. Konsole ohne Fehler außer den absichtlich erzeugten.
+- 2026-11-05, **PASSED (Change Request).** Langer Druck statt Zeilen-Wischen, Summenzeile entfernt: Menü „Duplizieren“/„Löschen“ per langem Druck (390) und Rechtsklick (1440), Löschen mit Rückfrage und Monatssummen-Update, Duplizieren mit Vorbelegung, Zurück schließt das Menü, Wischen auf einer Zeile wechselt den Tab, Pull-to-Refresh bleibt (`ui-testing/longpress/`). Partner-Rechnung lokal nicht prüfbar; mit emuliertem Touch schloss ein synthetischer Klick das Menü, mit Pointer-Events nicht – auf einem echten Gerät nachprüfen.
 
 ## Technical Notes
 
@@ -106,4 +107,4 @@ Setzt US-0006 und US-0007 voraus (Tabs, Snackbar, Sheet-Verhalten, Vibrieren).
 
 ## AI Usage
 
-Siehe [ai-usage.md](./ai-usage.md). Die Session begann noch mit dem Abschluss von US-0007: Die Zeile „Before Planning“ (€106.90) ist US-0007 und dort erfasst. Auf US-0008 entfallen die übrigen Zeilen, zusammen €185.19 und 12h 05m (Planning bis Wrap-up). Die Sichtprüfungen je Task stecken in der Phase Implementation.
+Siehe [ai-usage.md](./ai-usage.md). Die Session begann noch mit dem Abschluss von US-0007: Die Zeile „Before Planning“ (€106.78) ist US-0007 und dort erfasst. Auf US-0008 entfallen die übrigen Zeilen, zusammen €201.36 und 13h 52m (Planning bis Wrap-up; Wrap-up enthält die DEV-Fehlersuche und den Change Request „Langer Druck statt Wischen“). Die Sichtprüfungen je Task stecken in der Phase Implementation.
