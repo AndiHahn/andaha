@@ -24,6 +24,7 @@ public sealed class BillValidationPipelineTests : IDisposable
 {
     private readonly Guid userId = Guid.NewGuid();
     private readonly Guid strangerId = Guid.NewGuid();
+    private readonly Guid partnerId = Guid.NewGuid();
     private readonly SqliteConnection connection;
     private readonly Guid ownCategoryId;
     private readonly Guid strangerCategoryId;
@@ -53,7 +54,8 @@ public sealed class BillValidationPipelineTests : IDisposable
         identity.GetUserId().Returns(this.userId);
 
         var collaborationApiProxy = Substitute.For<ICollaborationApiProxy>();
-        collaborationApiProxy.GetConnectedUsers(Arg.Any<CancellationToken>()).Returns(Array.Empty<Guid>());
+        // The partner is connected to the signed-in user, the stranger is not.
+        collaborationApiProxy.GetConnectedUsers(Arg.Any<CancellationToken>()).Returns(new[] { this.partnerId });
 
         var builder = WebApplication.CreateBuilder();
         builder.AddCustomApplicationServices();
@@ -137,5 +139,60 @@ public sealed class BillValidationPipelineTests : IDisposable
         Assert.Equal(this.ownCategoryId, unchanged.CategoryId);
         Assert.Equal("ZZ Shop", unchanged.ShopName);
         Assert.Equal(12.5, unchanged.Price);
+    }
+
+    private (Guid BillId, Guid CategoryId, Guid SubCategoryId, Guid OtherCategoryId) SeedPartnerBill()
+    {
+        using var seedContext = TestDb.Open(this.connection);
+
+        var category = new BillCategory(this.partnerId, "Partner", "#333333", 0, new[] { ("Unter", 0) });
+        var otherCategory = new BillCategory(this.partnerId, "Partner 2", "#444444", 1, Array.Empty<(string, int)>());
+        seedContext.BillCategory.AddRange(category, otherCategory);
+        seedContext.SaveChanges();
+
+        var subCategoryId = category.SubCategories.Single().Id;
+        var bill = new Core.Bill(null, this.partnerId, category.Id, subCategoryId, "ZZ Partner", 12.5, DateTime.UtcNow);
+        seedContext.Bill.Add(bill);
+        seedContext.SaveChanges();
+
+        return (bill.Id, category.Id, subCategoryId, otherCategory.Id);
+    }
+
+    [Fact]
+    public async Task Update_partner_bill_keeping_its_category_succeeds()
+    {
+        var (billId, categoryId, subCategoryId, _) = this.SeedPartnerBill();
+
+        var command = new UpdateBillCommand(billId, categoryId, subCategoryId, "ZZ Partner", 20, DateTime.UtcNow, "neu", null);
+
+        var result = await this.SendAsync(command);
+
+        Assert.IsType<Ok<BillDto>>(result);
+
+        using var context = TestDb.Open(this.connection);
+        var bill = await context.Bill.AsNoTracking().SingleAsync(b => b.Id == billId);
+        Assert.Equal(20, bill.Price);
+        Assert.Equal("neu", bill.Notes);
+        Assert.Equal(this.partnerId, bill.UserId);
+        Assert.Equal(categoryId, bill.CategoryId);
+        Assert.Equal(subCategoryId, bill.SubCategoryId);
+    }
+
+    [Fact]
+    public async Task Update_partner_bill_to_partners_other_category_is_rejected()
+    {
+        var (billId, categoryId, subCategoryId, otherCategoryId) = this.SeedPartnerBill();
+
+        var command = new UpdateBillCommand(billId, otherCategoryId, null, "ZZ Partner", 20, DateTime.UtcNow, null, null);
+
+        var result = await this.SendAsync(command);
+
+        AssertSingleValidationError(result);
+
+        using var context = TestDb.Open(this.connection);
+        var bill = await context.Bill.AsNoTracking().SingleAsync(b => b.Id == billId);
+        Assert.Equal(categoryId, bill.CategoryId);
+        Assert.Equal(subCategoryId, bill.SubCategoryId);
+        Assert.Equal(12.5, bill.Price);
     }
 }

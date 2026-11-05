@@ -31,14 +31,30 @@ public class UpdateBillCommandValidator : AbstractValidator<UpdateBillCommand>
         RuleFor(command => command).MustAsync(CategoriesValidAsync);
     }
 
-    private Task<bool> CategoriesValidAsync(UpdateBillCommand command, CancellationToken arg2)
+    private async Task<bool> CategoriesValidAsync(UpdateBillCommand command, CancellationToken cancellationToken)
     {
+        // Unchanged category and sub-category are always accepted: a connected user may edit other fields of a
+        // partner bill that sits in the partner's category. Access to the bill itself is checked by the handler.
+        bool keepsCurrentCategory = await dbContext.Bill
+            .AnyAsync(
+                bill => bill.Id == command.Id &&
+                        bill.CategoryId == command.CategoryId &&
+                        bill.SubCategoryId == command.SubCategoryId,
+                cancellationToken);
+
+        if (keepsCurrentCategory)
+        {
+            return true;
+        }
+
+        // A different category must be one of the current user's own categories (design §6.1).
         Guid userId = this.identityService.GetUserId();
 
-        return dbContext.BillCategory
+        return await dbContext.BillCategory
             .AnyAsync(
                 category => category.UserId == userId &&
                             category.Id == command.CategoryId &&
-                            (command.SubCategoryId == null || category.SubCategories.Any(subCategory => subCategory.Id == command.SubCategoryId)));
+                            (command.SubCategoryId == null || category.SubCategories.Any(subCategory => subCategory.Id == command.SubCategoryId)),
+                cancellationToken);
     }
 }
