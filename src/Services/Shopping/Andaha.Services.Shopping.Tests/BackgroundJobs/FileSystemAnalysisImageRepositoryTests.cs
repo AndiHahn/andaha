@@ -5,6 +5,13 @@ namespace Andaha.Services.Shopping.Tests.BackgroundJobs;
 
 public sealed class FileSystemAnalysisImageRepositoryTests : IDisposable
 {
+    // Upload ohne Claim, wie vom NasBillWorker
+    private static readonly AnalysisUploadOptions Unclaimed = new()
+    {
+        UploadedAtUtc = new DateTimeOffset(2026, 11, 4, 11, 0, 0, TimeSpan.Zero),
+        Origin = AnalysisUploadOptions.NasOrigin,
+    };
+
     private readonly string directory = Path.Combine(Path.GetTempPath(), "andaha-analysis-" + Guid.NewGuid().ToString("N"));
 
     public void Dispose()
@@ -20,7 +27,7 @@ public sealed class FileSystemAnalysisImageRepositoryTests : IDisposable
     {
         var repository = new FileSystemAnalysisImageRepository(directory);
         var userId = Guid.NewGuid();
-        await repository.UploadImageAsync("a.jpg", new MemoryStream([1, 2, 3]), userId);
+        await repository.UploadImageAsync("a.jpg", new MemoryStream([1, 2, 3]), userId, Unclaimed);
         var claimedUntil = new DateTimeOffset(2026, 11, 4, 12, 10, 0, TimeSpan.Zero);
 
         await repository.ClaimAsync("a.jpg", claimedUntil);
@@ -44,8 +51,8 @@ public sealed class FileSystemAnalysisImageRepositoryTests : IDisposable
     public async Task List_skips_sidecars_and_reports_attempts()
     {
         var repository = new FileSystemAnalysisImageRepository(directory);
-        await repository.UploadImageAsync("a.jpg", new MemoryStream([1]), Guid.NewGuid());
-        await repository.UploadImageAsync("b.jpg", new MemoryStream([2]), Guid.NewGuid());
+        await repository.UploadImageAsync("a.jpg", new MemoryStream([1]), Guid.NewGuid(), Unclaimed);
+        await repository.UploadImageAsync("b.jpg", new MemoryStream([2]), Guid.NewGuid(), Unclaimed);
         var claimedUntil = new DateTimeOffset(2026, 11, 4, 12, 10, 0, TimeSpan.Zero);
         await repository.ClaimAsync("b.jpg", claimedUntil);
         await File.WriteAllTextAsync(
@@ -73,7 +80,7 @@ public sealed class FileSystemAnalysisImageRepositoryTests : IDisposable
     {
         var repository = new FileSystemAnalysisImageRepository(directory);
         var userId = Guid.NewGuid();
-        await repository.UploadImageAsync("a.jpg", new MemoryStream([1]), userId);
+        await repository.UploadImageAsync("a.jpg", new MemoryStream([1]), userId, Unclaimed);
         await File.WriteAllBytesAsync(Path.Combine(directory, "without-sidecar.jpg"), [2]);
 
         var images = (await repository.ListImagesAsync()).OrderBy(image => image.ImageName).ToArray();

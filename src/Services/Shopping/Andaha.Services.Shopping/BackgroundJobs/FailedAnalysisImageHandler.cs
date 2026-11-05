@@ -26,7 +26,8 @@ internal class FailedAnalysisImageHandler(
             shopName: null,
             price: null,
             confidence: null,
-            totalAmountConfidence: null);
+            totalAmountConfidence: null,
+            sourceUploadId: imageName);
 
         string billImageName = $"{analyzedBill.Id}-1";
 

@@ -12,6 +12,16 @@ public record ImageMetadata
     public Guid? UserId { get; set; }
 
     /// <summary>
+    /// Upload time from the <c>uploadedAt</c> metadata entry, or <c>null</c> for images uploaded before US-0009.
+    /// </summary>
+    public DateTimeOffset? UploadedAtUtc { get; set; }
+
+    /// <summary>
+    /// Where the image came from (<c>app</c> or <c>nas</c>), or <c>null</c> for images uploaded before US-0009.
+    /// </summary>
+    public string? Origin { get; set; }
+
+    /// <summary>
     /// Number of times the image has been claimed for analysis.
     /// </summary>
     public int Attempts { get; set; }

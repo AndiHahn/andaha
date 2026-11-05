@@ -9,6 +9,8 @@ public class FileSystemAnalysisImageRepository : IAnalysisImageRepository
     private const string UserIdKey = "userId";
     private const string AttemptsKey = "attempts";
     private const string ClaimedUntilKey = "claimedUntil";
+    private const string UploadedAtKey = "uploadedAt";
+    private const string OriginKey = "origin";
     private const string LegacyProcessedAtKey = "processedAt";
 
     private readonly string analyzeFilePath;
@@ -39,20 +41,32 @@ public class FileSystemAnalysisImageRepository : IAnalysisImageRepository
         return (new MemoryStream(imageBytes), userId);
     }
 
-    public async Task UploadImageAsync(string name, Stream imageStream, Guid userId, CancellationToken ct = default)
+    public async Task UploadImageAsync(string name, Stream imageStream, Guid userId, AnalysisUploadOptions options, CancellationToken ct = default)
     {
+        ArgumentNullException.ThrowIfNull(options);
+
         string fileName = Path.GetFileName(name);
         string filePath = this.GetFilePath(fileName);
         string metadataFilePath = this.GetMetadataFilePath(fileName);
 
         var imageBytes = ReadStreamToBytes(imageStream);
 
+        var metadata = new JsonObject
+        {
+            [UserIdKey] = userId.ToString(),
+            [UploadedAtKey] = options.UploadedAtUtc.ToString("O", CultureInfo.InvariantCulture),
+            [OriginKey] = options.Origin,
+            [AttemptsKey] = options.Attempts,
+        };
+
+        if (options.ClaimedUntilUtc is { } claimedUntil)
+        {
+            metadata[ClaimedUntilKey] = claimedUntil.ToString("O", CultureInfo.InvariantCulture);
+        }
+
+        // The sidecar is written first: a worker listing in between sees the claim, never an unclaimed image.
+        await File.WriteAllTextAsync(metadataFilePath, metadata.ToJsonString(), ct);
         await File.WriteAllBytesAsync(filePath, imageBytes, ct);
-
-        var metadata = new { userId = userId.ToString() };
-        var metadataJson = JsonSerializer.Serialize(metadata);
-
-        await File.WriteAllTextAsync(metadataFilePath, metadataJson, ct);
     }
 
     public Task DeleteImageAsync(string name, CancellationToken ct = default)
@@ -102,8 +116,10 @@ public class FileSystemAnalysisImageRepository : IAnalysisImageRepository
                 ImageName = fileName,
                 LastModified = lastModified,
                 UserId = ReadUserId(metadata),
+                UploadedAtUtc = ReadTimestamp(metadata, UploadedAtKey),
+                Origin = metadata[OriginKey] is JsonValue origin && origin.TryGetValue<string>(out var originText) ? originText : null,
                 Attempts = ReadAttempts(metadata),
-                ClaimedUntilUtc = ReadClaimedUntil(metadata),
+                ClaimedUntilUtc = ReadTimestamp(metadata, ClaimedUntilKey),
                 LegacyProcessed = metadata.ContainsKey(LegacyProcessedAtKey),
             });
         }
@@ -119,6 +135,17 @@ public class FileSystemAnalysisImageRepository : IAnalysisImageRepository
 
         metadata[AttemptsKey] = ReadAttempts(metadata) + 1;
         metadata[ClaimedUntilKey] = claimedUntilUtc.ToString("O", CultureInfo.InvariantCulture);
+
+        await File.WriteAllTextAsync(metadataFilePath, metadata.ToJsonString(), ct);
+    }
+
+    public async Task ReleaseClaimAsync(string name, CancellationToken ct = default)
+    {
+        string metadataFilePath = this.GetMetadataFilePath(name);
+
+        var metadata = await ReadMetadataObjectAsync(metadataFilePath, ct);
+
+        metadata.Remove(ClaimedUntilKey);
 
         await File.WriteAllTextAsync(metadataFilePath, metadata.ToJsonString(), ct);
     }
@@ -159,11 +186,11 @@ public class FileSystemAnalysisImageRepository : IAnalysisImageRepository
     private static int ReadAttempts(JsonObject metadata)
         => metadata[AttemptsKey] is JsonValue value && value.TryGetValue<int>(out var attempts) ? attempts : 0;
 
-    private static DateTimeOffset? ReadClaimedUntil(JsonObject metadata)
-        => metadata[ClaimedUntilKey] is JsonValue value &&
+    private static DateTimeOffset? ReadTimestamp(JsonObject metadata, string key)
+        => metadata[key] is JsonValue value &&
            value.TryGetValue<string>(out var text) &&
-           DateTimeOffset.TryParse(text, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var claimedUntil)
-            ? claimedUntil
+           DateTimeOffset.TryParse(text, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var timestamp)
+            ? timestamp
             : null;
 
     private string GetFilePath(string name) => Path.Combine(this.analyzeFilePath, name);

@@ -11,6 +11,7 @@ using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Nas;
 using Andaha.Services.Shopping.Infrastructure.InvoiceAnalysis;
 using Andaha.Services.Shopping.Infrastructure.Messaging;
 using Andaha.Services.Shopping.Infrastructure.Proxies;
+using Andaha.Services.Shopping.Requests.Bill.AnalyzeBill;
 using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
@@ -97,6 +98,9 @@ public static class ProgramExtensions
 
         builder.Services.TryAddSingleton(TimeProvider.System);
         builder.Services.AddScoped<IFailedAnalysisImageHandler, FailedAnalysisImageHandler>();
+        builder.Services.AddScoped<IBillAnalysisProcessor, BillAnalysisProcessor>();
+        builder.Services.AddSingleton<AnalysisQueue>();
+        builder.Services.AddHostedService<ImmediateAnalysisService>();
         builder.Services.AddHostedService<AnalyzeBillWorker>();
         builder.Services.AddHostedService<NasBillWorker>();
 

@@ -63,6 +63,10 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(200)");
 
+                    b.Property<string>("SourceUploadId")
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
+
                     b.Property<Guid?>("SubCategoryId")
                         .HasColumnType("uniqueidentifier");
 
@@ -145,6 +149,10 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .IsUnicode(false)
                         .HasColumnType("varchar(200)");
+
+                    b.Property<string>("SourceUploadId")
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
 
                     b.Property<Guid?>("SubCategoryId")
                         .HasColumnType("uniqueidentifier");

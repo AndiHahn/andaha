@@ -10,6 +10,8 @@ public class AzureStorageAnalysisImageRepository(BlobServiceClient blobServiceCl
     private const string UserIdKey = "userId";
     private const string AttemptsKey = "attempts";
     private const string ClaimedUntilKey = "claimedUntil";
+    private const string UploadedAtKey = "uploadedAt";
+    private const string OriginKey = "origin";
     private const string LegacyProcessedAtKey = "processedAt";
 
     private readonly IBlobStorageService analysisBlobStorageService = new BlobStorageService(blobServiceClient, "analysis");
@@ -29,21 +31,32 @@ public class AzureStorageAnalysisImageRepository(BlobServiceClient blobServiceCl
         return (stream, new Guid(userId));
     }
 
-    public Task UploadImageAsync(string name, Stream imageStream, Guid userId, CancellationToken ct = default)
+    public Task UploadImageAsync(string name, Stream imageStream, Guid userId, AnalysisUploadOptions options, CancellationToken ct = default)
     {
+        ArgumentNullException.ThrowIfNull(options);
+
         string fileName = Path.GetFileName(name);
 
+        // Everything goes into the Put Blob call, so the claim exists from the first moment on.
         var metadata = new Dictionary<string, string>
         {
-            { "userId", userId.ToString() }
+            { UserIdKey, userId.ToString() },
+            { UploadedAtKey, options.UploadedAtUtc.ToString("O", CultureInfo.InvariantCulture) },
+            { OriginKey, options.Origin },
+            { AttemptsKey, options.Attempts.ToString(CultureInfo.InvariantCulture) },
         };
 
-        var options = new BlobUploadOptions
+        if (options.ClaimedUntilUtc is { } claimedUntil)
+        {
+            metadata[ClaimedUntilKey] = claimedUntil.ToString("O", CultureInfo.InvariantCulture);
+        }
+
+        var uploadOptions = new BlobUploadOptions
         {
             Metadata = metadata,
         };
 
-        return this.analysisBlobStorageService.UpdateBlobContentAsync(fileName, imageStream, options, ct: ct);
+        return this.analysisBlobStorageService.UpdateBlobContentAsync(fileName, imageStream, uploadOptions, ct: ct);
     }
 
     public async Task<IReadOnlyCollection<ImageMetadata>> ListImagesAsync(CancellationToken ct = default)
@@ -62,9 +75,11 @@ public class AzureStorageAnalysisImageRepository(BlobServiceClient blobServiceCl
                 ImageName = Path.GetFileName(blobItem.Name),
                 LastModified = blobItem.Properties.LastModified ?? blobItem.Properties.CreatedOn ?? DateTimeOffset.MinValue,
                 UserId = ReadUserId(metadata),
+                UploadedAtUtc = ReadTimestamp(metadata, UploadedAtKey),
+                Origin = ReadValue(metadata, OriginKey),
                 Attempts = ReadAttempts(metadata),
-                ClaimedUntilUtc = ReadClaimedUntil(metadata),
-                LegacyProcessed = metadata.ContainsKey(LegacyProcessedAtKey),
+                ClaimedUntilUtc = ReadTimestamp(metadata, ClaimedUntilKey),
+                LegacyProcessed = ReadValue(metadata, LegacyProcessedAtKey) is not null,
             });
         }
 
@@ -79,13 +94,7 @@ public class AzureStorageAnalysisImageRepository(BlobServiceClient blobServiceCl
     public async Task ClaimAsync(string name, DateTimeOffset claimedUntilUtc, CancellationToken ct = default)
     {
         var blobClient = blobServiceClient.GetBlobContainerClient("analysis").GetBlobClient(name);
-
-        var properties = await blobClient.GetPropertiesAsync(cancellationToken: ct);
-
-        // SetMetadataAsync replaces all metadata, so the existing entries (userId, ...) are carried over.
-        var metadata = new Dictionary<string, string>(
-            properties.Value.Metadata ?? new Dictionary<string, string>(),
-            StringComparer.OrdinalIgnoreCase);
+        var metadata = await ReadMetadataAsync(blobClient, ct);
 
         metadata[AttemptsKey] = (ReadAttempts(metadata) + 1).ToString(CultureInfo.InvariantCulture);
         metadata[ClaimedUntilKey] = claimedUntilUtc.ToString("O", CultureInfo.InvariantCulture);
@@ -93,22 +102,40 @@ public class AzureStorageAnalysisImageRepository(BlobServiceClient blobServiceCl
         await blobClient.SetMetadataAsync(metadata, cancellationToken: ct);
     }
 
+    public async Task ReleaseClaimAsync(string name, CancellationToken ct = default)
+    {
+        var blobClient = blobServiceClient.GetBlobContainerClient("analysis").GetBlobClient(name);
+        var metadata = await ReadMetadataAsync(blobClient, ct);
+
+        metadata.Remove(ClaimedUntilKey);
+
+        await blobClient.SetMetadataAsync(metadata, cancellationToken: ct);
+    }
+
+    // SetMetadataAsync replaces all metadata, so the existing entries (userId, uploadedAt, ...) are carried over.
+    private static async Task<Dictionary<string, string>> ReadMetadataAsync(BlobClient blobClient, CancellationToken ct)
+    {
+        var properties = await blobClient.GetPropertiesAsync(cancellationToken: ct);
+
+        return new Dictionary<string, string>(
+            properties.Value.Metadata ?? new Dictionary<string, string>(),
+            StringComparer.OrdinalIgnoreCase);
+    }
+
     private static int ReadAttempts(IDictionary<string, string> metadata)
-        => metadata.TryGetValue(AttemptsKey, out var text) &&
-           int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var attempts)
+        => int.TryParse(ReadValue(metadata, AttemptsKey), NumberStyles.Integer, CultureInfo.InvariantCulture, out var attempts)
             ? attempts
             : 0;
 
-    private static DateTimeOffset? ReadClaimedUntil(IDictionary<string, string> metadata)
-        => metadata.TryGetValue(ClaimedUntilKey, out var text) &&
-           DateTimeOffset.TryParse(text, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var claimedUntil)
-            ? claimedUntil
+    private static DateTimeOffset? ReadTimestamp(IDictionary<string, string> metadata, string key)
+        => DateTimeOffset.TryParse(ReadValue(metadata, key), CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var timestamp)
+            ? timestamp
             : null;
 
-    // Metadata names are case-insensitive in Blob Storage, the listed dictionary is not.
     private static Guid? ReadUserId(IDictionary<string, string> metadata)
-        => metadata.FirstOrDefault(entry => string.Equals(entry.Key, UserIdKey, StringComparison.OrdinalIgnoreCase)).Value is { } text &&
-           Guid.TryParse(text, out var userId)
-            ? userId
-            : null;
+        => Guid.TryParse(ReadValue(metadata, UserIdKey), out var userId) ? userId : null;
+
+    // Metadata names are case-insensitive in Blob Storage, the listed dictionary is not.
+    private static string? ReadValue(IDictionary<string, string> metadata, string key)
+        => metadata.FirstOrDefault(entry => string.Equals(entry.Key, key, StringComparison.OrdinalIgnoreCase)).Value;
 }

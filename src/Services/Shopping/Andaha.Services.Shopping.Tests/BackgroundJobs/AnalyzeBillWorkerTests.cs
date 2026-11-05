@@ -1,8 +1,7 @@
 using Andaha.Services.Shopping.BackgroundJobs;
-using Andaha.Services.Shopping.Contracts;
 using Andaha.Services.Shopping.Infrastructure.ImageRepositories;
 using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Analysis;
-using Andaha.Services.Shopping.Infrastructure.Messaging;
+using Andaha.Services.Shopping.Requests.Bill.AnalyzeBill;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -15,7 +14,7 @@ public class AnalyzeBillWorkerTests
     private static readonly DateTimeOffset Now = new(2026, 11, 4, 12, 0, 0, TimeSpan.Zero);
 
     private readonly FakeAnalysisImageRepository repository = new();
-    private readonly IMessageBroker broker = Substitute.For<IMessageBroker>();
+    private readonly IBillAnalysisProcessor processor = Substitute.For<IBillAnalysisProcessor>();
     private readonly IFailedAnalysisImageHandler failedHandler = Substitute.For<IFailedAnalysisImageHandler>();
     private readonly MutableTimeProvider time = new(Now);
 
@@ -23,13 +22,13 @@ public class AnalyzeBillWorkerTests
     {
         var scopeFactory = new ServiceCollection()
             .AddScoped(_ => failedHandler)
+            .AddScoped(_ => processor)
             .BuildServiceProvider()
             .GetRequiredService<IServiceScopeFactory>();
 
         return new AnalyzeBillWorker(
             NullLogger<AnalyzeBillWorker>.Instance,
             imageRepository ?? repository,
-            broker,
             scopeFactory,
             time);
     }
@@ -41,13 +40,13 @@ public class AnalyzeBillWorkerTests
 
         await CreateWorker().PollAndProcessAsync(CancellationToken.None);
 
-        await broker.DidNotReceiveWithAnyArgs().PublishMessageAsync<AnalyzeBillMessageV1>(default!, default);
+        await processor.DidNotReceiveWithAnyArgs().ProcessAsync(default!, default);
         await failedHandler.DidNotReceiveWithAnyArgs().HandleAsync(default!, default);
         Assert.Equal(1, repository.Get("a.jpg").Attempts);
     }
 
     [Fact]
-    public async Task Claims_before_publishing()
+    public async Task Claims_before_processing()
     {
         var imageRepository = Substitute.For<IAnalysisImageRepository>();
         imageRepository.ListImagesAsync(Arg.Any<CancellationToken>()).Returns(
@@ -60,38 +59,64 @@ public class AnalyzeBillWorkerTests
         Received.InOrder(() =>
         {
             imageRepository.ClaimAsync("a.jpg", Now + AnalyzeBillWorker.ClaimDuration, Arg.Any<CancellationToken>());
-            broker.PublishMessageAsync(Arg.Is<AnalyzeBillMessageV1>(m => m.ImageName == "a.jpg"), Arg.Any<CancellationToken>());
+            processor.ProcessAsync("a.jpg", Arg.Any<CancellationToken>());
         });
+        await imageRepository.DidNotReceiveWithAnyArgs().ReleaseClaimAsync(default!, default);
     }
 
     [Fact]
-    public async Task Publish_failure_keeps_image_for_retry_after_claim_expires()
+    public async Task Processing_failure_releases_claim_for_retry_on_next_run()
     {
         repository.Add("a.jpg");
-        broker.PublishMessageAsync(Arg.Any<AnalyzeBillMessageV1>(), Arg.Any<CancellationToken>())
-            .ThrowsAsync(new InvalidOperationException("broker down"));
+        processor.ProcessAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .ThrowsAsync(new InvalidOperationException("analysis down"));
         var worker = CreateWorker();
 
         await worker.PollAndProcessAsync(CancellationToken.None);
 
-        var claimed = repository.Get("a.jpg");
-        Assert.Equal(1, claimed.Attempts);
-        Assert.Equal(Now + AnalyzeBillWorker.ClaimDuration, claimed.ClaimedUntilUtc);
+        var released = repository.Get("a.jpg");
+        Assert.Equal(1, released.Attempts);
+        Assert.Null(released.ClaimedUntilUtc);
 
-        time.Now = Now.AddMinutes(5);
-        broker.ClearReceivedCalls();
-        await worker.PollAndProcessAsync(CancellationToken.None);
-        await broker.DidNotReceiveWithAnyArgs().PublishMessageAsync<AnalyzeBillMessageV1>(default!, default);
-
-        time.Now = Now.AddMinutes(11);
-        broker.ClearReceivedCalls();
-        broker.PublishMessageAsync(Arg.Any<AnalyzeBillMessageV1>(), Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        time.Now = Now.AddMinutes(1);
+        processor.ClearReceivedCalls();
+        processor.ProcessAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
         await worker.PollAndProcessAsync(CancellationToken.None);
 
-        await broker.Received(1).PublishMessageAsync(Arg.Is<AnalyzeBillMessageV1>(m => m.ImageName == "a.jpg"), Arg.Any<CancellationToken>());
+        await processor.Received(1).ProcessAsync("a.jpg", Arg.Any<CancellationToken>());
         Assert.Equal(2, repository.Get("a.jpg").Attempts);
         Assert.True(repository.Contains("a.jpg"));
         await failedHandler.DidNotReceiveWithAnyArgs().HandleAsync(default!, default);
+    }
+
+    [Fact]
+    public async Task Worker_skips_image_claimed_by_upload()
+    {
+        await repository.UploadImageAsync("upload", new MemoryStream([1]), Guid.NewGuid(), UploadClaim());
+        time.Now = Now.AddMinutes(1);
+
+        await CreateWorker().PollAndProcessAsync(CancellationToken.None);
+
+        await processor.DidNotReceiveWithAnyArgs().ProcessAsync(default!, default);
+        await failedHandler.DidNotReceiveWithAnyArgs().HandleAsync(default!, default);
+        var image = repository.Get("upload");
+        Assert.Equal(1, image.Attempts);
+        Assert.Equal(Now.AddMinutes(2), image.ClaimedUntilUtc);
+    }
+
+    [Fact]
+    public async Task Worker_processes_after_claim_released()
+    {
+        await repository.UploadImageAsync("upload", new MemoryStream([1]), Guid.NewGuid(), UploadClaim());
+        await repository.ReleaseClaimAsync("upload");
+        time.Now = Now.AddMinutes(1);
+
+        await CreateWorker().PollAndProcessAsync(CancellationToken.None);
+
+        await processor.Received(1).ProcessAsync("upload", Arg.Any<CancellationToken>());
+        var image = repository.Get("upload");
+        Assert.Equal(2, image.Attempts);
+        Assert.Equal(time.Now + AnalyzeBillWorker.ClaimDuration, image.ClaimedUntilUtc);
     }
 
     [Fact]
@@ -102,7 +127,7 @@ public class AnalyzeBillWorkerTests
         await CreateWorker().PollAndProcessAsync(CancellationToken.None);
 
         await failedHandler.Received(1).HandleAsync("a.jpg", Arg.Any<CancellationToken>());
-        await broker.DidNotReceiveWithAnyArgs().PublishMessageAsync<AnalyzeBillMessageV1>(default!, default);
+        await processor.DidNotReceiveWithAnyArgs().ProcessAsync(default!, default);
         Assert.Equal(AnalyzeBillWorker.MaxAttempts, repository.Get("a.jpg").Attempts);
     }
 
@@ -114,7 +139,7 @@ public class AnalyzeBillWorkerTests
         await CreateWorker().PollAndProcessAsync(CancellationToken.None);
 
         await failedHandler.DidNotReceiveWithAnyArgs().HandleAsync(default!, default);
-        await broker.DidNotReceiveWithAnyArgs().PublishMessageAsync<AnalyzeBillMessageV1>(default!, default);
+        await processor.DidNotReceiveWithAnyArgs().ProcessAsync(default!, default);
     }
 
     [Fact]
@@ -127,9 +152,18 @@ public class AnalyzeBillWorkerTests
 
         await failedHandler.Received(1).HandleAsync("legacy.jpg", Arg.Any<CancellationToken>());
         await failedHandler.DidNotReceive().HandleAsync("fresh.jpg", Arg.Any<CancellationToken>());
-        await broker.Received(1).PublishMessageAsync(Arg.Is<AnalyzeBillMessageV1>(m => m.ImageName == "fresh.jpg"), Arg.Any<CancellationToken>());
-        await broker.DidNotReceive().PublishMessageAsync(Arg.Is<AnalyzeBillMessageV1>(m => m.ImageName == "legacy.jpg"), Arg.Any<CancellationToken>());
+        await processor.Received(1).ProcessAsync("fresh.jpg", Arg.Any<CancellationToken>());
+        await processor.DidNotReceive().ProcessAsync("legacy.jpg", Arg.Any<CancellationToken>());
     }
+
+    private static AnalysisUploadOptions UploadClaim()
+        => new()
+        {
+            UploadedAtUtc = Now,
+            Origin = AnalysisUploadOptions.AppOrigin,
+            ClaimedUntilUtc = Now.AddMinutes(2),
+            Attempts = 1,
+        };
 
     private sealed class MutableTimeProvider(DateTimeOffset now) : TimeProvider
     {
@@ -166,6 +200,12 @@ public class AnalyzeBillWorkerTests
             return Task.CompletedTask;
         }
 
+        public Task ReleaseClaimAsync(string name, CancellationToken ct = default)
+        {
+            images[name] = images[name] with { ClaimedUntilUtc = null };
+            return Task.CompletedTask;
+        }
+
         public Task DeleteImageAsync(string name, CancellationToken ct = default)
         {
             images.Remove(name);
@@ -175,7 +215,19 @@ public class AnalyzeBillWorkerTests
         public Task<(Stream Image, Guid UserId)> GetImageAsync(string name, CancellationToken ct = default)
             => throw new NotSupportedException();
 
-        public Task UploadImageAsync(string name, Stream imageStream, Guid userId, CancellationToken ct = default)
-            => throw new NotSupportedException();
+        public Task UploadImageAsync(string name, Stream imageStream, Guid userId, AnalysisUploadOptions options, CancellationToken ct = default)
+        {
+            images[name] = new ImageMetadata
+            {
+                ImageName = name,
+                LastModified = options.UploadedAtUtc,
+                UserId = userId,
+                UploadedAtUtc = options.UploadedAtUtc,
+                Origin = options.Origin,
+                Attempts = options.Attempts,
+                ClaimedUntilUtc = options.ClaimedUntilUtc,
+            };
+            return Task.CompletedTask;
+        }
     }
 }

@@ -40,6 +40,11 @@ public class BillModelBuilder : IEntityTypeConfiguration<Bill>
             .HasMaxLength(1000);
 
         builder
+            .Property(b => b.SourceUploadId)
+            .IsRequired(false)
+            .HasMaxLength(1024); // Azure blob name limit; NAS file names may contain any character
+
+        builder
             .Property(b => b.CreatedAt)
             .IsRequired(true)
             .HasDefaultValueSql("GETDATE()");

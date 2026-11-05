@@ -16,7 +16,8 @@ public class AnalyzedBill : Entity<Guid>
         double? price,
         double? confidence,
         double? totalAmountConfidence,
-        DateTime? date = null)
+        DateTime? date = null,
+        string? sourceUploadId = null)
         : base(Guid.NewGuid())
     {
         if (createdByUserId == Guid.Empty)
@@ -32,6 +33,7 @@ public class AnalyzedBill : Entity<Guid>
         this.Confidence = confidence;
         this.TotalAmountConfidence = totalAmountConfidence;
         this.Date = date ?? DateTime.UtcNow;
+        this.SourceUploadId = sourceUploadId;
     }
 
     public Guid UserId { get; private set; }
@@ -51,6 +53,11 @@ public class AnalyzedBill : Entity<Guid>
     public double? Confidence { get; private set; }
 
     public double? TotalAmountConfidence { get; private set; }
+
+    /// <summary>
+    /// Name of the analysis image this entry was created from, so the client can match it to its upload (US-0009).
+    /// </summary>
+    public string? SourceUploadId { get; private set; }
 
     public virtual ICollection<BillImage> Images { get; private set; } = [];
 

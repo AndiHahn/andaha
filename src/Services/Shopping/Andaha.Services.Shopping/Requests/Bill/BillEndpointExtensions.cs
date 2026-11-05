@@ -264,7 +264,7 @@ internal static class BillEndpointExtensions
             .MediatePost<UploadForAnalysis.V1.UploadBillForAnalysisCommand>("upload-for-analysis")
             .DisableAntiforgery()
             .Accepts<IFormFile>("multipart/form-data")
-            .Produces(StatusCodes.Status202Accepted)
+            .Produces<UploadForAnalysis.V1.UploadBillForAnalysisResponse>(StatusCodes.Status202Accepted)
             .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
             .WithDescription("Upload an invoice image for asynchronous analysis.");

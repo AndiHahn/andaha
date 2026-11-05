@@ -53,6 +53,7 @@ public class FailedAnalysisImageHandlerTests
                 .Include(b => b.LineItems)
                 .SingleAsync();
             Assert.Equal(owner, bill.UserId);
+            Assert.Equal("a.jpg", bill.SourceUploadId);
             Assert.Null(bill.ShopName);
             Assert.Null(bill.Price);
             Assert.Null(bill.CategoryId);

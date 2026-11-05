@@ -10,6 +10,7 @@ internal class NasBillWorker(
     INasImageRepository nasImageRepository,
     IAnalysisImageRepository analysisImageRepository,
     IServiceScopeFactory scopeFactory,
+    TimeProvider timeProvider,
     ILogger<NasBillWorker> logger) : BackgroundService
 {
     private readonly TimeSpan pollingInterval = TimeSpan.FromMinutes(1);
@@ -39,7 +40,7 @@ internal class NasBillWorker(
         logger.LogInformation("NasBillWorker stopping.");
     }
 
-    protected async Task PollAndProcessAsync(CancellationToken stoppingToken)
+    internal async Task PollAndProcessAsync(CancellationToken stoppingToken)
     {
         using var scope = scopeFactory.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ShoppingDbContext>();
@@ -82,7 +83,18 @@ internal class NasBillWorker(
 
                 logger.LogInformation("Upload image to analysis repository '{ImageName}'", blob.ImageName);
 
-                await analysisImageRepository.UploadImageAsync(blob.ImageName, fileStream, file.UserId, stoppingToken);
+                // No claim: NAS images are not analyzed immediately, the AnalyzeBillWorker picks them up.
+                // origin=nas keeps them out of the "In Arbeit" list of the app (US-0009).
+                await analysisImageRepository.UploadImageAsync(
+                    blob.ImageName,
+                    fileStream,
+                    file.UserId,
+                    new AnalysisUploadOptions
+                    {
+                        UploadedAtUtc = timeProvider.GetUtcNow(),
+                        Origin = AnalysisUploadOptions.NasOrigin,
+                    },
+                    stoppingToken);
 
                 state.LastProcessedUtc = blob.LastModified;
 

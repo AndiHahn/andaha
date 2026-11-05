@@ -1,16 +1,24 @@
 using Andaha.CrossCutting.Application.Identity;
+using Andaha.Services.Shopping.BackgroundJobs;
 using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Analysis;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Andaha.Services.Shopping.Requests.Bill.UploadForAnalysis.V1;
 
-// The AnalyzeBillWorker polls the analysis repository and publishes the analysis message itself,
-// so this handler must not publish (it would be analyzed twice).
+// Stores the image with an active claim and hands it to the ImmediateAnalysisService (US-0009).
+// The AnalyzeBillWorker skips the claimed image and only steps in after a failure or a restart.
 internal class UploadBillForAnalysisCommandHandler(
     IAnalysisImageRepository analysisImageRepository,
-    IIdentityService identityService) : IRequestHandler<UploadBillForAnalysisCommand, IResult>
+    IIdentityService identityService,
+    AnalysisQueue analysisQueue,
+    TimeProvider timeProvider) : IRequestHandler<UploadBillForAnalysisCommand, IResult>
 {
+    /// <summary>
+    /// Long enough for the immediate analysis, short enough that the worker takes over soon after a restart.
+    /// </summary>
+    internal static readonly TimeSpan UploadClaimDuration = TimeSpan.FromMinutes(2);
+
     public async Task<IResult> Handle(UploadBillForAnalysisCommand request, CancellationToken cancellationToken)
     {
         var file = request.File;
@@ -25,11 +33,24 @@ internal class UploadBillForAnalysisCommandHandler(
 
         var imageName = Guid.NewGuid().ToString();
         var userId = identityService.GetUserId();
+        var now = timeProvider.GetUtcNow();
 
-        using Stream imageStream = file.OpenReadStream();
+        // Claim and attempt are written with the upload itself, so the worker never sees the image unclaimed.
+        var options = new AnalysisUploadOptions
+        {
+            UploadedAtUtc = now,
+            Origin = AnalysisUploadOptions.AppOrigin,
+            ClaimedUntilUtc = now + UploadClaimDuration,
+            Attempts = 1,
+        };
 
-        await analysisImageRepository.UploadImageAsync(imageName, imageStream, userId, cancellationToken);
+        using (Stream imageStream = file.OpenReadStream())
+        {
+            await analysisImageRepository.UploadImageAsync(imageName, imageStream, userId, options, cancellationToken);
+        }
 
-        return Results.Accepted();
+        analysisQueue.Enqueue(imageName);
+
+        return Results.Accepted(value: new UploadBillForAnalysisResponse(imageName));
     }
 }

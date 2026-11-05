@@ -10,7 +10,10 @@ internal static class AnalyzedBillLineItemDtoMapping
             IReadOnlyCollection<AnalyzedBillLineItemDto>
         >
     > EntityToDto =
-        (lineItems) => lineItems.Select(lineItem => new AnalyzedBillLineItemDto(
+        (lineItems) => lineItems
+            .OrderBy(lineItem => lineItem.Position)
+            .ThenBy(lineItem => lineItem.Id)
+            .Select(lineItem => new AnalyzedBillLineItemDto(
             lineItem.Description,
             lineItem.TotalPrice,
             lineItem.Quantity,

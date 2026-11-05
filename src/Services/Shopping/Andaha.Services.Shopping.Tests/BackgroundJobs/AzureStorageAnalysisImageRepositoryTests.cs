@@ -1,8 +1,7 @@
 using System.Net.Sockets;
 using Andaha.Services.Shopping.BackgroundJobs;
-using Andaha.Services.Shopping.Contracts;
 using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Analysis;
-using Andaha.Services.Shopping.Infrastructure.Messaging;
+using Andaha.Services.Shopping.Requests.Bill.AnalyzeBill;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,6 +51,13 @@ public sealed class AzureStorageAnalysisImageRepositoryTests : IAsyncLifetime
 
     private readonly BlobServiceClient blobServiceClient = new(AzuriteConnectionString);
 
+    // Upload ohne Claim, wie vom NasBillWorker
+    private static readonly AnalysisUploadOptions Unclaimed = new()
+    {
+        UploadedAtUtc = new DateTimeOffset(2026, 11, 4, 11, 0, 0, TimeSpan.Zero),
+        Origin = AnalysisUploadOptions.NasOrigin,
+    };
+
     private BlobContainerClient Container => blobServiceClient.GetBlobContainerClient("analysis");
 
     public async Task InitializeAsync()
@@ -75,7 +81,7 @@ public sealed class AzureStorageAnalysisImageRepositoryTests : IAsyncLifetime
     {
         var repository = new AzureStorageAnalysisImageRepository(blobServiceClient);
         var userId = Guid.NewGuid();
-        await repository.UploadImageAsync("a.jpg", new MemoryStream([1, 2, 3]), userId);
+        await repository.UploadImageAsync("a.jpg", new MemoryStream([1, 2, 3]), userId, Unclaimed);
         var claimedUntil = new DateTimeOffset(2026, 11, 4, 12, 10, 0, TimeSpan.Zero);
 
         await repository.ClaimAsync("a.jpg", claimedUntil);
@@ -101,8 +107,8 @@ public sealed class AzureStorageAnalysisImageRepositoryTests : IAsyncLifetime
     public async Task List_reports_new_images_claims_and_legacy_processed_blobs()
     {
         var repository = new AzureStorageAnalysisImageRepository(blobServiceClient);
-        await repository.UploadImageAsync("new.jpg", new MemoryStream([1]), Guid.NewGuid());
-        await repository.UploadImageAsync("claimed.jpg", new MemoryStream([2]), Guid.NewGuid());
+        await repository.UploadImageAsync("new.jpg", new MemoryStream([1]), Guid.NewGuid(), Unclaimed);
+        await repository.UploadImageAsync("claimed.jpg", new MemoryStream([2]), Guid.NewGuid(), Unclaimed);
         var claimedUntil = new DateTimeOffset(2026, 11, 4, 12, 10, 0, TimeSpan.Zero);
         await repository.ClaimAsync("claimed.jpg", claimedUntil);
 
@@ -144,6 +150,38 @@ public sealed class AzureStorageAnalysisImageRepositoryTests : IAsyncLifetime
     }
 
     [AzuriteFact]
+    public async Task Upload_writes_claim_and_origin_and_release_keeps_the_rest()
+    {
+        var repository = new AzureStorageAnalysisImageRepository(blobServiceClient);
+        var userId = Guid.NewGuid();
+        var uploadedAt = new DateTimeOffset(2026, 11, 5, 12, 0, 0, TimeSpan.Zero);
+
+        await repository.UploadImageAsync("a.jpg", new MemoryStream([1]), userId, new AnalysisUploadOptions
+        {
+            UploadedAtUtc = uploadedAt,
+            Origin = AnalysisUploadOptions.AppOrigin,
+            ClaimedUntilUtc = uploadedAt.AddMinutes(2),
+            Attempts = 1,
+        });
+
+        var uploaded = Assert.Single(await repository.ListImagesAsync());
+        Assert.Equal(userId, uploaded.UserId);
+        Assert.Equal(uploadedAt, uploaded.UploadedAtUtc);
+        Assert.Equal("app", uploaded.Origin);
+        Assert.Equal(uploadedAt.AddMinutes(2), uploaded.ClaimedUntilUtc);
+        Assert.Equal(1, uploaded.Attempts);
+
+        await repository.ReleaseClaimAsync("a.jpg");
+
+        var released = Assert.Single(await repository.ListImagesAsync());
+        Assert.Null(released.ClaimedUntilUtc);
+        Assert.Equal(1, released.Attempts);
+        Assert.Equal(userId, released.UserId);
+        Assert.Equal(uploadedAt, released.UploadedAtUtc);
+        Assert.Equal("app", released.Origin);
+    }
+
+    [AzuriteFact]
     public async Task Claim_of_a_legacy_blob_keeps_the_legacy_flag_and_owner()
     {
         var repository = new AzureStorageAnalysisImageRepository(blobServiceClient);
@@ -173,7 +211,7 @@ public sealed class AzureStorageAnalysisImageRepositoryTests : IAsyncLifetime
     public async Task Delete_removes_the_blob()
     {
         var repository = new AzureStorageAnalysisImageRepository(blobServiceClient);
-        await repository.UploadImageAsync("a.jpg", new MemoryStream([1]), Guid.NewGuid());
+        await repository.UploadImageAsync("a.jpg", new MemoryStream([1]), Guid.NewGuid(), Unclaimed);
 
         await repository.DeleteImageAsync("a.jpg");
 
@@ -185,7 +223,7 @@ public sealed class AzureStorageAnalysisImageRepositoryTests : IAsyncLifetime
     public async Task Worker_claims_three_times_then_gives_up_and_converts_legacy_blobs_at_once()
     {
         var repository = new AzureStorageAnalysisImageRepository(blobServiceClient);
-        await repository.UploadImageAsync("a.jpg", new MemoryStream([1]), Guid.NewGuid());
+        await repository.UploadImageAsync("a.jpg", new MemoryStream([1]), Guid.NewGuid(), Unclaimed);
         await Container.GetBlobClient("legacy.jpg").UploadAsync(new BinaryData(new byte[] { 3 }), new BlobUploadOptions
         {
             Metadata = new Dictionary<string, string>
@@ -195,19 +233,21 @@ public sealed class AzureStorageAnalysisImageRepositoryTests : IAsyncLifetime
             },
         });
 
-        var broker = Substitute.For<IMessageBroker>();
+        var processor = Substitute.For<IBillAnalysisProcessor>();
         var failedHandler = Substitute.For<IFailedAnalysisImageHandler>();
         // wie FailedAnalysisImageHandler: leerer Analyse-Eintrag (hier ausgelassen), dann Quellbild löschen
         failedHandler.HandleAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(call => repository.DeleteImageAsync(call.Arg<string>(), call.Arg<CancellationToken>()));
         var scopeFactory = new ServiceCollection()
             .AddScoped(_ => failedHandler)
+            .AddScoped(_ => processor)
             .BuildServiceProvider()
             .GetRequiredService<IServiceScopeFactory>();
         var time = new SettableTimeProvider(new DateTimeOffset(2026, 11, 4, 12, 0, 0, TimeSpan.Zero));
-        var worker = new AnalyzeBillWorker(NullLogger<AnalyzeBillWorker>.Instance, repository, broker, scopeFactory, time);
+        var worker = new AnalyzeBillWorker(NullLogger<AnalyzeBillWorker>.Instance, repository, scopeFactory, time);
 
-        // 1. Durchlauf: Altbestand sofort aufgegeben, neues Bild beansprucht und veröffentlicht
+        // 1. Durchlauf: Altbestand sofort aufgegeben, neues Bild beansprucht und verarbeitet
+        // (der Processor-Ersatz löscht das Bild nicht, es bleibt also beansprucht liegen)
         await worker.PollAndProcessAsync(CancellationToken.None);
         await failedHandler.Received(1).HandleAsync("legacy.jpg", Arg.Any<CancellationToken>());
         Assert.Equal(["a.jpg"], (await repository.ListImagesAsync()).Select(image => image.ImageName));
@@ -215,7 +255,7 @@ public sealed class AzureStorageAnalysisImageRepositoryTests : IAsyncLifetime
         // noch beansprucht: kein weiterer Versuch
         time.Now += TimeSpan.FromMinutes(5);
         await worker.PollAndProcessAsync(CancellationToken.None);
-        await broker.Received(1).PublishMessageAsync(Arg.Is<AnalyzeBillMessageV1>(m => m.ImageName == "a.jpg"), Arg.Any<CancellationToken>());
+        await processor.Received(1).ProcessAsync("a.jpg", Arg.Any<CancellationToken>());
 
         // Versuche 2 und 3 nach Ablauf des Claims
         for (var attempt = 2; attempt <= 3; attempt++)
@@ -224,13 +264,13 @@ public sealed class AzureStorageAnalysisImageRepositoryTests : IAsyncLifetime
             await worker.PollAndProcessAsync(CancellationToken.None);
             Assert.Equal(attempt, Assert.Single(await repository.ListImagesAsync()).Attempts);
         }
-        await broker.Received(3).PublishMessageAsync(Arg.Any<AnalyzeBillMessageV1>(), Arg.Any<CancellationToken>());
+        await processor.Received(3).ProcessAsync("a.jpg", Arg.Any<CancellationToken>());
 
         // 4. Durchlauf: Obergrenze erreicht → aufgeben, Quellbild weg
         time.Now += AnalyzeBillWorker.ClaimDuration;
         await worker.PollAndProcessAsync(CancellationToken.None);
         await failedHandler.Received(1).HandleAsync("a.jpg", Arg.Any<CancellationToken>());
-        await broker.Received(3).PublishMessageAsync(Arg.Any<AnalyzeBillMessageV1>(), Arg.Any<CancellationToken>());
+        await processor.Received(3).ProcessAsync("a.jpg", Arg.Any<CancellationToken>());
         Assert.Empty(await repository.ListImagesAsync());
     }
 

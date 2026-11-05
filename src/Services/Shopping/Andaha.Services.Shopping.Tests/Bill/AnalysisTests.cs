@@ -1,4 +1,5 @@
 using Andaha.CrossCutting.Application.Identity;
+using Andaha.Services.Shopping.BackgroundJobs;
 using Andaha.Services.Shopping.Core;
 using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Analysis;
 using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Image;
@@ -36,28 +37,32 @@ public class AnalysisTests
     public async Task Upload_stores_image_in_analysis_repository_with_user()
     {
         var repository = Substitute.For<IAnalysisImageRepository>();
-        var handler = new UploadBillForAnalysisCommandHandler(repository, Identity(UserA));
+        var handler = new UploadBillForAnalysisCommandHandler(repository, Identity(UserA), new AnalysisQueue(), TimeProvider.System);
 
         var result = await handler.Handle(new UploadBillForAnalysisCommand(File(3)), CancellationToken.None);
 
-        Assert.IsType<Accepted>(result);
+        var accepted = Assert.IsType<Accepted<UploadBillForAnalysisResponse>>(result);
         await repository.Received(1).UploadImageAsync(
-            Arg.Is<string>(n => n.Length == 36),
+            accepted.Value!.Id,
             Arg.Any<Stream>(),
             UserA,
+            Arg.Any<AnalysisUploadOptions>(),
             Arg.Any<CancellationToken>());
+        Assert.Equal(36, accepted.Value.Id.Length);
     }
 
     [Fact]
     public async Task Upload_without_file_returns_bad_request()
     {
         var repository = Substitute.For<IAnalysisImageRepository>();
-        var handler = new UploadBillForAnalysisCommandHandler(repository, Identity(UserA));
+        var queue = new AnalysisQueue();
+        var handler = new UploadBillForAnalysisCommandHandler(repository, Identity(UserA), queue, TimeProvider.System);
 
         var result = await handler.Handle(new UploadBillForAnalysisCommand(File(0)), CancellationToken.None);
 
         Assert.IsType<BadRequest<Microsoft.AspNetCore.Mvc.ProblemDetails>>(result);
-        await repository.DidNotReceiveWithAnyArgs().UploadImageAsync(default!, default!, default, default);
+        await repository.DidNotReceiveWithAnyArgs().UploadImageAsync(default!, default!, default, default!, default);
+        Assert.False(queue.TryDequeue(out _));
     }
 
     [Fact]
@@ -83,6 +88,28 @@ public class AnalysisTests
             Assert.Equal(0.5, a.TotalAmountConfidence);
             Assert.True(a.ImageAvailable);
             Assert.False(b.ImageAvailable);
+        }
+    }
+
+    [Fact]
+    public async Task AnalyzedBills_list_returns_line_items_by_position()
+    {
+        var (context, connection) = TestDb.CreateShopping();
+        using (connection)
+        using (context)
+        {
+            var analyzed = new AnalyzedBill(UserA, null, null, "Shop", 10, 0.5, 0.5, DateTime.UtcNow);
+            analyzed.LineItems.Add(new AnalyzedBillLineItem(analyzed.Id, "Zweite", 1, 1, 1, 1));
+            analyzed.LineItems.Add(new AnalyzedBillLineItem(analyzed.Id, "Erste", 2, 2, 1, 0));
+            context.AnalyzedBill.Add(analyzed);
+            context.SaveChanges();
+            context.ChangeTracker.Clear();
+
+            var handler = new GetAnalyzedBillsQueryHandler(context, Identity(UserA));
+            var result = await handler.Handle(new GetAnalyzedBillsQuery(), CancellationToken.None);
+
+            var dto = Assert.Single(Assert.IsType<Ok<List<AnalyzedBillDto>>>(result).Value!);
+            Assert.Equal(["Erste", "Zweite"], dto.LineItems.Select(item => item.Description));
         }
     }
 

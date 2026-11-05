@@ -1,20 +1,20 @@
-﻿using Andaha.Services.Shopping.Contracts;
-using Andaha.Services.Shopping.Infrastructure.ImageRepositories;
+﻿using Andaha.Services.Shopping.Infrastructure.ImageRepositories;
 using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Analysis;
-using Andaha.Services.Shopping.Infrastructure.Messaging;
+using Andaha.Services.Shopping.Requests.Bill.AnalyzeBill;
 
 namespace Andaha.Services.Shopping.BackgroundJobs;
 
 /// <summary>
-/// Publishes an analysis message for each image in the analysis repository. Every publish claims the image
-/// for <see cref="ClaimDuration"/> and counts an attempt; the message handler deletes the image on success.
+/// Safety net behind the <see cref="ImmediateAnalysisService"/>: analyzes every unclaimed image in the analysis
+/// repository through the <see cref="IBillAnalysisProcessor"/>. Every attempt claims the image for
+/// <see cref="ClaimDuration"/> and counts an attempt (the immediate attempt after an upload counts as the first);
+/// the processor deletes the image on success, a failure releases the claim for the next run.
 /// An image that is still there after <see cref="MaxAttempts"/> attempts (or carries the legacy processed
 /// marker) is handed to the <see cref="IFailedAnalysisImageHandler"/>.
 /// </summary>
 internal class AnalyzeBillWorker(
     ILogger<AnalyzeBillWorker> logger,
     IAnalysisImageRepository imageRepository,
-    IMessageBroker messageBroker,
     IServiceScopeFactory scopeFactory,
     TimeProvider timeProvider) : BackgroundService
 {
@@ -79,7 +79,8 @@ internal class AnalyzeBillWorker(
     {
         var now = timeProvider.GetUtcNow();
 
-        // An attempt is still in flight; the message handler deletes the image once it succeeds.
+        // An attempt is still in flight (immediate analysis after the upload, or an earlier run);
+        // the processor deletes the image once it succeeds.
         if (blob.ClaimedUntilUtc > now)
         {
             return;
@@ -103,20 +104,27 @@ internal class AnalyzeBillWorker(
 
         await imageRepository.ClaimAsync(blob.ImageName, now + ClaimDuration, ct);
 
-        var message = new AnalyzeBillMessageV1
-        {
-            ImageName = blob.ImageName,
-            LastModifiedUtc = blob.LastModified.ToUniversalTime()
-        };
-
         logger.LogInformation(
-            "Publishing analyze message for blob '{BlobName}' (lastModified={LastModified}, attempt={Attempt})",
+            "Analyzing image '{ImageName}' (lastModified={LastModified}, attempt={Attempt})",
             blob.ImageName,
             blob.LastModified,
             blob.Attempts + 1);
 
-        await messageBroker.PublishMessageAsync(message, ct);
+        try
+        {
+            await using var scope = scopeFactory.CreateAsyncScope();
+            var processor = scope.ServiceProvider.GetRequiredService<IBillAnalysisProcessor>();
 
-        logger.LogInformation("Successfully published analyze message for blob '{ImageName}'", blob.ImageName);
+            await processor.ProcessAsync(blob.ImageName, ct);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException || !ct.IsCancellationRequested)
+        {
+            // Retry on the next run (the attempt stays counted) instead of waiting for the claim to expire.
+            await imageRepository.ReleaseClaimAsync(blob.ImageName, CancellationToken.None);
+
+            throw;
+        }
+
+        logger.LogInformation("Successfully analyzed image '{ImageName}'", blob.ImageName);
     }
 }

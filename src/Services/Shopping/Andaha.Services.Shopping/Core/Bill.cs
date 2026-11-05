@@ -20,7 +20,8 @@ public class Bill : Entity<Guid>
         string? notes = null,
         bool? fromAutoAnalysis = false,
         double? confidence = null,
-        double? totalAmountConfidence = null)
+        double? totalAmountConfidence = null,
+        string? sourceUploadId = null)
         : base(id ?? Guid.NewGuid())
     {
         if (createdByUserId == Guid.Empty)
@@ -63,6 +64,7 @@ public class Bill : Entity<Guid>
         this.FromAutoAnalysis = fromAutoAnalysis ?? false;
         this.Confidence = confidence;
         this.TotalAmountConfidence = totalAmountConfidence;
+        this.SourceUploadId = sourceUploadId;
     }
 
     public Guid UserId { get; private set; }
@@ -84,6 +86,12 @@ public class Bill : Entity<Guid>
     public double? Confidence { get; private set; }
 
     public double? TotalAmountConfidence { get; private set; }
+
+    /// <summary>
+    /// Name of the analysis image this bill was created from automatically, so the client can match it
+    /// to its upload (US-0009). <c>null</c> for bills entered by hand.
+    /// </summary>
+    public string? SourceUploadId { get; private set; }
 
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
