@@ -12,6 +12,7 @@ internal static class ExpenseEndpointExtensions
         var groupBuilder = income.MapGroup("/api/expense").ApplyApiVersions();
 
         groupBuilder.MapGetExpenses();
+        groupBuilder.MapGetMonthlyExpenses();
         groupBuilder.MapGetAvailableTimeRange();
         groupBuilder.MapExportExpenses();
 
@@ -24,6 +25,18 @@ internal static class ExpenseEndpointExtensions
         groupBuilder
             .MediateGet<GetExpenses.V1.GetExpensesQuery>("/")
             .Produces<IEnumerable<Dtos.V1.ExpenseDto>>()
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
+
+        return groupBuilder;
+    }
+
+    private static RouteGroupBuilder MapGetMonthlyExpenses(
+        this RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediateGet<GetMonthlyExpenses.V1.GetMonthlyExpensesQuery>("monthly")
+            .Produces<IEnumerable<Dtos.V1.MonthlyCostsDto>>()
+            .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest)
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
 
         return groupBuilder;

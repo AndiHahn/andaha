@@ -32,9 +32,7 @@ internal class SearchBillsQueryHandler : IRequestHandler<SearchBillsQuery, IResu
         IQueryable<Core.Bill> query = dbContext.Bill
             .AsNoTracking()
             .Where(bill => bill.UserId == userId ||
-                           connectedUsers.Contains(bill.UserId))
-            .OrderByDescending(b => b.Date)
-            .ThenByDescending(b => b.CreatedAt);
+                           connectedUsers.Contains(bill.UserId));
 
         if (request.Search is not null)
         {
@@ -58,14 +56,26 @@ internal class SearchBillsQueryHandler : IRequestHandler<SearchBillsQuery, IResu
         }
 
         int totalCount = await query.CountAsync(cancellationToken);
+        double totalSum = await query.SumAsync(bill => bill.Price, cancellationToken);
+
+        var monthSums = (await query
+                .GroupBy(bill => new { bill.Date.Year, bill.Date.Month })
+                .Select(group => new { group.Key.Year, group.Key.Month, Sum = group.Sum(b => b.Price) })
+                .ToListAsync(cancellationToken))
+            .OrderByDescending(m => m.Year)
+            .ThenByDescending(m => m.Month)
+            .Select(m => new MonthSumDto($"{m.Year:D4}-{m.Month:D2}", m.Sum))
+            .ToArray();
 
         var queryResult = await query
+            .OrderByDescending(b => b.Date)
+            .ThenByDescending(b => b.CreatedAt)
             .AsExpandable()
             .Select(bill => BillDtoMapping.EntityToDto.Invoke(bill, userId))
             .Skip(request.PageSize * request.PageIndex)
             .Take(request.PageSize)
             .ToArrayAsync(cancellationToken);
 
-        return Results.Ok(new PagedResultDto<BillDto>(queryResult, totalCount));
+        return Results.Ok(new BillSearchResultDto(queryResult, totalCount, totalSum, monthSums));
     }
 }

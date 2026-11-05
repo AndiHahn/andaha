@@ -42,7 +42,7 @@ internal static class BillEndpointExtensions
     {
         groupBuilder
             .MediateGet<SearchBills.V1.SearchBillsQuery>("/")
-            .Produces<PagedResultDto<Dtos.V1.BillDto>>()
+            .Produces<Dtos.V1.BillSearchResultDto>()
             .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest)
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
 
