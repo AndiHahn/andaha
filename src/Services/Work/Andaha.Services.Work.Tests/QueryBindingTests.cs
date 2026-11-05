@@ -39,13 +39,14 @@ public class QueryBindingTests
         Guid first = Guid.NewGuid();
         Guid second = Guid.NewGuid();
 
-        var monthly = await Bind<GetMonthlyHoursQuery>($"?until=2026-04&months=12&personFilter={first}&personFilter={second}");
+        var monthly = await Bind<GetMonthlyHoursQuery>($"?until=2026-04&months=12&personFilter={first}&personFilter={second}&tz=Europe/Berlin");
         Assert.Equal("2026-04", monthly.Until);
         Assert.Equal(12, monthly.Months);
-        Assert.Equal([first, second], monthly.PersonFilter);
+        Assert.Equal([first, second], monthly.PersonFilter!);
+        Assert.Equal("Europe/Berlin", monthly.Tz);
 
         var full = await Bind<GetFullStatisticsRequest>($"?personFilter={first}");
-        Assert.Equal([first], full.PersonFilter);
+        Assert.Equal([first], full.PersonFilter!);
 
         var fullWithoutFilter = await Bind<GetFullStatisticsRequest>(string.Empty);
         Assert.True(fullWithoutFilter.PersonFilter is null or { Length: 0 });
@@ -56,8 +57,8 @@ public class QueryBindingTests
     {
         Guid personId = Guid.NewGuid();
 
-        var withQuery = await Bind<ListWorkingEntryMonthsQuery>("?until=2026-03&months=3", personId.ToString());
-        Assert.Equal(new ListWorkingEntryMonthsQuery(personId, "2026-03", 3), withQuery);
+        var withQuery = await Bind<ListWorkingEntryMonthsQuery>("?until=2026-03&months=3&tz=Europe/Vienna", personId.ToString());
+        Assert.Equal(new ListWorkingEntryMonthsQuery(personId, "2026-03", 3, "Europe/Vienna"), withQuery);
 
         var withoutQuery = await Bind<ListWorkingEntryMonthsQuery>(string.Empty, personId.ToString());
         Assert.Equal(new ListWorkingEntryMonthsQuery(personId, null, null), withoutQuery);

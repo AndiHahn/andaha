@@ -1,17 +1,18 @@
 using Andaha.CrossCutting.Application.Identity;
+using Andaha.Services.Work.Common;
 using Andaha.Services.Work.Infrastructure;
 using Andaha.Services.Work.Infrastructure.Proxies;
 using Andaha.Services.Work.Requests.Statistics.Dtos.V1;
 using Andaha.Services.Work.Requests.Statistics.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
 
 namespace Andaha.Services.Work.Requests.Statistics.GetMonthlyHours.V1;
 
 /// <summary>
 /// Working hours per month for exactly <c>Months</c> months ending with <c>Until</c>, oldest first.
-/// Months without entries are included with 0 hours. An entry counts in the month of its start.
+/// Months without entries are included with 0 hours. An entry counts in the local month (time zone <c>Tz</c>,
+/// default Europe/Vienna) of its start.
 /// </summary>
 internal class GetMonthlyHoursQueryHandler : IRequestHandler<GetMonthlyHoursQuery, IResult>
 {
@@ -33,32 +34,28 @@ internal class GetMonthlyHoursQueryHandler : IRequestHandler<GetMonthlyHoursQuer
     {
         var userId = this.identityService.GetUserId();
         var connectedUsers = await this.collaborationApiProxy.GetConnectedUsers(cancellationToken);
+        var timeZone = LocalMonths.ResolveTimeZone(request.Tz);
 
-        var untilMonth = DateTime.ParseExact(request.Until, "yyyy-MM", CultureInfo.InvariantCulture);
+        var untilMonth = LocalMonths.Parse(request.Until);
         var start = untilMonth.AddMonths(1 - request.Months);
-        var endExclusive = untilMonth.AddMonths(1);
+        var startUtc = LocalMonths.StartUtc(start, timeZone);
+        var endUtcExclusive = LocalMonths.StartUtc(untilMonth.AddMonths(1), timeZone);
 
-        var sums = await this.dbContext.VisibleWorkingEntries(userId, connectedUsers, request.PersonFilter)
-            .Where(entry => entry.From >= start && entry.From < endExclusive)
-            .GroupBy(entry => new { entry.From.Year, entry.From.Month })
-            .Select(group => new
-            {
-                group.Key.Year,
-                group.Key.Month,
-                Ticks = group.Sum(entry => entry.WorkDurationTicks)
-            })
+        // Local months are computed in memory from the entries of the range.
+        var entries = await this.dbContext.VisibleWorkingEntries(userId, connectedUsers, request.PersonFilter)
+            .Where(entry => entry.From >= startUtc && entry.From < endUtcExclusive)
+            .Select(entry => new { entry.From, entry.WorkDurationTicks })
             .ToListAsync(cancellationToken);
+
+        var ticksPerMonth = entries
+            .GroupBy(entry => LocalMonths.MonthOf(entry.From, timeZone))
+            .ToDictionary(group => group.Key, group => group.Sum(entry => entry.WorkDurationTicks));
 
         var result = Enumerable.Range(0, request.Months)
             .Select(offset => start.AddMonths(offset))
             .Select(month => new MonthlyHoursDto(
-                month.ToString("yyyy-MM", CultureInfo.InvariantCulture),
-                Math.Round(
-                    TimeSpan.FromTicks(sums
-                        .Where(sum => sum.Year == month.Year && sum.Month == month.Month)
-                        .Sum(sum => sum.Ticks))
-                    .TotalHours,
-                    2)))
+                LocalMonths.ToMonthString(month),
+                Math.Round(TimeSpan.FromTicks(ticksPerMonth.GetValueOrDefault(month)).TotalHours, 2)))
             .ToArray();
 
         return Results.Ok(result);

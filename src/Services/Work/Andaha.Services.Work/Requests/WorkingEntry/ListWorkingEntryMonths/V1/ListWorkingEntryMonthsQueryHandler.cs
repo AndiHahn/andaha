@@ -1,16 +1,17 @@
 using Andaha.CrossCutting.Application.Identity;
+using Andaha.Services.Work.Common;
 using Andaha.Services.Work.Infrastructure;
 using Andaha.Services.Work.Infrastructure.Proxies;
 using Andaha.Services.Work.Requests.WorkingEntry.Dtos.V1;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
 
 namespace Andaha.Services.Work.Requests.WorkingEntry.ListWorkingEntryMonths.V1;
 
 /// <summary>
 /// Lists the entries of a person month by month: the newest months with entries up to <c>Until</c>,
 /// always whole months (by <c>From</c>), so month sums computed from the result are complete.
+/// Months are local months in the time zone <c>Tz</c> (default Europe/Vienna).
 /// </summary>
 internal class ListWorkingEntryMonthsQueryHandler : IRequestHandler<ListWorkingEntryMonthsQuery, IResult>
 {
@@ -46,6 +47,7 @@ internal class ListWorkingEntryMonthsQueryHandler : IRequestHandler<ListWorkingE
         }
 
         int monthCount = request.Months ?? ListWorkingEntryMonthsQuery.DefaultMonths;
+        var timeZone = LocalMonths.ResolveTimeZone(request.Tz);
 
         var entries = this.dbContext.WorkingEntry
             .AsNoTracking()
@@ -53,35 +55,34 @@ internal class ListWorkingEntryMonthsQueryHandler : IRequestHandler<ListWorkingE
 
         if (request.Until is not null)
         {
-            var untilEndExclusive = DateTime
-                .ParseExact(request.Until, "yyyy-MM", CultureInfo.InvariantCulture)
-                .AddMonths(1);
-            entries = entries.Where(entry => entry.From < untilEndExclusive);
+            var untilEndUtc = LocalMonths.StartUtc(LocalMonths.Parse(request.Until).AddMonths(1), timeZone);
+            entries = entries.Where(entry => entry.From < untilEndUtc);
         }
 
+        // Local months are computed in memory; the entries of one person are few.
         // One month more than requested tells whether older entries exist.
-        var months = await entries
-            .Select(entry => new { entry.From.Year, entry.From.Month })
+        var froms = await entries.Select(entry => entry.From).ToListAsync(cancellationToken);
+        var months = froms
+            .Select(from => LocalMonths.MonthOf(from, timeZone))
             .Distinct()
-            .OrderByDescending(month => month.Year)
-            .ThenByDescending(month => month.Month)
+            .OrderDescending()
             .Take(monthCount + 1)
-            .ToListAsync(cancellationToken);
+            .ToList();
 
         if (months.Count == 0)
         {
             return Results.Ok(new WorkingEntryMonthsDto([], null));
         }
 
-        var oldest = months[Math.Min(months.Count, monthCount) - 1];
-        var oldestStart = new DateTime(oldest.Year, oldest.Month, 1);
+        var oldestMonth = months[Math.Min(months.Count, monthCount) - 1];
+        var oldestStartUtc = LocalMonths.StartUtc(oldestMonth, timeZone);
 
         string? nextUntil = months.Count > monthCount
-            ? oldestStart.AddMonths(-1).ToString("yyyy-MM", CultureInfo.InvariantCulture)
+            ? LocalMonths.ToMonthString(oldestMonth.AddMonths(-1))
             : null;
 
         var result = await entries
-            .Where(entry => entry.From >= oldestStart)
+            .Where(entry => entry.From >= oldestStartUtc)
             .OrderByDescending(entry => entry.From)
             .Select(WorkingEntryDtoMapping.EntityToDto)
             .ToListAsync(cancellationToken);

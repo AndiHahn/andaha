@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Data.Sqlite;
 using NSubstitute;
+using System.Globalization;
 
 namespace Andaha.Services.Work.Tests.WorkingEntry;
 
@@ -39,9 +40,10 @@ public sealed class ListWorkingEntryMonthsTests : IDisposable
 
             foreach (var (year, month) in MonthsWithEntries)
             {
-                // First of the month just after midnight and last evening of the month: both belong to the month.
-                var first = new DateTime(year, month, 1, 0, 30, 0, DateTimeKind.Utc);
-                var last = new DateTime(year, month, DateTime.DaysInMonth(year, month), 20, 0, 0, DateTimeKind.Utc);
+                // First of the month at 00:30 local time (stored as its UTC instant in the previous UTC month,
+                // CET in November to March, CEST in April) and last evening of the month: both belong to the local month.
+                var first = ViennaToUtc(new DateTime(year, month, 1, 0, 30, 0));
+                var last = ViennaToUtc(new DateTime(year, month, DateTime.DaysInMonth(year, month), 20, 0, 0));
                 person.AddWorkingEntry(first, first.AddHours(2), TimeSpan.Zero, null);
                 person.AddWorkingEntry(last, last.AddHours(3), TimeSpan.Zero, null);
             }
@@ -60,21 +62,31 @@ public sealed class ListWorkingEntryMonthsTests : IDisposable
 
     public void Dispose() => this.connection.Dispose();
 
-    private async Task<IResult> List(Guid personId, string? until, int? months)
+    private static readonly TimeZoneInfo Vienna = TimeZoneInfo.FindSystemTimeZoneById("Europe/Vienna");
+
+    private static DateTime ViennaToUtc(DateTime local)
+        => DateTime.SpecifyKind(TimeZoneInfo.ConvertTimeToUtc(local, Vienna), DateTimeKind.Utc);
+
+    private async Task<IResult> List(Guid personId, string? until, int? months, string? tz = null)
     {
         using var context = TestDb.Open(this.connection);
         var handler = new ListWorkingEntryMonthsQueryHandler(context, this.identityService, this.collaborationApiProxy);
-        return await handler.Handle(new ListWorkingEntryMonthsQuery(personId, until, months), CancellationToken.None);
+        return await handler.Handle(new ListWorkingEntryMonthsQuery(personId, until, months, tz), CancellationToken.None);
     }
 
-    private async Task<WorkingEntryMonthsDto> ListOk(string? until, int? months)
+    private async Task<WorkingEntryMonthsDto> ListOk(string? until, int? months, string? tz = null)
     {
-        var result = await this.List(this.personId, until, months);
+        var result = await this.List(this.personId, until, months, tz);
         return Assert.IsType<Ok<WorkingEntryMonthsDto>>(result).Value!;
     }
 
+    /// <summary>Local months (Europe/Vienna) of the delivered entries, in order of appearance.</summary>
     private static string[] MonthsOf(WorkingEntryMonthsDto dto)
-        => dto.Entries.Select(entry => entry.From.ToString("yyyy-MM")).Distinct().ToArray();
+        => dto.Entries
+            .Select(entry => TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(entry.From, DateTimeKind.Utc), Vienna))
+            .Select(local => local.ToString("yyyy-MM", CultureInfo.InvariantCulture))
+            .Distinct()
+            .ToArray();
 
     private static void AssertDescendingByFrom(WorkingEntryMonthsDto dto)
         => Assert.Equal(dto.Entries.OrderByDescending(entry => entry.From).Select(entry => entry.Id), dto.Entries.Select(entry => entry.Id));
@@ -132,5 +144,45 @@ public sealed class ListWorkingEntryMonthsTests : IDisposable
     {
         Assert.IsType<NotFound<string>>(await this.List(this.foreignPersonId, null, 3));
         Assert.IsType<NotFound<string>>(await this.List(Guid.NewGuid(), null, 3));
+    }
+
+    [Fact]
+    public async Task Months_count_first_of_month_00_30_in_the_local_month_by_default()
+    {
+        var aprilFirstCest = ViennaToUtc(new DateTime(2026, 4, 1, 0, 30, 0)); // 2026-03-31 22:30 UTC
+        var marchFirstCet = ViennaToUtc(new DateTime(2026, 3, 1, 0, 30, 0)); // 2026-02-28 23:30 UTC
+        Assert.Equal(new DateTime(2026, 3, 31, 22, 30, 0), aprilFirstCest);
+        Assert.Equal(new DateTime(2026, 2, 28, 23, 30, 0), marchFirstCet);
+
+        // Default time zone is Europe/Vienna.
+        var dto = await this.ListOk(until: "2026-04", months: 2);
+        Assert.Equal(["2026-04", "2026-03"], MonthsOf(dto));
+        Assert.Equal(4, dto.Entries.Count);
+        Assert.Contains(dto.Entries, entry => entry.From == aprilFirstCest);
+        Assert.Contains(dto.Entries, entry => entry.From == marchFirstCet);
+        Assert.Equal("2026-02", dto.NextUntil);
+
+        var explicitVienna = await this.ListOk(until: "2026-04", months: 2, tz: "Europe/Vienna");
+        Assert.Equal(dto.NextUntil, explicitVienna.NextUntil);
+        Assert.Equal(dto.Entries.Select(e => e.Id), explicitVienna.Entries.Select(e => e.Id));
+
+        // In UTC the same instants fall into the previous month, so the pages differ.
+        var utc = await this.ListOk(until: "2026-04", months: 2, tz: "UTC");
+        Assert.Equal(3, utc.Entries.Count);
+        Assert.Contains(utc.Entries, entry => entry.From == aprilFirstCest);
+        Assert.DoesNotContain(utc.Entries, entry => entry.From == marchFirstCet);
+    }
+
+    [Fact]
+    public void Months_rejects_unknown_time_zone()
+    {
+        var validator = new ListWorkingEntryMonthsQueryValidator();
+
+        var invalid = validator.Validate(new ListWorkingEntryMonthsQuery(this.personId, null, 3, "Mars/Olympus"));
+        Assert.False(invalid.IsValid);
+        Assert.Contains(invalid.Errors, error => error.PropertyName == "Tz");
+
+        Assert.True(validator.Validate(new ListWorkingEntryMonthsQuery(this.personId, null, 3, "Europe/Vienna")).IsValid);
+        Assert.True(validator.Validate(new ListWorkingEntryMonthsQuery(this.personId, null, 3)).IsValid);
     }
 }

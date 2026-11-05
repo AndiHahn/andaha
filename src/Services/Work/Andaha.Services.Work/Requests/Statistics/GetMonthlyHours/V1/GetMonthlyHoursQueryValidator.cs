@@ -1,3 +1,4 @@
+using Andaha.Services.Work.Common;
 using FluentValidation;
 using System.Globalization;
 
@@ -13,5 +14,9 @@ public class GetMonthlyHoursQueryValidator : AbstractValidator<GetMonthlyHoursQu
             .Must(until => until is not null &&
                            DateTime.TryParseExact(until, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
             .WithMessage("'Until' must be a month in the format yyyy-MM.");
+
+        this.RuleFor(query => query.Tz)
+            .Must(LocalMonths.IsKnownTimeZone)
+            .WithMessage("'Tz' must be a known IANA time zone id.");
     }
 }
