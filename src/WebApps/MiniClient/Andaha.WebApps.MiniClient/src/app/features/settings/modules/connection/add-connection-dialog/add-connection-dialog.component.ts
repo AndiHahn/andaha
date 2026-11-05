@@ -10,19 +10,19 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe';
 
 const GENERIC_ERROR = 'Anfrage konnte nicht gesendet werden. Bitte später erneut versuchen.';
-const MAX_MESSAGE_LENGTH = 120;
+const NOT_FOUND_ERROR = 'Kein Benutzer mit dieser E-Mail-Adresse gefunden.';
+const ALREADY_CONNECTED_ERROR = 'Es gibt bereits eine Verbindung oder offene Anfrage zu diesem Benutzer.';
 
-/** Servertext nur bei kurzen Meldungen einer 4xx-Antwort (z. B. „User not found“), sonst ein allgemeiner Text ohne Interna. */
-function userFacingMessage(error: { status?: number; error?: unknown }): string {
-  const status = error?.status ?? 0;
-  const body = error?.error;
-  if (status >= 400 && status < 500 && typeof body === 'string') {
-    const text = body.trim();
-    if (text.length > 0 && text.length <= MAX_MESSAGE_LENGTH && !text.includes('\n')) {
-      return text;
-    }
+/**
+ * Deutscher Text nach Status (Backend: 404 „User not found“, 400 „already a connection request“).
+ * Der Servertext wird nie angezeigt, damit keine Interna oder englischen Texte erscheinen.
+ */
+function userFacingMessage(error: { status?: number }): string {
+  switch (error?.status) {
+    case 404: return NOT_FOUND_ERROR;
+    case 400: return ALREADY_CONNECTED_ERROR;
+    default: return GENERIC_ERROR;
   }
-  return GENERIC_ERROR;
 }
 
 @Component({

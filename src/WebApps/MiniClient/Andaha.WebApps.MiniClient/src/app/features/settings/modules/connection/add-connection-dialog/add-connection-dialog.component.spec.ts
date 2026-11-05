@@ -45,15 +45,19 @@ describe('AddConnectionDialogComponent', () => {
     expect(close).toHaveBeenCalledWith(true);
   });
 
-  it.each([[404, 'User not found'], [400, 'There is already a connection request to this user.']])(
-    '%i with a short message shows the server text in the dialog only',
-    (status, message) => {
+  it.each([
+    [404, 'User not found', 'Kein Benutzer mit dieser E-Mail-Adresse gefunden.'],
+    [400, 'There is already a connection request to this user.', 'Es gibt bereits eine Verbindung oder offene Anfrage zu diesem Benutzer.']
+  ])(
+    '%i shows the German text, never the server text, and no snackbar',
+    (status, serverText, germanText) => {
       setup();
-      requestConnection.mockReturnValue(throwError(() => new HttpErrorResponse({ status, error: message })));
+      requestConnection.mockReturnValue(throwError(() => new HttpErrorResponse({ status, error: serverText })));
 
       submit();
 
-      expect(alertText()).toContain(message);
+      expect(alertText()).toContain(germanText);
+      expect(fixture.nativeElement.textContent).not.toContain(serverText);
       expect(close).not.toHaveBeenCalled();
       expect(snackbar).not.toHaveBeenCalled();
     });
