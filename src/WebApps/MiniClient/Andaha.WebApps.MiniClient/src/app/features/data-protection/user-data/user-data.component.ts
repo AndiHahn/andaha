@@ -8,6 +8,7 @@ import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/co
 import { getDialogBaseConfig } from 'src/app/shared/dialog/dialog-functions';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { vibrate } from 'src/app/shared/utils/haptics';
+import { BillCacheService } from 'src/app/features/bill/services/bill-cache.service';
 import { DeleteConfirmDialogComponent } from './delete-confirm-dialog/delete-confirm-dialog.component';
 
 export const DELETE_ALL_CONFIRMATION_TEXT =
@@ -27,6 +28,7 @@ export class UserDataComponent {
   private confirmationDialog = inject(ConfirmationDialogService);
   private dialog = inject(MatDialog);
   private snackbar = inject(MatSnackBar);
+  private billCacheService = inject(BillCacheService);
 
   /** true, solange gelöscht wird; sperrt den Button */
   readonly deleting = signal(false);
@@ -58,8 +60,14 @@ export class UserDataComponent {
     this.deleting.set(true);
 
     this.userDataApiService.deleteAll().subscribe({
-      next: () => {
+      next: async () => {
         vibrate();
+        // noch wartende Offline-Rechnungen (US-0005) nicht nach der nächsten Anmeldung hochladen
+        try {
+          await this.billCacheService.clearLocal();
+        } catch (error) {
+          console.error('Clearing the local bill queue failed', error);
+        }
         this.authService.logout();
       },
       error: () => {

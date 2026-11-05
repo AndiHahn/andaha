@@ -23,6 +23,12 @@ export class PendingBillStore {
     return this.run<void>('readwrite', store => store.delete(id));
   }
 
+
+  /** Alle wartenden Rechnungen entfernen (z. B. nach „Benutzerdaten löschen“) */
+  public clear(): Promise<void> {
+    return this.run<void>('readwrite', store => store.clear());
+  }
+
   private open(): Promise<IDBDatabase> {
     if (!this.db) {
       const opening = new Promise<IDBDatabase>((resolve, reject) => {

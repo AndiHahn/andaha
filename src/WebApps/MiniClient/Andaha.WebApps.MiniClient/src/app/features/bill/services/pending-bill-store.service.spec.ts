@@ -29,6 +29,15 @@ describe('PendingBillStore', () => {
         });
     });
 
+    it('clear removes all pending bills', async () => {
+        await store.put(createBill('a'));
+        await store.put(createBill('b'));
+
+        await store.clear();
+
+        expect(await store.getAll()).toEqual([]);
+    });
+
     it('stores, lists and deletes bills', async () => {
         await store.put(createBill('a'));
         expect((await store.getAll()).map(b => b.id)).toEqual(['a']);

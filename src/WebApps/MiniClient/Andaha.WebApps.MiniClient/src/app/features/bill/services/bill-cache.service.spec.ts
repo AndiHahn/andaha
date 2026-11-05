@@ -26,14 +26,27 @@ describe('BillCacheService', () => {
         store = {
             getAll: vi.fn().mockName("PendingBillStore.getAll"),
             put: vi.fn().mockName("PendingBillStore.put"),
-            delete: vi.fn().mockName("PendingBillStore.delete")
+            delete: vi.fn().mockName("PendingBillStore.delete"),
+            clear: vi.fn().mockName("PendingBillStore.clear")
         } as unknown as MockedObject<PendingBillStore>;
+        store.clear.mockImplementation(() => { bills.clear(); return Promise.resolve(); });
         store.getAll.mockImplementation(() => Promise.resolve(Array.from(bills.values())));
         store.put.mockImplementation(bill => { bills.set(bill.id, bill); return Promise.resolve(); });
         store.delete.mockImplementation(id => { bills.delete(id); return Promise.resolve(); });
     });
 
     afterEach(() => localStorage.removeItem(LEGACY_KEY));
+
+    it('clearLocal removes the offline queue and the legacy cache', async () => {
+        const service = createService();
+        await service.saveNewBillLocal(createBill('a'));
+        localStorage.setItem(LEGACY_KEY, '[]');
+
+        await service.clearLocal();
+
+        expect(await service.getBillsToSync()).toEqual([]);
+        expect(localStorage.getItem(LEGACY_KEY)).toBeNull();
+    });
 
     it('saveNewBillLocal stores bill and emits billAdded', async () => {
         const service = createService();

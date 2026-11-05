@@ -43,6 +43,18 @@ export class BillCacheService {
     return this.pendingBillStore.getAll();
   }
 
+
+  /**
+   * Offline-Warteschlange und alten localStorage-Cache leeren, z. B. nach „Benutzerdaten löschen“:
+   * sonst würden noch wartende Rechnungen nach der nächsten Anmeldung hochgeladen.
+   */
+  public async clearLocal(): Promise<void> {
+    await this.migration;
+
+    localStorage.removeItem(this.LEGACY_BILLS_CACHE_KEY);
+    await this.pendingBillStore.clear();
+  }
+
   public async migrateLegacyBills(): Promise<void> {
     try {
       const billsJson = localStorage.getItem(this.LEGACY_BILLS_CACHE_KEY);

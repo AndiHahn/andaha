@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, Subject, of, throwError } from 'rxjs';
 import { UserDataApiService } from 'src/app/api/user-data/user-data-api.service';
 import { AuthService } from 'src/app/core/auth.service';
+import { BillCacheService } from 'src/app/features/bill/services/bill-cache.service';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { DELETE_ALL_FAILED, UserDataComponent } from './user-data.component';
 
@@ -17,6 +18,7 @@ describe('UserDataComponent', () => {
   let deleteAll: ReturnType<typeof vi.fn>;
   let logout: ReturnType<typeof vi.fn>;
   let openFromComponent: ReturnType<typeof vi.fn>;
+  let clearLocal: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     firstConfirmed = true;
@@ -26,6 +28,7 @@ describe('UserDataComponent', () => {
     deleteAll = vi.fn(() => of(undefined));
     logout = vi.fn();
     openFromComponent = vi.fn();
+    clearLocal = vi.fn(() => Promise.resolve());
 
     await TestBed.configureTestingModule({
       imports: [UserDataComponent],
@@ -34,7 +37,8 @@ describe('UserDataComponent', () => {
         { provide: MatDialog, useValue: { open: openFinal } },
         { provide: UserDataApiService, useValue: { deleteAll } },
         { provide: AuthService, useValue: { logout } },
-        { provide: MatSnackBar, useValue: { openFromComponent } }
+        { provide: MatSnackBar, useValue: { openFromComponent } },
+        { provide: BillCacheService, useValue: { clearLocal } }
       ]
     }).compileComponents();
 
@@ -86,6 +90,31 @@ describe('UserDataComponent', () => {
 
     expect(deleteAll).toHaveBeenCalledTimes(1);
     expect(logout).toHaveBeenCalledTimes(1);
+  });
+
+  it('success clears the local offline bill queue before logging out', async () => {
+    await clickDelete();
+
+    expect(clearLocal).toHaveBeenCalledTimes(1);
+    expect(clearLocal.mock.invocationCallOrder[0]).toBeLessThan(logout.mock.invocationCallOrder[0]);
+  });
+
+  it('clearing the local queue fails: still logs out', async () => {
+    clearLocal.mockRejectedValue(new Error('IndexedDB is not available'));
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    await clickDelete();
+
+    expect(logout).toHaveBeenCalledTimes(1);
+    consoleError.mockRestore();
+  });
+
+  it('failure keeps the local offline bill queue', async () => {
+    deleteAll.mockReturnValue(throwError(() => new Error('boom')));
+
+    await clickDelete();
+
+    expect(clearLocal).not.toHaveBeenCalled();
   });
 
   it('shows loading and locks the button while deleting', async () => {
