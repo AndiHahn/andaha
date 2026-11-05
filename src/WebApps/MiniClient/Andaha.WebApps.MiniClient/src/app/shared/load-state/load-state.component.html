@@ -1,0 +1,19 @@
+@switch (state()) {
+  @case ('loading') {
+    <mat-progress-bar mode="indeterminate" color="accent" aria-label="Wird geladen" />
+  }
+  @case ('error') {
+    <div class="state" role="alert">
+      <span class="state-icon"><mat-icon aria-hidden="true">error</mat-icon></span>
+      <b class="state-title">Laden fehlgeschlagen</b>
+      <p class="state-text">Die Daten konnten nicht geladen werden.</p>
+      <button type="button" class="state-retry" (click)="retry.emit()">Erneut versuchen</button>
+    </div>
+  }
+  @case ('empty') {
+    <p class="empty">{{ emptyText() }}</p>
+  }
+  @case ('ready') {
+    <ng-content />
+  }
+}

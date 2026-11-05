@@ -1,0 +1,28 @@
+// Mockup 03 D (.off): Kupfer-Fläche, 13 px halbfett, Icon 16 px
+:host {
+  display: block;
+  flex: none;
+}
+
+.offline-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--sec-soft);
+  color: var(--sec-text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+
+  .mat-icon { flex: none; font-size: 16px; width: 16px; height: 16px; line-height: 16px; }
+}
+
+// Desktop: bündig mit dem Seitenkopf (40 px Rand)
+@media (min-width: 1024px) {
+  .offline-banner {
+    margin: 12px 40px 0;
+    padding: 8px 12px;
+    border-radius: 10px;
+  }
+}

@@ -1,7 +1,7 @@
 import { ApplicationConfig, inject, provideAppInitializer, provideEnvironmentInitializer, provideZoneChangeDetection } from '@angular/core';
 import { DatePipe, registerLocaleData } from '@angular/common';
 import localeDe from '@angular/common/locales/de';
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { provideRouter, withViewTransitions } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideServiceWorker } from '@angular/service-worker';
@@ -12,7 +12,7 @@ import { OAuthStorage, provideOAuthClient } from 'angular-oauth2-oidc';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 import { AuthService } from './core/auth.service';
-import { ErrorHttpInterceptor } from './core/error-http-interceptor.service';
+import { errorInterceptor } from './core/http/error.interceptor';
 import { onTabViewTransition } from './core/navigation/tab-transition';
 import { provideOverlayBack } from './core/overlay/overlay-back.providers';
 import { HistoryTrailService } from './core/navigation/history-trail.service';
@@ -34,7 +34,9 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => {
       inject(HistoryTrailService);
     }),
-    provideHttpClient(withXhr(), withInterceptorsFromDi()),
+    // Reihenfolge der Interceptoren = Reihenfolge der Features: zuerst die DI-Interceptoren (OAuth aus
+    // provideOAuthClient), dann der Fehler-Interceptor (wie vor dem Upgrade)
+    provideHttpClient(withXhr(), withInterceptorsFromDi(), withInterceptors([errorInterceptor])),
     // registriert auch den DefaultOAuthInterceptor (HTTP_INTERCEPTORS, braucht withInterceptorsFromDi)
     provideOAuthClient({
       resourceServer: {
@@ -49,12 +51,6 @@ export const appConfig: ApplicationConfig = {
         sendAccessToken: true
       }
     }),
-    // nach provideOAuthClient: Reihenfolge OAuth-Interceptor zuerst, dann Error-Interceptor (wie vor dem Upgrade)
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: ErrorHttpInterceptor,
-      multi: true
-    },
     {
       // nach provideOAuthClient, damit dessen Standard-Storage ueberschrieben wird
       provide: OAuthStorage,

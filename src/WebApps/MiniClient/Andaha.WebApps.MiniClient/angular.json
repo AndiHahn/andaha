@@ -133,6 +133,7 @@
           "builder": "@angular/build:unit-test",
           "options": {
             "runner": "vitest",
+            "runnerConfig": "vitest-base.config.mts",
             "browsers": ["chromium"],
             "headless": true,
             "watch": false,

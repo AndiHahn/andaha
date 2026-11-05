@@ -11,7 +11,9 @@ import { MatIcon } from '@angular/material/icon';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { AsyncPipe } from '@angular/common';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { BottomBarComponent } from './core/navigation/bottom-bar/bottom-bar.component';
+import { OfflineBannerComponent } from './core/offline-banner/offline-banner.component';
 import { currentUrl$ } from './core/navigation/current-url';
 import { MenuBackDirective } from './core/overlay/menu-back.directive';
 import { findArea, LEGAL_LINKS, MORE_DATA, MORE_SETTINGS, NAV_AREAS, NavArea } from './core/navigation/nav-areas';
@@ -21,7 +23,7 @@ import { findArea, LEGAL_LINKS, MORE_DATA, MORE_SETTINGS, NAV_AREAS, NavArea } f
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [MatSidenavContainer, MatSidenav, MatIcon, RouterLink, RouterLinkActive, MatSidenavContent, MatMenuTrigger, MatMenu, MatMenuItem, MenuBackDirective, RouterOutlet, AsyncPipe, BottomBarComponent]
+    imports: [MatSidenavContainer, MatSidenav, MatIcon, RouterLink, RouterLinkActive, MatSidenavContent, MatMenuTrigger, MatMenu, MatMenuItem, MenuBackDirective, RouterOutlet, AsyncPipe, BottomBarComponent, OfflineBannerComponent, MatProgressSpinner]
 })
 export class AppComponent implements OnInit {
   private appUpdateService = inject(AppUpdateService);

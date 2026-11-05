@@ -399,7 +399,7 @@ body.mat-app-background {
   // Material 18 setzt am Panel keine Typografie mehr (14/20, Textfarbe); 15 hatte die MDC-Menueflaeche (16/24, Schwarz)
   font-size: 16px;
   line-height: 24px;
-  color: #000;
+  color: var(--m2-text);
   width: calc(100% + 32px);
   margin-left: -16px;
 
@@ -434,8 +434,8 @@ body.mat-app-background {
   &:hover:not(.mdc-list-item--disabled), &:focus:not(.mdc-list-item--disabled) { background: var(--act); }
   &.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled) { background: var(--pri-soft); color: var(--pri-chip); }
   // Material 20: Zustandsflaechen per color-mix (Fokus/aktiv 12 % statt 4 %); Werte wie bis 19
-  --mat-option-focus-state-layer-color: rgba(0, 0, 0, .04);
-  --mat-option-hover-state-layer-color: rgba(0, 0, 0, .04);
+  --mat-option-focus-state-layer-color: var(--m2-state-layer);
+  --mat-option-hover-state-layer-color: var(--m2-state-layer);
 }
 
 // Datepicker
@@ -443,7 +443,7 @@ body.mat-app-background {
   // Heute-Markierung: ab Material 17/18 setzt das Komponenten-CSS die Randfarbe nur noch ueber diesen Token
   --mat-datepicker-calendar-date-today-outline-color: var(--pri);
   // Material 20 faerbt den Monat/Jahr-Button ueber den Token (.87); bis 19 schwarz
-  --mat-datepicker-calendar-period-button-text-color: #000;
+  --mat-datepicker-calendar-period-button-text-color: var(--m2-text);
   background: var(--surface);
   color: var(--fg);
   border-radius: 12px;
@@ -513,7 +513,7 @@ body.mat-app-background {
   .mat-mdc-menu-item { color: var(--fg); font-size: 15px; &:hover:not([disabled]) { background: var(--act); } }
   // MDC faerbt Text und Icon im Eintrag selbst (rgba(0,0,0,.87)); wie Material 14: Text in --fg, Icon .54
   .mat-mdc-menu-item .mdc-list-item__primary-text { color: inherit; }
-  .mat-mdc-menu-item .mat-icon-no-color { color: rgba(0, 0, 0, .54); }
+  .mat-mdc-menu-item .mat-icon-no-color { color: var(--m2-icon); }
 }
 
 // Snackbar: Basis fuer alle Snackbars (auch ohne panelClass) = andaha-snackbar + andaha-snackbar-info.
@@ -606,15 +606,15 @@ body .mat-mdc-progress-bar.mat-primary {
   --mat-checkbox-selected-hover-icon-color: var(--pri);
   --mat-checkbox-selected-focus-icon-color: var(--pri);
   --mat-checkbox-selected-pressed-icon-color: var(--pri);
-  --mat-checkbox-selected-checkmark-color: #FAFAFA; // Material 14: Theme-Hintergrund
+  --mat-checkbox-selected-checkmark-color: var(--m2-checkmark); // Material 14: Theme-Hintergrund
   --mat-checkbox-unselected-icon-color: var(--line3);
   --mat-checkbox-unselected-hover-icon-color: var(--line3);
   --mat-checkbox-unselected-focus-icon-color: var(--line3);
   --mat-checkbox-unselected-pressed-icon-color: var(--line3);
   // Lesemodus (disabled): Material 14 zeigte die gewaehlte Checkbox weiter in Primaer
   --mat-checkbox-disabled-selected-icon-color: var(--pri);
-  --mat-checkbox-disabled-selected-checkmark-color: #FAFAFA;
-  --mat-checkbox-disabled-unselected-icon-color: #B0B0B0; // Material 14: Rahmen deaktiviert
+  --mat-checkbox-disabled-selected-checkmark-color: var(--m2-checkmark);
+  --mat-checkbox-disabled-unselected-icon-color: var(--m2-disabled-line); // Material 14: Rahmen deaktiviert
 }
 
 .mat-mdc-radio-button.mat-accent,
@@ -693,7 +693,7 @@ body .cdk-drag-preview.andaha-drag-item {
   --mat-dialog-supporting-text-line-height: 20px;
   --mat-dialog-supporting-text-weight: 400;
   --mat-dialog-supporting-text-tracking: normal;
-  --mat-dialog-supporting-text-color: rgba(0, 0, 0, .87);
+  --mat-dialog-supporting-text-color: var(--m2-text-high);
 }
 
 // Bottom Sheet (MatBottomSheet über SheetService, v2 „Schnell-Sheet“): surface, Radius 20 oben, Schatten
@@ -850,7 +850,7 @@ body .cdk-drag-preview.andaha-drag-item {
   }
   // Ziffern .87 Schwarz: ngx-mat-timepicker 18 setzt kein .mat-void mehr, daher ueber den FAB-Token
   // (gewaehlte Ziffer hat .mat-primary, dort setzt das Theme den Token am Element selbst)
-  .clock-face { --mat-fab-small-foreground-color: rgba(0, 0, 0, .87); }
+  .clock-face { --mat-fab-small-foreground-color: var(--m2-text-high); }
 
   // Aktionszeile wie .mat-dialog-actions in Material 14 (52 px + 8 px oben/unten, 24 px seitlich)
   .mat-mdc-dialog-actions {

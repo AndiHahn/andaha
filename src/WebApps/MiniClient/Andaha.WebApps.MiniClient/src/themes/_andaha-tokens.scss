@@ -53,6 +53,14 @@ $andaha-negative-line:#E8C3BE; // Rahmen Löschen-Button
 $andaha-negative-bar: #D27466; // Ausgaben-Anteil im Haushaltsplan-Balken
 $andaha-negative-text:#A33A33;
 
+// Material-2-Werte (Material 14/15), die einzelne Overrides in styles.scss nachbilden
+$andaha-m2-text:          #000; // Panel- und Kalendertext (Schwarz)
+$andaha-m2-text-high:     rgba(0, 0, 0, .87); // Text hohe Betonung
+$andaha-m2-icon:          rgba(0, 0, 0, .54); // Icons im Menü
+$andaha-m2-state-layer:   rgba(0, 0, 0, .04); // Hover/Fokus von Optionen
+$andaha-m2-checkmark:     #FAFAFA; // Haken der Checkbox (Theme-Hintergrund)
+$andaha-m2-disabled-line: #B0B0B0; // Rahmen deaktivierter Checkboxen
+
 // Overlay & Schatten
 $andaha-scrim:        rgba(40, 30, 18, .38);
 $andaha-shadow-sm:    0 1px 2px rgba(60, 40, 20, .14);
@@ -139,4 +147,11 @@ $andaha-breakpoint-desktop: 1024px;
   --sh6: rgba(60, 40, 20, .16);
   --sh7: rgba(60, 40, 20, .22);
   --ring-sw: rgba(0, 0, 0, .12);
+
+  --m2-text: #{$andaha-m2-text};
+  --m2-text-high: #{$andaha-m2-text-high};
+  --m2-icon: #{$andaha-m2-icon};
+  --m2-state-layer: #{$andaha-m2-state-layer};
+  --m2-checkmark: #{$andaha-m2-checkmark};
+  --m2-disabled-line: #{$andaha-m2-disabled-line};
 }

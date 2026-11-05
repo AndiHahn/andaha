@@ -93,14 +93,25 @@
   flex-direction: column;
 }
 
-.wait-login-container {
+// Login-Ladebildschirm (AC36): zentriert App-Name und Spinner in Primär, Grund bg (DESIGN.md)
+.login-screen {
   flex: 1;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 20px;
+  padding: 24px;
+  background: var(--bg);
 }
 
-.wait-login {
-  font-size: 15px;
-  color: var(--mut);
+.login-brand {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -.03em;
+  color: var(--fg);
+}
+
+.login-spinner {
+  --mat-progress-spinner-active-indicator-color: var(--pri);
 }

@@ -1,0 +1,60 @@
+// Mockup 03 D (.state): Fehlerzustand mittig mit Icon-Kachel, Titel, Erklärsatz und „Erneut versuchen“.
+// Ladezustand als Fortschrittsbalken oben wie die übrigen Listen; Leerzustand über das globale Muster .empty.
+// display: contents: Zustände und projizierter Inhalt nehmen direkt am Layout des Elternelements teil;
+// in einer Flex-Spalte füllt der Fehlerzustand den Rest der Seite (flex: 1).
+:host {
+  display: contents;
+}
+
+.state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+}
+
+.state-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--raised);
+  color: var(--mut);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  .mat-icon { font-size: 22px; width: 22px; height: 22px; line-height: 22px; }
+}
+
+.state-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.state-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--mut);
+  max-width: 28ch;
+}
+
+// .mbtn.g aus dem Mockup: 36 px hoch, Fläche raised mit Feldrahmen
+.state-retry {
+  height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--raised);
+  box-shadow: inset 0 0 0 1px var(--line3);
+  color: var(--fg);
+  cursor: pointer;
+}

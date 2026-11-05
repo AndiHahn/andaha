@@ -89,10 +89,15 @@
       </header>
     }
 
+    <!-- Offline-Banner app-weit unter dem Seitenkopf (AC33) -->
+    <app-offline-banner />
+
     <main class="content">
       @if (!isLoggedIn) {
-        <div class="wait-login-container">
-          <span class="wait-login">Warten auf Login...</span>
+        <!-- Login-Ladebildschirm (AC36) -->
+        <div class="login-screen" role="status">
+          <span class="login-brand">Andaha</span>
+          <mat-spinner class="login-spinner" diameter="36" aria-label="Anmeldung läuft" />
         </div>
       }
       @if (isLoggedIn) {
