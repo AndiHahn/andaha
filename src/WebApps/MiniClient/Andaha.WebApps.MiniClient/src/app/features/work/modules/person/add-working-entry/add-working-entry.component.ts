@@ -1,16 +1,23 @@
 import { Component, OnInit, ChangeDetectionStrategy, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CreateWorkingEntriesDto } from 'src/app/api/work/dtos/CreateWorkingEntriesDto';
-import { WorkingEntryForm, getEmptyWorkingEntryForm } from '../../../functions/working-entry-form-functions';
+import { ActivatedRoute } from '@angular/router';
+import { catchError, distinctUntilChanged, map, of, switchMap, tap } from 'rxjs';
+import { WorkingEntryDto } from 'src/app/api/work/dtos/WorkingEntryDto';
+import { WorkingEntryApiService } from 'src/app/api/work/working-entry-api.service';
+import { StatisticsContextService } from '../../../services/statistics-context.service';
+import {
+  BREAK_TOO_LONG_TEXT, UNTIL_BEFORE_FROM_TEXT, WorkingEntryForm, applyPickedTime, getEmptyWorkingEntryForm,
+  getFormWorkTime, getNetWorkingTimeText
+} from '../../../functions/working-entry-form-functions';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { openErrorSnackbar, openInformationSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { WorkingEntriesContextGlobalService } from '../../../services/working-entries-context-global.service';
 import moment from "moment";
-import { Time } from "@angular/common";
 import { PersonContextService } from '../../../services/person-context.service';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
-import { getTotalWorkingTimeString } from '../../../functions/date-time-functions';
+import { formatLocalTime } from '../../../functions/date-time-functions';
 import { formatTime } from 'src/app/api/functions/api-utils';
 import { MatSelect, MatSelectTrigger, MatOption } from '@angular/material/select';
 import { MatInput } from '@angular/material/input';
@@ -33,7 +40,12 @@ export class AddWorkingEntryComponent implements OnInit {
   private personContextService = inject(PersonContextService);
   private destroyRef = inject(DestroyRef);
   private contextService = inject(WorkingEntriesContextGlobalService);
+  private workingEntryApiService = inject(WorkingEntryApiService);
+  private statisticsContextService = inject(StatisticsContextService);
+  private route = inject(ActivatedRoute);
 
+  /** Neuester Eintrag der einzigen gewählten Person (Zeile „Letzter Eintrag“) */
+  lastEntry?: WorkingEntryDto;
 
   form: FormGroup<WorkingEntryForm>;
 
@@ -47,16 +59,57 @@ export class AddWorkingEntryComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // „Letzter Eintrag“ gibt es nur bei genau einer gewählten Person
+    this.form.controls.selectedPersons.valueChanges.pipe(
+      map(selected => selected.length === 1 ? selected[0].id : undefined),
+      distinctUntilChanged(),
+      tap(() => this.lastEntry = undefined),
+      switchMap(personId => personId
+        ? this.workingEntryApiService.listWorkingEntryMonths(personId, undefined, 1).pipe(catchError(() => of(undefined)))
+        : of(undefined)),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(result => this.lastEntry = result?.entries[0]);
+
     this.personContextService.persons().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
       {
         next: persons => {
           if (!this.persons) {
             this.persons = persons;
             this.filteredPersons = persons;
+            this.preselectPerson(persons);
           }
         }
       }
     );
+  }
+
+  private preselectPerson(persons: PersonDto[] | undefined): void {
+    const personId = this.route.snapshot.queryParamMap.get('person');
+    const person = persons?.find(candidate => candidate.id === personId);
+    if (person) {
+      this.form.controls.selectedPersons.setValue([person]);
+    }
+  }
+
+  /** „Letzter Eintrag: 04.11. · 07:00 – 12:30“ */
+  getLastEntryText(): string {
+    const entry = this.lastEntry;
+    return entry
+      ? `Letzter Eintrag: ${moment(entry.from).format('DD.MM.')} · ${formatLocalTime(entry.from)} – ${formatLocalTime(entry.until)}`
+      : '';
+  }
+
+  /** Beginn, Ende, Pause und Notiz des letzten Eintrags übernehmen; das Datum bleibt */
+  copyLastEntry(): void {
+    const entry = this.lastEntry;
+    if (!entry) {
+      return;
+    }
+
+    applyPickedTime(this.form.controls.fromTime, formatLocalTime(entry.from));
+    applyPickedTime(this.form.controls.untilTime, formatLocalTime(entry.until));
+    this.form.controls.break.setValue({ hours: entry.break.hours, minutes: entry.break.minutes });
+    this.form.controls.notes.setValue(entry.notes ?? null);
   }
 
   onInputChange(event: any) {
@@ -82,20 +135,15 @@ export class AddWorkingEntryComponent implements OnInit {
   }
 
   setFormTime(control: FormControl, newTime: string): void {
-    const currentDate = control.value;
-    if (currentDate instanceof Date) {
-      const dateString = this.formatDateAsString(currentDate);
-      const dateTimeString = dateString + " " + newTime;
-      control.setValue(moment(dateTimeString).toDate());
-    } else {
-      const currentDateString = this.formatDateAsString(new Date());
-      const currentDateTimeString = currentDateString + " " + newTime;
-      const timeTyped = moment(currentDateTimeString).toDate();
-      const currentTime = currentDate as Time;
-      currentTime.hours = timeTyped.getHours();
-      currentTime.minutes = timeTyped.getMinutes();
-      control.setValue(currentTime);
-    }
+    applyPickedTime(control, newTime);
+  }
+
+  get untilError(): string | null {
+    return this.form.hasError('untilNotAfterFrom') ? UNTIL_BEFORE_FROM_TEXT : null;
+  }
+
+  get breakError(): string | null {
+    return this.form.hasError('breakTooLong') ? BREAK_TOO_LONG_TEXT : null;
   }
 
   getPersonDisplayText(): string {
@@ -105,11 +153,7 @@ export class AddWorkingEntryComponent implements OnInit {
   }
 
   getWorkingTime(): string {
-    return getTotalWorkingTimeString({
-      from: this.form.controls.fromTime.value,
-      until: this.form.controls.untilTime.value,
-      break: this.form.controls.break.value
-    });
+    return getNetWorkingTimeText(this.form);
   }
 
   onSubmit(): void {
@@ -127,11 +171,12 @@ export class AddWorkingEntryComponent implements OnInit {
           this.isSaving = false;
           this.form.controls.selectedPersons.reset();
           this.personContextService.refetch();
+          this.statisticsContextService.refreshTimeRange();
           openInformationSnackbar('Arbeitszeit wurde gespeichert', this.snackbar);
         },
         error: _ => {
           this.isSaving = false;
-          openErrorSnackbar('Eintrag konnte nicht gespeichert werden.', this.snackbar);
+          openErrorSnackbar('Arbeitszeit konnte nicht gespeichert werden.', this.snackbar);
         } 
       }
     );
@@ -139,26 +184,14 @@ export class AddWorkingEntryComponent implements OnInit {
 
   private createDtoFromForm(): CreateWorkingEntriesDto {
     const controls = this.form.controls;
-
-    const date = moment(controls.date.value).toDate();
-    const year = date.getUTCFullYear();
-    const month = date.getUTCMonth();
-    const day = date.getUTCDate() + 1;
-    const fromTime = controls.fromTime.value;
-    const untilTime = controls.untilTime.value;
-    const fromDate = new Date(year, month, day, fromTime.getHours(), fromTime.getMinutes(), fromTime.getSeconds());
-    const untilDate = new Date(year, month, day, untilTime.getHours(), untilTime.getMinutes(), untilTime.getSeconds());
+    const workTime = getFormWorkTime(this.form)!;
 
     return {
-      from: fromDate,
-      until: untilDate,
+      from: workTime.from,
+      until: workTime.until,
       break: formatTime(controls.break.value),
       personIds: controls.selectedPersons.value.map(person => person.id),
       notes: controls.notes?.value ?? undefined
     }
-  }
-
-  private formatDateAsString(date: Date): string {
-    return date.getUTCFullYear() + "." + (date.getUTCMonth() + 1) + "." + date.getUTCDate();
   }
 }

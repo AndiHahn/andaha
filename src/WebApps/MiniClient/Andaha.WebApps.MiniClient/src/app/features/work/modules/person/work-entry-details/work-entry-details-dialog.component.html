@@ -4,23 +4,25 @@
       <app-date-picker-form-field [control]="form.controls.date"
         label="Datum" />
 
-      <!-- Start/Ende/Pause als 3er-Reihe wie in "Arbeitszeiten hinzufuegen" -->
+      <!-- Beginn und Ende nebeneinander, Pause darunter wie in "Arbeitszeit erfassen" -->
       <div class="times">
-        <app-time-picker-form-field label="Startzeit"
+        <app-time-picker-form-field label="Beginn"
           [defaultTime]="getNgxTime(form.controls.fromTime)"
           (timeChanged)="setFormTime(form.controls.fromTime, $event)"
           [disabled]="!isEditing" />
 
-        <app-time-picker-form-field label="Endzeit"
+        <app-time-picker-form-field label="Ende"
           [defaultTime]="getNgxTime(form.controls.untilTime)"
+          [error]="untilError"
           (timeChanged)="setFormTime(form.controls.untilTime, $event)"
           [disabled]="!isEditing" />
-
-        <app-time-picker-form-field label="Pause"
-          [defaultTime]="getNgxTime(form.controls.break)"
-          (timeChanged)="setFormTime(form.controls.break, $event)"
-          [disabled]="!isEditing" />
       </div>
+
+      <app-time-picker-form-field label="Pause"
+        [defaultTime]="getNgxTime(form.controls.break)"
+        [error]="breakError"
+        (timeChanged)="setFormTime(form.controls.break, $event)"
+        [disabled]="!isEditing" />
 
       <div class="net">
         <span class="net-k">Arbeitszeit netto</span>
@@ -63,7 +65,7 @@
       <button type="button" class="btn sec2" (click)="onCancelClick()">
         <mat-icon>close</mat-icon><span>Abbrechen</span>
       </button>
-      <button type="button" class="btn pri" (click)="onSaveClick()" [disabled]="isSaving">
+      <button type="button" class="btn pri" (click)="onSaveClick()" [disabled]="isSaving || !form.valid">
         @if (!isSaving) {
           <mat-icon>check</mat-icon><span>Speichern</span>
         }

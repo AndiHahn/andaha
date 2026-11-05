@@ -1,14 +1,25 @@
-<label class="field">
+<label class="field" [class.invalid]="!!error">
   <span class="field-label">{{ label }}</span>
   <span class="field-box">
     <input
       [ngxMatTimepicker]="picker"
       [format]="format"
       [value]="defaultTime"
-      [disabled]="disabled" />
+      [disabled]="disabled"
+      [attr.aria-invalid]="!!error"
+      [attr.aria-describedby]="error ? errorId : null" />
     <mat-icon class="suffix" aria-hidden="true">schedule</mat-icon>
     <ngx-mat-timepicker #picker
       [minutesGap]="minutesGap"
+      [cancelBtnTmpl]="cancelButton"
+      [confirmBtnTmpl]="confirmButton"
       (timeSet)="ngxTimeSet($event)" />
   </span>
+  @if (error) {
+    <span class="field-error" [id]="errorId">{{ error }}</span>
+  }
 </label>
+
+<!-- Die Bibliothek bringt „CANCEL“/„OK“ mit; über die Button-Templates bleibt die Auswahl deutsch -->
+<ng-template #cancelButton><button type="button" mat-button>Abbrechen</button></ng-template>
+<ng-template #confirmButton><button type="button" mat-button>OK</button></ng-template>

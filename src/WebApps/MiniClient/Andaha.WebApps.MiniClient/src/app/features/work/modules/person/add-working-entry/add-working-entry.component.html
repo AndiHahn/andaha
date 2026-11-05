@@ -30,23 +30,33 @@
       }
     </div>
 
+    <!-- Mockup 02 D: letzter Eintrag, nur bei genau einer gewählten Person -->
+    @if (lastEntry) {
+      <div class="restored" role="status">
+        <mat-icon aria-hidden="true">history</mat-icon>{{ getLastEntryText() }}
+        <button type="button" class="link" (click)="copyLastEntry()">Übernehmen</button>
+      </div>
+    }
+
     <app-date-picker-form-field [control]="form.controls.date"
       label="Datum" />
 
-    <!-- Start/Ende/Pause als 3er-Reihe (Mockup 05, Arbeitszeiten hinzufuegen) -->
+    <!-- Beginn und Ende nebeneinander, Pause darunter (Mockup 02 D) -->
     <div class="times">
-      <app-time-picker-form-field label="Startzeit"
+      <app-time-picker-form-field label="Beginn"
         [defaultTime]="getNgxTime(form.controls.fromTime)"
         (timeChanged)="setFormTime(form.controls.fromTime, $event)" />
 
-      <app-time-picker-form-field label="Endzeit"
+      <app-time-picker-form-field label="Ende"
         [defaultTime]="getNgxTime(form.controls.untilTime)"
+        [error]="untilError"
         (timeChanged)="setFormTime(form.controls.untilTime, $event)" />
-
-      <app-time-picker-form-field label="Pause"
-        [defaultTime]="getNgxTime(form.controls.break)"
-        (timeChanged)="setFormTime(form.controls.break, $event)" />
     </div>
+
+    <app-time-picker-form-field label="Pause"
+      [defaultTime]="getNgxTime(form.controls.break)"
+      [error]="breakError"
+      (timeChanged)="setFormTime(form.controls.break, $event)" />
 
     <div class="net">
       <span class="net-k">Arbeitszeit netto</span>

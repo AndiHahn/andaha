@@ -1,13 +1,14 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
-import { WorkingEntryForm, getWorkingEntryForm } from '../../../functions/working-entry-form-functions';
+import {
+  BREAK_TOO_LONG_TEXT, UNTIL_BEFORE_FROM_TEXT, WorkingEntryForm, applyPickedTime, getFormWorkTime, getNetWorkingTimeText,
+  getWorkingEntryForm
+} from '../../../functions/working-entry-form-functions';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/ConfirmationDialogData';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { WorkingEntryDto } from 'src/app/api/work/dtos/WorkingEntryDto';
-import { getTotalWorkingTimeString } from '../../../functions/date-time-functions';
 import moment from 'moment';
-import { Time } from '@angular/common';
 import { WorkEntryDetailsDialogData } from './WorkEntryDetailsDialogData';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent } from '@angular/material/dialog';
 import { WorkingEntryApiService } from 'src/app/api/work/working-entry-api.service';
@@ -81,34 +82,21 @@ export class WorkEntryDetailsDialogComponent implements OnInit {
   }
 
   getWorkingTime(): string {
-    return getTotalWorkingTimeString({
-      from: this.form.controls.fromTime.value,
-      until: this.form.controls.untilTime.value,
-      break: this.form.controls.break.value
-    });
+    return getNetWorkingTimeText(this.form);
   }
 
   setFormTime(control: FormControl, newTime: string): void {
-    const currentDate = control.value;
-    if (currentDate instanceof Date) {
-      const dateString = this.formatDateAsString(currentDate);
-      const dateTimeString = dateString + " " + newTime;
-      control.setValue(moment(dateTimeString).toDate());
-    } else {
-      const currentDateString = this.formatDateAsString(new Date());
-      const currentDateTimeString = currentDateString + " " + newTime;
-      const timeTyped = moment(currentDateTimeString).toDate();
-      const currentTime = currentDate as Time;
-      currentTime.hours = timeTyped.getHours();
-      currentTime.minutes = timeTyped.getMinutes();
-      control.setValue(currentTime);
-    }
+    applyPickedTime(control, newTime);
   }
 
-  private formatDateAsString(date: Date): string {
-    return date.getUTCFullYear() + "." + (date.getUTCMonth() + 1) + "." + date.getUTCDate();
+  get untilError(): string | null {
+    return this.form.hasError('untilNotAfterFrom') ? UNTIL_BEFORE_FROM_TEXT : null;
   }
-  
+
+  get breakError(): string | null {
+    return this.form.hasError('breakTooLong') ? BREAK_TOO_LONG_TEXT : null;
+  }
+
   onEditClick(): void {
     this.isEditing = true;
     this.form.enable();
@@ -183,19 +171,11 @@ export class WorkEntryDetailsDialogComponent implements OnInit {
 
   private createUpdateDtoFromForm(): UpdateWorkingEntryDto {
     const controls = this.form.controls;
-
-    const date = moment(controls.date.value).toDate();
-    const year = date.getUTCFullYear();
-    const month = date.getUTCMonth();
-    const day = date.getDate();
-    const fromTime = controls.fromTime.value;
-    const untilTime = controls.untilTime.value;
-    const fromDate = new Date(year, month, day, fromTime.getHours(), fromTime.getMinutes(), fromTime.getSeconds());
-    const untilDate = new Date(year, month, day, untilTime.getHours(), untilTime.getMinutes(), untilTime.getSeconds());
+    const workTime = getFormWorkTime(this.form)!;
 
     return {
-      from: fromDate,
-      until: untilDate,
+      from: workTime.from,
+      until: workTime.until,
       break: formatTime(controls.break.value),
       notes: controls.notes?.value ?? undefined
     }

@@ -104,3 +104,40 @@ export function workingMinutes(workingTime: WorkingTime): number {
   const grossMinutes = Math.round((workingTime.until.getTime() - workingTime.from.getTime()) / 60000);
   return Math.max(0, grossMinutes - timeToMinutes(workingTime.break));
 }
+
+
+/**
+ * Lokaler Zeitpunkt aus den lokalen Bestandteilen von `day` (Jahr, Monat, Tag) und der Uhrzeit `HH:mm`.
+ * Bewusst ohne UTC-Getter: der gewählte Tag bleibt in jeder Zeitzone und an Sommerzeit-Umstellungen der Tag.
+ */
+export function toLocalDateTime(day: Date, time: string): Date {
+  const [hours, minutes] = time.split(':').map(part => Number(part));
+  return new Date(day.getFullYear(), day.getMonth(), day.getDate(), hours || 0, minutes || 0, 0);
+}
+
+/** Uhrzeit eines Zeitpunkts (lokal) als „HH:mm“ */
+export function formatLocalTime(date: Date): string {
+  return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+}
+
+export type WorkTimeError = 'until-not-after-from' | 'break-too-long';
+
+/** Plausibilität: Ende nach Beginn, Pause kürzer als die Arbeitszeit (Ende − Beginn); gleiche Regeln wie im Backend */
+export function validateWorkTime(from: Date, until: Date, breakMinutes: number): WorkTimeError | null {
+  const grossMinutes = Math.round((until.getTime() - from.getTime()) / 60000);
+  if (grossMinutes <= 0) {
+    return 'until-not-after-from';
+  }
+  if (breakMinutes >= grossMinutes) {
+    return 'break-too-long';
+  }
+  return null;
+}
+
+/** Netto-Arbeitszeit in Minuten; `null` bei ungültiger Eingabe (Anzeige „–“), nie negativ */
+export function netWorkingTime(from: Date, until: Date, breakMinutes: number): number | null {
+  if (validateWorkTime(from, until, breakMinutes) !== null) {
+    return null;
+  }
+  return Math.round((until.getTime() - from.getTime()) / 60000) - breakMinutes;
+}

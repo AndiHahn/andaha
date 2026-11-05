@@ -38,13 +38,37 @@
   &::placeholder { color: var(--faint); }
 }
 
-// Start/Ende/Pause: drei gleich breite Spalten
+// Beginn/Ende: zwei gleich breite Spalten
 .times {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+  align-items: start;
 
   > * { min-width: 0; }
+}
+
+// Letzter Eintrag: 13 muted, Icon primary, rechts „Übernehmen“ (Mockup 02 D)
+.restored {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--mut);
+
+  .mat-icon { width: 16px; height: 16px; font-size: 16px; line-height: 16px; color: var(--pri); }
+}
+
+.link {
+  margin: -12px 0 -12px auto;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  padding: 0 4px;
+  font: inherit;
+  color: var(--pri);
+  font-weight: 600;
+  cursor: pointer;
 }
 
 // Arbeitszeit netto als Wertezeile (Wert 22/600)

@@ -71,6 +71,11 @@ export class StatisticsContextService {
     this.lastLoad?.();
   }
 
+  /** Verfügbaren Zeitraum neu laden, z. B. nach dem Speichern einer Arbeitszeit (AC39) */
+  refreshTimeRange(): void {
+    this.fetchTimeRange();
+  }
+
   private fetchTimeRange(): void {
     this.apiService.getAvailableTimeRange().subscribe(
       {
