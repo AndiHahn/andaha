@@ -132,6 +132,7 @@ describe('AnalyzedBillDetailsComponent', () => {
 
   it('„Verwerfen“ fragt nach, löscht, entfernt den Eintrag und geht zur Analyse-Liste', async () => {
     await setup();
+    const vibrate = vi.spyOn(navigator, 'vibrate').mockImplementation(() => true);
 
     button('Verwerfen').click();
     await settle();
@@ -141,6 +142,9 @@ describe('AnalyzedBillDetailsComponent', () => {
     expect(remove).toHaveBeenCalledWith('a1');
     // I1: zurück zur Analyse-Liste statt neuem Eintrag über dem gelöschten
     expect(leaveTo).toHaveBeenCalledWith('/bill/analysis');
+    // AC35: nach erfolgreichem Löschen vibriert das Gerät
+    expect(vibrate).toHaveBeenCalledWith(30);
+    vibrate.mockRestore();
   });
 
   it('„Verwerfen“ abgelehnt: nichts passiert', async () => {
@@ -156,6 +160,7 @@ describe('AnalyzedBillDetailsComponent', () => {
 
   it('„Verwerfen“ fehlgeschlagen: Fehlermeldung, Eintrag bleibt', async () => {
     await setup({ deleteAnalyzedBill: () => throwError(() => new Error('offline')) });
+    const vibrate = vi.spyOn(navigator, 'vibrate').mockImplementation(() => true);
 
     button('Verwerfen').click();
     await settle();
@@ -163,6 +168,8 @@ describe('AnalyzedBillDetailsComponent', () => {
     expect(openSnackbar).toHaveBeenCalled();
     expect(remove).not.toHaveBeenCalled();
     expect(leaveTo).not.toHaveBeenCalled();
+    expect(vibrate).not.toHaveBeenCalled();
+    vibrate.mockRestore();
   });
 
   it('„Als Rechnung übernehmen“ öffnet das Formular mit Vorbelegung, Analyse-ID und geladenem Foto (AC33)', async () => {

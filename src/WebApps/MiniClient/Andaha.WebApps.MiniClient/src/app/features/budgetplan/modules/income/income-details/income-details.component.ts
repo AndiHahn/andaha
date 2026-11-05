@@ -10,6 +10,7 @@ import { IncomeUpdateDto } from 'src/app/api/budgetplan/dtos/IncomeUpdateDto';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/ConfirmationDialogData';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
+import { vibrate } from 'src/app/shared/utils/haptics';
 import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
 import { IncomeContextService } from '../../../services/income-context.service';
@@ -154,6 +155,7 @@ export class IncomeDetailsComponent implements OnInit, OnDestroy {
       {
         next: _ => {
           this.isDeleting = false;
+          vibrate();
           // zurück zur Liste; Zurück führt danach nicht auf den gelöschten Eintrag
           this.historyTrail.leaveTo('/budgetplan/income');
         },

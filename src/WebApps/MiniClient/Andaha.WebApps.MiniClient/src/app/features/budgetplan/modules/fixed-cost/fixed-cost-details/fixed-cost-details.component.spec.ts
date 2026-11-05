@@ -29,6 +29,7 @@ describe('FixedCostDetailsComponent', () => {
     let router: MockedObject<Router>;
     let snackbar: MockedObject<MatSnackBar>;
     let context: MockedObject<FixedCostContextService>;
+    let confirmation: { openDialog: ReturnType<typeof vi.fn> };
 
     const fixedCost: FixedCostDto = {
         id: 'fc-1',
@@ -49,8 +50,10 @@ describe('FixedCostDetailsComponent', () => {
         } as unknown as MockedObject<MatSnackBar>;
         context = {
             byId: vi.fn().mockName("FixedCostContextService.byId"),
-            updateFixedCost: vi.fn().mockName("FixedCostContextService.updateFixedCost")
+            updateFixedCost: vi.fn().mockName("FixedCostContextService.updateFixedCost"),
+            deleteFixedCost: vi.fn().mockName("FixedCostContextService.deleteFixedCost")
         } as unknown as MockedObject<FixedCostContextService>;
+        confirmation = { openDialog: vi.fn(() => Promise.resolve({ afterClosed: () => of(true) })) };
         context.byId.mockReturnValue(byId$.asObservable());
         const pageTitle = {
             set: vi.fn().mockName("PageTitleService.set"),
@@ -66,7 +69,7 @@ describe('FixedCostDetailsComponent', () => {
         { provide: MatSnackBar, useValue: snackbar },
         { provide: FixedCostContextService, useValue: context },
         { provide: PageTitleService, useValue: pageTitle },
-        { provide: ConfirmationDialogService, useValue: {} },
+        { provide: ConfirmationDialogService, useValue: confirmation },
         { provide: FixedCostHistoryDialogService, useValue: {} },
         { provide: ActivatedRoute, useValue: { snapshot: { params: { id: 'fc-1' }, children: [], parent: null } } }
     ]
@@ -143,5 +146,33 @@ describe('FixedCostDetailsComponent', () => {
 
         expect(component.form.controls.name.value).toBe('Neu');
         expect(component.isEditing).toBe(false);
+    });
+
+    it('delete: vibrates and leaves to the list after success (AC35)', async () => {
+        const component = load();
+        context.deleteFixedCost.mockReturnValue(of(undefined));
+        const vibrate = vi.spyOn(navigator, 'vibrate').mockImplementation(() => true);
+
+        component.onDeleteClick();
+        await fixture.whenStable();
+
+        expect(context.deleteFixedCost).toHaveBeenCalledWith('fc-1');
+        expect(vibrate).toHaveBeenCalledWith(30);
+        expect(historyTrail.leaveTo).toHaveBeenCalledWith('/budgetplan/fixedcost');
+        vibrate.mockRestore();
+    });
+
+    it('delete failed: error snackbar, no vibration', async () => {
+        const component = load();
+        context.deleteFixedCost.mockReturnValue(throwError(() => new Error('fail')));
+        const vibrate = vi.spyOn(navigator, 'vibrate').mockImplementation(() => true);
+
+        component.onDeleteClick();
+        await fixture.whenStable();
+
+        expect(snackbar.openFromComponent).toHaveBeenCalled();
+        expect(vibrate).not.toHaveBeenCalled();
+        expect(historyTrail.leaveTo).not.toHaveBeenCalled();
+        vibrate.mockRestore();
     });
 });

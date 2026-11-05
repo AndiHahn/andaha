@@ -16,6 +16,7 @@ import { toDayKey } from 'src/app/features/bill/quick-entry/logic/quick-entry-st
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
+import { vibrate } from 'src/app/shared/utils/haptics';
 import { confidencePercent, resolveAnalyzedCategory } from '../../functions/analyzed-bill-functions';
 import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
 import { MatProgressBar } from '@angular/material/progress-bar';
@@ -145,6 +146,7 @@ export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
 
     this.analyzedContext.remove(bill.id);
     this.busy = false;
+    vibrate();
     // zurück zur Analyse-Liste; Zurück führt danach nicht auf den verworfenen Eintrag (I1)
     this.historyTrail.leaveTo('/bill/analysis');
   }
