@@ -12,4 +12,5 @@ public record BillDto(
     bool ImageAvailable,
     bool FromAnalysis,
     IReadOnlyCollection<BillLineItemDto> LineItems,
-    DateTime CreatedAt);
+    DateTime CreatedAt,
+    MatchedLineItemDto? MatchedLineItem);

@@ -19,7 +19,6 @@ internal static class BillEndpointExtensions
         app.MapSearchBills(groupBuilder);
         app.MapGetShopStats(groupBuilder);
         app.MapGetById(groupBuilder);
-        app.MapAnalyzeBill(groupBuilder);
         app.MapCreateBill(groupBuilder);
         app.MapUpdateBill(groupBuilder);
         app.MapDeleteBill(groupBuilder);
@@ -29,6 +28,8 @@ internal static class BillEndpointExtensions
         app.MapUploadForAnalysis(groupBuilder);
         app.MapAnalyzeNasImage(groupBuilder);
         app.MapGetAnalyzedBills(groupBuilder);
+        app.MapGetPendingAnalyses(groupBuilder);
+        app.MapGetTodayAutoCreatedBills(groupBuilder);
         app.MapGetAnalyzedBillImage(groupBuilder);
         app.MapDeleteAnalyzedBill(groupBuilder);
         app.MapAnalyzeBillSubscription(groupBuilder);
@@ -68,30 +69,6 @@ internal static class BillEndpointExtensions
         groupBuilder
             .MediateGet<GetBillById.V1.GetBillByIdQuery>("{id}")
             .Produces<Dtos.V1.BillDto>()
-            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
-            .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
-
-        return app;
-    }
-
-    private static WebApplication MapAnalyzeBill(
-        this WebApplication app,
-        RouteGroupBuilder groupBuilder)
-    {
-        groupBuilder
-            .MapPost("/analyze", [Authorize] async (IMediator mediator, IFormFile file, CancellationToken cancellationToken) =>
-            {
-                //var file = httpContext.Request.Form.Files.FirstOrDefault();
-
-                await using var stream = file.OpenReadStream();
-
-                var command = new AnalyzeBill.V1.AnalyzeBillCommand(stream);
-
-                return await mediator.Send(command, cancellationToken);
-            })
-            .DisableAntiforgery()
-            .Accepts<IFormFile>("multipart/form-data")
-            .Produces<AnalyzeBill.V1.AnalyzeBillResultDto>()
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
@@ -297,6 +274,33 @@ internal static class BillEndpointExtensions
             .Produces<IEnumerable<Dtos.V1.AnalyzedBillDto>>()
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
             .WithDescription("Returns analyzed bills for the current user.");
+
+        return app;
+    }
+
+    private static WebApplication MapGetPendingAnalyses(
+        this WebApplication app,
+        RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediateGet<GetPendingAnalyses.V1.GetPendingAnalysesQuery>("analyzed/pending")
+            .Produces<IEnumerable<Dtos.V1.PendingAnalysisDto>>()
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+            .WithDescription("Returns the current user's app uploads that are not analyzed yet, oldest first.");
+
+        return app;
+    }
+
+    private static WebApplication MapGetTodayAutoCreatedBills(
+        this WebApplication app,
+        RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediateGet<GetTodayAutoCreatedBills.V1.GetTodayAutoCreatedBillsQuery>("analyzed/today")
+            .Produces<IEnumerable<Dtos.V1.AutoCreatedBillDto>>()
+            .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest)
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+            .WithDescription("Returns the current user's bills created automatically by the analysis on the local day (tz), newest first.");
 
         return app;
     }

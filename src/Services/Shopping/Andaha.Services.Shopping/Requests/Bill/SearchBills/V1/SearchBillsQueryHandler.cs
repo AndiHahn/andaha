@@ -37,7 +37,8 @@ internal class SearchBillsQueryHandler : IRequestHandler<SearchBillsQuery, IResu
         if (request.Search is not null)
         {
             query = query.Where(b => b.ShopName.Contains(request.Search) ||
-                                     b.Notes != null && b.Notes.Contains(request.Search));
+                                     b.Notes != null && b.Notes.Contains(request.Search) ||
+                                     b.LineItems.Any(l => l.Description != null && l.Description.Contains(request.Search)));
         }
 
         if (request.CategoryFilter?.Length > 0)
@@ -67,11 +68,17 @@ internal class SearchBillsQueryHandler : IRequestHandler<SearchBillsQuery, IResu
             .Select(m => new MonthSumDto($"{m.Year:D4}-{m.Month:D2}", m.Sum))
             .ToArray();
 
-        var queryResult = await query
+        var orderedQuery = query
             .OrderByDescending(b => b.Date)
             .ThenByDescending(b => b.CreatedAt)
-            .AsExpandable()
-            .Select(bill => BillDtoMapping.EntityToListDto.Invoke(bill, userId))
+            .AsExpandable();
+
+        var search = request.Search;
+        var dtoQuery = search is null
+            ? orderedQuery.Select(bill => BillDtoMapping.EntityToListDto.Invoke(bill, userId))
+            : orderedQuery.Select(bill => BillDtoMapping.EntityToSearchListDto.Invoke(bill, userId, search));
+
+        var queryResult = await dtoQuery
             .Skip(request.PageSize * request.PageIndex)
             .Take(request.PageSize)
             .ToArrayAsync(cancellationToken);

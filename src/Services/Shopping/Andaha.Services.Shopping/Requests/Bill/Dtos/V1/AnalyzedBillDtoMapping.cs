@@ -16,5 +16,6 @@ internal static class AnalyzedBillDtoMapping
             AnalyzedBillLineItemDtoMapping.EntityToDto.Invoke(bill.LineItems),
             bill.Confidence,
             bill.TotalAmountConfidence,
-            bill.Images.Any());
+            bill.Images.Any(),
+            bill.SourceUploadId);
 }

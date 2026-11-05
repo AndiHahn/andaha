@@ -10,4 +10,5 @@ public record AnalyzedBillDto(
     IReadOnlyCollection<AnalyzedBillLineItemDto> LineItems,
     double? Confidence,
     double? TotalAmountConfidence,
-    bool ImageAvailable);
+    bool ImageAvailable,
+    string? SourceUploadId);

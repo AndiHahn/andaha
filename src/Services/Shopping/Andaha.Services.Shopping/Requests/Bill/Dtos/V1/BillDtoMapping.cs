@@ -12,7 +12,8 @@ internal static class BillDtoMapping
         (bill, currentUserId) => BillDtoMapping.ToDto.Invoke(
             bill,
             currentUserId,
-            BillLineItemDtoMapping.EntityToDto.Invoke(bill.LineItems));
+            BillLineItemDtoMapping.EntityToDto.Invoke(bill.LineItems),
+            null);
 
     /// <summary>
     /// List mapping (<c>GET api/bill/</c>): without line items (always an empty array) to keep the list lean.
@@ -21,7 +22,23 @@ internal static class BillDtoMapping
         (bill, currentUserId) => BillDtoMapping.ToDto.Invoke(
             bill,
             currentUserId,
-            Array.Empty<BillLineItemDto>());
+            Array.Empty<BillLineItemDto>(),
+            null);
+
+    /// <summary>
+    /// List mapping with an active search term: like <see cref="EntityToListDto"/>, plus the first line item
+    /// (by position) whose description contains <c>search</c>, or <c>null</c> if only shop or notes match.
+    /// </summary>
+    public static Expression<Func<Core.Bill, Guid, string, BillDto>> EntityToSearchListDto =
+        (bill, currentUserId, search) => BillDtoMapping.ToDto.Invoke(
+            bill,
+            currentUserId,
+            Array.Empty<BillLineItemDto>(),
+            bill.LineItems
+                .Where(lineItem => lineItem.Description != null && lineItem.Description.Contains(search))
+                .OrderBy(lineItem => lineItem.Position)
+                .Select(lineItem => new MatchedLineItemDto(lineItem.Description!, lineItem.TotalPrice))
+                .FirstOrDefault());
 
     public static Expression<Func<Core.BillCategory, BillCategoryDto>> CategoryToDto =
         (category) => new BillCategoryDto(category.Id, category.Name, category.Color, category.Order);
@@ -29,8 +46,8 @@ internal static class BillDtoMapping
     public static Expression<Func<Core.BillSubCategory?, BillSubCategoryDto?>> SubCategoryToDto =
         (category) => category == null ? null : new BillSubCategoryDto(category.Id, category.Name, category.Order);
 
-    private static Expression<Func<Core.Bill, Guid, IReadOnlyCollection<BillLineItemDto>, BillDto>> ToDto =
-        (bill, currentUserId, lineItems) => new BillDto(
+    private static Expression<Func<Core.Bill, Guid, IReadOnlyCollection<BillLineItemDto>, MatchedLineItemDto?, BillDto>> ToDto =
+        (bill, currentUserId, lineItems, matchedLineItem) => new BillDto(
             bill.Id,
             BillDtoMapping.CategoryToDto.Invoke(bill.Category),
             BillDtoMapping.SubCategoryToDto.Invoke(bill.SubCategory),
@@ -42,5 +59,6 @@ internal static class BillDtoMapping
             bill.Images.Any(),
             bill.FromAutoAnalysis,
             lineItems,
-            bill.CreatedAt);
+            bill.CreatedAt,
+            matchedLineItem);
 }
