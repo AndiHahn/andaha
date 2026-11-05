@@ -42,12 +42,11 @@ internal class ExportExpensesRequestHandler : IRequestHandler<ExportExpensesRequ
             .OrderBy(b => b.Date)
             .ThenBy(b => b.CreatedAt);
 
-        /*
-        if (request.CategoryFilter is not null && request.CategoryFilter.Any())
+        // Filter by category name like list and statistics, so bills of connected users match too.
+        if (request.CategoryFilter?.Length > 0)
         {
-            query = query.Where(bill => request.CategoryFilter.Contains(bill.Category.Id));
+            query = query.Where(bill => request.CategoryFilter.Contains(bill.Category.Name));
         }
-        */
 
         var bills = await query
             .Select(bill => new ExportRow

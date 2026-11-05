@@ -18,7 +18,7 @@ public class BillModelBuilder : IEntityTypeConfiguration<Bill>
             .HasOne(b => b.Category)
             .WithMany(c => c.Bills)
             .HasForeignKey(b => b.CategoryId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict); // never delete bills through their category, see BillCategoryReassignment
 
         builder
             .Property(b => b.ShopName)

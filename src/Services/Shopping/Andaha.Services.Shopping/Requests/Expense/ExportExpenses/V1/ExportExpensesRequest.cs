@@ -5,5 +5,5 @@ namespace Andaha.Services.Shopping.Requests.Expense.ExportExpenses.V1;
 
 public record ExportExpensesRequest(
     [FromQuery] DateTime StartTimeUtc,
-    [FromQuery] DateTime EndTimeUtc) : IHttpRequest;
-    //[FromQuery] IEnumerable<Guid>? CategoryFilter = null) : IHttpRequest;
+    [FromQuery] DateTime EndTimeUtc,
+    [FromQuery] string[]? CategoryFilter = null) : IHttpRequest;

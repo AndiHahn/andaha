@@ -116,10 +116,12 @@ public class Bill : Entity<Guid>
 
     public bool HasCreated(Guid userId) => this.UserId == userId;
 
-    public void UpdateCategory(BillCategory category)
+    public void MoveToCategory(BillCategory category)
     {
         this.CategoryId = category.Id;
         this.Category = category;
+        this.SubCategoryId = null;
+        this.SubCategory = null;
     }
 
     public void UpdateSubCategory(BillSubCategory subCategory)

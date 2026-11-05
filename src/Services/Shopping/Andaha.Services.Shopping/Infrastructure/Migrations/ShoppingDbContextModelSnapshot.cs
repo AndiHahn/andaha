@@ -377,7 +377,7 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
                     b.HasOne("Andaha.Services.Shopping.Core.BillCategory", "Category")
                         .WithMany("Bills")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Andaha.Services.Shopping.Core.BillSubCategory", "SubCategory")

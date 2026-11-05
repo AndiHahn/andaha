@@ -4,6 +4,7 @@ using Andaha.Services.Shopping.Requests.BillCategory.Dtos.V1;
 using LinqKit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Andaha.Services.Shopping.Requests.BillCategory.ListBillCategories.V1;
 
@@ -24,28 +25,43 @@ internal class ListBillCategoriesQueryHandler : IRequestHandler<ListBillCategori
     {
         Guid userId = identityService.GetUserId();
 
-        var categoryDtos = await dbContext.BillCategory
+        var categoryDtos = await ListCategoriesAsync(userId, cancellationToken);
+
+        if (!categoryDtos.Any())
+        {
+            await SeedInitialCategoriesIfNoneExistAsync(userId, cancellationToken);
+
+            categoryDtos = await ListCategoriesAsync(userId, cancellationToken);
+        }
+
+        return Results.Ok(categoryDtos);
+    }
+
+    private Task<List<CategoryDto>> ListCategoriesAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        return dbContext.BillCategory
             .AsNoTracking()
             .Where(category => category.UserId == userId)
             .OrderBy(category => category.Order)
             .AsExpandable()
             .Select(category => CategoryDtoMapping.EntityToDto.Invoke(category))
             .ToListAsync(cancellationToken);
+    }
 
-        if (!categoryDtos.Any())
+    // Two parallel first requests must not both seed: check and insert run in one serializable transaction,
+    // and the categories are only created while the user still has none. No unique index (existing duplicates).
+    private async Task SeedInitialCategoriesIfNoneExistAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        await using var transaction = await dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable, cancellationToken);
+
+        bool hasCategories = await dbContext.BillCategory.AnyAsync(category => category.UserId == userId, cancellationToken);
+        if (!hasCategories)
         {
-            var initialCategories = ShoppingDbContextSeed.CreateInitialCategories(userId);
-
-            dbContext.BillCategory.AddRange(initialCategories);
+            dbContext.BillCategory.AddRange(ShoppingDbContextSeed.CreateInitialCategories(userId));
 
             await dbContext.SaveChangesAsync(cancellationToken);
-
-            categoryDtos = initialCategories
-                .Select(category => CategoryDtoMapping.EntityToDto.Invoke(category))
-                .OrderBy(category => category.Order)
-                .ToList();
         }
 
-        return Results.Ok(categoryDtos);
+        await transaction.CommitAsync(cancellationToken);
     }
 }

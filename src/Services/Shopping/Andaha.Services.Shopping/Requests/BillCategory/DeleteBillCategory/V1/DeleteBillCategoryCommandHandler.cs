@@ -1,6 +1,8 @@
 ﻿using Andaha.CrossCutting.Application.Identity;
 using Andaha.Services.Shopping.Infrastructure;
+using Andaha.Services.Shopping.Requests.BillCategory.Services;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Andaha.Services.Shopping.Requests.BillCategory.DeleteBillCategory.V1;
@@ -31,11 +33,21 @@ internal class DeleteBillCategoryCommandHandler : IRequestHandler<DeleteBillCate
             return Results.NotFound();
         }
 
+        if (category.IsDefault)
+        {
+            return Results.BadRequest(new ProblemDetails
+            {
+                Title = "Default category cannot be deleted",
+                Detail = "Die Standardkategorie kann nicht gelöscht werden.",
+            });
+        }
+
         await RemoveTemplatesAndHiddenSuggestionsAsync(request.Id, cancellationToken);
 
-        dbContext.BillCategory.Remove(category);
+        // Bills of every user in this category (also those of connected users) move to their owner's default category.
+        await BillCategoryReassignment.MoveBillsToOwnersDefaultCategoryAsync(dbContext, new[] { request.Id }, cancellationToken);
 
-        await UpdateBillsForDeletedCategoryAsync(userId, request.Id, cancellationToken);
+        dbContext.BillCategory.Remove(category);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
@@ -57,25 +69,5 @@ internal class DeleteBillCategoryCommandHandler : IRequestHandler<DeleteBillCate
 
         this.dbContext.BillTemplate.RemoveRange(templates);
         this.dbContext.HiddenBillSuggestion.RemoveRange(hiddenSuggestions);
-    }
-
-    private async Task UpdateBillsForDeletedCategoryAsync(
-        Guid userId,
-        Guid removedCategoryId,
-        CancellationToken cancellationToken)
-    {
-        var billsWithRemovedCategory = await this.dbContext.Bill
-            .Where(bill => bill.UserId == userId &&
-                           bill.CategoryId == removedCategoryId)
-            .ToListAsync(cancellationToken);
-
-        var defaultCategory = await this.dbContext.BillCategory
-            .Where(category => category.UserId == userId)
-            .SingleAsync(category => category.IsDefault, cancellationToken);
-
-        foreach (var bill in billsWithRemovedCategory)
-        {
-            bill.UpdateCategory(defaultCategory);
-        }
     }
 }

@@ -65,6 +65,7 @@ internal static class BillCategoryEndpointExtensions
             .MediateDelete<DeleteBillCategory.V1.DeleteBillCategoryCommand>("{id}")
             .Produces(StatusCodes.Status204NoContent)
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
             .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
         return groupBuilder;
