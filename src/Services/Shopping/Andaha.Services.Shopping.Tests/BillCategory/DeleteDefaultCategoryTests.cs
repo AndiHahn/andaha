@@ -80,6 +80,40 @@ public class DeleteDefaultCategoryTests
         }
     }
 
+    // Same as above, but the handler runs on a second context (as in a request scope), so nothing
+    // the seeding context tracks (categories, sub categories, bills) can mask what the handler loads.
+    [Fact]
+    public async Task Delete_category_moves_own_bills_to_own_default_and_clears_subcategory_fresh_context()
+    {
+        var (context, connection) = TestDb.CreateShopping();
+        using (connection)
+        using (context)
+        {
+            var defaultCategory = Default(UserA);
+            var food = new Core.BillCategory(UserA, "Lebensmittel", "red", 1, new[] { ("Obst", 0) });
+            context.BillCategory.AddRange(defaultCategory, food);
+            context.SaveChanges();
+            var bill = BillIn(UserA, food, food.SubCategories.Single().Id);
+            context.Bill.Add(bill);
+            context.SaveChanges();
+
+            var options = new DbContextOptionsBuilder<ShoppingDbContext>().UseSqlite(connection).Options;
+            IResult result;
+            using (var handlerContext = new ShoppingDbContext(options))
+            {
+                var handler = new DeleteBillCategoryCommandHandler(handlerContext, IdentityOf(UserA));
+                result = await handler.Handle(new DeleteBillCategoryCommand(food.Id), CancellationToken.None);
+            }
+
+            Assert.IsType<NoContent>(result);
+            var stored = context.Bill.AsNoTracking().Single(b => b.Id == bill.Id);
+            Assert.Equal(defaultCategory.Id, stored.CategoryId);
+            Assert.Null(stored.SubCategoryId);
+            Assert.DoesNotContain(context.BillCategory.AsNoTracking(), c => c.Id == food.Id);
+            Assert.Empty(context.BillSubCategory.AsNoTracking());
+        }
+    }
+
     [Fact]
     public async Task Delete_category_moves_partner_bill_to_partner_default()
     {

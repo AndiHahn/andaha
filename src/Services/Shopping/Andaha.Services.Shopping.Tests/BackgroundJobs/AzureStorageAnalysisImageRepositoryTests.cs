@@ -126,6 +126,7 @@ public sealed class AzureStorageAnalysisImageRepositoryTests : IAsyncLifetime
         Assert.False(images[0].LegacyProcessed);
 
         Assert.True(images[1].LegacyProcessed);
+        Assert.Equal(legacyUserId, images[1].UserId);
         Assert.Equal(0, images[1].Attempts);
         Assert.Null(images[1].ClaimedUntilUtc);
 

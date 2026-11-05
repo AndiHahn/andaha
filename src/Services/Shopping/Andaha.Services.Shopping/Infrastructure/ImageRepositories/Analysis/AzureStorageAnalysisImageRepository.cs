@@ -7,6 +7,7 @@ namespace Andaha.Services.Shopping.Infrastructure.ImageRepositories.Analysis;
 
 public class AzureStorageAnalysisImageRepository(BlobServiceClient blobServiceClient) : IAnalysisImageRepository
 {
+    private const string UserIdKey = "userId";
     private const string AttemptsKey = "attempts";
     private const string ClaimedUntilKey = "claimedUntil";
     private const string LegacyProcessedAtKey = "processedAt";
@@ -60,6 +61,7 @@ public class AzureStorageAnalysisImageRepository(BlobServiceClient blobServiceCl
             {
                 ImageName = Path.GetFileName(blobItem.Name),
                 LastModified = blobItem.Properties.LastModified ?? blobItem.Properties.CreatedOn ?? DateTimeOffset.MinValue,
+                UserId = ReadUserId(metadata),
                 Attempts = ReadAttempts(metadata),
                 ClaimedUntilUtc = ReadClaimedUntil(metadata),
                 LegacyProcessed = metadata.ContainsKey(LegacyProcessedAtKey),
@@ -101,5 +103,12 @@ public class AzureStorageAnalysisImageRepository(BlobServiceClient blobServiceCl
         => metadata.TryGetValue(ClaimedUntilKey, out var text) &&
            DateTimeOffset.TryParse(text, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var claimedUntil)
             ? claimedUntil
+            : null;
+
+    // Metadata names are case-insensitive in Blob Storage, the listed dictionary is not.
+    private static Guid? ReadUserId(IDictionary<string, string> metadata)
+        => metadata.FirstOrDefault(entry => string.Equals(entry.Key, UserIdKey, StringComparison.OrdinalIgnoreCase)).Value is { } text &&
+           Guid.TryParse(text, out var userId)
+            ? userId
             : null;
 }

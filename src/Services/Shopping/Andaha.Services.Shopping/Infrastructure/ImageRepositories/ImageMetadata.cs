@@ -7,6 +7,11 @@ public record ImageMetadata
     public required DateTimeOffset LastModified { get; set; }
 
     /// <summary>
+    /// The uploading user from the <c>userId</c> metadata entry, or <c>null</c> when it is missing or invalid.
+    /// </summary>
+    public Guid? UserId { get; set; }
+
+    /// <summary>
     /// Number of times the image has been claimed for analysis.
     /// </summary>
     public int Attempts { get; set; }

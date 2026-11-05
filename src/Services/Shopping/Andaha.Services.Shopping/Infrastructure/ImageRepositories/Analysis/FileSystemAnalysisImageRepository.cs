@@ -101,6 +101,7 @@ public class FileSystemAnalysisImageRepository : IAnalysisImageRepository
             {
                 ImageName = fileName,
                 LastModified = lastModified,
+                UserId = ReadUserId(metadata),
                 Attempts = ReadAttempts(metadata),
                 ClaimedUntilUtc = ReadClaimedUntil(metadata),
                 LegacyProcessed = metadata.ContainsKey(LegacyProcessedAtKey),
@@ -126,15 +127,15 @@ public class FileSystemAnalysisImageRepository : IAnalysisImageRepository
     {
         var metadata = await ReadMetadataObjectAsync(metadataPath, ct);
 
-        if (metadata[UserIdKey] is JsonValue userIdValue &&
-            userIdValue.TryGetValue<string>(out var userIdText) &&
-            Guid.TryParse(userIdText, out var userId))
-        {
-            return userId;
-        }
-
-        return Guid.Empty;
+        return ReadUserId(metadata) ?? Guid.Empty;
     }
+
+    private static Guid? ReadUserId(JsonObject metadata)
+        => metadata[UserIdKey] is JsonValue userIdValue &&
+           userIdValue.TryGetValue<string>(out var userIdText) &&
+           Guid.TryParse(userIdText, out var userId)
+            ? userId
+            : null;
 
     private static async Task<JsonObject> ReadMetadataObjectAsync(string metadataPath, CancellationToken ct)
     {

@@ -67,4 +67,18 @@ public sealed class FileSystemAnalysisImageRepositoryTests : IDisposable
 
         Assert.True(images[2].LegacyProcessed);
     }
+
+    [Fact]
+    public async Task List_reports_owner_from_metadata()
+    {
+        var repository = new FileSystemAnalysisImageRepository(directory);
+        var userId = Guid.NewGuid();
+        await repository.UploadImageAsync("a.jpg", new MemoryStream([1]), userId);
+        await File.WriteAllBytesAsync(Path.Combine(directory, "without-sidecar.jpg"), [2]);
+
+        var images = (await repository.ListImagesAsync()).OrderBy(image => image.ImageName).ToArray();
+
+        Assert.Equal(userId, images[0].UserId);
+        Assert.Null(images[1].UserId);
+    }
 }
