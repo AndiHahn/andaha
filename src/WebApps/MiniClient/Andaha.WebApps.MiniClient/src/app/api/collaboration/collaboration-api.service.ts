@@ -43,17 +43,18 @@ export class CollaborationApiService {
       }
     ]);
 
-    return this.httpClient.post<void>(url, null, { params: httpParameters });
+    // Der Dialog zeigt den Fehler selbst (eine Meldung pro Fehler)
+    return this.httpClient.post<void>(url, null, { params: httpParameters, ...skipGlobalError() });
   }
 
   acceptRequest(fromUserId: string): Observable<void> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'connection', 'accept', fromUserId);
-    return this.httpClient.put<void>(url, null);
+    return this.httpClient.put<void>(url, null, skipGlobalError());
   }
 
   declineRequest(fromUserId: string): Observable<void> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'connection', 'decline', fromUserId);
-    return this.httpClient.delete<void>(url);
+    return this.httpClient.delete<void>(url, skipGlobalError());
   }
 
   listIncomingConnectionRequests(): Observable<ConnectionRequestDto[]> {

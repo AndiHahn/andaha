@@ -9,6 +9,22 @@ import { CdkScrollable } from '@angular/cdk/scrolling';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe';
 
+const GENERIC_ERROR = 'Anfrage konnte nicht gesendet werden. Bitte später erneut versuchen.';
+const MAX_MESSAGE_LENGTH = 120;
+
+/** Servertext nur bei kurzen Meldungen einer 4xx-Antwort (z. B. „User not found“), sonst ein allgemeiner Text ohne Interna. */
+function userFacingMessage(error: { status?: number; error?: unknown }): string {
+  const status = error?.status ?? 0;
+  const body = error?.error;
+  if (status >= 400 && status < 500 && typeof body === 'string') {
+    const text = body.trim();
+    if (text.length > 0 && text.length <= MAX_MESSAGE_LENGTH && !text.includes('\n')) {
+      return text;
+    }
+  }
+  return GENERIC_ERROR;
+}
+
 @Component({
     selector: 'app-add-connection-dialog',
     templateUrl: './add-connection-dialog.component.html',
@@ -60,9 +76,7 @@ export class AddConnectionDialogComponent implements OnInit {
         },
         error: error => {
           this.isSaving = false;
-          this.errorMessage = typeof error?.error === 'string' && error.error
-            ? error.error
-            : 'Die Anfrage konnte nicht gesendet werden.';
+          this.errorMessage = userFacingMessage(error);
         } 
       }
     );

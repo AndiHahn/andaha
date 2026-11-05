@@ -19,6 +19,23 @@ describe('CollaborationApiService', () => {
 
   afterEach(() => http.verify());
 
+  it('requestConnection, acceptRequest and declineRequest set SKIP_GLOBAL_ERROR (callers show the error)', () => {
+    api.requestConnection({ targetUserEmailAddress: 'a@b.at' }).subscribe();
+    const post = http.expectOne(r => r.method === 'POST' && new URL(r.url).pathname === '/api/connection/request');
+    expect(post.request.context.get(SKIP_GLOBAL_ERROR)).toBe(true);
+    post.flush(null);
+
+    api.acceptRequest('u1').subscribe();
+    const put = http.expectOne(r => r.method === 'PUT' && new URL(r.url).pathname === '/api/connection/accept/u1');
+    expect(put.request.context.get(SKIP_GLOBAL_ERROR)).toBe(true);
+    put.flush(null);
+
+    api.declineRequest('u1').subscribe();
+    const del = deleteTo('/api/connection/decline/u1');
+    expect(del.request.context.get(SKIP_GLOBAL_ERROR)).toBe(true);
+    del.flush(null);
+  });
+
   it('removeConnection: DELETE api/connection/{userId}', () => {
     api.removeConnection('u1').subscribe();
     const req = deleteTo('/api/connection/u1');

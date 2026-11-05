@@ -35,7 +35,7 @@
         </div>
       }
       <div cdkDropList (cdkDropListDropped)="drop($event)">
-        @for (subCategoryForm of subCategoryForms.controls; track subCategoryForm; let i = $index) {
+        @for (subCategoryForm of subCategoryForms.controls; track subCategoryForm.controls.id.value || subCategoryForm; let i = $index) {
           <div
             cdkDrag
             class="sub andaha-drag-item"
