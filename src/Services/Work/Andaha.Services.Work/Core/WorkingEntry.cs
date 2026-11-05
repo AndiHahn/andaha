@@ -21,10 +21,7 @@ public class WorkingEntry : Entity<Guid>
             throw new ArgumentNullException(nameof(person));
         }
 
-        if (from > until)
-        {
-            throw new ArgumentException("Until timestamp must be > from timestamp.");
-        }
+        EnsureUntilAfterFrom(from, until);
 
         this.PersonId = person.Id;
         this.Person = person;
@@ -57,12 +54,25 @@ public class WorkingEntry : Entity<Guid>
         TimeSpan? @break = null,
         string? notes = null)
     {
-        this.From = from ?? this.From;
-        this.Until = until ?? this.Until;
+        var newFrom = from ?? this.From;
+        var newUntil = until ?? this.Until;
+
+        EnsureUntilAfterFrom(newFrom, newUntil);
+
+        this.From = newFrom;
+        this.Until = newUntil;
         this.Break = @break ?? this.Break;
         this.Notes = notes ?? this.Notes;
 
         CalculateWorkDuration();
+    }
+
+    private static void EnsureUntilAfterFrom(DateTime from, DateTime until)
+    {
+        if (until <= from)
+        {
+            throw new ArgumentException("Until timestamp must be > from timestamp.", nameof(until));
+        }
     }
 
     private void CalculateWorkDuration()

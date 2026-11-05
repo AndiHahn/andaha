@@ -16,6 +16,7 @@ public static class WorkingEntryEndpointExtensions
             .MapCreateWorkingEntriesRequest()
             .MapUpdatePersonRequest()
             .MapListWorkingEntriesRequest()
+            .MapListWorkingEntryMonthsRequest()
             .MapDeleteWorkingEntryRequest();
 
         return app;
@@ -67,6 +68,19 @@ public static class WorkingEntryEndpointExtensions
             .Produces<IEnumerable<Dtos.V1.WorkingEntryDto>>()
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<ProblemDetails>(StatusCodes.Status403Forbidden);
+
+        return groupBuilder;
+    }
+
+    private static RouteGroupBuilder MapListWorkingEntryMonthsRequest(
+        this RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediateGet<ListWorkingEntryMonths.V1.ListWorkingEntryMonthsQuery>("/{personId}/months")
+            .Produces<Dtos.V1.WorkingEntryMonthsDto>()
+            .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest)
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
         return groupBuilder;
     }

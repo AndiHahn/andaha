@@ -14,13 +14,21 @@ internal static class TestDb
         var connection = new SqliteConnection("DataSource=:memory:");
         connection.Open();
 
+        var context = Open(connection);
+        context.Database.EnsureCreated();
+
+        return (context, connection);
+    }
+
+    /// <summary>
+    /// Creates a fresh WorkDbContext on an existing connection, e.g. to act on data seeded through another context.
+    /// </summary>
+    public static WorkDbContext Open(SqliteConnection connection)
+    {
         var options = new DbContextOptionsBuilder<WorkDbContext>()
             .UseSqlite(connection)
             .Options;
 
-        var context = new WorkDbContext(options);
-        context.Database.EnsureCreated();
-
-        return (context, connection);
+        return new WorkDbContext(options);
     }
 }

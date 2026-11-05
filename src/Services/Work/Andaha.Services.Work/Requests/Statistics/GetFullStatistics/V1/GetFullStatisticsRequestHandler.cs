@@ -28,29 +28,34 @@ internal class GetFullStatisticsRequestHandler : IRequestHandler<GetFullStatisti
     {
         var userId = this.identityService.GetUserId();
         var connectedUsers = await this.collaborationApiProxy.GetConnectedUsers(cancellationToken);
+        var personFilter = request.PersonFilter;
 
         long totalWorkingTimeUnix = await this.dbContext.GetTotalWorkingTimeAsync(
             userId,
             connectedUsers,
+            personFilter,
             cancellationToken);
 
         double payedMoney = await this.dbContext.GetTotalPayedMoneyAsync(
             userId,
             connectedUsers,
+            personFilter,
             cancellationToken);
 
         double totalMoneyToPay = await this.dbContext.GetTotalMoneyToPayAsync(
             userId,
             connectedUsers,
+            personFilter,
             cancellationToken);
 
         double totalPayedTip = await this.dbContext.GetTotalPayedTipAsync(
             userId,
             connectedUsers,
+            personFilter,
             cancellationToken);
 
-        long totalHoursToPayUnix = await GetHoursToPayAsync(userId, connectedUsers, cancellationToken);
-        long hoursPayedUnix = await GetHoursPayedAsync(userId, connectedUsers, cancellationToken);
+        long totalHoursToPayUnix = await GetHoursToPayAsync(userId, connectedUsers, personFilter, cancellationToken);
+        long hoursPayedUnix = await GetHoursPayedAsync(userId, connectedUsers, personFilter, cancellationToken);
 
         var totalWorkingTime = new TimeSpan(totalWorkingTimeUnix);
         var totalHoursToPay = new TimeSpan(totalHoursToPayUnix);
@@ -68,13 +73,9 @@ internal class GetFullStatisticsRequestHandler : IRequestHandler<GetFullStatisti
     private Task<long> GetHoursPayedAsync(
         Guid userId,
         IReadOnlyCollection<Guid> connectedUsers,
+        IReadOnlyCollection<Guid>? personFilter,
         CancellationToken cancellationToken)
-        => this.dbContext.Person
-            .AsNoTracking()
-            .Where(
-                person =>
-                    person.UserId == userId ||
-                    connectedUsers.Contains(person.UserId))
+        => this.dbContext.VisiblePersons(userId, connectedUsers, personFilter)
             .Where(person => person.HourlyRate > 0)
             .SelectMany(person => person.Payments)
             .SumAsync(payment => payment.PayedHoursTicks, cancellationToken);
@@ -82,13 +83,9 @@ internal class GetFullStatisticsRequestHandler : IRequestHandler<GetFullStatisti
     private Task<long> GetHoursToPayAsync(
         Guid userId,
         IReadOnlyCollection<Guid> connectedUsers,
+        IReadOnlyCollection<Guid>? personFilter,
         CancellationToken cancellationToken)
-        => this.dbContext.Person
-            .AsNoTracking()
-            .Where(
-                person =>
-                    person.UserId == userId ||
-                    connectedUsers.Contains(person.UserId))
+        => this.dbContext.VisiblePersons(userId, connectedUsers, personFilter)
             .Where(person => person.HourlyRate > 0)
             .SelectMany(person => person.WorkingEntries)
             .SumAsync(entry => entry.WorkDurationTicks, cancellationToken);

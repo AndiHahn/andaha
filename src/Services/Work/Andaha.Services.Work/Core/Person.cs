@@ -55,6 +55,37 @@ public class Person : Entity<Guid>
         this.Payments.Add(payment);
     }
 
+    /// <summary>
+    /// Changes a payment of this person. Returns false if the person has no payment with this id.
+    /// </summary>
+    public bool UpdatePayment(Guid paymentId, TimeSpan payedTime, double payedMoney, double payedTip, string? notes)
+    {
+        var payment = this.Payments.FirstOrDefault(payment => payment.Id == paymentId);
+        if (payment is null)
+        {
+            return false;
+        }
+
+        payment.Update(payedTime, payedMoney, payedTip, notes);
+
+        return true;
+    }
+
+    /// <summary>
+    /// Removes a payment from this person and returns it, or null if the person has no payment with this id.
+    /// The relationship does not cascade, so the caller deletes the returned payment from the database.
+    /// </summary>
+    public Payment? RemovePayment(Guid paymentId)
+    {
+        var payment = this.Payments.FirstOrDefault(payment => payment.Id == paymentId);
+        if (payment is not null)
+        {
+            this.Payments.Remove(payment);
+        }
+
+        return payment;
+    }
+
     public bool HasCreated(Guid userId) => this.UserId == userId;
 
     public void Update(

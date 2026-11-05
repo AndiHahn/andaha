@@ -16,6 +16,32 @@ public class Payment : Entity<Guid>
         string? notes)
     : base(Guid.NewGuid())
     {
+        EnsureValidAmounts(payedMoney, payedTip);
+
+        this.PersonId = person.Id;
+        this.PayedHoursTicks = payedTime.Ticks;
+        this.PayedMoney = payedMoney;
+        this.PayedTip = payedTip;
+        this.Notes = notes;
+        this.PayedAt = DateTime.UtcNow;
+        this.Person = person;
+    }
+
+    /// <summary>
+    /// Changes the paid hours, money, tip and notes. The payment date stays as it is.
+    /// </summary>
+    public void Update(TimeSpan payedTime, double payedMoney, double payedTip, string? notes)
+    {
+        EnsureValidAmounts(payedMoney, payedTip);
+
+        this.PayedHoursTicks = payedTime.Ticks;
+        this.PayedMoney = payedMoney;
+        this.PayedTip = payedTip;
+        this.Notes = notes;
+    }
+
+    private static void EnsureValidAmounts(double payedMoney, double payedTip)
+    {
         if (payedMoney <= 0)
         {
             throw new ArgumentException("Parameter must be > 0.", nameof(payedMoney));
@@ -25,14 +51,6 @@ public class Payment : Entity<Guid>
         {
             throw new ArgumentException("Parameter must be >= 0.", nameof(payedTip));
         }
-
-        this.PersonId = person.Id;
-        this.PayedHoursTicks = payedTime.Ticks;
-        this.PayedMoney = payedMoney;
-        this.PayedTip = payedTip;
-        this.Notes = notes;
-        this.PayedAt = DateTime.UtcNow;
-        this.Person = person;
     }
 
     public Guid PersonId { get; private set; }

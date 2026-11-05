@@ -31,6 +31,7 @@ internal class GetStatisticsRequestHandler : IRequestHandler<GetStatisticsReques
         long totalWorkingTimeUnix = await this.dbContext.GetWorkingTimeAsync(
             userId,
             connectedUsers,
+            request.Parameters.PersonFilter,
             request.Parameters.StartTimeUtc,
             request.Parameters.EndTimeUtc,
             cancellationToken);
@@ -38,6 +39,7 @@ internal class GetStatisticsRequestHandler : IRequestHandler<GetStatisticsReques
         double payedMoney = await this.dbContext.GetExtrapolatedPayedMoneyAsync(
             userId,
             connectedUsers,
+            request.Parameters.PersonFilter,
             request.Parameters.StartTimeUtc,
             request.Parameters.EndTimeUtc,
             cancellationToken);

@@ -15,6 +15,8 @@ internal static class PersonEndpointExtensions
             .MapCreatePersonRequest()
             .MapListPersonsRequest()
             .MapPayPersonRequest()
+            .MapUpdatePaymentRequest()
+            .MapDeletePaymentRequest()
             .MapUpdatePersonRequest()
             .MapDeletePersonRequest()
             .MapExportExpenses();
@@ -52,6 +54,31 @@ internal static class PersonEndpointExtensions
             .MediatePost<PayPerson.V1.PayPersonRequest>("{id}/pay")
             .Produces(StatusCodes.Status204NoContent)
             .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest)
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        return groupBuilder;
+    }
+
+    private static RouteGroupBuilder MapUpdatePaymentRequest(
+        this RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediatePut<UpdatePayment.V1.UpdatePaymentCommand>("{personId}/payments/{paymentId}")
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest)
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+            .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        return groupBuilder;
+    }
+
+    private static RouteGroupBuilder MapDeletePaymentRequest(
+        this RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediateDelete<DeletePayment.V1.DeletePaymentCommand>("{personId}/payments/{paymentId}")
+            .Produces(StatusCodes.Status204NoContent)
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 

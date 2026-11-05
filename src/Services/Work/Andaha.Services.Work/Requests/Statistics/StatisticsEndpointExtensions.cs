@@ -14,7 +14,8 @@ internal static class StatisticsEndpointExtensions
         groupBuilder
             .MapGetAvailableTimeRange()
             .MapGetStatisticsRequest()
-            .MapGetFullStatisticsRequest();
+            .MapGetFullStatisticsRequest()
+            .MapGetMonthlyHoursRequest();
 
         return app;
     }
@@ -48,6 +49,18 @@ internal static class StatisticsEndpointExtensions
         groupBuilder
             .MediateGet<GetFullStatistics.V1.GetFullStatisticsRequest>("full")
             .Produces<Dtos.V1.FullStatisticsDto>()
+            .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest)
+            .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
+
+        return groupBuilder;
+    }
+
+    private static RouteGroupBuilder MapGetMonthlyHoursRequest(
+        this RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediateGet<GetMonthlyHours.V1.GetMonthlyHoursQuery>("monthly")
+            .Produces<Dtos.V1.MonthlyHoursDto[]>()
             .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest)
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
 
