@@ -182,6 +182,31 @@ public sealed class AzureStorageAnalysisImageRepositoryTests : IAsyncLifetime
     }
 
     [AzuriteFact]
+    public async Task Extend_moves_claim_without_counting_and_metadata_reads_one_blob()
+    {
+        var repository = new AzureStorageAnalysisImageRepository(blobServiceClient);
+        var userId = Guid.NewGuid();
+        await repository.UploadImageAsync("a.jpg", new MemoryStream([1]), userId, Unclaimed with
+        {
+            Origin = AnalysisUploadOptions.AppOrigin,
+            ClaimedUntilUtc = Unclaimed.UploadedAtUtc.AddMinutes(2),
+            Attempts = 1,
+        });
+        var extendedUntil = Unclaimed.UploadedAtUtc.AddMinutes(10);
+
+        await repository.ExtendClaimAsync("a.jpg", extendedUntil);
+
+        var image = await repository.GetMetadataAsync("a.jpg");
+        Assert.NotNull(image);
+        Assert.Equal(extendedUntil, image.ClaimedUntilUtc);
+        Assert.Equal(1, image.Attempts);
+        Assert.Equal(userId, image.UserId);
+        Assert.Equal("app", image.Origin);
+        Assert.Equal(Unclaimed.UploadedAtUtc, image.UploadedAtUtc);
+        Assert.Null(await repository.GetMetadataAsync("missing.jpg"));
+    }
+
+    [AzuriteFact]
     public async Task Claim_of_a_legacy_blob_keeps_the_legacy_flag_and_owner()
     {
         var repository = new AzureStorageAnalysisImageRepository(blobServiceClient);

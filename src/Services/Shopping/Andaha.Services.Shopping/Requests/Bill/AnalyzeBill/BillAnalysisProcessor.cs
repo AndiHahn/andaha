@@ -24,6 +24,17 @@ internal sealed class BillAnalysisProcessor(
 
     public async Task ProcessAsync(string imageName, CancellationToken ct)
     {
+        // An earlier attempt may have saved its result but failed to delete the source image.
+        // Finish that attempt instead of analyzing (and creating) a second time.
+        if (await IsAlreadyProcessedAsync(imageName, ct))
+        {
+            logger.LogWarning("Image '{ImageName}' was already turned into a bill or analyzed bill. Deleting the leftover image.", imageName);
+
+            await analysisImageRepository.DeleteImageAsync(imageName, ct);
+
+            return;
+        }
+
         var file = await analysisImageRepository.GetImageAsync(imageName, ct);
         using var fileStream = file.Image;
 
@@ -53,6 +64,10 @@ internal sealed class BillAnalysisProcessor(
         logger.LogInformation("Analysis Result is not reasonable. Create analyzed bill for manual review.");
         await CreateAnalyzedBillAsync(imageName, file, analysisResult, classificationResult, lineItems, ct);
     }
+
+    private async Task<bool> IsAlreadyProcessedAsync(string imageName, CancellationToken ct)
+        => await dbContext.Bill.AnyAsync(bill => bill.SourceUploadId == imageName, ct) ||
+           await dbContext.AnalyzedBill.AnyAsync(analyzedBill => analyzedBill.SourceUploadId == imageName, ct);
 
     private async Task CreateAnalyzedBillAsync(
         string sourceImageName,

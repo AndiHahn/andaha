@@ -49,10 +49,9 @@ public class AnalyzeBillWorkerTests
     public async Task Claims_before_processing()
     {
         var imageRepository = Substitute.For<IAnalysisImageRepository>();
-        imageRepository.ListImagesAsync(Arg.Any<CancellationToken>()).Returns(
-        [
-            new ImageMetadata { ImageName = "a.jpg", LastModified = Now.AddHours(-1) },
-        ]);
+        var image = new ImageMetadata { ImageName = "a.jpg", LastModified = Now.AddHours(-1) };
+        imageRepository.ListImagesAsync(Arg.Any<CancellationToken>()).Returns([image]);
+        imageRepository.GetMetadataAsync("a.jpg", Arg.Any<CancellationToken>()).Returns(image);
 
         await CreateWorker(imageRepository).PollAndProcessAsync(CancellationToken.None);
 
@@ -117,6 +116,33 @@ public class AnalyzeBillWorkerTests
         var image = repository.Get("upload");
         Assert.Equal(2, image.Attempts);
         Assert.Equal(time.Now + AnalyzeBillWorker.ClaimDuration, image.ClaimedUntilUtc);
+    }
+
+    [Fact]
+    public async Task Worker_rechecks_claim_before_processing_stale_snapshot_entry()
+    {
+        // The listing at the start of the run still shows both images unclaimed ...
+        var imageRepository = Substitute.For<IAnalysisImageRepository>();
+        imageRepository.ListImagesAsync(Arg.Any<CancellationToken>()).Returns(
+        [
+            new ImageMetadata { ImageName = "claimed.jpg", LastModified = Now.AddHours(-1) },
+            new ImageMetadata { ImageName = "gone.jpg", LastModified = Now.AddHours(-1), Attempts = AnalyzeBillWorker.MaxAttempts },
+        ]);
+        // ... but meanwhile the immediate analysis claimed one and finished the other.
+        imageRepository.GetMetadataAsync("claimed.jpg", Arg.Any<CancellationToken>()).Returns(new ImageMetadata
+        {
+            ImageName = "claimed.jpg",
+            LastModified = Now.AddHours(-1),
+            Attempts = 1,
+            ClaimedUntilUtc = Now + AnalyzeBillWorker.ClaimDuration,
+        });
+        imageRepository.GetMetadataAsync("gone.jpg", Arg.Any<CancellationToken>()).Returns((ImageMetadata?)null);
+
+        await CreateWorker(imageRepository).PollAndProcessAsync(CancellationToken.None);
+
+        await imageRepository.DidNotReceiveWithAnyArgs().ClaimAsync(default!, default, default);
+        await processor.DidNotReceiveWithAnyArgs().ProcessAsync(default!, default);
+        await failedHandler.DidNotReceiveWithAnyArgs().HandleAsync(default!, default);
     }
 
     [Fact]
@@ -197,6 +223,15 @@ public class AnalyzeBillWorkerTests
         {
             var image = images[name];
             images[name] = image with { Attempts = image.Attempts + 1, ClaimedUntilUtc = claimedUntilUtc };
+            return Task.CompletedTask;
+        }
+
+        public Task<ImageMetadata?> GetMetadataAsync(string name, CancellationToken ct = default)
+            => Task.FromResult(images.TryGetValue(name, out var image) ? image with { } : null);
+
+        public Task ExtendClaimAsync(string name, DateTimeOffset claimedUntilUtc, CancellationToken ct = default)
+        {
+            images[name] = images[name] with { ClaimedUntilUtc = claimedUntilUtc };
             return Task.CompletedTask;
         }
 

@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using Andaha.Services.Shopping.Infrastructure.AzureBlobStorage;
+using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 
@@ -68,23 +69,53 @@ public class AzureStorageAnalysisImageRepository(BlobServiceClient blobServiceCl
             traits: BlobTraits.Metadata,
             cancellationToken: ct))
         {
-            var metadata = blobItem.Metadata ?? new Dictionary<string, string>();
-
-            result.Add(new ImageMetadata
-            {
-                ImageName = Path.GetFileName(blobItem.Name),
-                LastModified = blobItem.Properties.LastModified ?? blobItem.Properties.CreatedOn ?? DateTimeOffset.MinValue,
-                UserId = ReadUserId(metadata),
-                UploadedAtUtc = ReadTimestamp(metadata, UploadedAtKey),
-                Origin = ReadValue(metadata, OriginKey),
-                Attempts = ReadAttempts(metadata),
-                ClaimedUntilUtc = ReadTimestamp(metadata, ClaimedUntilKey),
-                LegacyProcessed = ReadValue(metadata, LegacyProcessedAtKey) is not null,
-            });
+            result.Add(ToImageMetadata(
+                blobItem.Name,
+                blobItem.Properties.LastModified ?? blobItem.Properties.CreatedOn ?? DateTimeOffset.MinValue,
+                blobItem.Metadata ?? new Dictionary<string, string>()));
         }
 
         return result;
     }
+
+    public async Task<ImageMetadata?> GetMetadataAsync(string name, CancellationToken ct = default)
+    {
+        var blobClient = blobServiceClient.GetBlobContainerClient("analysis").GetBlobClient(name);
+
+        try
+        {
+            var properties = (await blobClient.GetPropertiesAsync(cancellationToken: ct)).Value;
+
+            return ToImageMetadata(name, properties.LastModified, properties.Metadata ?? new Dictionary<string, string>());
+        }
+        catch (RequestFailedException ex) when (ex.Status == 404)
+        {
+            return null;
+        }
+    }
+
+    public async Task ExtendClaimAsync(string name, DateTimeOffset claimedUntilUtc, CancellationToken ct = default)
+    {
+        var blobClient = blobServiceClient.GetBlobContainerClient("analysis").GetBlobClient(name);
+        var metadata = await ReadMetadataAsync(blobClient, ct);
+
+        metadata[ClaimedUntilKey] = claimedUntilUtc.ToString("O", CultureInfo.InvariantCulture);
+
+        await blobClient.SetMetadataAsync(metadata, cancellationToken: ct);
+    }
+
+    private static ImageMetadata ToImageMetadata(string blobName, DateTimeOffset lastModified, IDictionary<string, string> metadata)
+        => new()
+        {
+            ImageName = Path.GetFileName(blobName),
+            LastModified = lastModified,
+            UserId = ReadUserId(metadata),
+            UploadedAtUtc = ReadTimestamp(metadata, UploadedAtKey),
+            Origin = ReadValue(metadata, OriginKey),
+            Attempts = ReadAttempts(metadata),
+            ClaimedUntilUtc = ReadTimestamp(metadata, ClaimedUntilKey),
+            LegacyProcessed = ReadValue(metadata, LegacyProcessedAtKey) is not null,
+        };
 
     public async Task DeleteImageAsync(string name, CancellationToken ct = default)
     {

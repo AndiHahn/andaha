@@ -88,4 +88,35 @@ public sealed class FileSystemAnalysisImageRepositoryTests : IDisposable
         Assert.Equal(userId, images[0].UserId);
         Assert.Null(images[1].UserId);
     }
+
+    [Fact]
+    public async Task Extend_moves_claim_without_counting_and_metadata_reads_one_image()
+    {
+        var repository = new FileSystemAnalysisImageRepository(directory);
+        await repository.UploadImageAsync("a.jpg", new MemoryStream([1]), Guid.NewGuid(), Unclaimed with { ClaimedUntilUtc = Unclaimed.UploadedAtUtc.AddMinutes(2), Attempts = 1 });
+        var extendedUntil = Unclaimed.UploadedAtUtc.AddMinutes(10);
+
+        await repository.ExtendClaimAsync("a.jpg", extendedUntil);
+
+        var image = await repository.GetMetadataAsync("a.jpg");
+        Assert.NotNull(image);
+        Assert.Equal(extendedUntil, image.ClaimedUntilUtc);
+        Assert.Equal(1, image.Attempts);
+        Assert.Equal("nas", image.Origin);
+        Assert.Null(await repository.GetMetadataAsync("missing.jpg"));
+    }
+
+    [Fact]
+    public async Task Claim_changes_on_a_missing_image_leave_no_orphaned_sidecar()
+    {
+        var repository = new FileSystemAnalysisImageRepository(directory);
+        var until = new DateTimeOffset(2026, 11, 4, 12, 10, 0, TimeSpan.Zero);
+
+        await repository.ClaimAsync("gone.jpg", until);
+        await repository.ExtendClaimAsync("gone.jpg", until);
+        await repository.ReleaseClaimAsync("gone.jpg");
+
+        Assert.Empty(Directory.GetFiles(directory));
+        Assert.Empty(await repository.ListImagesAsync());
+    }
 }

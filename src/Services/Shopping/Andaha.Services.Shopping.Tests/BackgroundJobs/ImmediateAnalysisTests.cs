@@ -32,7 +32,7 @@ public sealed class ImmediateAnalysisTests : IDisposable
     private readonly string folder = Path.Combine(Path.GetTempPath(), "andaha-immediate-" + Guid.NewGuid().ToString("N"));
     private readonly FileSystemAnalysisImageRepository analysisImages;
     private readonly AnalysisQueue queue = new();
-    private readonly FixedTimeProvider time = new(Now);
+    private readonly MutableTimeProvider time = new(Now);
     private readonly IInvoiceAnalysisService invoiceAnalysis = Substitute.For<IInvoiceAnalysisService>();
     private readonly ICategoryClassificationService classification = Substitute.For<ICategoryClassificationService>();
     private readonly IImageRepository billImages = Substitute.For<IImageRepository>();
@@ -96,11 +96,7 @@ public sealed class ImmediateAnalysisTests : IDisposable
     {
         invoiceAnalysis.AnalyzeAsync(Arg.Any<Stream>(), Arg.Any<CancellationToken>()).Returns(Plausible());
         using var services = BuildServices();
-        var service = new ImmediateAnalysisService(
-            queue,
-            services.GetRequiredService<IServiceScopeFactory>(),
-            analysisImages,
-            NullLogger<ImmediateAnalysisService>.Instance);
+        var service = CreateService(services);
 
         await service.StartAsync(CancellationToken.None);
         string id = await UploadAsync();
@@ -163,7 +159,7 @@ public sealed class ImmediateAnalysisTests : IDisposable
     }
 
     [Fact]
-    public async Task Failure_releases_claim_and_counts_attempt()
+    public async Task Failure_releases_claim_and_keeps_upload_attempt()
     {
         invoiceAnalysis.AnalyzeAsync(Arg.Any<Stream>(), Arg.Any<CancellationToken>())
             .ThrowsAsync(new InvalidOperationException("analysis down"));
@@ -182,6 +178,138 @@ public sealed class ImmediateAnalysisTests : IDisposable
         await using var context = TestDb.Open(connection);
         Assert.Empty(await context.Bill.ToListAsync());
         Assert.Empty(await context.AnalyzedBill.ToListAsync());
+    }
+
+    [Fact]
+    public async Task Immediate_processing_extends_claim_before_analysis()
+    {
+        string? id = null;
+        ImageMetadata? duringAnalysis = null;
+        invoiceAnalysis.AnalyzeAsync(Arg.Any<Stream>(), Arg.Any<CancellationToken>())
+            .Returns(async _ =>
+            {
+                duringAnalysis = await analysisImages.GetMetadataAsync(id!);
+                return Plausible();
+            });
+        using var services = BuildServices();
+        id = await UploadAsync();
+        time.Now = Now.AddSeconds(30);
+
+        await CreateService(services).ProcessAsync(id, CancellationToken.None);
+
+        Assert.NotNull(duringAnalysis);
+        Assert.Equal(Now.AddSeconds(30) + AnalyzeBillWorker.ClaimDuration, duringAnalysis.ClaimedUntilUtc);
+        Assert.Equal(1, duringAnalysis.Attempts);
+        await using var context = TestDb.Open(connection);
+        Assert.Single(await context.Bill.ToListAsync());
+    }
+
+    [Theory]
+    [InlineData("claim lapsed")]
+    [InlineData("worker owns it")]
+    [InlineData("image gone")]
+    public async Task Immediate_processing_skips_when_claim_lapsed_or_worker_owns_it(string situation)
+    {
+        invoiceAnalysis.AnalyzeAsync(Arg.Any<Stream>(), Arg.Any<CancellationToken>()).Returns(Plausible());
+        using var services = BuildServices();
+        string id = await UploadAsync();
+        time.Now = Now.AddMinutes(3);
+
+        switch (situation)
+        {
+            case "worker owns it":
+                await analysisImages.ClaimAsync(id, time.Now + AnalyzeBillWorker.ClaimDuration);
+                break;
+            case "image gone":
+                await analysisImages.DeleteImageAsync(id);
+                break;
+        }
+
+        var before = await analysisImages.GetMetadataAsync(id);
+
+        await CreateService(services).ProcessAsync(id, CancellationToken.None);
+
+        await invoiceAnalysis.DidNotReceiveWithAnyArgs().AnalyzeAsync(default!, default);
+        Assert.Equal(before, await analysisImages.GetMetadataAsync(id));
+        await using var context = TestDb.Open(connection);
+        Assert.Empty(await context.Bill.ToListAsync());
+        Assert.Empty(await context.AnalyzedBill.ToListAsync());
+    }
+
+    [Fact]
+    public async Task Worker_and_immediate_path_on_the_same_image_create_exactly_one_bill()
+    {
+        var analysisStarted = new TaskCompletionSource();
+        var finishAnalysis = new TaskCompletionSource();
+        invoiceAnalysis.AnalyzeAsync(Arg.Any<Stream>(), Arg.Any<CancellationToken>())
+            .Returns(async _ =>
+            {
+                // Only the first analysis is held open; a second one (the duplicate this test guards against) runs through.
+                if (analysisStarted.TrySetResult())
+                {
+                    await finishAnalysis.Task;
+                }
+
+                return Plausible();
+            });
+        using var services = BuildServices();
+        var worker = new AnalyzeBillWorker(
+            NullLogger<AnalyzeBillWorker>.Instance,
+            analysisImages,
+            services.GetRequiredService<IServiceScopeFactory>(),
+            time);
+        string id = await UploadAsync();
+
+        var immediate = CreateService(services).ProcessAsync(id, CancellationToken.None);
+        await analysisStarted.Task.WaitAsync(TimeSpan.FromSeconds(10));
+
+        // The 2-minute upload claim has lapsed while the analysis is still running: the worker must keep off.
+        time.Now = Now.AddMinutes(3);
+        await worker.PollAndProcessAsync(CancellationToken.None);
+
+        finishAnalysis.SetResult();
+        await immediate;
+        await worker.PollAndProcessAsync(CancellationToken.None);
+
+        await invoiceAnalysis.ReceivedWithAnyArgs(1).AnalyzeAsync(default!, default);
+        await using var context = TestDb.Open(connection);
+        Assert.Equal(id, Assert.Single(await context.Bill.ToListAsync()).SourceUploadId);
+        Assert.Empty(await context.AnalyzedBill.ToListAsync());
+        Assert.Empty(await analysisImages.ListImagesAsync());
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Processor_skips_and_deletes_image_already_turned_into_bill(bool asAnalyzedBill)
+    {
+        using var services = BuildServices();
+        string id = await UploadAsync();
+        await using (var seed = TestDb.Open(connection))
+        {
+            if (asAnalyzedBill)
+            {
+                seed.AnalyzedBill.Add(new Core.AnalyzedBill(UserA, null, null, "ZZ Markt", 4.15, 0.5, 0.5, sourceUploadId: id));
+            }
+            else
+            {
+                seed.Bill.Add(new Core.Bill(null, UserA, categoryId, null, "ZZ Markt", 4.15, sourceUploadId: id));
+            }
+
+            await seed.SaveChangesAsync();
+        }
+
+        await using (var scope = services.CreateAsyncScope())
+        {
+            await scope.ServiceProvider.GetRequiredService<IBillAnalysisProcessor>().ProcessAsync(id, CancellationToken.None);
+        }
+
+        await invoiceAnalysis.DidNotReceiveWithAnyArgs().AnalyzeAsync(default!, default);
+        await billImages.DidNotReceiveWithAnyArgs().UploadImageAsync(default!, default!, default);
+        Assert.Empty(await analysisImages.ListImagesAsync());
+        await using var context = TestDb.Open(connection);
+        Assert.Equal((asAnalyzedBill ? 0 : 1), (await context.Bill.ToListAsync()).Count);
+        Assert.Equal((asAnalyzedBill ? 1 : 0), (await context.AnalyzedBill.ToListAsync()).Count);
     }
 
     [Fact]
@@ -234,6 +362,7 @@ public sealed class ImmediateAnalysisTests : IDisposable
             queue,
             services.GetRequiredService<IServiceScopeFactory>(),
             analysisImages,
+            time,
             NullLogger<ImmediateAnalysisService>.Instance);
 
     private ServiceProvider BuildServices()
@@ -301,8 +430,10 @@ public sealed class ImmediateAnalysisTests : IDisposable
         return stream.ToArray();
     }
 
-    private sealed class FixedTimeProvider(DateTimeOffset now) : TimeProvider
+    private sealed class MutableTimeProvider(DateTimeOffset now) : TimeProvider
     {
-        public override DateTimeOffset GetUtcNow() => now;
+        public DateTimeOffset Now { get; set; } = now;
+
+        public override DateTimeOffset GetUtcNow() => Now;
     }
 }

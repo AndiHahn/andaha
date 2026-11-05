@@ -6,17 +6,19 @@ namespace Andaha.Services.Shopping.BackgroundJobs;
 /// <summary>
 /// Analyzes uploaded images right away instead of waiting for the next <see cref="AnalyzeBillWorker"/> run (US-0009).
 /// The upload has already claimed the image and counted this attempt, so the worker leaves it alone meanwhile.
+/// Before analyzing, the short upload claim is extended to <see cref="AnalyzeBillWorker.ClaimDuration"/>;
+/// an image whose upload claim has lapsed belongs to the worker and is skipped.
 /// On failure the claim is released and the worker retries on its next run, within the usual attempt limit.
 /// </summary>
 internal sealed class ImmediateAnalysisService(
     AnalysisQueue queue,
     IServiceScopeFactory scopeFactory,
     IAnalysisImageRepository imageRepository,
+    TimeProvider timeProvider,
     ILogger<ImmediateAnalysisService> logger) : BackgroundService
 {
     /// <summary>
-    /// Several photos taken in a row are analyzed side by side, so none of them waits in the queue
-    /// until its upload claim has expired and the worker takes it as well.
+    /// Several photos taken in a row are analyzed side by side instead of waiting for each other.
     /// </summary>
     internal const int MaxParallelAnalyses = 4;
 
@@ -39,6 +41,11 @@ internal sealed class ImmediateAnalysisService(
 
     internal async Task ProcessAsync(string imageName, CancellationToken ct)
     {
+        if (!await TryTakeOverUploadClaimAsync(imageName, ct))
+        {
+            return;
+        }
+
         try
         {
             await using var scope = scopeFactory.CreateAsyncScope();
@@ -50,27 +57,55 @@ internal sealed class ImmediateAnalysisService(
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
-            // Shutting down: the claim from the upload expires by itself and the worker takes over.
+            // Shutting down: the claim expires by itself and the worker takes over.
             throw;
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Immediate analysis of image '{ImageName}' failed. Releasing the claim for the worker.", imageName);
 
-            await ReleaseClaimAsync(imageName);
+            await imageRepository.TryReleaseClaimAsync(imageName, logger);
         }
     }
 
-    private async Task ReleaseClaimAsync(string imageName)
+    /// <summary>
+    /// Re-reads the image right before analyzing it. Only an image still under its upload claim
+    /// (claim active, no attempt beyond the counted upload attempt) is analyzed here; its claim is then extended
+    /// without counting an attempt. Anything else belongs to the worker or is already done.
+    /// </summary>
+    private async Task<bool> TryTakeOverUploadClaimAsync(string imageName, CancellationToken ct)
     {
         try
         {
-            await imageRepository.ReleaseClaimAsync(imageName, CancellationToken.None);
+            var image = await imageRepository.GetMetadataAsync(imageName, ct);
+            var now = timeProvider.GetUtcNow();
+
+            if (image is null || !(image.ClaimedUntilUtc > now) || image.Attempts > 1)
+            {
+                logger.LogInformation(
+                    "Skipping immediate analysis of image '{ImageName}' (exists: {Exists}, claimed until: {ClaimedUntil}, attempts: {Attempts}); the worker owns it.",
+                    imageName,
+                    image is not null,
+                    image?.ClaimedUntilUtc,
+                    image?.Attempts);
+
+                return false;
+            }
+
+            await imageRepository.ExtendClaimAsync(imageName, now + AnalyzeBillWorker.ClaimDuration, ct);
+
+            return true;
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {
-            // Not fatal: the claim from the upload runs out after two minutes anyway.
-            logger.LogWarning(ex, "Could not release the claim of image '{ImageName}'.", imageName);
+            // The upload claim stays as it is and runs out; the worker takes over then.
+            logger.LogError(ex, "Could not take over the upload claim of image '{ImageName}'. Leaving it to the worker.", imageName);
+
+            return false;
         }
     }
 }

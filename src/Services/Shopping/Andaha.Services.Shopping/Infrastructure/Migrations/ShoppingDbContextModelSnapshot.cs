@@ -64,8 +64,8 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
                         .HasColumnType("varchar(200)");
 
                     b.Property<string>("SourceUploadId")
-                        .HasMaxLength(1024)
-                        .HasColumnType("nvarchar(1024)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<Guid?>("SubCategoryId")
                         .HasColumnType("uniqueidentifier");
@@ -79,6 +79,8 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Date");
+
+                    b.HasIndex("SourceUploadId");
 
                     b.ToTable("AnalyzedBill");
                 });
@@ -151,8 +153,8 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
                         .HasColumnType("varchar(200)");
 
                     b.Property<string>("SourceUploadId")
-                        .HasMaxLength(1024)
-                        .HasColumnType("nvarchar(1024)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<Guid?>("SubCategoryId")
                         .HasColumnType("uniqueidentifier");
@@ -168,6 +170,8 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("Date");
+
+                    b.HasIndex("SourceUploadId");
 
                     b.HasIndex("SubCategoryId");
 

@@ -98,54 +98,75 @@ public class FileSystemAnalysisImageRepository : IAnalysisImageRepository
                 continue;
             }
 
-            var fileInfo = new FileInfo(filePath);
-            DateTimeOffset lastModified;
-            if (fileInfo.LastWriteTimeUtc != DateTime.MinValue)
-            {
-                lastModified = new DateTimeOffset(fileInfo.LastWriteTimeUtc, TimeSpan.Zero);
-            }
-            else
-            {
-                lastModified = new DateTimeOffset(fileInfo.CreationTimeUtc, TimeSpan.Zero);
-            }
-
-            var metadata = await ReadMetadataObjectAsync(this.GetMetadataFilePath(fileName), ct);
-
-            result.Add(new ImageMetadata
-            {
-                ImageName = fileName,
-                LastModified = lastModified,
-                UserId = ReadUserId(metadata),
-                UploadedAtUtc = ReadTimestamp(metadata, UploadedAtKey),
-                Origin = metadata[OriginKey] is JsonValue origin && origin.TryGetValue<string>(out var originText) ? originText : null,
-                Attempts = ReadAttempts(metadata),
-                ClaimedUntilUtc = ReadTimestamp(metadata, ClaimedUntilKey),
-                LegacyProcessed = metadata.ContainsKey(LegacyProcessedAtKey),
-            });
+            result.Add(await this.ReadImageMetadataAsync(fileName, ct));
         }
 
         return result;
     }
 
-    public async Task ClaimAsync(string name, DateTimeOffset claimedUntilUtc, CancellationToken ct = default)
+    public async Task<ImageMetadata?> GetMetadataAsync(string name, CancellationToken ct = default)
     {
-        string metadataFilePath = this.GetMetadataFilePath(name);
+        string fileName = Path.GetFileName(name);
 
-        var metadata = await ReadMetadataObjectAsync(metadataFilePath, ct);
-
-        metadata[AttemptsKey] = ReadAttempts(metadata) + 1;
-        metadata[ClaimedUntilKey] = claimedUntilUtc.ToString("O", CultureInfo.InvariantCulture);
-
-        await File.WriteAllTextAsync(metadataFilePath, metadata.ToJsonString(), ct);
+        return File.Exists(this.GetFilePath(fileName))
+            ? await this.ReadImageMetadataAsync(fileName, ct)
+            : null;
     }
 
-    public async Task ReleaseClaimAsync(string name, CancellationToken ct = default)
+    private async Task<ImageMetadata> ReadImageMetadataAsync(string fileName, CancellationToken ct)
     {
+        var fileInfo = new FileInfo(this.GetFilePath(fileName));
+        var lastModified = fileInfo.LastWriteTimeUtc != DateTime.MinValue
+            ? new DateTimeOffset(fileInfo.LastWriteTimeUtc, TimeSpan.Zero)
+            : new DateTimeOffset(fileInfo.CreationTimeUtc, TimeSpan.Zero);
+
+        var metadata = await ReadMetadataObjectAsync(this.GetMetadataFilePath(fileName), ct);
+
+        return new ImageMetadata
+        {
+            ImageName = fileName,
+            LastModified = lastModified,
+            UserId = ReadUserId(metadata),
+            UploadedAtUtc = ReadTimestamp(metadata, UploadedAtKey),
+            Origin = metadata[OriginKey] is JsonValue origin && origin.TryGetValue<string>(out var originText) ? originText : null,
+            Attempts = ReadAttempts(metadata),
+            ClaimedUntilUtc = ReadTimestamp(metadata, ClaimedUntilKey),
+            LegacyProcessed = metadata.ContainsKey(LegacyProcessedAtKey),
+        };
+    }
+
+    public Task ClaimAsync(string name, DateTimeOffset claimedUntilUtc, CancellationToken ct = default)
+        => this.UpdateMetadataAsync(name, metadata =>
+        {
+            metadata[AttemptsKey] = ReadAttempts(metadata) + 1;
+            metadata[ClaimedUntilKey] = claimedUntilUtc.ToString("O", CultureInfo.InvariantCulture);
+        }, ct);
+
+    public Task ExtendClaimAsync(string name, DateTimeOffset claimedUntilUtc, CancellationToken ct = default)
+        => this.UpdateMetadataAsync(name, metadata =>
+        {
+            metadata[ClaimedUntilKey] = claimedUntilUtc.ToString("O", CultureInfo.InvariantCulture);
+        }, ct);
+
+    public Task ReleaseClaimAsync(string name, CancellationToken ct = default)
+        => this.UpdateMetadataAsync(name, metadata => metadata.Remove(ClaimedUntilKey), ct);
+
+    /// <summary>
+    /// Rewrites the sidecar of an existing image. Does nothing for a missing image (already processed),
+    /// so no orphaned sidecar is left behind.
+    /// </summary>
+    private async Task UpdateMetadataAsync(string name, Action<JsonObject> update, CancellationToken ct)
+    {
+        if (!File.Exists(this.GetFilePath(name)))
+        {
+            return;
+        }
+
         string metadataFilePath = this.GetMetadataFilePath(name);
 
         var metadata = await ReadMetadataObjectAsync(metadataFilePath, ct);
 
-        metadata.Remove(ClaimedUntilKey);
+        update(metadata);
 
         await File.WriteAllTextAsync(metadataFilePath, metadata.ToJsonString(), ct);
     }

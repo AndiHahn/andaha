@@ -75,12 +75,26 @@ internal class AnalyzeBillWorker(
         }
     }
 
-    private async Task ProcessImageAsync(ImageMetadata blob, CancellationToken ct)
+    private async Task ProcessImageAsync(ImageMetadata listed, CancellationToken ct)
     {
-        var now = timeProvider.GetUtcNow();
-
         // An attempt is still in flight (immediate analysis after the upload, or an earlier run);
         // the processor deletes the image once it succeeds.
+        if (listed.ClaimedUntilUtc > timeProvider.GetUtcNow())
+        {
+            return;
+        }
+
+        // The listing is a snapshot from the start of the run: the immediate analysis may have claimed or
+        // finished the image since. Decide on its current state, read right before acting.
+        var blob = await imageRepository.GetMetadataAsync(listed.ImageName, ct);
+        if (blob is null)
+        {
+            logger.LogDebug("Image '{ImageName}' is gone since the listing; it has been processed meanwhile.", listed.ImageName);
+            return;
+        }
+
+        var now = timeProvider.GetUtcNow();
+
         if (blob.ClaimedUntilUtc > now)
         {
             return;
@@ -120,7 +134,7 @@ internal class AnalyzeBillWorker(
         catch (Exception ex) when (ex is not OperationCanceledException || !ct.IsCancellationRequested)
         {
             // Retry on the next run (the attempt stays counted) instead of waiting for the claim to expire.
-            await imageRepository.ReleaseClaimAsync(blob.ImageName, CancellationToken.None);
+            await imageRepository.TryReleaseClaimAsync(blob.ImageName, logger);
 
             throw;
         }
