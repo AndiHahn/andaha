@@ -229,6 +229,136 @@ body.mat-app-background {
   border-bottom: 1px solid var(--line2);
 }
 
+// Summe der Treffer (Mockup 01 A .sum): Anzahl links, Betrag rechts
+.sum {
+  flex: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 4px 16px 8px;
+  font-size: 13px;
+  color: var(--mut);
+
+  b { color: var(--fg); font-weight: 600; font-size: 14px; }
+}
+
+// Monatskopf (Mockup 01 A .mh): bleibt beim Scrollen oben stehen, bis der naechste Monat kommt
+.month-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 14px 16px 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mut);
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+
+  b { color: var(--fg2); font-weight: 600; }
+}
+
+// Zeilen-Wischen (Mockup 01 A .swrap, RowSwipeDirective): die Zeile (.swipe-content) verschiebt sich,
+// darunter liegt die Aktion; data-swipe sagt, welche Seite aufgedeckt ist
+.swipe-row {
+  position: relative;
+  overflow: hidden;
+  // waagrechte Gesten gehoeren der Zeile, senkrechtes Scrollen und Zoomen bleiben beim Browser
+  touch-action: pan-y pinch-zoom;
+
+  .under {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: stretch;
+  }
+
+  .under button {
+    width: 96px;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--on-pri);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+
+    .mat-icon { font-size: 22px; width: 22px; height: 22px; line-height: 22px; }
+
+    &:focus-visible { outline-color: var(--on-pri); outline-offset: -4px; }
+  }
+
+  .under-delete { justify-content: flex-end; background: var(--neg); }
+  .under-duplicate { justify-content: flex-start; background: var(--pri); }
+
+  &[data-swipe='left'] .under-delete,
+  &[data-swipe='right'] .under-duplicate { display: flex; }
+
+  .swipe-content {
+    position: relative;
+    background: var(--bg);
+    transition: transform .2s ease;
+  }
+
+  &.dragging .swipe-content { transition: none; }
+}
+
+// Pull-to-Refresh-Indikator (Mockup 01 C .ptr, PullToRefreshDirective): rund, Flaeche surface, Pfeile in Primaer
+.ptr {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 3;
+  width: 36px;
+  height: 36px;
+  margin-left: -18px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(calc(var(--ptr-y, 0px) - 44px));
+  transition: transform .2s ease, opacity .2s ease;
+
+  > span {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--surface);
+    box-shadow: 0 0 0 1px var(--line3), 0 6px 14px -6px var(--sh7);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pri);
+    transform: rotate(var(--ptr-turn, 0deg));
+  }
+
+  .mat-icon { font-size: 20px; width: 20px; height: 20px; line-height: 20px; }
+
+  &.pulling,
+  &.spinning { opacity: 1; }
+
+  &.pulling { transition: none; }
+
+  &.spinning > span { animation: ptr-spin .8s linear infinite; }
+}
+
+@keyframes ptr-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swipe-row .swipe-content,
+  .ptr { transition: none; }
+
+  .ptr.spinning > span { animation-duration: 2.4s; }
+}
+
 // Kennzahl
 .big {
   font-size: 44px;

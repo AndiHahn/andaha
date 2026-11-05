@@ -1,7 +1,7 @@
 <div class="row bill-row" [class.is-new]="isNew">
   <div class="date">
     <b>{{ bill.date | date:'dd':undefined:'de' }}</b>
-    <span>{{ bill.date | date:'LLL':undefined:'de' }}</span>
+    <span>{{ bill.date | date:'EEEEEE':undefined:'de' }}</span>
   </div>
   <div class="date-full">{{ bill.date | date:'dd.MM.yyyy':undefined:'de' }}</div>
   <div class="main">

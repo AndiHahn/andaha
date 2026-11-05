@@ -1,15 +1,17 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { CdkScrollable, ScrollDispatcher, CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf } from '@angular/cdk/scrolling';
-import { AfterViewInit, Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
-import { filter, takeUntil } from 'rxjs/operators';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { AfterViewInit, Component, OnDestroy, OnInit, ChangeDetectionStrategy, NgZone, ViewChild, inject } from '@angular/core';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { takeUntil } from 'rxjs/operators';
 import { PageEvent, MatPaginator } from '@angular/material/paginator';
 import { BillContextService } from '../../services/bill-context.service';
-import { BillDataSource } from './BillDataSource';
-import { Subject } from 'rxjs';
+import { Subject, combineLatest } from 'rxjs';
+import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillListDateFilter } from './bill-list-filter/BillListDateFilter';
 import { BillListFilterComponent } from './bill-list-filter/bill-list-filter.component';
 import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatIcon } from '@angular/material/icon';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BillListItemComponent } from './bill-list-item/bill-list-item.component';
 import { QuickEntryDockComponent } from '../../quick-entry/quick-entry-dock/quick-entry-dock.component';
@@ -18,16 +20,30 @@ import { ScanService } from '../../scan/scan.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { SHARED_IMAGE_FAILED, readLaunchIntent, takeSharedImage } from '../../scan/shared-image';
+import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
+import { LoadState, LoadStateComponent } from 'src/app/shared/load-state/load-state.component';
+import { groupByMonth, monthStart } from 'src/app/shared/utils/month-groups';
+import { vibrate } from 'src/app/shared/utils/haptics';
+import { duplicatePrefill } from '../../functions/duplicate-prefill';
+import { RowSwipeAction, RowSwipeDirective } from './row-swipe.directive';
+import { PullToRefreshDirective } from './pull-to-refresh.directive';
+
+/** Monatskopf mit der Monatssumme des Backends über alle Treffer (design.md §3.1, AC1) */
+interface BillMonthGroup {
+  month: string;
+  start: Date;
+  sum: number;
+  bills: BillDto[];
+}
 
 @Component({
     selector: 'app-bill-list',
     templateUrl: './bill-list.component.html',
     styleUrls: ['./bill-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [BillListFilterComponent, MatProgressBar, CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf, RouterLink, BillListItemComponent, MatPaginator, QuickEntryDockComponent]
+    imports: [BillListFilterComponent, MatProgressBar, MatIcon, CdkScrollable, RouterLink, BillListItemComponent, MatPaginator, QuickEntryDockComponent, LoadStateComponent, RowSwipeDirective, PullToRefreshDirective, DatePipe, DecimalPipe]
 })
 export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
-  private scrollDispatcher = inject(ScrollDispatcher);
   private billContextService = inject(BillContextService);
   private breakpointObserver = inject(BreakpointObserver);
   private quickEntry = inject(QuickEntryService);
@@ -35,26 +51,30 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private snackbar = inject(MatSnackBar);
+  private confirmationDialog = inject(ConfirmationDialogService);
+  private zone = inject(NgZone);
 
-  billDataSource = new BillDataSource();
-  pixelHeightPerItem = 64;
+  @ViewChild(CdkScrollable) private scrollable?: CdkScrollable;
+
+  /** Fehlerzustand der Liste (nach dem Wecken des Backends) */
+  readonly loadFailed = this.billContextService.error;
+
+  bills: BillDto[] = [];
+  monthGroups: BillMonthGroup[] = [];
   isDesktop = false;
   /** gerade gespeicherte Rechnung, deren Zeile kurz hervorgehoben ist (v2) */
   lastAddedId: string | null = null;
 
-  totalCount?: number;
   loading: boolean = false;
 
   pageSize?: number;
-  totalResults?: number;
-
-  timeoutHandler?: any;
+  totalResults: number = 0;
+  totalSum: number = 0;
 
   showFilterBar: boolean = true;
   initialSearchValue?: string;
   initialCategoryFilters?: string[];
   initialDateFilter?: BillListDateFilter;
-  dateFilterEnabled: boolean = false;
   
   private destroy$: Subject<void> = new Subject();
 
@@ -77,13 +97,31 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
           untilDate: untilDateFilter
         }
       }
-
-      this.updateDateFilterEnabled();
     }
+
+  /** Laden, Fehler und Leerzustand (AC34); geladene Zeilen bleiben bei Fehlern späterer Seiten stehen */
+  get loadState(): LoadState {
+    if (this.bills.length > 0) {
+      return 'ready';
+    }
+    if (this.loadFailed()) {
+      return 'error';
+    }
+    return this.loading ? 'loading' : 'empty';
+  }
+
+  get emptyText(): string {
+    const context = this.billContextService;
+    const filtered = context.getSearchText().length > 0 || context.getCategoryFilter().length > 0
+      || !!context.getFromDateFilter() || !!context.getUntilDateFilter();
+    return filtered
+      ? 'Keine Rechnungen gefunden – entferne einen Filter oder ändere die Suche.'
+      : 'Noch keine Rechnungen – neue Rechnungen erscheinen hier.';
+  }
   
   ngOnInit(): void {
     this.initSubscriptions();
-    this.initItemSize();
+    this.initDesktop();
     this.handleLaunchIntent();
   }
 
@@ -101,13 +139,10 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.scrollDispatcher
-      .scrolled()
+    // Scroll-Events kommen außerhalb der Zone; die Zone nur betreten, wenn sich etwas ändert
+    this.scrollable?.elementScrolled()
       .pipe(takeUntil(this.destroy$))
-      .pipe(filter(data => data instanceof CdkScrollable))
-      .subscribe(data => {
-        this.onScroll(data);
-      });
+      .subscribe(() => this.onScroll());
   }
 
   onPageChange(event: PageEvent): void {
@@ -130,50 +165,81 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onDateFilterChanged(dateFilter: BillListDateFilter): void {
     this.initialDateFilter = dateFilter;
-    this.updateDateFilterEnabled();
     this.billContextService.setDateFilter(dateFilter.fromDate, dateFilter.untilDate);
     this.billContextService.searchBills();
   }
 
+  onPullRefresh(): void {
+    this.billContextService.refreshBills();
+  }
+
+  onRetry(): void {
+    this.billContextService.retry();
+  }
+
+  /** Wischaktion bzw. Tipp auf die aufgedeckte Aktion einer Zeile (AC3) */
+  onRowAction(bill: BillDto, action: RowSwipeAction, row: RowSwipeDirective): void {
+    if (action === 'duplicate') {
+      row.close();
+      void this.router.navigate(['/bill/create'], { state: { prefill: duplicatePrefill(bill, new Date()) } });
+      return;
+    }
+
+    void this.confirmDelete(bill, row);
+  }
+
+  private async confirmDelete(bill: BillDto, row: RowSwipeDirective): Promise<void> {
+    const dialogRef = await this.confirmationDialog.openDialog({
+      text: 'Soll die Rechnung und alle damit verbundenen Daten wirklich gelöscht werden?'
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed) {
+        row.close();
+        return;
+      }
+
+      this.billContextService.deleteBill(bill.id).subscribe({
+        next: () => vibrate(),
+        error: () => {
+          row.close();
+          openErrorSnackbar('Rechnung konnte nicht gelöscht werden.', this.snackbar);
+        }
+      });
+    });
+  }
+
   private previousTop: number = 0;
 
-  private onScroll(data: any) {
-    if (data instanceof CdkScrollable) {
-      const topOffset = data.measureScrollOffset('top');
-      const bottomOffset = data.measureScrollOffset('bottom');
+  private onScroll(): void {
+    const scrollable = this.scrollable;
+    if (!scrollable) {
+      return;
+    }
 
-      // hide filterbar on scroll down and show it on scroll up
-      if (topOffset < this.previousTop || topOffset <= 0) {
-        this.showFilterBar = true;
-      } else {
-        this.showFilterBar = false;
-      }
+    const topOffset = scrollable.measureScrollOffset('top');
+    const bottomOffset = scrollable.measureScrollOffset('bottom');
 
-      const thresholdReached = bottomOffset < (topOffset + bottomOffset) / 2;
-      if (thresholdReached && !this.loading) {
-        this.billContextService.fetchNextBills();
-      }
+    // hide filterbar on scroll down and show it on scroll up
+    const showFilterBar = topOffset < this.previousTop || topOffset <= 0;
+    const thresholdReached = bottomOffset < (topOffset + bottomOffset) / 2;
+    const fetchNext = thresholdReached && !this.loading && this.bills.length < this.totalResults;
+    this.previousTop = topOffset;
 
-      this.previousTop = topOffset;
+    if (showFilterBar !== this.showFilterBar || fetchNext) {
+      this.zone.run(() => {
+        this.showFilterBar = showFilterBar;
+        if (fetchNext) {
+          this.billContextService.fetchNextBills();
+        }
+      });
     }
   }
 
-  private updateDateFilterEnabled(): void {
-    if (!this.initialDateFilter?.fromDate && !this.initialDateFilter?.untilDate) {
-      this.dateFilterEnabled = false;
-    } else {
-      this.dateFilterEnabled = true;
-    }
-  }
-
-  // Zeilenhoehe je Breakpoint: Mobile 64 px (Listenzeile), Desktop 52 px (Tabellenzeile, Mockup 07)
-  private initItemSize(): void {
+  private initDesktop(): void {
     this.breakpointObserver.observe('(min-width: 1024px)').pipe(takeUntil(this.destroy$)).subscribe(
       {
-        next: state => {
-          this.isDesktop = state.matches;
-          this.pixelHeightPerItem = state.matches ? 52 : 64;
-        }
+        next: state => this.isDesktop = state.matches
       }
     );
   }
@@ -211,18 +277,27 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     );
 
-    this.billContextService.bills().pipe(takeUntil(this.destroy$)).subscribe(
-      {
-        next: result => {
-          this.billDataSource.update(result);
-          this.totalCount = result.length;
-        } 
-      }
-    );
+    combineLatest([this.billContextService.bills(), this.billContextService.monthSums$])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([bills, monthSums]) => {
+        this.bills = bills;
+        this.monthGroups = groupByMonth(bills, bill => bill.date).map(group => ({
+          month: group.month,
+          start: monthStart(group.month),
+          sum: monthSums.get(group.month) ?? 0,
+          bills: group.items
+        }));
+      });
 
     this.billContextService.totalResults().pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: totalResults => this.totalResults = totalResults
+      }
+    );
+
+    this.billContextService.totalSum$.pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: totalSum => this.totalSum = totalSum
       }
     );
 

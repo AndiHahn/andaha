@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy, inject } from '@angular/core';
+import { Injectable, OnDestroy, Signal, inject, signal } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, Subscription, catchError, finalize, firstValueFrom, of, skip, timeout } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
@@ -43,6 +43,14 @@ export class BillContextService implements OnDestroy {
 
   private syncRunning: boolean = false;
   private syncAgain: boolean = false;
+
+  /** refreshBills(): die nächste Antwort ersetzt die Liste, statt sie zu ergänzen */
+  private replaceListOnNextResult: boolean = false;
+  private backendIsReady: boolean = false;
+  private readonly errorState = signal(false);
+
+  /** true, wenn das letzte Laden fehlgeschlagen ist (nachdem das Backend bereit war) */
+  readonly error: Signal<boolean> = this.errorState.asReadonly();
 
   /** Summe aller Treffer der aktuellen Suche (nicht nur der geladenen Seiten) */
   readonly totalSum$: Observable<number> = this.totalSumSubject.asObservable();
@@ -150,8 +158,23 @@ export class BillContextService implements OnDestroy {
     this.setPageIndex(this.pageIndex$.value + 1);
   }
 
+  /**
+   * Lädt die aktuelle Suche ab der ersten Seite neu (Pull-to-Refresh, Änderungen an Kategorien oder
+   * Verbindungen) und ersetzt die Liste mit der Antwort; bis dahin bleibt die bisherige Liste stehen.
+   */
   refreshBills(): void {
-    this.fetchBills();
+    this.startNewQueryGeneration();
+    this.replaceListOnNextResult = true;
+    this.pageIndex$.next(0);
+  }
+
+  /** Liste erneut laden (bzw. Backend erneut wecken, solange es nicht bereit ist) */
+  retry(): void {
+    if (this.backendIsReady) {
+      this.fetchBills();
+    } else {
+      this.contextService.retryWakeUp();
+    }
   }
 
   async addBill(dto: BillCreateDto, category: BillCategoryDto, subCategory?: BillSubCategoryDto): Promise<void> {
@@ -269,6 +292,7 @@ export class BillContextService implements OnDestroy {
     this.contextService.backendReady().subscribe(
       {
         next: ready => {
+          this.backendIsReady = ready;
           if (ready) {
             this.fetchBills();
             this.syncNewBills();
@@ -305,7 +329,10 @@ export class BillContextService implements OnDestroy {
 
   private fetchBills() {
     const generation = this.queryGeneration;
+    const replaceList = this.replaceListOnNextResult;
+    this.replaceListOnNextResult = false;
     this.loading$.next(true);
+    this.errorState.set(false);
 
     const request = new Subscription();
     this.pendingRequests.add(request);
@@ -339,12 +366,20 @@ export class BillContextService implements OnDestroy {
               return;
             }
 
-            this.updateBillList(result.values);
+            if (replaceList) {
+              this.bills$.next([...result.values].sort(this.billCompareDateDescending));
+            } else {
+              this.updateBillList(result.values);
+            }
             this.totalResults$.next(result.totalCount);
             this.totalSumSubject.next(result.totalSum ?? 0);
             this.monthSumsSubject.next(new Map((result.monthSums ?? []).map(monthSum => [monthSum.month, monthSum.sum])));
           },
-          error: _ => { }
+          error: _ => {
+            if (generation === this.queryGeneration && this.backendIsReady) {
+              this.errorState.set(true);
+            }
+          }
         }
     ));
   }

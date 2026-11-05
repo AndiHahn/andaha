@@ -125,7 +125,7 @@
   </div>
 
   @if (bill && !isEditing) {
-    <div class="actions">
+    <div class="actions view-actions">
       <button type="button" class="btn pri" (click)="onEditClick()" [disabled]="isDeleting || isLoading || isSaving">
         @if (!isSaving) {
           <mat-icon>edit</mat-icon><span>Bearbeiten</span>
@@ -133,6 +133,9 @@
         @if (isSaving) {
           <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
         }
+      </button>
+      <button type="button" class="btn sec2" (click)="onDuplicateClick()" [disabled]="isDeleting || isSaving">
+        <mat-icon>content_copy</mat-icon><span>Duplizieren</span>
       </button>
       <button type="button" class="btn del" (click)="onDeleteClick()"
         [disabled]="isExternal || isEditing || isDeleting || isLoading || isSaving">

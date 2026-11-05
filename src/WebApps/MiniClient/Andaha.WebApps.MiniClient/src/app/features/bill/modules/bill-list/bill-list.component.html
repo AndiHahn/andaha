@@ -1,4 +1,4 @@
-<div #filterBar class="filter-container" [class.collapsed]="!showFilterBar" (transitionend)="viewport.checkViewportSize()">
+<div class="filter-container" [class.collapsed]="!showFilterBar">
   <app-bill-list-filter [deactivate]="loading"
     [initialSearchText]="initialSearchValue"
     [initialCategoryFilters]="initialCategoryFilters"
@@ -12,8 +12,14 @@
   </app-bill-list-filter>
 </div>
 
+<!-- Summe aller Treffer der aktiven Filter (AC2, Mockup 01 A) -->
+<div class="sum">
+  <b>{{ totalResults | number:'1.0-0':'de' }} {{ totalResults === 1 ? 'Rechnung' : 'Rechnungen' }}</b>
+  <b>{{ totalSum | number:'1.2-2':'de' }} €</b>
+</div>
+
 <div class="progress-slot">
-  @if (loading) {
+  @if (loading && bills.length > 0) {
     <mat-progress-bar mode="indeterminate" color="accent" />
   }
 </div>
@@ -26,17 +32,43 @@
   <span class="r">Preis</span>
 </div>
 
-@if (!loading && totalCount === 0) {
-  <div class="empty">
-    Keine Rechnungen verfügbar.
-  </div>
-}
+<div class="list-wrap">
+  <!-- Pull-to-Refresh (AC4, Mockup 01 C): runder Indikator, von der Direktive positioniert -->
+  <div #ptr class="ptr" aria-hidden="true"><span><mat-icon>sync</mat-icon></span></div>
 
-<cdk-virtual-scroll-viewport #viewport class="list" [itemSize]="pixelHeightPerItem">
-  <a *cdkVirtualFor="let bill of billDataSource" class="bill-link" routerLink="/bill/{{bill.id}}">
-    <app-bill-list-item [bill]="bill" [isNew]="bill.id === lastAddedId" />
-  </a>
-</cdk-virtual-scroll-viewport>
+  <div class="list" cdkScrollable [appPullToRefresh]="ptr" [refreshing]="loading" (refresh)="onPullRefresh()">
+    <app-load-state [state]="loadState" [emptyText]="emptyText" (retry)="onRetry()">
+      @for (group of monthGroups; track group.month) {
+        <section class="month-group">
+          <!-- Monatskopf mit Monatssumme des Backends (AC1) -->
+          <div class="month-head">
+            <b>{{ group.start | date:'LLLL yyyy':undefined:'de' }}</b>
+            <span>{{ group.sum | number:'1.2-2':'de' }} €</span>
+          </div>
+
+          @for (bill of group.bills; track bill.id) {
+            <!-- Zeilen-Wischen (AC3): links Löschen, rechts Duplizieren; data-no-swipe nimmt die Zeile vom Tab-Wischen aus -->
+            <div class="swipe-row" data-no-swipe appRowSwipe #row="rowSwipe" (rowAction)="onRowAction(bill, $event, row)">
+              <div class="under under-delete" [inert]="row.state() !== 'open-delete'">
+                <button type="button" (click)="onRowAction(bill, 'delete', row)">
+                  <mat-icon aria-hidden="true">delete</mat-icon>Löschen
+                </button>
+              </div>
+              <div class="under under-duplicate" [inert]="row.state() !== 'open-duplicate'">
+                <button type="button" (click)="onRowAction(bill, 'duplicate', row)">
+                  <mat-icon aria-hidden="true">content_copy</mat-icon>Duplizieren
+                </button>
+              </div>
+              <a class="bill-link swipe-content" routerLink="/bill/{{bill.id}}">
+                <app-bill-list-item [bill]="bill" [isNew]="bill.id === lastAddedId" />
+              </a>
+            </div>
+          }
+        </section>
+      }
+    </app-load-state>
+  </div>
+</div>
 
 @if (!isDesktop) {
   <app-quick-entry-dock (openEntry)="openQuickEntry()" (scan)="onScan($event)" />

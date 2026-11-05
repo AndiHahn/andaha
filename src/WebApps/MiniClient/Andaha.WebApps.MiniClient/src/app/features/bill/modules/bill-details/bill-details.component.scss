@@ -92,8 +92,18 @@
   height: 3px;
 }
 
-.actions .btn.del {
+.actions .btn.del,
+.actions .btn.sec2 {
   flex: none;
+}
+
+// Mobil: drei Aktionen (Bearbeiten, Duplizieren, Löschen) passen ab 360 px nur als Text in eine Zeile
+@media (max-width: 1023.98px) {
+  .view-actions .btn {
+    padding: 0 14px;
+
+    .mat-icon { display: none; }
+  }
 }
 
 // Desktop: Inhaltsspalte, Aktionen rechtsbuendig am Ende (DESIGN.md Layout)

@@ -5,9 +5,8 @@ import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { BillListFilterDialogService } from './bill-list-filter-dialog/bill-list-filter-dialog.service';
 import { BillListFilterDialogData } from './bill-list-filter-dialog/BillListFilterDialogData';
-import { BillListDateFilter } from './BillListDateFilter';
+import { BillListDateFilter, dateFilterLabel } from './BillListDateFilter';
 import { MatIcon } from '@angular/material/icon';
-import { DatePipe } from '@angular/common';
 
 interface CategorySelection {
   selected: boolean;
@@ -20,7 +19,7 @@ interface CategorySelection {
     templateUrl: './bill-list-filter.component.html',
     styleUrls: ['./bill-list-filter.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [MatIcon, DatePipe]
+    imports: [MatIcon]
 })
 export class BillListFilterComponent implements OnInit, OnDestroy {
   private billListFilterDialogService = inject(BillListFilterDialogService);
@@ -142,6 +141,17 @@ export class BillListFilterComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // aktive Kategorie (Chip mit ×): Filter entfernen, wieder „Alle“
+    const chip = this.categories[index];
+    if (chip.selected && chip.category) {
+      index = this.categories.findIndex(category => !category.category);
+      if (index < 0) {
+        chip.selected = false;
+        this.triggerCategorySelection();
+        return;
+      }
+    }
+
     this.categories[index].selected = true;
 
     this.deselectAllExcept(index);
@@ -158,12 +168,13 @@ export class BillListFilterComponent implements OnInit, OnDestroy {
     allExceptGiven.forEach(category => category.selected = false);
   }
 
-  onFromDateFilterRemoveClick(): void {
-    this.fromDateFilter = undefined;
-    this.triggerDateFilterChanged();
+  /** Text des Datums-Chips, z. B. „November 2026“ oder „01.01.–31.12.2026“ */
+  get dateLabel(): string {
+    return dateFilterLabel({ fromDate: this.fromDateFilter, untilDate: this.untilDateFilter });
   }
 
-  onUntilDateFilterRemoveClick(): void {
+  onDateFilterRemoveClick(): void {
+    this.fromDateFilter = undefined;
     this.untilDateFilter = undefined;
     this.triggerDateFilterChanged();
   }

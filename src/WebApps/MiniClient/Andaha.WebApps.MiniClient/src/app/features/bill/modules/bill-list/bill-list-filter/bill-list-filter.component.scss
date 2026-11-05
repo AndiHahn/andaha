@@ -58,10 +58,14 @@
   &::-webkit-scrollbar { display: none; }
 }
 
-// Datums-Chip: Text oeffnet den Datumfilter, x entfernt das Datum
+// Aktive Kategorie: × hinter dem Namen (Mockup 01 C .chip .x)
+.chip .x-icon {
+  margin-right: -4px;
+}
+
+// Datums-Chip (aktiv, Mockup 01 C): Text oeffnet den Datumfilter, x entfernt das Datum
 .date-chip {
   padding: 0 4px 0 14px;
-  background: var(--surface);
   cursor: default;
   gap: 4px;
 
@@ -83,7 +87,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: var(--mut);
+    color: inherit;
   }
 }
 

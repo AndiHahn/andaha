@@ -127,3 +127,67 @@ describe('BillListFilterComponent search', () => {
         expect(restoredEmitted).toEqual([]);
     });
 });
+
+describe('BillListFilterComponent active filter chips', () => {
+    let fixture: ComponentFixture<BillListFilterComponent>;
+    let component: BillListFilterComponent;
+    let host: HTMLElement;
+
+    const categories = [
+        { id: 'c1', name: 'Lebensmittel', color: '#3B7D4F', order: 0, subCategories: [] },
+        { id: 'c2', name: 'Haushalt', color: '#B5651D', order: 1, subCategories: [] }
+    ];
+
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [BillListFilterComponent],
+            providers: [
+                { provide: BillListFilterDialogService, useValue: { openDialog: () => Promise.resolve(undefined) } },
+                { provide: BillCategoryContextService, useValue: { categories: () => of(categories) } }
+            ]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(BillListFilterComponent);
+        component = fixture.componentInstance;
+        host = fixture.nativeElement;
+        // wie aus der Statistik (Task 10): Kategorie und Monat gesetzt
+        component.initialCategoryFilters = ['Lebensmittel'];
+        component.initialDateFilter = { fromDate: new Date(2026, 10, 1), untilDate: new Date(2026, 10, 30) };
+        fixture.detectChanges();
+    });
+
+    const chips = () => Array.from(host.querySelectorAll<HTMLElement>('.chips .chip'));
+
+    it('shows the date filter as a removable chip "November 2026" first', () => {
+        const first = chips()[0];
+        expect(first.textContent).toContain('November 2026');
+        expect(first.classList.contains('on')).toBe(true);
+        expect(first.querySelector('[aria-label="Datumsfilter entfernen"]')).not.toBeNull();
+    });
+
+    it('removing the date chip clears the date filter', () => {
+        const emitted: unknown[] = [];
+        component.dateFilterChanged.subscribe(value => emitted.push(value));
+
+        host.querySelector<HTMLButtonElement>('[aria-label="Datumsfilter entfernen"]')!.click();
+        fixture.detectChanges();
+
+        expect(emitted).toEqual([{ fromDate: undefined, untilDate: undefined }]);
+        expect(host.textContent).not.toContain('November 2026');
+    });
+
+    it('marks the active category with × and removing it selects all again', () => {
+        const emitted: string[][] = [];
+        component.categoryFilterChanged.subscribe(value => emitted.push(value.map(category => category.name)));
+
+        const active = chips().find(chip => chip.textContent?.includes('Lebensmittel'))!;
+        expect(active.classList.contains('on')).toBe(true);
+        expect(active.querySelector('mat-icon')?.textContent).toContain('close');
+
+        active.click();
+        fixture.detectChanges();
+
+        expect(emitted).toEqual([[]]);
+        expect(chips().find(chip => chip.textContent?.includes('Alle'))!.classList.contains('on')).toBe(true);
+    });
+});

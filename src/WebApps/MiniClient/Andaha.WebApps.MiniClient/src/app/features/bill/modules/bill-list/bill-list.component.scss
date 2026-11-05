@@ -1,4 +1,4 @@
-// Seite im Flex-Fluss der .area: Filter, Ladebalken und Kopfzeile fest, die Liste fuellt den Rest und scrollt
+// Seite im Flex-Fluss der .area: Filter, Summe, Ladebalken und Kopfzeile fest, die Liste fuellt den Rest und scrollt
 :host {
   display: flex;
   flex-direction: column;
@@ -34,29 +34,43 @@
   display: none;
 }
 
-.empty {
-  flex: none;
+// Rahmen der Liste: haelt den Pull-to-Refresh-Indikator ueber der Liste und schneidet ihn oben ab
+.list-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
+// Kein virtuelles Scrollen: Monatskoepfe und Zeilen haben verschiedene Hoehen, nachgeladen wird seitenweise (50)
 .list {
   flex: 1 1 auto;
   min-height: 0;
-  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  // Die Geste bleibt beim Scroll-Container der Liste (Pull-to-Refresh statt Neuladen des Browsers)
+  overscroll-behavior-y: contain;
 }
 
-// contain: inline-size, damit lange Shopnamen den (absolut positionierten) Inhalts-Wrapper des Viewports
-// nicht verbreitern: die Zeile ist immer so breit wie die Liste, der Name wird per Ellipsis gekuerzt
+.month-group {
+  flex: none;
+}
+
+// contain: inline-size, damit lange Shopnamen die Zeile nicht verbreitern: der Name wird per Ellipsis gekuerzt
 .bill-link {
   display: block;
   contain: inline-size;
   color: inherit;
   text-decoration: none;
 
-  // Zeile reicht bis an den Rand des Viewports: Fokusring nach innen, sonst abgeschnitten
+  // Zeile reicht bis an den Rand der Liste: Fokusring nach innen, sonst abgeschnitten
   &:focus-visible { outline-offset: -2px; }
 }
 
-// Desktop (Mockup 07): Leiste immer offen, Liste als Tabelle mit Kopfzeile ausserhalb des Viewports
+// Desktop (Mockup 07): Leiste immer offen, Liste als Tabelle mit Kopfzeile ausserhalb der Liste
 @media (min-width: 1024px) {
   .filter-container,
   .filter-container.collapsed {
@@ -68,18 +82,24 @@
   }
 
   .filter-container,
+  .sum,
   .progress-slot,
   .table-head,
-  .empty,
-  .list {
+  .list-wrap {
     margin: 0 40px;
     max-width: 1040px;
   }
 
+  .sum {
+    padding: 0 16px 10px;
+  }
+
   // Kopfzeile und Liste reservieren dieselbe Scrollbar-Spalte, damit die Spalten buendig bleiben
-  .list {
-    border-top: 0;
+  .list-wrap {
     margin-bottom: 24px;
+  }
+
+  .list {
     scrollbar-gutter: stable;
   }
 
@@ -104,5 +124,9 @@
 
   .bill-link:hover {
     background: var(--hover-row);
+  }
+
+  .ptr {
+    display: none;
   }
 }

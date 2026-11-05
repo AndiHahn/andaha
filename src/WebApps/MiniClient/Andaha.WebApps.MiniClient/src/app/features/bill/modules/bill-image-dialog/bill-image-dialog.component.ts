@@ -3,6 +3,8 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatDialogContent } from '@angular/materi
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { blobToDataUrl } from 'src/app/shared/utils/file-utils';
+import { vibrate } from 'src/app/shared/utils/haptics';
+import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { BillImageDialogData } from './BillImageDialogData';
 import { DialogComponent } from '../../../../shared/dialog/dialog.component';
 import { CdkScrollable } from '@angular/cdk/scrolling';
@@ -20,6 +22,7 @@ import { MatIcon } from '@angular/material/icon';
 })
 export class BillImageDialogComponent {
   private snackbar = inject(MatSnackBar);
+  private confirmationDialog = inject(ConfirmationDialogService);
   private dialogRef = inject<MatDialogRef<BillImageDialogComponent, boolean | undefined>>(MatDialogRef);
 
   private readonly data = inject<BillImageDialogData>(MAT_DIALOG_DATA);
@@ -35,7 +38,21 @@ export class BillImageDialogComponent {
     this.fetchImage();
   }
 
-  onDeleteImageClick(): void {
+  async onDeleteImageClick(): Promise<void> {
+    if (!this.data.delete) {
+      return;
+    }
+
+    // Rückfrage vor dem Löschen (AC26)
+    const dialogRef = await this.confirmationDialog.openDialog({ text: 'Soll das Foto wirklich gelöscht werden?' });
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.deleteImage();
+      }
+    });
+  }
+
+  private deleteImage(): void {
     if (!this.data.delete) {
       return;
     }
@@ -45,6 +62,7 @@ export class BillImageDialogComponent {
       {
         next: _ =>{
           this.isDeleting = false;
+          vibrate();
           this.dialogRef.close(true);
         },
         error: _ => {

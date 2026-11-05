@@ -2,7 +2,9 @@ import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-providers';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { vibrate } from 'src/app/shared/utils/haptics';
+import { duplicatePrefill } from '../../functions/duplicate-prefill';
 import { Subject, takeUntil } from 'rxjs';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
@@ -37,6 +39,7 @@ import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 })
 export class BillDetailsComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private historyTrail = inject(HistoryTrailService);
   private snackbar = inject(MatSnackBar);
   private confirmationDialog = inject(ConfirmationDialogService);
@@ -163,6 +166,11 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
     ));
   }
 
+  /** Großes Formular mit den Werten dieser Rechnung, Datum heute, ohne Foto (design.md §3.1) */
+  onDuplicateClick(): void {
+    void this.router.navigate(['/bill/create'], { state: { prefill: duplicatePrefill(this.bill!, new Date()) } });
+  }
+
   onImageSelected(image: File | null): void {
     this.image = image;
   }
@@ -174,6 +182,7 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
       {
         next: _ => {
           this.isDeleting = false;
+          vibrate();
           // zurück zur Liste; Zurück führt danach nicht auf den gelöschten Eintrag
           this.historyTrail.leaveTo('/bill/list');
         },

@@ -42,12 +42,16 @@ describe('BillContextService search', () => {
     let service: BillContextService;
     let currentBills: BillDto[];
     let loadingValues: boolean[];
+    let backendReady: Subject<boolean>;
+    let retryWakeUp: ReturnType<typeof vi.fn>;
 
     beforeEach(() => {
         requests = [];
         parameters = [];
         currentBills = [];
         loadingValues = [];
+        backendReady = new Subject<boolean>();
+        retryWakeUp = vi.fn();
 
         const billApi = {
             searchBills: vi.fn().mockName("BillApiService.searchBills")
@@ -60,9 +64,10 @@ describe('BillContextService search', () => {
         });
 
         const contextService = {
-            backendReady: vi.fn().mockName("ContextService.backendReady")
+            backendReady: vi.fn().mockName("ContextService.backendReady"),
+            retryWakeUp
         };
-        contextService.backendReady.mockReturnValue(new Subject<boolean>());
+        contextService.backendReady.mockReturnValue(backendReady);
 
         const cacheService = {
             billAdded: vi.fn().mockName("BillCacheService.billAdded"),
@@ -74,6 +79,46 @@ describe('BillContextService search', () => {
         service = createBillContextService(billApi as unknown as BillApiService, contextService as unknown as ContextService, cacheService as unknown as BillCacheService);
         service.bills().subscribe(b => currentBills = b);
         service.loading().subscribe(l => loadingValues.push(l));
+    });
+
+    it('refreshBills reloads the first page and replaces the list', () => {
+        answerInitialRequest(120);
+
+        service.searchBills();
+        requests[requests.length - 1].next({ values: [createBill('p0', 3)], totalCount: 120 });
+        service.fetchNextBills();
+        requests[requests.length - 1].next({ values: [createBill('p1', 2)], totalCount: 120 });
+        expect(currentBills.map(b => b.id)).toEqual(['p0', 'p1']);
+
+        service.refreshBills();
+        expect(parameters[parameters.length - 1].pageIndex).toBe(0);
+        expect(currentBills.map(b => b.id)).toEqual(['p0', 'p1']);
+
+        requests[requests.length - 1].next({ values: [createBill('fresh', 4), createBill('p0', 3)], totalCount: 2 });
+
+        expect(currentBills.map(b => b.id)).toEqual(['fresh', 'p0']);
+    });
+
+    it('exposes an error after a failed load and retry reloads', () => {
+        answerInitialRequest();
+        backendReady.next(true);
+        expect(service.error()).toBe(false);
+
+        requests[requests.length - 1].error(new Error('500'));
+        expect(service.error()).toBe(true);
+
+        const count = requests.length;
+        service.retry();
+        expect(requests.length).toBe(count + 1);
+        expect(service.error()).toBe(false);
+    });
+
+    it('a failed load before the backend is ready is no error; retry wakes the backend', () => {
+        requests[0].error(new Error('0'));
+        expect(service.error()).toBe(false);
+
+        service.retry();
+        expect(retryWakeUp).toHaveBeenCalled();
     });
 
     afterEach(() => service.ngOnDestroy());
