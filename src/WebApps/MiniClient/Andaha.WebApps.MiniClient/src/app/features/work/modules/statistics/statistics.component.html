@@ -1,83 +1,63 @@
-<div>
-
-  <!-- Time filter -->
-  @if (availableTimeRange) {
+<div class="page">
+  @if (availableTimeRange(); as available) {
     <div class="timerange-container">
-      <app-timerange-selection [availableTimeRange]="availableTimeRange"
-        (selectionChanged)="timeSelectionChanged($event)" />
+      <app-timerange-selection [availableTimeRange]="available" (selectionChanged)="timeSelectionChanged($event)" />
     </div>
   }
 
-  @if (availableTimeRange && !statistics && !isLoading) {
-    <div class="action-container">
-      Keine Daten vorhanden.
-    </div>
+  <!-- Personenfilter: „Alle“ plus eine Person, Einfachauswahl -->
+  @if (persons(); as persons) {
+    @if (persons.length > 0) {
+      <div class="chips" role="group" aria-label="Person">
+        <button type="button" class="chip" [class.on]="selectedPersonId() === null"
+          [attr.aria-pressed]="selectedPersonId() === null" (click)="selectPerson(null)">Alle</button>
+        @for (person of persons; track person.id) {
+          <button type="button" class="chip" [class.on]="selectedPersonId() === person.id"
+            [attr.aria-pressed]="selectedPersonId() === person.id" (click)="selectPerson(person.id)">{{ person.name }}</button>
+        }
+      </div>
+    }
   }
 
-  @if (isLoading) {
-    <div class="action-container">
-      <mat-spinner diameter="40" />
-    </div>
-  }
+  <app-load-state [state]="loadState()" [emptyText]="emptyText" (retry)="retry()">
+    @if (bars(); as bars) {
+      <app-monthly-bars [months]="bars" [highlight]="highlight()" ariaLabel="Stunden je Monat" />
+    }
 
-  <!-- Person filter -->
-
-  <!-- ----------------------------------- -->
-  <!-- Statistics non total -->
-  <!-- ----------------------------------- -->
-  @if (selectedTimeRange?.dateType != dateType.Total) {
-    <div>
-      <!-- workingtime total -->
-      @if (statistics) {
+    @if (!isTotal()) {
+      @if (statistics(); as statistics) {
         <div class="fig">
           <h3 class="label">Arbeitszeit gesamt:</h3>
           <div class="value">{{ getTimeDisplayString(statistics.totalWorkingTime) }}</div>
         </div>
-      }
-      <!-- payed money -->
-      @if (statistics) {
         <div class="fig">
           <h3 class="label">Personalkosten hochgerechnet:</h3>
-          <div class="value">{{ statistics.extrapolatedMoneyToPay }} €</div>
+          <div class="value">{{ statistics.extrapolatedMoneyToPay | number:'1.2-2':'de' }} €</div>
         </div>
       }
-    </div>
-  }
-
-  <!-- ----------------------------------- -->
-  <!-- Statistics total -->
-  <!-- ----------------------------------- -->
-  @if (selectedTimeRange?.dateType == dateType.Total) {
-    <div>
-      <!-- workingtime total -->
-      @if (fullStatistics) {
+    } @else {
+      @if (fullStatistics(); as full) {
         <div class="fig">
           <h3 class="label">Arbeitszeit gesamt:</h3>
-          <div class="value">{{ getTimeDisplayString(fullStatistics.totalWorkingTime) }}</div>
+          <div class="value">{{ getTimeDisplayString(full.totalWorkingTime) }}</div>
         </div>
-      }
-      <!-- payed money -->
-      @if (fullStatistics) {
         <div class="fig">
           <h3 class="label">Personalkosten bezahlt:</h3>
-          <div class="value">{{ fullStatistics.payedMoney }} €</div>
+          <div class="value">{{ full.payedMoney | number:'1.2-2':'de' }} €</div>
         </div>
-      }
-      <!-- not payed hours -->
-      @if (fullStatistics) {
         <div class="fig">
           <h3 class="label">Stunden noch nicht bezahlt:</h3>
-          <div class="value open">{{ getTimeDisplayString(fullStatistics.notPayedHours) }}</div>
+          <div class="value open">{{ getTimeDisplayString(full.notPayedHours) }}</div>
         </div>
-      }
-      <!-- payed money -->
-      @if (fullStatistics) {
         <div class="fig">
           <h3 class="label">Personalkosten noch nicht bezahlt:</h3>
-          <div class="value open">{{ fullStatistics.notPayedMoney }} €</div>
+          <div class="value open">{{ full.notPayedMoney | number:'1.2-2':'de' }} €</div>
         </div>
       }
-    </div>
-  }
+    }
+  </app-load-state>
 
+  @if (loadState() === 'empty') {
+    <a class="empty-link" routerLink="/work/person">Zu den Personen</a>
+  }
 </div>

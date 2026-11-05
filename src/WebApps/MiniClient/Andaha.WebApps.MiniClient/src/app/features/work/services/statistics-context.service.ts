@@ -1,5 +1,6 @@
 import { Injectable, Signal, inject, signal } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { DateType } from 'src/app/features/bill/modules/expenses/timerange-selection/DateType';
 import { TimeRangeDto } from 'src/app/api/common-dtos/TimeRangeDto';
 import { FullStatisticsDto } from 'src/app/api/work/dtos/FullStatisticsDto';
 import { StatisticsDto } from 'src/app/api/work/dtos/StatisticsDto';
@@ -21,6 +22,7 @@ export class StatisticsContextService {
   private readonly errorState = signal(false);
   /** Das zuletzt angeforderte Laden, für „Erneut versuchen“ */
   private lastLoad?: () => void;
+  private pending?: Subscription;
   private backendIsReady: boolean = false;
 
   /** true, wenn das Laden des Zeitraums oder zuletzt der Statistik fehlgeschlagen ist */
@@ -47,13 +49,17 @@ export class StatisticsContextService {
     return this.loading$.asObservable();
   }
 
-  loadStatistics(timeRange: TimeRange): void {
-    this.lastLoad = () => this.fetchStatistics(timeRange.startDate, timeRange.endDate);
-    this.lastLoad();
-  }
+  /**
+   * Statistik für Zeitraum und Personen laden (leer = alle). Die Werte des vorigen Zeitraums bzw. der
+   * vorigen Person werden sofort geleert und der Ladezustand gesetzt (AC39); Gesamt lädt die Gesamtstatistik.
+   */
+  load(range: TimeRange, personIds: string[]): void {
+    this.statistics$.next(undefined);
+    this.fullStatistics$.next(undefined);
 
-  loadFullStatistics(): void {
-    this.lastLoad = () => this.fetchFullStatistics();
+    this.lastLoad = range.dateType === DateType.Total
+      ? () => this.fetchFullStatistics(personIds)
+      : () => this.fetchStatistics(range.startDate, range.endDate, personIds);
     this.lastLoad();
   }
 
@@ -93,16 +99,19 @@ export class StatisticsContextService {
 
   private fetchStatistics(
     startTimeUtc: Date,
-    endTimeUtc: Date
+    endTimeUtc: Date,
+    personIds: string[]
   ) {
     this.loading$.next(true);
     this.errorState.set(false);
 
-    this.apiService
+    // eine überholte Antwort darf die neue Auswahl nicht überschreiben
+    this.pending?.unsubscribe();
+    this.pending = this.apiService
       .getStatistics(
         startTimeUtc,
         endTimeUtc,
-        undefined
+        personIds
       )
       .subscribe(
         {
@@ -118,12 +127,13 @@ export class StatisticsContextService {
     );
   }
 
-  private fetchFullStatistics() {
+  private fetchFullStatistics(personIds: string[]) {
     this.loading$.next(true);
     this.errorState.set(false);
 
-    this.apiService
-      .getFullStatistics(undefined)
+    this.pending?.unsubscribe();
+    this.pending = this.apiService
+      .getFullStatistics(personIds)
       .subscribe(
         {
           next: result => {

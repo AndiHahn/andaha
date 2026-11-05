@@ -13,7 +13,7 @@ import { MonthlyCostsDto } from 'src/app/api/shopping/dtos/MonthlyCostsDto';
   template: `
     <div class="bars">
       <div class="canvas-box">
-        <canvas baseChart role="img" aria-label="Ausgaben je Monat"
+        <canvas baseChart role="img" [attr.aria-label]="ariaLabel()"
           [type]="'bar'" [data]="chartData()" [options]="chartOptions"></canvas>
       </div>
     </div>
@@ -33,6 +33,8 @@ import { MonthlyCostsDto } from 'src/app/api/shopping/dtos/MonthlyCostsDto';
 export class MonthlyBarsComponent {
   readonly months = input.required<MonthlyCostsDto[]>();
   readonly highlight = input<string>('');
+  /** Beschreibung für Screenreader; `costs` trägt die Balkenwerte, bei Stunden also die Stunden */
+  readonly ariaLabel = input<string>('Ausgaben je Monat');
 
   /** Anfangsbuchstabe des Monats, z. B. „N“ */
   readonly labels = computed(() => this.months().map(month => formatDate(monthStart(month.month), 'LLLLL', 'de')));
