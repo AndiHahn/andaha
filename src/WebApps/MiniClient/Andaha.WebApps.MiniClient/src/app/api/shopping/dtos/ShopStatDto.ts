@@ -1,3 +1,5 @@
+import { parseLocalDateTime } from "src/app/shared/utils/utils";
+
 export interface ShopStatDto {
   shopName: string;
   categoryId: string;
@@ -11,5 +13,6 @@ export interface ShopStatDtoRaw extends Omit<ShopStatDto, 'lastUsed'> {
 }
 
 export function mapShopStatDtoRaw(raw: ShopStatDtoRaw): ShopStatDto {
-  return { ...raw, lastUsed: new Date(raw.lastUsed) };
+  // letztes Rechnungsdatum: gespeicherte Ortszeit wie bei mapBillDtoRaw
+  return { ...raw, lastUsed: parseLocalDateTime(raw.lastUsed) };
 }

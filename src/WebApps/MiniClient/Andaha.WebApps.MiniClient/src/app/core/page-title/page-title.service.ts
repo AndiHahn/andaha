@@ -1,7 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { ActivatedRouteSnapshot, NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { asapScheduler, BehaviorSubject, Observable } from 'rxjs';
-import { observeOn } from 'rxjs/operators';
+import { map, observeOn } from 'rxjs/operators';
+
+/** Seite „Mehr“ (nur mobil Ziel der Hauptleiste) */
+const MORE_URL = '/more';
 
 /** Icon-Button rechts in der Kopfzeile (z. B. Verlauf auf Detailseiten), gilt bis zur nächsten Navigation. */
 export interface HeaderAction {
@@ -23,6 +26,11 @@ export class PageTitleService {
   // Durchlauf (asapScheduler) verhindert ExpressionChangedAfterItHasBeenCheckedError.
   readonly title$: Observable<string> = this.titleSubject.pipe(observeOn(asapScheduler));
   readonly back$: Observable<string | null> = this.backSubject.asObservable();
+  /**
+   * Zurück-Ziel im Desktop-Kopf (ab 1024 px): Die Seitenleiste ersetzt dort die Seite „Mehr“, darum haben
+   * deren Ziele (Einstellungen, Export, Benutzerdaten, Rechtliches) keinen Zurück-Pfeil (Design v2, 04).
+   */
+  readonly desktopBack$: Observable<string | null> = this.back$.pipe(map(back => back === MORE_URL ? null : back));
   readonly action$: Observable<HeaderAction | null> = this.actionSubject.pipe(observeOn(asapScheduler));
 
   /** Überschreibt `data.back`, gesetzt von der Seitenkomponente während der Navigation */

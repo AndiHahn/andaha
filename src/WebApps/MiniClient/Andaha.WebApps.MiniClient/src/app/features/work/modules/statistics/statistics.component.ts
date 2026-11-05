@@ -39,7 +39,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
   readonly dateType = DateType;
 
   readonly availableTimeRange = toSignal(this.contextService.availableTimeRange()
-    .pipe(map(timeRange => timeRange ? mapTimeRangeDto(timeRange) : undefined)));
+    .pipe(map(timeRange => timeRange ? mapTimeRangeDto(timeRange) : timeRange)));
   readonly statistics = toSignal(this.contextService.statistics());
   readonly fullStatistics = toSignal(this.contextService.fullStatistics());
   private readonly isLoading = toSignal(this.contextService.loading(), { initialValue: false });
@@ -67,6 +67,11 @@ export class StatisticsComponent implements OnInit, OnDestroy {
   readonly loadState = computed<LoadState>(() => {
     if (this.contextService.error() || this.monthlyError() || this.entriesError()) {
       return 'error';
+    }
+
+    // Konto ohne Arbeitszeiten: kein Zeitraum zum Auswählen, gleich der Leerzustand statt Spinner
+    if (this.availableTimeRange() === null) {
+      return 'empty';
     }
 
     const hasEntries = this.hasEntries();

@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpHeaders, HttpResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, Subject, of, throwError } from 'rxjs';
+import { TimeRangeDto } from 'src/app/api/common-dtos/TimeRangeDto';
 import { PersonApiService } from 'src/app/api/work/person-api.service';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { ExpenseContextService } from '../bill/services/expense-context.service';
@@ -23,7 +24,10 @@ describe('ExportComponent', () => {
     Object.defineProperty(navigator, 'share', { value: supported ? () => Promise.resolve() : undefined, configurable: true });
   }
 
-  async function create(shareSupported = false): Promise<void> {
+  async function create(
+    shareSupported = false,
+    availableRange: TimeRangeDto | null = { startTimeUtc: new Date(2023, 0, 5), endTimeUtc: new Date(2026, 10, 5) }
+  ): Promise<void> {
     setShareSupport(shareSupported);
     downloadExpenses = vi.fn(() => of('downloaded'));
     personExport = vi.fn(() => of(new HttpResponse<Blob>({ body: null, headers: new HttpHeaders() })));
@@ -37,7 +41,7 @@ describe('ExportComponent', () => {
         {
           provide: ExpenseContextService,
           useValue: {
-            availableTimeRange: () => new BehaviorSubject({ startTimeUtc: new Date(2023, 0, 5), endTimeUtc: new Date(2026, 10, 5) }).asObservable(),
+            availableTimeRange: () => new BehaviorSubject(availableRange).asObservable(),
             downloadExpenses
           }
         },
@@ -116,6 +120,14 @@ describe('ExportComponent', () => {
     expensesButton().click();
 
     expect(downloadExpenses).toHaveBeenCalledWith(new Date(2023, 0, 5), new Date(2026, 10, 5), []);
+  });
+
+  it('"Alles" is disabled for an account without bills, the other presets stay usable', async () => {
+    await create(false, null);
+    const alles = Array.from(host.querySelectorAll<HTMLButtonElement>('.chip')).find(c => c.textContent?.trim() === 'Alles')!;
+
+    expect(alles.disabled).toBe(true);
+    expect(expensesButton().disabled).toBe(false);
   });
 
   it('disables the export when "Von" lies after "Bis"', async () => {

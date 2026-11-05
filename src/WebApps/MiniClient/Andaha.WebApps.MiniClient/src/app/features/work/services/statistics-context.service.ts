@@ -16,7 +16,8 @@ export class StatisticsContextService {
   private apiService = inject(StatisticsApiService);
 
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  private availableTimeRange$: BehaviorSubject<TimeRangeDto | undefined> = new BehaviorSubject<TimeRangeDto | undefined>(undefined);
+  /** undefined = noch nicht geladen, null = Konto ohne Arbeitszeiten */
+  private availableTimeRange$ = new BehaviorSubject<TimeRangeDto | null | undefined>(undefined);
   private statistics$: BehaviorSubject<StatisticsDto | undefined> = new BehaviorSubject<StatisticsDto | undefined>(undefined);
   private fullStatistics$: BehaviorSubject<FullStatisticsDto | undefined> = new BehaviorSubject<FullStatisticsDto | undefined>(undefined);
   private readonly errorState = signal(false);
@@ -33,7 +34,7 @@ export class StatisticsContextService {
     this.fetchTimeRange();
   }
 
-  availableTimeRange(): Observable<TimeRangeDto | undefined> {
+  availableTimeRange(): Observable<TimeRangeDto | null | undefined> {
     return this.availableTimeRange$.asObservable();
   }
 
@@ -88,7 +89,7 @@ export class StatisticsContextService {
         next: timeRange => this.availableTimeRange$.next(timeRange),
         error: _ => {
           // ohne Zeitraum kann die Seite nichts laden: Fehlerzustand statt endlosem Spinner
-          if (this.backendIsReady && !this.availableTimeRange$.value) {
+          if (this.backendIsReady && this.availableTimeRange$.value === undefined) {
             this.loading$.next(false);
             this.errorState.set(true);
           }

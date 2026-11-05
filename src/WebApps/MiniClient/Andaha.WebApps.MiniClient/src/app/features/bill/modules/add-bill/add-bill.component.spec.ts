@@ -204,6 +204,36 @@ describe('AddBillComponent', () => {
     expect(savedDto().shopName).toBe('Billa');
   });
 
+  it('big form shows "Pflichtfeld" and "Betrag größer 0"', async () => {
+    await setup();
+    const error = (name: string) => input(name).closest('.field')!.querySelector('.field-error')?.textContent?.trim();
+
+    // vor der ersten Eingabe keine Fehler
+    expect(host.querySelector('.field-error')).toBeNull();
+
+    await type('price', '0');
+    input('price').dispatchEvent(new Event('blur'));
+    await settle();
+    expect(error('price')).toBe('Betrag größer 0');
+
+    await type('price', '');
+    await settle();
+    expect(error('price')).toBe('Pflichtfeld');
+
+    await type('shopName', '   ');
+    input('shopName').dispatchEvent(new Event('blur'));
+    await settle();
+    expect(error('shopName')).toBe('Pflichtfeld');
+
+    component.form.controls.category.markAsTouched();
+    await settle();
+    const categoryField = host.querySelector('mat-select[formControlName="category"]')!.closest('.field')!;
+    expect(categoryField.querySelector('.field-error')?.textContent?.trim()).toBe('Pflichtfeld');
+
+    await type('price', '12,5');
+    expect(error('price')).toBeUndefined();
+  });
+
   it('blocks saving while the amount is invalid', async () => {
     await setup();
     await pickShop('Bi', 'Billa');

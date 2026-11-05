@@ -80,7 +80,7 @@ describe('ExpenseContextService error state', () => {
 
     fail = false;
     const callsBefore = timeRangeCalls;
-    let current: TimeRangeDto | undefined;
+    let current: TimeRangeDto | null | undefined;
     service.availableTimeRange().subscribe(r => current = r);
     service.retry();
 
@@ -104,6 +104,28 @@ describe('ExpenseContextService error state', () => {
     expect(service.error()).toBe(false);
   });
 
+  it('an account without bills has the empty range null until its first bill sets the range', () => {
+    const bills = new Subject<any[]>();
+    const api = { getAvailableTimeRange: () => of(null) } as unknown as ExpenseApiService;
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: BillContextService, useValue: { bills: () => bills.asObservable() } },
+        { provide: ContextService, useValue: { backendReady: () => of(true) } },
+        { provide: ExpenseApiService, useValue: api },
+        { provide: DatePipe, useValue: new DatePipe('en-US') }
+      ]
+    });
+    const service = TestBed.runInInjectionContext(() => new ExpenseContextService());
+    let current: TimeRangeDto | null | undefined;
+    service.availableTimeRange().subscribe(r => current = r);
+
+    expect(current).toBeNull();
+    expect(service.error()).toBe(false);
+
+    bills.next([{ date: new Date(2026, 10, 5) }]);
+
+    expect(current).toEqual({ startTimeUtc: new Date(2026, 10, 5), endTimeUtc: new Date(2026, 10, 5) });
+  });
 
   it('a late response of an older time range is ignored (fast ‹ › stepping)', () => {
     const october = new Subject<any[]>();

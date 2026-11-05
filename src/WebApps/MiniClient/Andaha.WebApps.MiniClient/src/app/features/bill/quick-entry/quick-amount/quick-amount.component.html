@@ -1,6 +1,6 @@
 @if (mode === 'input') {
   <label class="amount-field">
-    <input name="amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00" aria-label="Betrag"
+    <input #amountInput name="amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00" aria-label="Betrag"
       [value]="text" (input)="onInput($event)" (keydown.enter)="submitted.emit()">
     <span class="sfx">€</span>
   </label>

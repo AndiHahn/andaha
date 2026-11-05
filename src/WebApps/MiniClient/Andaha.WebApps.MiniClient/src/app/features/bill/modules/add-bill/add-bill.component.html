@@ -12,9 +12,13 @@
       <span class="field-box">
         <input #priceInput class="price" name="price" formControlName="price" type="text" inputmode="decimal"
           enterkeyhint="next" placeholder="0,00" autocomplete="off" required
-          [attr.aria-invalid]="form.controls.price | showError: formDirective">
+          [attr.aria-invalid]="form.controls.price | showError: formDirective"
+          [attr.aria-describedby]="(form.controls.price | showError: formDirective) ? 'bill-price-error' : null">
         <span class="suffix" aria-hidden="true">€</span>
       </span>
+      @if (form.controls.price | showError: formDirective) {
+        <span class="field-error" id="bill-price-error" role="alert">{{ form.controls.price.hasError('required') ? 'Pflichtfeld' : 'Betrag größer 0' }}</span>
+      }
     </label>
 
     <label class="field" [class.invalid]="form.controls.shopName | showError: formDirective">
@@ -22,8 +26,12 @@
       <span class="field-box">
         <input name="shopName" formControlName="shopName" type="text" autocomplete="off" enterkeyhint="next" required
           [matAutocomplete]="shopAuto" (focus)="updateShopOptions()"
-          [attr.aria-invalid]="form.controls.shopName | showError: formDirective">
+          [attr.aria-invalid]="form.controls.shopName | showError: formDirective"
+          [attr.aria-describedby]="(form.controls.shopName | showError: formDirective) ? 'bill-shop-error' : null">
       </span>
+      @if (form.controls.shopName | showError: formDirective) {
+        <span class="field-error" id="bill-shop-error" role="alert">{{ form.controls.shopName.hasError('maxlength') ? 'Höchstens 200 Zeichen' : 'Pflichtfeld' }}</span>
+      }
     </label>
     <mat-autocomplete #shopAuto="matAutocomplete" (optionSelected)="onShopSelected($event)">
       @for (name of shopOptions; track $index) {
@@ -49,6 +57,9 @@
         </mat-select>
         <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
       </span>
+      @if (form.controls.category | showError: formDirective) {
+        <span class="field-error" role="alert">Pflichtfeld</span>
+      }
     </div>
 
     @if (billSubCategories.length > 0) {
@@ -80,6 +91,9 @@
       <span class="field-box ta">
         <textarea name="notes" formControlName="notes" [attr.aria-invalid]="form.controls.notes | showError: formDirective"></textarea>
       </span>
+      @if (form.controls.notes | showError: formDirective) {
+        <span class="field-error" role="alert">Höchstens 1000 Zeichen</span>
+      }
     </label>
 
     <app-photo-picker [photo]="photo" [disabled]="isSaving"

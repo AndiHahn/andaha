@@ -1,3 +1,4 @@
+import { parseLocalDateTime } from "src/app/shared/utils/utils";
 import { PagedResultDto } from "../../common-dtos/PagedResultDto";
 
 export interface BillAnalyzedDto extends BillAnalyzedDtoBase {
@@ -30,7 +31,8 @@ interface BillAnalyzedDtoBase {
 export function mapBillAnalyzedDtoRaw(raw: BillAnalyzedDtoRaw): BillAnalyzedDto {
   return {
     ...raw,
-    date: raw.date ? new Date(raw.date) : undefined
+    // Rechnungsdatum der Analyse: gespeicherter Kalendertag als Ortszeit wie bei mapBillDtoRaw
+    date: raw.date ? parseLocalDateTime(raw.date) : undefined
   }
 }
 

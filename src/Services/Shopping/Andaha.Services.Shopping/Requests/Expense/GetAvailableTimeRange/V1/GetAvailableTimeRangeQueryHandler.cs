@@ -29,21 +29,20 @@ internal class GetAvailableTimeRangeQueryHandler : IRequestHandler<GetAvailableT
         Guid userId = identityService.GetUserId();
         var connectedUsers = await collaborationApiProxy.GetConnectedUsers(cancellationToken);
 
-        var result = await dbContext.Bill
+        var bills = dbContext.Bill
             .AsNoTracking()
-            .Select(bill => new
-            {
-                StartDate = dbContext.Bill.Where(GetUserFilterExpression(userId, connectedUsers)).Min(b => b.Date),
-                EndDate = dbContext.Bill.Where(GetUserFilterExpression(userId, connectedUsers)).Max(b => b.Date)
-            })
-            .FirstOrDefaultAsync(cancellationToken);
+            .Where(GetUserFilterExpression(userId, connectedUsers));
 
-        if (result is null)
+        // Nullable projection: an account without bills has no Min/Max and gets the empty range.
+        DateTime? startDate = await bills.MinAsync(bill => (DateTime?)bill.Date, cancellationToken);
+        if (startDate is null)
         {
             return Results.Ok(new TimeRangeDto());
         }
 
-        return Results.Ok(new TimeRangeDto(result.StartDate, result.EndDate));
+        DateTime endDate = await bills.MaxAsync(bill => bill.Date, cancellationToken);
+
+        return Results.Ok(new TimeRangeDto(startDate.Value, endDate));
     }
 
     private Expression<Func<Core.Bill, bool>> GetUserFilterExpression(Guid userId, IReadOnlyCollection<Guid> connectedUsers)

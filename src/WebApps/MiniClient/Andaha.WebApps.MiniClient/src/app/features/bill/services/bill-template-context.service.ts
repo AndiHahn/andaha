@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, combineLatest, firstValueFrom, map, Observable } from 'rxjs';
 import { BillSuggestionDto, BillSuggestionKey } from 'src/app/api/shopping/dtos/BillSuggestionDto';
 import { BillTemplateCreateDto, BillTemplateDto } from 'src/app/api/shopping/dtos/BillTemplateDto';
+import { HiddenBillSuggestionDto } from 'src/app/api/shopping/dtos/HiddenBillSuggestionDto';
 import { BillTemplateApiService } from 'src/app/api/shopping/bill-template-api.service';
 import { ContextService } from 'src/app/core/context.service';
 
@@ -117,6 +118,18 @@ export class BillTemplateContextService {
 
   async hide(s: BillSuggestionKey): Promise<void> {
     await firstValueFrom(this.api.hideSuggestion(s));
+    this.refresh();
+  }
+
+
+  /** Ausgeblendete Vorschläge (Mehr → Vorlagen, Abschnitt „Ausgeblendet“), bei jedem Aufruf frisch vom Server */
+  listHiddenSuggestions(): Observable<HiddenBillSuggestionDto[]> {
+    return this.api.listHiddenSuggestions();
+  }
+
+  /** „Wieder anzeigen“: der Vorschlag erscheint danach wieder in Schnellerfassung und Vorschlagsliste */
+  async unhideSuggestion(id: string): Promise<void> {
+    await firstValueFrom(this.api.unhideSuggestion(id));
     this.refresh();
   }
 

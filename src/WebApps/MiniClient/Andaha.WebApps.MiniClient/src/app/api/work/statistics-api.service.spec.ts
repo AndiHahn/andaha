@@ -42,6 +42,16 @@ describe('StatisticsApiService', () => {
     expect(req.request.params.getAll('personFilter')).toEqual(['p1', 'p2']);
   });
 
+  it('getAvailableTimeRange maps the empty range of an account without entries to null', () => {
+    let result: unknown;
+    api.getAvailableTimeRange().subscribe(r => result = r);
+
+    http.expectOne(r => r.method === 'GET' && path(r.url).endsWith('/time-range'))
+      .flush({ startTimeUtc: '0001-01-01T00:00:00', endTimeUtc: '0001-01-01T00:00:00' });
+
+    expect(result).toBeNull();
+  });
+
   it('getMonthlyHours sends until, months, personFilter and the device time zone', () => {
     let result: unknown;
     api.getMonthlyHours('2026-11', 12, ['p1']).subscribe(r => result = r);

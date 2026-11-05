@@ -40,6 +40,26 @@ describe('ExpenseApiService', () => {
     req.flush(new Blob());
   });
 
+  it('getAvailableTimeRange maps the range to dates', () => {
+    let result: unknown;
+    api.getAvailableTimeRange().subscribe(r => result = r);
+
+    http.expectOne(r => path(r.url) === '/api/expense/time-range')
+      .flush({ startTimeUtc: '2025-01-15T00:00:00', endTimeUtc: '2026-11-05T00:00:00' });
+
+    expect(result).toEqual({ startTimeUtc: new Date('2025-01-15T00:00:00'), endTimeUtc: new Date('2026-11-05T00:00:00') });
+  });
+
+  it('getAvailableTimeRange maps the empty range of an account without bills to null', () => {
+    let result: unknown;
+    api.getAvailableTimeRange().subscribe(r => result = r);
+
+    http.expectOne(r => path(r.url) === '/api/expense/time-range')
+      .flush({ startTimeUtc: '0001-01-01T00:00:00', endTimeUtc: '0001-01-01T00:00:00' });
+
+    expect(result).toBeNull();
+  });
+
   it('exportExpenses without categories sends no categoryFilter', () => {
     api.exportExpenses(new Date(2026, 0, 1), new Date(2026, 0, 31)).subscribe();
 

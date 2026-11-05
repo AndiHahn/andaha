@@ -49,6 +49,7 @@ export class AppComponent implements OnInit {
   readonly isDesktop$: Observable<boolean>;
   readonly title$: Observable<string>;
   readonly back$: Observable<string | null>;
+  readonly desktopBack$: Observable<string | null>;
   readonly action$: Observable<HeaderAction | null>;
 
   constructor() {
@@ -59,6 +60,7 @@ export class AppComponent implements OnInit {
       shareReplay({ bufferSize: 1, refCount: true }));
     this.title$ = pageTitleService.title$;
     this.back$ = pageTitleService.back$;
+    this.desktopBack$ = pageTitleService.desktopBack$;
     this.action$ = pageTitleService.action$;
     this.initSubscriptions();
   }

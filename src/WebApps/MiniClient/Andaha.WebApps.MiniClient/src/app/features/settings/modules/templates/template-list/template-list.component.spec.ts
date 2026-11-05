@@ -1,8 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { provideRouter } from '@angular/router';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { BillSuggestionDto } from 'src/app/api/shopping/dtos/BillSuggestionDto';
+import { HiddenBillSuggestionDto } from 'src/app/api/shopping/dtos/HiddenBillSuggestionDto';
 import { BillTemplateDto } from 'src/app/api/shopping/dtos/BillTemplateDto';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillTemplateContextService } from 'src/app/features/bill/services/bill-template-context.service';
@@ -24,12 +25,27 @@ const suggestions: BillSuggestionDto[] = [
   { shopName: 'Thalia', categoryId: 'c2', subCategoryId: 's2', count: 5 }
 ];
 
+const hidden: HiddenBillSuggestionDto[] = [
+  { id: 'h1', shopName: 'Spar', categoryId: 'c1', categoryName: 'Lebensmittel', subCategoryId: 's1', subCategoryName: 'Gebäck' },
+  { id: 'h2', shopName: 'Thalia', categoryId: 'c2', categoryName: 'Freizeit', subCategoryId: null, subCategoryName: null }
+];
+
 describe('TemplateListComponent', () => {
   let fixture: ComponentFixture<TemplateListComponent>;
-  let service: { reorder: ReturnType<typeof vi.fn>; pin: ReturnType<typeof vi.fn> };
+  let service: {
+    reorder: ReturnType<typeof vi.fn>;
+    pin: ReturnType<typeof vi.fn>;
+    listHiddenSuggestions: ReturnType<typeof vi.fn>;
+    unhideSuggestion: ReturnType<typeof vi.fn>;
+  };
   let snackbar: { openFromComponent: ReturnType<typeof vi.fn> };
 
-  async function setup(t: BillTemplateDto[] = templates, s: BillSuggestionDto[] = suggestions, failed = false) {
+  async function setup(
+    t: BillTemplateDto[] = templates,
+    s: BillSuggestionDto[] = suggestions,
+    failed = false,
+    hiddenList: () => Observable<HiddenBillSuggestionDto[]> = () => of([])
+  ) {
     snackbar = { openFromComponent: vi.fn() };
     await TestBed.configureTestingModule({
       imports: [TemplateListComponent],
@@ -42,6 +58,8 @@ describe('TemplateListComponent', () => {
           useValue: {
             reorder: vi.fn().mockResolvedValue(undefined),
             pin: vi.fn().mockResolvedValue({}),
+            listHiddenSuggestions: vi.fn(hiddenList),
+            unhideSuggestion: vi.fn().mockResolvedValue(undefined),
             templates: () => new BehaviorSubject(t),
             suggestions: () => new BehaviorSubject(s),
             retry: vi.fn(),
@@ -57,6 +75,7 @@ describe('TemplateListComponent', () => {
   }
 
   const rows = () => Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('.drag-item'));
+  const hiddenRows = () => Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('.hidden-row'));
   const text = (e: Element) => e.textContent!.replace(/\s+/g, ' ').trim();
 
   it('lists pinned templates in order with name or shop and category line', async () => {
@@ -119,7 +138,7 @@ describe('TemplateListComponent', () => {
   it('shows an error with retry when loading failed', async () => {
     await setup([], [], true);
     expect(text(fixture.nativeElement)).toContain('konnten nicht geladen werden');
-    (fixture.nativeElement.querySelector('button.retry') as HTMLButtonElement).click();
+    (fixture.nativeElement.querySelector('app-load-state .state-retry') as HTMLButtonElement).click();
     expect(TestBed.inject(BillTemplateContextService).retry).toHaveBeenCalled();
   });
 
@@ -128,5 +147,55 @@ describe('TemplateListComponent', () => {
     const add = fixture.nativeElement.querySelector('a.add') as HTMLAnchorElement;
     expect(text(add)).toContain('Vorlage hinzufügen');
     expect(add.getAttribute('href')).toBe('/create');
+  });
+
+  it('hidden section lists suggestions and "Wieder anzeigen" unhides', async () => {
+    await setup(templates, suggestions, false, () => of(hidden));
+    const heads = Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('.sect')).map(h => text(h));
+    expect(heads.at(-1)).toContain('Ausgeblendet');
+    expect(hiddenRows().map(r => `${text(r.querySelector('.t')!)} ${text(r.querySelector('.s')!)}`)).toEqual([
+      'Spar Lebensmittel · Gebäck',
+      'Thalia Freizeit'
+    ]);
+
+    const button = hiddenRows()[0].querySelector('button.act') as HTMLButtonElement;
+    expect(text(button)).toContain('Wieder anzeigen');
+    button.click();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(service.unhideSuggestion).toHaveBeenCalledWith('h1');
+    expect(hiddenRows().map(r => text(r.querySelector('.t')!))).toEqual(['Thalia']);
+  });
+
+  it('hidden section explains the empty state', async () => {
+    await setup();
+    expect(text(fixture.nativeElement)).toContain('Keine ausgeblendeten Vorschläge');
+  });
+
+  it('hidden section shows an error with retry and reloads', async () => {
+    let fail = true;
+    await setup(templates, suggestions, false, () => fail ? throwError(() => new Error('500')) : of(hidden));
+    const retry = fixture.nativeElement.querySelector('.hidden-state .state-retry') as HTMLButtonElement;
+    expect(retry).not.toBeNull();
+
+    fail = false;
+    retry.click();
+    fixture.detectChanges();
+
+    expect(service.listHiddenSuggestions).toHaveBeenCalledTimes(2);
+    expect(hiddenRows().length).toBe(2);
+  });
+
+  it('keeps the hidden suggestion and shows an error when unhiding fails', async () => {
+    await setup(templates, suggestions, false, () => of(hidden));
+    service.unhideSuggestion.mockRejectedValue(new Error('offline'));
+
+    (hiddenRows()[0].querySelector('button.act') as HTMLButtonElement).click();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(snackbar.openFromComponent).toHaveBeenCalled();
+    expect(hiddenRows().length).toBe(2);
   });
 });

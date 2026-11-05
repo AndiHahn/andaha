@@ -1,3 +1,4 @@
+import { parseLocalDateTime } from "src/app/shared/utils/utils";
 import { BillCategoryDto } from "./BillCategoryDto";
 import { BillSubCategoryDto } from "./BillSubCategoryDto";
 
@@ -24,6 +25,6 @@ interface BillDtoBase {
 export function mapBillDtoRaw(raw: BillDtoRaw): BillDto {
   return {
     ...raw,
-    date: new Date(raw.date)
+    date: parseLocalDateTime(raw.date)
   }
 }

@@ -19,7 +19,8 @@ export class ExpenseContextService {
   private apiService = inject(ExpenseApiService);
   private datePipe = inject(DatePipe);
 
-  private availableTimeRange$: BehaviorSubject<TimeRangeDto | undefined> = new BehaviorSubject<TimeRangeDto | undefined>(undefined);
+  /** undefined = noch nicht geladen, null = Konto ohne Rechnungen */
+  private availableTimeRange$ = new BehaviorSubject<TimeRangeDto | null | undefined>(undefined);
   private expenses$ : BehaviorSubject<ExpenseDto[] | undefined> = new BehaviorSubject<ExpenseDto[] | undefined>(undefined);
   private readonly loadingState = signal(false);
   private readonly errorState = signal(false);
@@ -37,7 +38,7 @@ export class ExpenseContextService {
     this.fetchTimeRange();
   }
 
-  availableTimeRange(): Observable<TimeRangeDto | undefined> {
+  availableTimeRange(): Observable<TimeRangeDto | null | undefined> {
     return this.availableTimeRange$.asObservable();
   }
 
@@ -133,7 +134,7 @@ export class ExpenseContextService {
         next: timeRange => this.availableTimeRange$.next(timeRange),
         error: _ => {
           // ohne Zeitraum kann die Seite nichts laden: Fehlerzustand statt endlosem Spinner
-          if (this.backendIsReady && !this.availableTimeRange$.value) {
+          if (this.backendIsReady && this.availableTimeRange$.value === undefined) {
             this.loadingState.set(false);
             this.errorState.set(true);
           }

@@ -29,25 +29,20 @@ internal class GetAvailableTimeRangeRequestHandler : IRequestHandler<GetAvailabl
         Guid userId = identityService.GetUserId();
         var connectedUsers = await collaborationApiProxy.GetConnectedUsers(cancellationToken);
 
-        var result = await dbContext.WorkingEntry
+        var entries = dbContext.WorkingEntry
             .AsNoTracking()
-            .Select(workingEntry => new
-            {
-                StartDate = dbContext.WorkingEntry
-                    .Where(GetUserFilterExpression(userId, connectedUsers))
-                    .Min(entry => entry.From),
-                EndDate = dbContext.WorkingEntry
-                    .Where(GetUserFilterExpression(userId, connectedUsers))
-                    .Max(entry => entry.Until)
-            })
-            .FirstOrDefaultAsync(cancellationToken);
+            .Where(GetUserFilterExpression(userId, connectedUsers));
 
-        if (result is null)
+        // Nullable projection: an account without entries has no Min/Max and gets the empty range.
+        DateTime? startDate = await entries.MinAsync(entry => (DateTime?)entry.From, cancellationToken);
+        if (startDate is null)
         {
             return Results.Ok(new TimeRangeDto());
         }
 
-        return Results.Ok(new TimeRangeDto(result.StartDate, result.EndDate));
+        DateTime endDate = await entries.MaxAsync(entry => entry.Until, cancellationToken);
+
+        return Results.Ok(new TimeRangeDto(startDate.Value, endDate));
     }
 
     private static Expression<Func<Core.WorkingEntry, bool>> GetUserFilterExpression(

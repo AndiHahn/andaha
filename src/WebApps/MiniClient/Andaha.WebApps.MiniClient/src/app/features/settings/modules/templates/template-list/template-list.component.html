@@ -1,15 +1,6 @@
 <div class="page">
   <div class="body">
-    @if (failed() && rows().length === 0 && suggestions().length === 0) {
-      <div class="empty" role="alert">
-        <p>Vorlagen und Vorschläge konnten nicht geladen werden.</p>
-        <button type="button" class="btn sec2 retry" (click)="retry()">Erneut versuchen</button>
-      </div>
-    } @else if (!loaded()) {
-      <div class="loading">
-        <mat-spinner diameter="40" />
-      </div>
-    } @else {
+    <app-load-state [state]="pageState()" (retry)="retry()">
       <h2 class="sect first">Angeheftet<span>Reihenfolge wie im Sheet</span></h2>
       @if (rows().length === 0) {
         <div class="empty">Noch keine Vorlagen angelegt. Mit „Vorlage hinzufügen“ oder „Anheften“ bei einem Vorschlag entsteht die erste.</div>
@@ -53,7 +44,27 @@
           </button>
         </div>
       }
-    }
+
+      <!-- „Nicht mehr vorschlagen“ rückgängig machen (design.md §8.9) -->
+      <h2 class="sect">Ausgeblendet<span>nicht mehr vorgeschlagen</span></h2>
+      <app-load-state class="hidden-state" [state]="hiddenState()" [emptyText]="hiddenEmptyText" (retry)="retryHidden()">
+        @for (row of hiddenRows(); track row.hidden.id) {
+          <div class="trow hidden-row">
+            <div class="main">
+              <span class="t">{{ row.hidden.shopName }}</span>
+              <span class="s">
+                @if (row.color) {
+                  <i class="dot" [class.dot-light]="row.color === 'white'" [style.background]="row.color"></i>
+                }{{ row.subtitle }}
+              </span>
+            </div>
+            <button type="button" class="act" (click)="unhide(row)">
+              <mat-icon aria-hidden="true">visibility</mat-icon>Wieder anzeigen
+            </button>
+          </div>
+        }
+      </app-load-state>
+    </app-load-state>
   </div>
 
   <div class="actions">

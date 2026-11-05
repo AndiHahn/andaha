@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { MatIcon } from '@angular/material/icon';
@@ -14,7 +14,9 @@ import { BillTemplateContextService } from 'src/app/features/bill/services/bill-
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { ShowErrorPipe } from 'src/app/shared/form-field/show-error.pipe';
+import { LoadState, LoadStateComponent } from 'src/app/shared/load-state/load-state.component';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
+import { vibrate } from 'src/app/shared/utils/haptics';
 import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
 import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 
@@ -33,7 +35,7 @@ function notBlank(control: AbstractControl): ValidationErrors | null {
   templateUrl: './template-edit.component.html',
   styleUrls: ['./template-edit.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [PanelBackDirective, RouterLink, ReactiveFormsModule, MatSelect, MatSelectTrigger, MatOption, MatIcon, MatProgressSpinner, ShowErrorPipe]
+  imports: [PanelBackDirective, RouterLink, ReactiveFormsModule, MatSelect, MatSelectTrigger, MatOption, MatIcon, MatProgressSpinner, ShowErrorPipe, LoadStateComponent]
 })
 export class TemplateEditComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -47,7 +49,8 @@ export class TemplateEditComponent implements OnInit {
   readonly categories = toSignal(this.categories$, { initialValue: [] as CategoryDto[] });
 
   readonly form = new FormGroup({
-    name: new FormControl('', { nonNullable: true }),
+    // Längen wie im Backend-Validator der Vorlagen
+    name: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(100)] }),
     shopMode: new FormControl<ShopMode>('fixed', { nonNullable: true }),
     shopName: new FormControl('', { nonNullable: true }),
     categoryId: new FormControl<string | null>(null, [Validators.required]),
@@ -58,6 +61,8 @@ export class TemplateEditComponent implements OnInit {
   readonly failed = toSignal(this.templateContext.loadFailed(), { initialValue: false });
 
   readonly ready = signal(false);
+  /** Laden und Fehler mit „Erneut versuchen“ über app-load-state (AC34) */
+  readonly loadState = computed<LoadState>(() => this.ready() ? 'ready' : this.failed() ? 'error' : 'loading');
   readonly isSaving = signal(false);
   readonly isDeleting = signal(false);
 
@@ -143,6 +148,7 @@ export class TemplateEditComponent implements OnInit {
     this.isDeleting.set(true);
     try {
       await this.templateContext.remove(this.templateId);
+      vibrate();
       // Zurück führt danach nicht auf die gelöschte Vorlage (I1)
       this.historyTrail.leaveTo(LIST_URL);
     } catch {
@@ -168,7 +174,7 @@ export class TemplateEditComponent implements OnInit {
   private updateShopValidator(): void {
     const shopName = this.form.controls.shopName;
     if (this.form.controls.shopMode.value === 'fixed') {
-      shopName.setValidators(notBlank);
+      shopName.setValidators([notBlank, Validators.maxLength(200)]);
     } else {
       shopName.clearValidators();
     }

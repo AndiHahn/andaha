@@ -128,7 +128,7 @@ internal static class BillEndpointExtensions
                     subCategoryId,
                     httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.ShopName)]!,
                     parsedPrice,
-                    DateTime.Parse(httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.Date)]!),
+                    BillFormDate.Parse(httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.Date)]!),
                     httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.Notes)],
                     httpContext.Request.Form.Files.FirstOrDefault());
 
@@ -166,7 +166,7 @@ internal static class BillEndpointExtensions
                     subCategoryId,
                     httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.ShopName)]!,
                     parsedPrice,
-                    DateTime.Parse(httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.Date)]!),
+                    BillFormDate.Parse(httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.Date)]!),
                     httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.Notes)],
                     httpContext.Request.Form.Files.FirstOrDefault());
 

@@ -59,7 +59,8 @@ describe('BillApiService addBill', () => {
       monthSums: [{ month: '2026-11', sum: 12.5 }]
     });
 
-    expect(result!.values[0].date).toEqual(new Date('2026-11-04T00:00:00Z'));
+    // gespeichert ist die Ortszeit (vom Server als „Z“ markiert): lokale Mitternacht des 4.11.
+    expect(result!.values[0].date).toEqual(new Date(2026, 10, 4));
     expect(result!.totalSum).toBe(12.5);
     expect(result!.monthSums).toEqual([{ month: '2026-11', sum: 12.5 }]);
     http.verify();

@@ -62,7 +62,7 @@
     <!-- Kopf Desktop -->
     @if (isDesktop$ | async) {
       <header class="top-desktop">
-        @if (back$ | async; as back) {
+        @if (desktopBack$ | async; as back) {
           <a class="icon-btn" [routerLink]="back" aria-label="Zurück">
             <mat-icon>arrow_back</mat-icon>
           </a>

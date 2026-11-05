@@ -1,27 +1,25 @@
 <div class="page">
   <div class="body">
-    @if (!ready() && failed()) {
-      <div class="state" role="alert">
-        <p>Die Vorlage konnte nicht geladen werden. Prüfe die Verbindung.</p>
-        <button type="button" class="btn sec2 retry" (click)="retry()">Erneut versuchen</button>
-      </div>
-    } @else if (!ready() && categories().length === 0 && loaded()) {
+    @if (!ready() && !failed() && categories().length === 0 && loaded()) {
       <div class="state">
         <p>Lege zuerst eine Kategorie an, bevor du eine Vorlage erstellst.</p>
         <a class="btn sec2" routerLink="/settings/categories">Zu den Kategorien</a>
       </div>
-    } @else if (!ready()) {
-      <div class="loading">
-        <mat-spinner diameter="40" />
-      </div>
     } @else {
+      <app-load-state [state]="loadState()" (retry)="retry()">
       <form class="form-body" [formGroup]="form" (ngSubmit)="onSave()">
-        <label class="field">
+        <label class="field" [class.invalid]="form.controls.name | showError">
           <span class="field-label">Name</span>
           <span class="field-box">
-            <input formControlName="name" name="name" placeholder="Optional" autocomplete="off">
+            <input formControlName="name" name="name" placeholder="Optional" autocomplete="off"
+              [attr.aria-invalid]="form.controls.name | showError"
+              [attr.aria-describedby]="(form.controls.name | showError) ? 'template-name-error' : null">
           </span>
-          <span class="field-hint">Steht auf der Kachel. Leer lassen = Shopname.</span>
+          @if (form.controls.name | showError) {
+            <span class="field-error" id="template-name-error" role="alert">Höchstens 100 Zeichen</span>
+          } @else {
+            <span class="field-hint">Steht auf der Kachel. Leer lassen = Shopname.</span>
+          }
         </label>
 
         <div class="field">
@@ -46,8 +44,12 @@
             <span class="field-label">Shopname</span>
             <span class="field-box">
               <input formControlName="shopName" name="shopName" required autocomplete="off"
-                [attr.aria-invalid]="form.controls.shopName | showError">
+                [attr.aria-invalid]="form.controls.shopName | showError"
+                [attr.aria-describedby]="(form.controls.shopName | showError) ? 'template-shop-error' : null">
             </span>
+            @if (form.controls.shopName | showError) {
+              <span class="field-error" id="template-shop-error" role="alert">{{ form.controls.shopName.hasError('maxlength') ? 'Höchstens 200 Zeichen' : 'Pflichtfeld' }}</span>
+            }
           </label>
         }
 
@@ -74,6 +76,9 @@
             </mat-select>
             <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
           </span>
+          @if (form.controls.categoryId | showError) {
+            <span class="field-error" role="alert">Pflichtfeld</span>
+          }
         </div>
 
         <div class="field">
@@ -89,6 +94,7 @@
           </span>
         </div>
       </form>
+      </app-load-state>
     }
   </div>
 

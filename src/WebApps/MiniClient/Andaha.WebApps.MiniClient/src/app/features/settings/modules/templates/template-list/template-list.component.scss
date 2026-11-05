@@ -17,11 +17,6 @@
   overflow: auto;
 }
 
-.loading {
-  display: flex;
-  justify-content: center;
-  padding-top: 30px;
-}
 
 // Abschnittskopf (Mockup .sect): 13/600 muted, 20 px oben, 8 px unten, 16 px seitlich, Linie darunter
 .sect {
@@ -47,7 +42,8 @@
   padding: 10px 8px 10px 4px;
   border-bottom: 1px solid var(--line2);
 
-  &.suggestion { padding-left: 16px; }
+  &.suggestion,
+  &.hidden-row { padding-left: 16px; }
 }
 
 .main {

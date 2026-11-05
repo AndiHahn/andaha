@@ -5,7 +5,7 @@ import { constructPath, constructVersionedPath } from '../functions/functions';
 import { StatisticsDto, StatisticsDtoRaw, mapStatisticsDtoRaw } from './dtos/StatisticsDto';
 import { Observable, map } from 'rxjs';
 import { GetStatisticsParameters } from './dtos/GetStatisticsParameters';
-import { TimeRangeDto, TimeRangeDtoRaw, mapTimeRangeDtoRaw } from '../common-dtos/TimeRangeDto';
+import { TimeRangeDto, TimeRangeDtoRaw, mapAvailableTimeRangeDtoRaw } from '../common-dtos/TimeRangeDto';
 import { DatePipe } from '@angular/common';
 import { FullStatisticsDto, FullStatisticsDtoRaw, mapFullStatisticsDtoRaw } from './dtos/FullStatisticsDto';
 import { MonthlyHoursDto } from './dtos/MonthlyHoursDto';
@@ -32,12 +32,13 @@ export class StatisticsApiService {
     }
   }
 
-  getAvailableTimeRange(): Observable<TimeRangeDto> {
+  /** Zeitraum aller eigenen und verbundenen Arbeitszeiten; null für ein Konto ohne Arbeitszeiten */
+  getAvailableTimeRange(): Observable<TimeRangeDto | null> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'time-range');
 
     return this.httpClient
       .get<TimeRangeDtoRaw>(url)
-      .pipe(map(mapTimeRangeDtoRaw));
+      .pipe(map(mapAvailableTimeRangeDtoRaw));
   }
 
   getStatistics(

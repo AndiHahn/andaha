@@ -25,7 +25,14 @@ describe('PageTitleService', () => {
                             { path: ':id', component: DummyComponent, data: { title: 'Rechnung', back: '/bill/list' } }
                         ]
                     },
-                    { path: 'untitled', component: DummyComponent }
+                    { path: 'untitled', component: DummyComponent },
+                    {
+                        path: 'settings',
+                        children: [
+                            { path: 'categories', component: DummyComponent, data: { title: 'Kategorien', back: '/more' } },
+                            { path: 'templates/:id', component: DummyComponent, data: { title: 'Vorlage bearbeiten', back: '/settings/templates' } }
+                        ]
+                    }
                 ])
             ]
         });
@@ -43,6 +50,17 @@ describe('PageTitleService', () => {
         await router.navigate(['/bill/42']);
         expect(await firstValueFrom(service.title$)).toBe('Rechnung');
         expect(await firstValueFrom(service.back$)).toBe('/bill/list');
+    });
+
+    it('settings pages have no back arrow at 1440', async () => {
+        // Desktop: die Seitenleiste ersetzt „Mehr“, ein Zurück-Pfeil zu /more entfällt (Design v2, 04)
+        await router.navigate(['/settings/categories']);
+        expect(await firstValueFrom(service.back$)).toBe('/more');
+        expect(await firstValueFrom(service.desktopBack$)).toBeNull();
+
+        // Detailseiten unter /settings behalten ihren Pfeil zur Liste
+        await router.navigate(['/settings/templates/t1']);
+        expect(await firstValueFrom(service.desktopBack$)).toBe('/settings/templates');
     });
 
     it('override wins until next navigation', async () => {

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, Output, viewChild } from '@angular/core';
 
 /**
  * Betrag im Schnell-Sheet (v2): mobil eine große Anzeige (44/600) mit Cursor, ein Tipp öffnet die
@@ -23,7 +23,14 @@ export class QuickAmountComponent {
   @Output() readonly textChange = new EventEmitter<string>();
   @Output() readonly submitted = new EventEmitter<void>();
 
+  private readonly amountInput = viewChild<ElementRef<HTMLInputElement>>('amountInput');
+
   onInput(event: Event): void {
     this.textChange.emit((event.target as HTMLInputElement).value);
+  }
+
+  /** Fokus ins Eingabefeld (Desktop); mit Zifferntastatur ohne Wirkung */
+  focusInput(): void {
+    this.amountInput()?.nativeElement.focus();
   }
 }

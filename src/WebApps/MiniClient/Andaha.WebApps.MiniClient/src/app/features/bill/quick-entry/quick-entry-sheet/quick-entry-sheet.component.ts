@@ -48,11 +48,9 @@ export const QUICK_ENTRY_RESTORE_TIMEOUT_MS = new InjectionToken<number>('QUICK_
   factory: () => 4000
 });
 
-/** Ohne Uhrzeit gespeichert: Mitternacht in UTC (Datum ohne Zeit vom Server) oder lokal (Datum gewählt) */
+/** Ohne Uhrzeit gespeichert: lokale Mitternacht (anderer Tag gewählt bzw. Datum ohne Zeit vom Server) */
 function hasTime(date: Date): boolean {
-  const utcMidnight = date.getUTCHours() === 0 && date.getUTCMinutes() === 0 && date.getUTCSeconds() === 0;
-  const localMidnight = date.getHours() === 0 && date.getMinutes() === 0 && date.getSeconds() === 0;
-  return !utcMidnight && !localMidnight;
+  return date.getHours() !== 0 || date.getMinutes() !== 0 || date.getSeconds() !== 0;
 }
 
 /**
@@ -153,6 +151,7 @@ export class QuickEntrySheetComponent {
   readonly menuTile = signal<QuickTile | null>(null);
   readonly menuTop = signal(0);
   private readonly menuTrigger = viewChild.required<MatMenuTrigger>('menuTrigger');
+  private readonly amountField = viewChild.required(QuickAmountComponent);
 
   constructor() {
     const draft = this.draftService.load();
@@ -264,6 +263,10 @@ export class QuickEntrySheetComponent {
     this.customShop.set(false);
     this.shopQuery.set('');
     this.saveAsTemplate.set(false);
+    // Desktop: der gedrückte Button verschwindet gleich, der Fokus bleibt im Betrag (mobil bleibt die Tastatur offen)
+    if (this.dialogMode) {
+      this.amountField().focusInput();
+    }
   }
 
   onCategoryChange(categoryId: string | null): void {

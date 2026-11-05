@@ -46,7 +46,7 @@ export class ExpensesComponent {
   readonly emptyText = 'Keine Ausgaben in diesem Zeitraum – erfasse Rechnungen unter Liste.';
 
   readonly availableTimeRange = toSignal(this.expenseContextService.availableTimeRange()
-    .pipe(map(timeRange => timeRange ? mapTimeRangeDto(timeRange) : undefined)));
+    .pipe(map(timeRange => timeRange ? mapTimeRangeDto(timeRange) : timeRange)));
 
   readonly expenses = toSignal(this.expenseContextService.expenses());
 
@@ -60,6 +60,11 @@ export class ExpensesComponent {
   readonly loadState = computed<LoadState>(() => {
     if (this.expenseContextService.error() || this.comparisonError()) {
       return 'error';
+    }
+
+    // Konto ohne Rechnungen: kein Zeitraum zum Auswählen, gleich der Leerzustand statt Spinner
+    if (this.availableTimeRange() === null) {
+      return 'empty';
     }
 
     const expenses = this.expenses();

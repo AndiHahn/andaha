@@ -7,7 +7,7 @@ import { createHttpParameters } from '../functions/api-utils';
 import { constructPath, constructVersionedPath } from '../functions/functions';
 import { ExpenseDto } from './dtos/ExpenseDto';
 import { MonthlyCostsDto } from './dtos/MonthlyCostsDto';
-import { mapTimeRangeDtoRaw, TimeRangeDto, TimeRangeDtoRaw } from '../common-dtos/TimeRangeDto';
+import { mapAvailableTimeRangeDtoRaw, TimeRangeDto, TimeRangeDtoRaw } from '../common-dtos/TimeRangeDto';
 
 @Injectable({
   providedIn: 'root'
@@ -39,11 +39,12 @@ export class ExpenseApiService {
     return this.httpClient.get<ExpenseDto[]>(url, { params: httpParameters});
   }
 
-  getAvailableTimeRange(): Observable<TimeRangeDto> {
+  /** Zeitraum aller eigenen und verbundenen Rechnungen; null für ein Konto ohne Rechnungen */
+  getAvailableTimeRange(): Observable<TimeRangeDto | null> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'time-range');
 
     return this.httpClient.get<TimeRangeDtoRaw>(url)
-      .pipe(map(mapTimeRangeDtoRaw));
+      .pipe(map(mapAvailableTimeRangeDtoRaw));
   }
 
   /**

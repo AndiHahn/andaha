@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { provideRouter, Router } from '@angular/router';
 import { BehaviorSubject, Observable, Subject, of, throwError } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
-import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
+import { BillDto, mapBillDtoRaw } from 'src/app/api/shopping/dtos/BillDto';
 import { BillSuggestionDto } from 'src/app/api/shopping/dtos/BillSuggestionDto';
 import { BillTemplateDto } from 'src/app/api/shopping/dtos/BillTemplateDto';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
@@ -305,11 +305,21 @@ describe('QuickEntrySheetComponent', () => {
     expect(addBill).toHaveBeenCalledTimes(1);
   });
 
-  it('duplicate hint leaves out the time for a bill stored without time (UTC midnight)', async () => {
-    const today = new Date();
-    const utcMidnight = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
-    await setup({ dayBills: () => of({ values: [bill({ date: utcMidnight })], totalCount: 1 }) });
-    fixture.componentInstance.onDateChange(new Date(utcMidnight));
+  it('duplicate hint shows time of existing bill, also late in the evening', async () => {
+    // vom Backend gelesen: gespeicherte Ortszeit 23:30, als „Z“ markiert
+    const lateEvening = mapBillDtoRaw({ ...bill({}), date: `${toDayKey(new Date())}T23:30:00Z` }).date;
+    await setup({ dayBills: () => of({ values: [bill({ date: lateEvening })], totalCount: 1 }) });
+    await type('6,80');
+    await click(byText('[role="radio"]', 'Bäcker Ruetz'));
+
+    const warn = host.querySelector<HTMLElement>('.warn[role="status"]')!;
+    expect(warn.textContent).toContain('Bäcker Ruetz · 6,80 € um 23:30. Trotzdem speichern?');
+  });
+
+  it('duplicate hint leaves out the time for a bill stored without time (local midnight)', async () => {
+    // ohne Uhrzeit gespeichert („…T00:00:00Z“) kommt die Rechnung als lokale Mitternacht an
+    const midnight = mapBillDtoRaw({ ...bill({}), date: `${toDayKey(new Date())}T00:00:00Z` }).date;
+    await setup({ dayBills: () => of({ values: [bill({ date: midnight })], totalCount: 1 }) });
     await type('6,80');
     await click(byText('[role="radio"]', 'Bäcker Ruetz'));
 
@@ -586,6 +596,31 @@ describe('QuickEntrySheetComponent', () => {
     await click(saveButton());
     expect(addBill.mock.calls[0][0].price).toBe(12.5);
     expect(dialogRef.close).toHaveBeenCalled();
+  });
+
+
+  it('after "Andere …" amount keeps focus / keypad open', async () => {
+    await setup();
+    await type('4');
+    await click(byText('button', 'Andere …'));
+
+    expect(host.querySelector('app-amount-keypad')).not.toBeNull();
+    expect(host.querySelector('input[name="shopName"]')).not.toBeNull();
+  });
+
+  it('desktop dialog: after "Andere …" the amount field keeps the focus', async () => {
+    await setup({ mode: 'dialog' });
+    const input = host.querySelector<HTMLInputElement>('input[inputmode="decimal"]')!;
+    input.focus();
+    input.value = '4';
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+
+    const other = byText('button', 'Andere …');
+    other.focus();
+    await click(other);
+
+    expect(document.activeElement).toBe(host.querySelector('input[inputmode="decimal"]'));
   });
 
   it('desktop dialog: "Abbrechen" closes and keeps the draft', async () => {

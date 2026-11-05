@@ -173,6 +173,15 @@ describe('ExpensesComponent', () => {
     expect(text('.tot .delta')).toBe('+12 % zum Vormonat');
   });
 
+  it('shows the empty state instead of a spinner for an account without bills', () => {
+    context['availableTimeRange'] = () => new BehaviorSubject<TimeRangeDto | null>(null);
+    create();
+
+    expect(text('app-load-state .empty')).toBe('Keine Ausgaben in diesem Zeitraum – erfasse Rechnungen unter Liste.');
+    expect(host.querySelector('app-timerange-selection')).toBeNull();
+    expect(context['loadExpenses']).not.toHaveBeenCalled();
+  });
+
   it('shows the error state when the context failed', () => {
     error.set(true);
     create();

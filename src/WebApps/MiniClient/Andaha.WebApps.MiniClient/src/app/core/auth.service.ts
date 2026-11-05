@@ -1,9 +1,23 @@
 import { Injectable, inject } from '@angular/core';
-import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
+import { AuthConfig, LoginOptions, OAuthService } from 'angular-oauth2-oidc';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { UserAuthInfo } from './UserAuthInfo';
 import { OverlayBackService } from './overlay/overlay-back.service';
+
+/**
+ * Optionen für `tryLogin()` im Code-Flow: angular-oauth2-oidc entfernt die Antwort des Login-Servers
+ * mit `history.replaceState(null, …)` aus der URL und löscht dabei den History-Zustand (die Spur `appTrail`).
+ * Nur eine echte Antwort (`code` bzw. `error`) wird deshalb entfernt; bei jedem anderen Laden, z. B. nach
+ * Neuladen einer Seite, bleibt der Zustand erhalten (`preventClearHashAfterLogin`).
+ */
+export function tryLoginOptions(search: string, hash: string): LoginOptions {
+  const hasAuthResponse = [search, hash.replace(/^#\??/, '?')].some(part => {
+    const params = new URLSearchParams(part);
+    return params.has('code') || params.has('error');
+  });
+  return { preventClearHashAfterLogin: !hasAuthResponse };
+}
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +54,7 @@ export class AuthService {
       .then(async () => {
         let loginFailed = false;
         try {
-          await this.oauthService.tryLogin();
+          await this.oauthService.tryLogin(tryLoginOptions(window.location.search, window.location.hash));
         } catch {
           loginFailed = true;
         }

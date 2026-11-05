@@ -325,6 +325,16 @@ Scrim hinter Sheets und Dialogen: `rgba(40,30,18,.38)`.
 
 **Leer- und Ladezustände:** Leertext 14 `faint`, 16 px eingerückt, direkt im Abschnitt („Keine Ausgaben.“). Laden: 3-px-Fortschrittsbalken unter der Kopfzeile nur beim initialen Laden von Listen; beim Speichern im Button.
 
+**Lade-, Fehler- und Leerzustand (`app-load-state`, US-0008):** ein Baustein für jede Liste und Seite mit dem Zustand `loading | error | empty | ready`. Laden: Fortschrittsbalken (indeterminate). Fehler: Icon, „Laden fehlgeschlagen“, Erklärsatz „Die Daten konnten nicht geladen werden.“ und der Sekundär-Button „Erneut versuchen“ – nie ein endloser Spinner. Leer: Leertext mit Erklärung, was hier entsteht bzw. was zu tun ist (z. B. „Noch keine Arbeitszeiten – erfasse sie unter Personen.“). Erst `ready` zeigt den Inhalt. Teilbereiche einer Seite (z. B. „Ausgeblendet“ unter Vorlagen) haben einen eigenen Zustand.
+
+**Offline-Banner (US-0008):** app-weit unter dem Seitenkopf, eine Zeile mit Icon `wifi_off`: „Keine Verbindung – neue Rechnungen werden später übertragen.“ Erscheint nur bei `navigator.onLine === false`; andere Aktionen bleiben bedienbar und melden Fehler per Snackbar.
+
+**Zeilen-Wischaktionen (Rechnungsliste, US-0008):** Nach links wischen deckt „Löschen“ auf (`negative`), nach rechts „Duplizieren“ (`primary`); die Aktion ist 96 px breit und wird per Tipp ausgelöst, ab etwa 40 % der Zeilenbreite direkt. Löschen fragt immer nach. Nur waagrechte Gesten zählen; auf den Zeilen gewinnt das Zeilen-Wischen vor dem Tab-Wischen (`data-no-swipe`). Detailseiten bieten dieselben Aktionen als Buttons.
+
+**Monatsköpfe (Rechnungsliste, US-0008):** vor jedem Monat ein Abschnittskopf „November 2026“ links und die Monatssumme rechts (Tabellenziffern); über der Liste die Summe aller Treffer („126 Rechnungen“ · Betrag). Zeilen sind nach dem angezeigten lokalen Datum gruppiert, die Summen kommen vom Backend.
+
+**Farbraster (Kategorien, US-0008):** 18 Farbpunkte zum Antippen statt eines Farbwählers; der gewählte Punkt hat einen Ring. Eine bisherige Farbe außerhalb des Rasters (CSS-Name) erscheint vorne als gestrichelt umrandeter Punkt mit dem Hinweis „Gestrichelt: bisherige Farbe „…““ und bleibt gültig.
+
 ## Do's and Don'ts
 
 **Do**

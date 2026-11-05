@@ -112,6 +112,16 @@ describe('StatisticsComponent', () => {
     expect(host.querySelector('a.empty-link')!.getAttribute('href')).toBe('/work/person');
   });
 
+  it('shows the empty state instead of a spinner for an account without working entries', () => {
+    context['availableTimeRange'] = () => new BehaviorSubject<TimeRangeDto | null>(null);
+    create();
+
+    expect(text('.empty')).toBe('Noch keine Arbeitszeiten – erfasse sie unter Personen.');
+    expect(host.querySelector('a.empty-link')!.getAttribute('href')).toBe('/work/person');
+    expect(host.querySelector('app-timerange-selection')).toBeNull();
+    expect(context.load).not.toHaveBeenCalled();
+  });
+
   it('a zero-hours month with hours in other months keeps figures and chart', () => {
     context.load.mockImplementation(() => statistics$.next({ totalWorkingTime: { hours: 0, minutes: 0 }, extrapolatedMoneyToPay: 0 }));
     create();

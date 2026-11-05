@@ -116,14 +116,39 @@ describe('TemplateEditComponent', () => {
 
   it('shows an error with retry when loading the templates failed', async () => {
     await setup('t1', [existing], categories, true);
-    expect(fixture.nativeElement.textContent).toContain('konnte nicht geladen werden');
-    (fixture.nativeElement.querySelector('button.retry') as HTMLButtonElement).click();
+    expect(fixture.nativeElement.textContent).toContain('konnten nicht geladen werden');
+    (fixture.nativeElement.querySelector('app-load-state .state-retry') as HTMLButtonElement).click();
     expect(TestBed.inject(BillTemplateContextService).retry).toHaveBeenCalled();
   });
 
   it('does not save while the shop is missing for a fixed shop', async () => {
     await setup(null);
     fixture.componentInstance.form.patchValue({ categoryId: 'c1' });
+    await fixture.componentInstance.onSave();
+    expect(service.save).not.toHaveBeenCalled();
+  });
+
+
+  it('template form shows field errors', async () => {
+    await setup(null);
+    const host: HTMLElement = fixture.nativeElement;
+    const errorOf = (selector: string) =>
+      host.querySelector(selector)!.closest('.field')!.querySelector('.field-error')?.textContent?.trim();
+
+    expect(host.querySelector('.field-error')).toBeNull();
+
+    // Speichern ohne Shop und Kategorie: die Fehler stehen an den Feldern
+    await fixture.componentInstance.onSave();
+    fixture.detectChanges();
+    expect(errorOf('input[name="shopName"]')).toBe('Pflichtfeld');
+    expect(errorOf('mat-select[formControlName="categoryId"]')).toBe('Pflichtfeld');
+
+    // Längen wie im Backend-Validator (Name 100, Shopname 200)
+    fixture.componentInstance.form.patchValue({ name: 'x'.repeat(101), shopName: 'y'.repeat(201), categoryId: 'c1' });
+    fixture.detectChanges();
+    expect(errorOf('input[name="name"]')).toBe('Höchstens 100 Zeichen');
+    expect(errorOf('input[name="shopName"]')).toBe('Höchstens 200 Zeichen');
+    expect(errorOf('mat-select[formControlName="categoryId"]')).toBeUndefined();
     await fixture.componentInstance.onSave();
     expect(service.save).not.toHaveBeenCalled();
   });
@@ -144,9 +169,12 @@ describe('TemplateEditComponent', () => {
 
   it('asks before deleting and then removes', async () => {
     await setup('t1');
+    const vibrate = vi.spyOn(navigator, 'vibrate').mockImplementation(() => true);
     await fixture.componentInstance.onDelete();
     expect(service.remove).toHaveBeenCalledWith('t1');
+    expect(vibrate).toHaveBeenCalled();
     expect(historyTrail.leaveTo).toHaveBeenCalledWith('/settings/templates');
+    vibrate.mockRestore();
   });
 
   it('keeps the template when the deletion is not confirmed', async () => {

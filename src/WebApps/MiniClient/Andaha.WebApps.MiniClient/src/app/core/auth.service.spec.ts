@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { OAuthErrorEvent, OAuthEvent, OAuthService, OAuthSuccessEvent } from 'angular-oauth2-oidc';
 import { firstValueFrom, Subject } from 'rxjs';
-import { AuthService } from './auth.service';
+import { AuthService, tryLoginOptions } from './auth.service';
 import { OverlayBackService } from './overlay/overlay-back.service';
 
 describe('AuthService', () => {
@@ -129,6 +129,25 @@ describe('AuthService', () => {
         valid();
         await service.init();
         expect(localStorage.getItem(key)).toBe('google.com');
+    });
+
+    it('tryLogin keeps history state when URL has no code', async () => {
+        valid();
+
+        // die URL des Testlaufs enthält keinen Login-Code: angular-oauth2-oidc darf history.replaceState(null, …) nicht aufrufen
+        await service.init();
+
+        expect(oauth.tryLogin).toHaveBeenCalledWith({ preventClearHashAfterLogin: true });
+    });
+
+    it('tryLogin clears hash only when code present', () => {
+        expect(tryLoginOptions('?code=abc&state=xyz', '')).toEqual({ preventClearHashAfterLogin: false });
+        expect(tryLoginOptions('', '#code=abc&state=xyz')).toEqual({ preventClearHashAfterLogin: false });
+        // auch eine Fehlerantwort des Login-Servers wird aus der URL entfernt
+        expect(tryLoginOptions('?error=access_denied&state=xyz', '')).toEqual({ preventClearHashAfterLogin: false });
+
+        expect(tryLoginOptions('', '')).toEqual({ preventClearHashAfterLogin: true });
+        expect(tryLoginOptions('?shopName=Billa&codex=1', '')).toEqual({ preventClearHashAfterLogin: true });
     });
 
     it('forgets the idp for local accounts', async () => {

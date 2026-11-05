@@ -370,6 +370,7 @@ Die Context-Services liefern dafür einen Fehlerzustand statt nur `loading`. Wie
    - Das Datum einer Rechnung ist immer der lokale Kalendertag, den der Benutzer gewählt hat. Die Umwandlung in `shared/utils/utils.ts` (`moment(...).utc(true)`) wird so korrigiert, dass der Tag erhalten bleibt.
    - Der Umsetzende prüft auch, was das Backend mit der Uhrzeit macht.
    - Ein Test deckt 23:30 Ortszeit ab.
+   - **[Umsetzung, Task 18]** Gespeichert war und bleibt die lokale Uhrzeit (Bestandsdaten stimmen ohne Migration, Tagesfilter und Monatsgruppen rechnen in Ortszeit). Der Fehler lag beim Lesen und Parsen: Der Server markiert die Uhrzeit als UTC („Z“), `new Date(…)` verschob sie um 1–2 Stunden in den Folgetag, und `DateTime.Parse` verschob ein „Z“ auf einem Server außerhalb von UTC. Jetzt sendet `getRecordOfProperties` die Ortszeit ohne Zone, `BillFormDate.Parse` übernimmt sie unverändert (auch mit „Z“ älterer App-Stände), und `parseLocalDateTime` liest Rechnungsdaten als Ortszeit (`BillDto`, `ShopStatDto`, `BillAnalyzedDto`).
 6. **Fehlertexte in Formularen:** Das große Rechnungsformular und das Vorlagenformular zeigen bei ungültigen Feldern einen Text am Feld (`mat-error`), z. B. „Pflichtfeld“ oder „Betrag größer 0“.
 7. **Schnellerfassung:**
    - Der Duplikat-Hinweis zeigt die Uhrzeit des vorhandenen Eintrags, wenn sie bekannt ist.

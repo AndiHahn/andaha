@@ -109,6 +109,13 @@ describe('QuickEntryState', () => {
     expect(s.subCategoryId()).toBe('s2');
     expect(s.keypadOpen()).toBe(false);
   });
+  it('"Andere …" keeps an open keypad open', () => {
+    const s = new QuickEntryState();
+    s.pressKey('4');
+    s.selectOther();
+    expect(s.keypadOpen()).toBe(true);
+  });
+
   it('"Andere …" without amount and shop asks for both', () => {
     const s = new QuickEntryState();
     s.selectOther();

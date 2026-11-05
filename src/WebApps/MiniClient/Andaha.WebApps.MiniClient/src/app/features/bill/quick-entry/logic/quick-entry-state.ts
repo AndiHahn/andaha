@@ -92,11 +92,11 @@ export class QuickEntryState {
   }
 
   /** „Andere …“: Felder statt Kacheln; die Tastatur macht Platz für Shopname und Kategorie */
+  /** „Andere …“: Felder statt Kacheln; die Tastatur bleibt, wie sie ist (erst der Fokus im Shopfeld klappt sie zu) */
   selectOther(): void {
     this.other.set(true);
     this.tile.set(null);
     this.shopName.set(null);
-    this.keypadOpen.set(false);
   }
 
   selectCategory(categoryId: string | null, subCategoryId: string | null): void {
