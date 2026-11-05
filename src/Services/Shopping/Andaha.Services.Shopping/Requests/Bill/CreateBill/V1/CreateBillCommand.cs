@@ -1,4 +1,5 @@
 using Andaha.CrossCutting.Application.Requests;
+using Andaha.Services.Shopping.Requests.Bill.LineItems;
 
 namespace Andaha.Services.Shopping.Requests.Bill.CreateBill.V1;
 
@@ -10,4 +11,5 @@ public record CreateBillCommand(
     double Price,
     DateTime Date,
     string? Notes,
-    IFormFile? Image) : IHttpRequest;
+    IFormFile? Image,
+    IReadOnlyList<LineItemData>? LineItems = null) : IHttpRequest;

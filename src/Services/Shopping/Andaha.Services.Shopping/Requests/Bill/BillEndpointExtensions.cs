@@ -103,37 +103,7 @@ internal static class BillEndpointExtensions
         RouteGroupBuilder groupBuilder)
     {
         groupBuilder
-            .MapPost("/", [Authorize] async (IMediator mediator, HttpContext httpContext, CancellationToken cancellationToken) =>
-            {
-                Guid? id = null;
-
-                if (Guid.TryParse(httpContext.Request.Form["Id"], out var parsedId))
-                {
-                    id = parsedId;
-                }
-
-                Guid? subCategoryId = null;
-
-                if (Guid.TryParse(httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.SubCategoryId)], out var parsedSubCategoryId))
-                {
-                    subCategoryId = parsedSubCategoryId;
-                }
-
-                var priceParameter = httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.Price)];
-                var parsedPrice = priceParameter.First()!.ToDouble();
-
-                var command = new CreateBill.V1.CreateBillCommand(
-                    id,
-                    Guid.Parse(httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.CategoryId)]!),
-                    subCategoryId,
-                    httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.ShopName)]!,
-                    parsedPrice,
-                    BillFormDate.Parse(httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.Date)]!),
-                    httpContext.Request.Form[nameof(CreateBill.V1.CreateBillCommand.Notes)],
-                    httpContext.Request.Form.Files.FirstOrDefault());
-
-                return await mediator.Send(command, cancellationToken);
-            })
+            .MapPost("/", CreateBillFromFormAsync)
             .DisableAntiforgery()
             .Accepts<CreateBill.V1.CreateBillCommand>("multipart/form-data")
             .Produces<Dtos.V1.BillDto>()
@@ -143,41 +113,94 @@ internal static class BillEndpointExtensions
         return app;
     }
 
+    [Authorize]
+    internal static async Task<Microsoft.AspNetCore.Http.IResult> CreateBillFromFormAsync(IMediator mediator, HttpContext httpContext, CancellationToken cancellationToken)
+    {
+        var form = httpContext.Request.Form;
+
+        if (!LineItems.LineItemsFormField.TryRead(form, out var lineItems))
+        {
+            return LineItems.LineItemsFormField.InvalidResult();
+        }
+
+        Guid? id = null;
+
+        if (Guid.TryParse(form["Id"], out var parsedId))
+        {
+            id = parsedId;
+        }
+
+        Guid? subCategoryId = null;
+
+        if (Guid.TryParse(form[nameof(CreateBill.V1.CreateBillCommand.SubCategoryId)], out var parsedSubCategoryId))
+        {
+            subCategoryId = parsedSubCategoryId;
+        }
+
+        var priceParameter = form[nameof(CreateBill.V1.CreateBillCommand.Price)];
+        var parsedPrice = priceParameter.First()!.ToDouble();
+
+        var command = new CreateBill.V1.CreateBillCommand(
+            id,
+            Guid.Parse(form[nameof(CreateBill.V1.CreateBillCommand.CategoryId)]!),
+            subCategoryId,
+            form[nameof(CreateBill.V1.CreateBillCommand.ShopName)]!,
+            parsedPrice,
+            BillFormDate.Parse(form[nameof(CreateBill.V1.CreateBillCommand.Date)]!),
+            form[nameof(CreateBill.V1.CreateBillCommand.Notes)],
+            form.Files.FirstOrDefault(),
+            lineItems);
+
+        return await mediator.Send(command, cancellationToken);
+    }
+
     private static WebApplication MapUpdateBill(
        this WebApplication app,
        RouteGroupBuilder groupBuilder)
     {
         groupBuilder
-            .MapPut("{id}", [Authorize] async (IMediator mediator, HttpContext httpContext, CancellationToken cancellationToken, Guid id) =>
-            {
-                var priceParameter = httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.Price)];
-                var parsedPrice = priceParameter.First()!.ToDouble();
-
-                Guid? subCategoryId = null;
-
-                if (Guid.TryParse(httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.SubCategoryId)], out var parsedSubCategoryId))
-                {
-                    subCategoryId = parsedSubCategoryId;
-                }
-
-                var command = new UpdateBill.V1.UpdateBillCommand(
-                    id,
-                    Guid.Parse(httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.CategoryId)]!),
-                    subCategoryId,
-                    httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.ShopName)]!,
-                    parsedPrice,
-                    BillFormDate.Parse(httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.Date)]!),
-                    httpContext.Request.Form[nameof(UpdateBill.V1.UpdateBillCommand.Notes)],
-                    httpContext.Request.Form.Files.FirstOrDefault());
-
-                return await mediator.Send(command, cancellationToken);
-            })
+            .MapPut("{id}", UpdateBillFromFormAsync)
             .Accepts<UpdateBill.V1.UpdateBillCommand>("multipart/form-data")
             .Produces<Dtos.V1.BillDto>()
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
             .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
         return app;
+    }
+
+    [Authorize]
+    internal static async Task<Microsoft.AspNetCore.Http.IResult> UpdateBillFromFormAsync(IMediator mediator, HttpContext httpContext, CancellationToken cancellationToken, Guid id)
+    {
+        var form = httpContext.Request.Form;
+
+        // Missing field: the stored line items stay unchanged; [] removes them.
+        if (!LineItems.LineItemsFormField.TryRead(form, out var lineItems))
+        {
+            return LineItems.LineItemsFormField.InvalidResult();
+        }
+
+        var priceParameter = form[nameof(UpdateBill.V1.UpdateBillCommand.Price)];
+        var parsedPrice = priceParameter.First()!.ToDouble();
+
+        Guid? subCategoryId = null;
+
+        if (Guid.TryParse(form[nameof(UpdateBill.V1.UpdateBillCommand.SubCategoryId)], out var parsedSubCategoryId))
+        {
+            subCategoryId = parsedSubCategoryId;
+        }
+
+        var command = new UpdateBill.V1.UpdateBillCommand(
+            id,
+            Guid.Parse(form[nameof(UpdateBill.V1.UpdateBillCommand.CategoryId)]!),
+            subCategoryId,
+            form[nameof(UpdateBill.V1.UpdateBillCommand.ShopName)]!,
+            parsedPrice,
+            BillFormDate.Parse(form[nameof(UpdateBill.V1.UpdateBillCommand.Date)]!),
+            form[nameof(UpdateBill.V1.UpdateBillCommand.Notes)],
+            form.Files.FirstOrDefault(),
+            lineItems);
+
+        return await mediator.Send(command, cancellationToken);
     }
 
     private static WebApplication MapDeleteBill(

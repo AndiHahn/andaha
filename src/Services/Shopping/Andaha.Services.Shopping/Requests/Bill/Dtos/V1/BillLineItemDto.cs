@@ -1,7 +1,8 @@
 ﻿namespace Andaha.Services.Shopping.Requests.Bill.Dtos.V1;
 
 public record BillLineItemDto(
-    string? Description,
-    double? TotalPrice,
+    Guid Id,
+    string Description,
     int? Quantity,
-    double? UnitPrice);
+    double? UnitPrice,
+    double? TotalPrice);

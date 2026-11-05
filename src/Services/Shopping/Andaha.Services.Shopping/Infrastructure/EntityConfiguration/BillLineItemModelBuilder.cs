@@ -21,6 +21,6 @@ public class BillLineItemModelBuilder : IEntityTypeConfiguration<BillLineItem>
         builder
             .Property(b => b.Description)
             .HasMaxLength(200)
-            .IsUnicode(false);
+            .IsUnicode();
     }
 }

@@ -71,7 +71,7 @@ internal class SearchBillsQueryHandler : IRequestHandler<SearchBillsQuery, IResu
             .OrderByDescending(b => b.Date)
             .ThenByDescending(b => b.CreatedAt)
             .AsExpandable()
-            .Select(bill => BillDtoMapping.EntityToDto.Invoke(bill, userId))
+            .Select(bill => BillDtoMapping.EntityToListDto.Invoke(bill, userId))
             .Skip(request.PageSize * request.PageIndex)
             .Take(request.PageSize)
             .ToArrayAsync(cancellationToken);

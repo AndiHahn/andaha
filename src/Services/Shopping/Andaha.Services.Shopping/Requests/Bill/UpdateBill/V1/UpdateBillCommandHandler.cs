@@ -46,6 +46,14 @@ internal class UpdateBillCommandHandler : IRequestHandler<UpdateBillCommand, IRe
 
         bill.Update(request.CategoryId, request.SubCategoryId, request.ShopName, request.Price, request.Date, request.Notes);
 
+        // Without the lineItems field the stored items stay unchanged; with it they are replaced ([] removes them).
+        if (request.LineItems is not null)
+        {
+            await dbContext.Entry(bill).Collection(b => b.LineItems).LoadAsync(cancellationToken);
+
+            bill.ReplaceLineItems(request.LineItems);
+        }
+
         await dbContext.SaveChangesAsync(cancellationToken);
 
         if (request.Image is not null)

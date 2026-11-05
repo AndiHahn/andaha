@@ -32,6 +32,7 @@ internal class CreateBillCommandHandler : IRequestHandler<CreateBillCommand, IRe
                 .Include(b => b.Images)
                 .SingleOrDefaultAsync(b => b.Id == requestedId, cancellationToken);
 
+            // Idempotent retry: the existing bill is returned unchanged, line items included (request.LineItems is ignored).
             if (existing is not null)
             {
                 if (!existing.HasCreated(userId))
@@ -50,27 +51,33 @@ internal class CreateBillCommandHandler : IRequestHandler<CreateBillCommand, IRe
             }
         }
 
-        var newBill = dbContext.Bill.Add(
-            new Core.Bill(
-                request.Id,
-                userId,
-                request.CategoryId,
-                request.SubCategoryId,
-                request.ShopName,
-                request.Price,
-                request.Date,
-                request.Notes));
+        var newBill = new Core.Bill(
+            request.Id,
+            userId,
+            request.CategoryId,
+            request.SubCategoryId,
+            request.ShopName,
+            request.Price,
+            request.Date,
+            request.Notes);
+
+        if (request.LineItems is not null)
+        {
+            newBill.ReplaceLineItems(request.LineItems);
+        }
+
+        dbContext.Bill.Add(newBill);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
         if (request.Image is not null)
         {
-            var command = new UploadBillImageCommand(newBill.Entity.Id, request.Image);
+            var command = new UploadBillImageCommand(newBill.Id, request.Image);
 
             await sender.Send(command, cancellationToken);
         }
 
-        var bill = await dbContext.FindBillDtoByIdAsync(newBill.Entity.Id, userId, cancellationToken);
+        var bill = await dbContext.FindBillDtoByIdAsync(newBill.Id, userId, cancellationToken);
 
         return Results.Ok(bill);
     }

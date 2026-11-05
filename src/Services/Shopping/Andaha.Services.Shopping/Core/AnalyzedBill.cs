@@ -63,7 +63,10 @@ public class AnalyzedBill : Entity<Guid>
 
     public void AddLineItem(string? description, double? unitPrice, double? totalPrice, int? quantity)
     {
-        this.LineItems.Add(new AnalyzedBillLineItem(Id, description, unitPrice, totalPrice, quantity));
+        // Items are added in recognized order; the position continues after the existing ones.
+        int position = this.LineItems.Select(lineItem => lineItem.Position + 1).DefaultIfEmpty(0).Max();
+
+        this.LineItems.Add(new AnalyzedBillLineItem(Id, description, unitPrice, totalPrice, quantity, position));
     }
 
     public void RemoveLineItem(AnalyzedBillLineItem lineItem)

@@ -1,6 +1,7 @@
 ﻿using Andaha.CrossCutting.Application.Identity;
 using Andaha.Services.Shopping.Infrastructure;
 using Andaha.Services.Shopping.Requests.Bill.CreateBill.V1;
+using Andaha.Services.Shopping.Requests.Bill.LineItems;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,6 +28,12 @@ public class UpdateBillCommandValidator : AbstractValidator<UpdateBillCommand>
         RuleFor(command => command.Price).GreaterThan(0);
 
         RuleFor(command => command.Notes).MaximumLength(1000);
+
+        RuleFor(command => command.LineItems)
+            .Must(LineItemDataValidator.HasAllowedCount)
+            .WithMessage(LineItemDataValidator.TooManyItemsMessage);
+
+        RuleForEach(command => command.LineItems).SetValidator(new LineItemDataValidator());
 
         RuleFor(command => command).MustAsync(CategoriesValidAsync);
     }

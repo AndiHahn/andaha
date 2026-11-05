@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using Andaha.Services.Shopping.Requests.Bill.LineItems;
+using CSharpFunctionalExtensions;
 
 namespace Andaha.Services.Shopping.Core;
 
@@ -106,7 +107,32 @@ public class Bill : Entity<Guid>
 
     public void AddLineItem(string? description, double? unitPrice, double? totalPrice, int? quantity)
     {
-        this.LineItems.Add(new BillLineItem(Id, description, unitPrice, totalPrice, quantity));
+        int position = this.LineItems.Select(lineItem => lineItem.Position + 1).DefaultIfEmpty(0).Max();
+
+        this.LineItems.Add(new BillLineItem(Id, description, unitPrice, totalPrice, quantity, position));
+    }
+
+    /// <summary>
+    /// Replaces all line items (PUT semantics, US-0009): the given items get the positions 0..n in input order.
+    /// The current items must be loaded. Descriptions are stored trimmed.
+    /// </summary>
+    public void ReplaceLineItems(IEnumerable<LineItemData> items)
+    {
+        ArgumentNullException.ThrowIfNull(items);
+
+        this.LineItems.Clear();
+
+        int position = 0;
+        foreach (var item in items)
+        {
+            this.LineItems.Add(new BillLineItem(
+                this.Id,
+                item.Description.Trim(),
+                item.UnitPrice,
+                item.TotalPrice,
+                item.Quantity,
+                position++));
+        }
     }
 
     public void RemoveLineItem(BillLineItem lineItem)

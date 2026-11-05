@@ -27,16 +27,20 @@ internal class GetBillByIdQueryHandler : IRequestHandler<GetBillByIdQuery, IResu
         Guid userId = identityService.GetUserId();
         var connectedUsers = await collaborationApiProxy.GetConnectedUsers(cancellationToken);
 
-        var bill = await dbContext.FindBillDtoByIdAsync(request.Id, userId, cancellationToken);
-        if (bill is null)
+        // Own bills and bills of connected users (detail page, US-0009 §5.3); a bill of an unconnected user behaves
+        // like a missing one.
+        bool isVisible = await dbContext.Bill
+            .AnyAsync(
+                bill => bill.Id == request.Id &&
+                        (bill.UserId == userId || connectedUsers.Contains(bill.UserId)),
+                cancellationToken);
+
+        if (!isVisible)
         {
             return Results.NotFound($"Bill with id {request.Id} not found.");
         }
 
-        if (bill.IsExternal && !connectedUsers.Contains(userId))
-        {
-            return Results.Forbid();
-        }
+        var bill = await dbContext.FindBillDtoByIdAsync(request.Id, userId, cancellationToken);
 
         return Results.Ok(bill);
     }

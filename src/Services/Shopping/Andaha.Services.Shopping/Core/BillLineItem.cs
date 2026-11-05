@@ -13,7 +13,8 @@ public class BillLineItem : Entity<Guid>
         string? description,
         double? unitPrice,
         double? totalPrice,
-        int? quantity)
+        int? quantity,
+        int position)
         : base(Guid.NewGuid())
     {
         this.BillId = billId;
@@ -21,9 +22,15 @@ public class BillLineItem : Entity<Guid>
         this.UnitPrice = unitPrice;
         this.TotalPrice = totalPrice;
         this.Quantity = quantity;
+        this.Position = position;
     }
 
     public Guid BillId { get; set; }
+
+    /// <summary>
+    /// Order of the item within its bill, 0-based (US-0009).
+    /// </summary>
+    public int Position { get; private set; }
 
     public string? Description { get; set; }
 
