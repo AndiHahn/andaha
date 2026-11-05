@@ -109,4 +109,34 @@ describe('ExpenseContextService error state', () => {
 
     expect(service.error()).toBe(false);
   });
+
+
+  it('a late response of an older time range is ignored (fast ‹ › stepping)', () => {
+    const october = new Subject<any[]>();
+    const september = new Subject<any[]>();
+    const responses = [october, september];
+    const api = {
+      getAvailableTimeRange: () => of({ startTimeUtc: new Date(2025, 0, 1), endTimeUtc: new Date(2026, 10, 5) }),
+      getExpenses: () => responses.shift()!.asObservable()
+    } as unknown as ExpenseApiService;
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: BillContextService, useValue: { bills: () => new Subject<any[]>().asObservable() } },
+        { provide: ContextService, useValue: { backendReady: () => of(true) } },
+        { provide: ExpenseApiService, useValue: api },
+        { provide: DatePipe, useValue: new DatePipe('en-US') }
+      ]
+    });
+    const service = TestBed.runInInjectionContext(() => new ExpenseContextService());
+    let shown: any[] | undefined;
+    service.expenses().subscribe(expenses => shown = expenses);
+
+    service.loadExpenses({ startDate: new Date(2026, 9, 1), endDate: new Date(2026, 9, 31) });
+    service.loadExpenses({ startDate: new Date(2026, 8, 1), endDate: new Date(2026, 8, 30) });
+    september.next([{ category: 'September', costs: 1, subCategories: [] }]);
+    october.next([{ category: 'Oktober', costs: 2, subCategories: [] }]);
+
+    expect(shown).toEqual([{ category: 'September', costs: 1, subCategories: [] }]);
+    expect(service.loading()).toBe(false);
+  });
 });

@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Injectable, Signal, inject, signal } from '@angular/core';
-import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { ExpenseDto } from '../../../api/shopping/dtos/ExpenseDto';
 import { TimeRangeDto, TimeRangeDtoRaw } from '../../../api/common-dtos/TimeRangeDto';
@@ -24,6 +24,7 @@ export class ExpenseContextService {
   private readonly loadingState = signal(false);
   private readonly errorState = signal(false);
   private lastTimeRange?: TimeRange;
+  private expensesRequest?: Subscription;
   private backendIsReady: boolean = false;
 
   /** true, solange Ausgaben für einen Zeitraum geladen werden */
@@ -173,7 +174,9 @@ export class ExpenseContextService {
     this.loadingState.set(true);
     this.errorState.set(false);
 
-    this.apiService.getExpenses(timeRange).subscribe(
+    // nur die letzte Anfrage zählt: beim schnellen Blättern mit ‹ › darf keine ältere Antwort gewinnen
+    this.expensesRequest?.unsubscribe();
+    this.expensesRequest = this.apiService.getExpenses(timeRange).subscribe(
       {
         next: expenses => {
           this.loadingState.set(false);

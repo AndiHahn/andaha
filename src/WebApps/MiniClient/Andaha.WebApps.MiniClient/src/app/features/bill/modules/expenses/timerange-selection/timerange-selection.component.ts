@@ -1,153 +1,149 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ChangeDetectionStrategy, inject } from '@angular/core';
-import { TimeRange } from '../../../../../shared/models/TimeRange';
+import { Component, OnInit, ChangeDetectionStrategy, computed, inject, input, output, signal } from '@angular/core';
+import { formatDate } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DATE_TYPE_SEGMENT_LABELS, DateType, DateTypeLabelMapping } from './DateType';
-import moment from 'moment';
-import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-providers';
-import { MatSelect, MatOption } from '@angular/material/select';
 import { MatIcon } from '@angular/material/icon';
 import { MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker } from '@angular/material/datepicker';
-import { DatePipe } from '@angular/common';
+import moment from 'moment';
+import { TimeRange } from '../../../../../shared/models/TimeRange';
+import { DATE_TYPE_SEGMENT_LABELS, DateType } from './DateType';
+import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-providers';
 import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 
+const MONTH_FORMAT = 'YYYY-MM';
+const DAY_FORMAT = 'YYYY-MM-DD';
+
+/**
+ * Zeitraumwahl der Statistiken (design.md 3.2): Segment Monat | Jahr | Gesamt | Von – Bis,
+ * bei Monat und Jahr ‹ › zum Blättern, an den Grenzen von `availableTimeRange` deaktiviert.
+ * Der Zustand liegt in Signals; Formwerte werden nie in ngOnChanges gesetzt (vorher NG0100).
+ */
 @Component({
     selector: 'app-timerange-selection',
     templateUrl: './timerange-selection.component.html',
     styleUrls: ['./timerange-selection.component.scss'],
     providers: GERMAN_DATE_PROVIDERS,
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [PanelBackDirective, FormsModule, ReactiveFormsModule, MatSelect, MatOption, MatIcon, MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker, DatePipe]
+    imports: [PanelBackDirective, FormsModule, ReactiveFormsModule, MatIcon, MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker]
 })
-export class TimerangeSelectionComponent implements OnInit, OnChanges {
+export class TimerangeSelectionComponent implements OnInit {
   private fb = inject(UntypedFormBuilder);
 
+  readonly availableTimeRange = input.required<TimeRange>();
 
-  @Input()
-  availableTimeRange!: TimeRange;
+  readonly selectionChanged = output<TimeRange>();
 
-  @Output()
-  selectionChanged: EventEmitter<TimeRange> = new EventEmitter<TimeRange>();
+  readonly dateType = DateType;
+  readonly dateTypeOptions = Object.values(DateType);
+  readonly dateTypeSegmentLabels = DATE_TYPE_SEGMENT_LABELS;
 
-  form: UntypedFormGroup;
-  
-  dateTypeLabelMapping = DateTypeLabelMapping;
-  dateTypeSegmentLabels = DATE_TYPE_SEGMENT_LABELS;
-  dateType = DateType;
-  dateTypeOptions = Object.values(DateType);
-  selectedDateType: DateType;
-  
-  monthSelectOptions?: string[];
-  currentMonth?: string;
+  readonly selectedDateType = signal<DateType>(DateType.Month);
 
-  yearSelectOptions?: string[];
-  currentYear?: string;
+  /** gewählter Monat ("YYYY-MM") bzw. Jahr; ohne Wahl der letzte verfügbare */
+  private readonly selectedMonth = signal<string | undefined>(undefined);
+  private readonly selectedYear = signal<number | undefined>(undefined);
 
-  customFromDate?: Date;
-  customToDate?: Date;
+  private readonly firstMonth = computed(() => moment(this.availableTimeRange().startDate).format(MONTH_FORMAT));
+  private readonly lastMonth = computed(() => moment(this.availableTimeRange().endDate).format(MONTH_FORMAT));
+  private readonly firstYear = computed(() => yearOf(this.firstMonth()));
+  private readonly lastYear = computed(() => yearOf(this.lastMonth()));
 
-  constructor() {
-    this.selectedDateType = DateType.Month;
+  readonly currentMonth = computed(() => clamp(this.selectedMonth() ?? this.lastMonth(), this.firstMonth(), this.lastMonth()));
+  readonly currentYear = computed(() => clamp(this.selectedYear() ?? this.lastYear(), this.firstYear(), this.lastYear()));
 
-    this.form = this.fb.group({
-      dateType: DateType['Month'],
-      monthSelection: '',
-      yearSelection: '',
-      fromDate: moment(),
-      toDate: moment()
-    });
-  }
+  readonly hasArrows = computed(() => this.selectedDateType() === DateType.Month || this.selectedDateType() === DateType.Year);
+
+  readonly canGoBack = computed(() => this.selectedDateType() === DateType.Month
+    ? this.currentMonth() > this.firstMonth()
+    : this.currentYear() > this.firstYear());
+
+  readonly canGoForward = computed(() => this.selectedDateType() === DateType.Month
+    ? this.currentMonth() < this.lastMonth()
+    : this.currentYear() < this.lastYear());
+
+  /** „November 2026“ bzw. „2026“ */
+  readonly periodLabel = computed(() => this.selectedDateType() === DateType.Month
+    ? formatDate(moment(this.currentMonth(), MONTH_FORMAT).toDate(), 'LLLL yyyy', 'de')
+    : String(this.currentYear()));
+
+  readonly form: UntypedFormGroup = this.fb.group({
+    fromDate: moment(),
+    toDate: moment()
+  });
 
   ngOnInit(): void {
-    if (!this.availableTimeRange) {
-      throw new Error('An available time range is required in order to use this component');
-    }
-    
-    this.refreshOptions();
-    this.triggerSelectionChanged();
+    this.emitSelection();
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    const timeRangeChange = changes?.['availableTimeRange'];
+  selectDateType(dateType: DateType): void {
+    if (dateType === this.selectedDateType()) {
+      return;
+    }
 
-    if (timeRangeChange && timeRangeChange.currentValue != timeRangeChange.previousValue) {
-      this.refreshOptions();
+    // Wechsel Monat → Jahr: das Jahr des gewählten Monats
+    if (dateType === DateType.Year && this.selectedDateType() === DateType.Month) {
+      this.selectedYear.set(yearOf(this.currentMonth()));
+    }
+
+    this.selectedDateType.set(dateType);
+    this.emitSelection();
+  }
+
+  previous(): void {
+    if (this.canGoBack()) {
+      this.step(-1);
     }
   }
 
-  refreshOptions() {
-    this.refreshMonthSelectOptions();
-    this.refreshYearSelectOptions();
-    this.refreshCustomDateSelection();
+  next(): void {
+    if (this.canGoForward()) {
+      this.step(1);
+    }
   }
 
-  refreshMonthSelectOptions() {
-    let startDate = moment(this.availableTimeRange.startDate);
-    let endDate = moment(this.availableTimeRange.endDate);
-
-    const dates = [];
-    endDate.subtract(1, "month"); //Substract one month to exclude endDate itself
-
-    const month = moment(startDate); //clone the startDate
-    dates.push(month.format('YYYY-MM'));
-    while (month < endDate) {
-        month.add(1, "month");
-        dates.push(month.format('YYYY-MM'));
-    }
-
-    if (dates.length > 0) {
-      this.form.get('monthSelection')?.setValue(dates[dates.length-1]);
-      this.currentMonth = dates[dates.length-1];
-    }
-    this.monthSelectOptions = dates;
+  customDateChanged(): void {
+    this.emitSelection();
   }
 
-  refreshYearSelectOptions() {
-    let startDate = moment(this.availableTimeRange.startDate);
-    let endDate = moment(this.availableTimeRange.endDate);
-
-    const dates = [];
-    endDate.subtract(1, "year"); //Substract one month to exclude endDate itself
-
-    const year = moment(startDate); //clone the startDate
-    dates.push(year.format('YYYY'));
-    while (year < endDate) {
-      year.add(1, "year");
-        dates.push(year.format('YYYY'));
-    }
-
-    if (dates.length > 0) {
-      this.form.get('yearSelection')?.setValue(dates[0]);
-      this.currentYear = dates[0];
-    }
-    this.yearSelectOptions = dates;
-  }
-
-  refreshCustomDateSelection() {
-    this.customFromDate = this.form.get('fromDate')?.value;
-    this.customToDate = this.form.get('toDate')?.value;
-  }
-  
-  triggerSelectionChanged() {
-    if (this.selectedDateType == DateType.Month) {
-      const startOfMonth = moment(this.currentMonth).startOf('month').format('YYYY-MM-DD');
-      const endOfMonth   = moment(this.currentMonth).endOf('month').format('YYYY-MM-DD');
-      this.selectionChanged.emit(this.createTimeRange(startOfMonth, endOfMonth, this.selectedDateType));
-    } else if (this.selectedDateType == DateType.Year) {
-      const startOfYear = moment(this.currentYear).startOf('year').format('YYYY-MM-DD');
-      const endOfYear   = moment(this.currentYear).endOf('year').format('YYYY-MM-DD');
-      this.selectionChanged.emit(this.createTimeRange(startOfYear, endOfYear, this.selectedDateType));
-    } else if (this.selectedDateType == DateType.Total) {
-      const start = moment(this.availableTimeRange.startDate).format('YYYY-MM-DD');
-      const end = moment(this.availableTimeRange.endDate).format('YYYY-MM-DD');
-      this.selectionChanged.emit(this.createTimeRange(start, end, this.selectedDateType));
-    } else if (this.selectedDateType == DateType.Custom && this.customFromDate && this.customToDate) {
-      this.selectionChanged.emit(this.createTimeRangeWithDate(this.customFromDate, this.customToDate, this.selectedDateType));
+  private step(delta: number): void {
+    if (this.selectedDateType() === DateType.Month) {
+      this.selectedMonth.set(moment(this.currentMonth(), MONTH_FORMAT).add(delta, 'month').format(MONTH_FORMAT));
     } else {
-      throw new Error('Date Type ' + this.selectedDateType + ' is not available');
+      this.selectedYear.set(this.currentYear() + delta);
+    }
+
+    this.emitSelection();
+  }
+
+  private emitSelection(): void {
+    const dateType = this.selectedDateType();
+
+    // gemeldeten Zeitraum festhalten: ein später erweiterter verfügbarer Zeitraum ändert die Anzeige nicht
+    this.selectedMonth.set(this.currentMonth());
+    this.selectedYear.set(this.currentYear());
+
+    if (dateType === DateType.Month) {
+      const month = moment(this.currentMonth(), MONTH_FORMAT);
+      this.selectionChanged.emit(this.createTimeRange(
+        month.clone().startOf('month').format(DAY_FORMAT), month.clone().endOf('month').format(DAY_FORMAT), dateType));
+    } else if (dateType === DateType.Year) {
+      const year = moment(String(this.currentYear()), 'YYYY');
+      this.selectionChanged.emit(this.createTimeRange(
+        year.clone().startOf('year').format(DAY_FORMAT), year.clone().endOf('year').format(DAY_FORMAT), dateType));
+    } else if (dateType === DateType.Total) {
+      const available = this.availableTimeRange();
+      this.selectionChanged.emit(this.createTimeRange(
+        moment(available.startDate).format(DAY_FORMAT), moment(available.endDate).format(DAY_FORMAT), dateType));
+    } else {
+      const from = this.form.get('fromDate')?.value;
+      const to = this.form.get('toDate')?.value;
+      if (from && to) {
+        this.selectionChanged.emit(this.createTimeRangeWithDate(moment(from).toDate(), moment(to).toDate(), dateType));
+      }
     }
   }
 
-  createTimeRange(from: string, to: string, dateType: DateType): TimeRange {
+  // Ausgabe wie bisher: Tage als "YYYY-MM-DD" geparst
+  private createTimeRange(from: string, to: string, dateType: DateType): TimeRange {
     return {
       startDate: new Date(from),
       endDate: new Date(to),
@@ -155,36 +151,22 @@ export class TimerangeSelectionComponent implements OnInit, OnChanges {
     };
   }
 
-  createTimeRangeWithDate(from: Date, to: Date, dateType: DateType): TimeRange {
+  private createTimeRangeWithDate(from: Date, to: Date, dateType: DateType): TimeRange {
     return {
       startDate: new Date(from),
       endDate: new Date(to),
       dateType: dateType
     };
   }
+}
 
-  dateTypeSelectionChanged() {
-    this.selectedDateType = this.form.get('dateType')?.value;
-    this.triggerSelectionChanged();
-  }
+function yearOf(month: string): number {
+  return Number(month.slice(0, 4));
+}
 
-  monthSelectionChanged() {
-    this.currentMonth = this.form.get('monthSelection')?.value;
-    this.triggerSelectionChanged();
+function clamp<T extends string | number>(value: T, min: T, max: T): T {
+  if (value < min) {
+    return min;
   }
-
-  yearSelectionChanged() {
-    this.currentYear = this.form.get('yearSelection')?.value;
-    this.triggerSelectionChanged();
-  }
-
-  customFromDateChanged() {
-    this.customFromDate = this.form.get('fromDate')?.value;
-    this.triggerSelectionChanged();
-  }
-
-  customToDateChanged() {
-    this.customToDate = this.form.get('toDate')?.value;
-    this.triggerSelectionChanged();
-  }
+  return value > max ? max : value;
 }

@@ -1,0 +1,27 @@
+@for (row of rows(); track row.category) {
+  <div class="crow">
+    <!-- Tipp auf die Zeile: Rechnungsliste mit Kategorie- und Datumsfilter -->
+    <button type="button" class="crow-main" (click)="categorySelected.emit(row.category)">
+      <span class="dot" [style.background]="row.color"></span>
+      <span class="n">{{ row.category }}</span>
+      @if (row.change) {
+        <span class="d" [class]="row.change.direction">{{ row.change.text }}</span>
+      }
+      <span class="a">{{ row.costs | number:'1.2-2':'de' }} €</span>
+    </button>
+    <button type="button" class="chev" [attr.aria-expanded]="isExpanded(row.category)"
+      [attr.aria-label]="'Unterkategorien von ' + row.category" (click)="toggle(row.category)">
+      <mat-icon aria-hidden="true">chevron_right</mat-icon>
+    </button>
+  </div>
+  @if (isExpanded(row.category)) {
+    <div class="sub">
+      @for (sub of row.subCategories; track sub.name) {
+        <div>
+          <span>{{ sub.name }}</span>
+          <span>{{ sub.costs | number:'1.2-2':'de' }} €</span>
+        </div>
+      }
+    </div>
+  }
+}

@@ -1,56 +1,35 @@
-<form [formGroup]="form" class="form-container">
-  <!-- Datumstyp als Segment aus nativen Radios (design.md 5.3), gleiche Control und gleicher Handler wie das bisherige Select -->
+<div class="form-container">
+  <!-- Datumstyp als Segment aus nativen Radios (design.md 3.2) -->
   <div class="segment" role="radiogroup" aria-label="Datumstyp" (click)="$event.stopPropagation();">
     @for (dateTypeOption of dateTypeOptions; track dateTypeOption) {
       <label>
-        <input type="radio" name="dateType" formControlName="dateType" [value]="dateTypeOption"
-          (ngModelChange)="dateTypeSelectionChanged()">
+        <input type="radio" name="dateType" [value]="dateTypeOption" [checked]="dateTypeOption === selectedDateType()"
+          (change)="selectDateType(dateTypeOption)">
         <span>{{ dateTypeSegmentLabels[dateTypeOption] }}</span>
       </label>
     }
   </div>
 
-  @if (selectedDateType == dateType.Month) {
-    <div class="field">
-      <span class="field-label">Monat</span>
-      <span class="field-box">
-        <mat-select formControlName="monthSelection" aria-label="Monat" (selectionChange)="monthSelectionChanged()"
-          (click)="$event.stopPropagation();">
-          @for (month of monthSelectOptions; track month) {
-            <mat-option [value]="month">
-              {{ month | date:'LLLL yyyy':'':'de' }}
-            </mat-option>
-          }
-        </mat-select>
-        <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
-      </span>
+  <!-- ‹ Zeitraum › bei Monat und Jahr, an den Grenzen des verfügbaren Zeitraums deaktiviert -->
+  @if (hasArrows()) {
+    <div class="period">
+      <button type="button" class="icon-btn" aria-label="Vorheriger Zeitraum" [disabled]="!canGoBack()" (click)="previous()">
+        <mat-icon aria-hidden="true">chevron_left</mat-icon>
+      </button>
+      <span class="period-label" aria-live="polite">{{ periodLabel() }}</span>
+      <button type="button" class="icon-btn" aria-label="Nächster Zeitraum" [disabled]="!canGoForward()" (click)="next()">
+        <mat-icon aria-hidden="true">chevron_right</mat-icon>
+      </button>
     </div>
   }
 
-  @if (selectedDateType == dateType.Year) {
-    <div class="field">
-      <span class="field-label">Jahr</span>
-      <span class="field-box">
-        <mat-select formControlName="yearSelection" aria-label="Jahr" (selectionChange)="yearSelectionChanged()"
-          (click)="$event.stopPropagation();">
-          @for (year of yearSelectOptions; track year) {
-            <mat-option [value]="year">
-              {{ year }}
-            </mat-option>
-          }
-        </mat-select>
-        <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
-      </span>
-    </div>
-  }
-
-  @if (selectedDateType == dateType.Custom) {
-    <div class="range">
+  @if (selectedDateType() === dateType.Custom) {
+    <form [formGroup]="form" class="range">
       <label class="field">
         <span class="field-label">Von</span>
         <span class="field-box">
           <input [matDatepicker]="pickerFrom" formControlName="fromDate" aria-label="Von"
-            (ngModelChange)="customFromDateChanged()">
+            (ngModelChange)="customDateChanged()">
           <mat-datepicker-toggle class="suffix" [for]="pickerFrom" [aria-label]="'Kalender öffnen'">
             <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
           </mat-datepicker-toggle>
@@ -61,13 +40,13 @@
         <span class="field-label">Bis</span>
         <span class="field-box">
           <input [matDatepicker]="pickerTo" formControlName="toDate" aria-label="Bis"
-            (ngModelChange)="customToDateChanged()">
+            (ngModelChange)="customDateChanged()">
           <mat-datepicker-toggle class="suffix" [for]="pickerTo" [aria-label]="'Kalender öffnen'">
             <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
           </mat-datepicker-toggle>
           <mat-datepicker #pickerTo />
         </span>
       </label>
-    </div>
+    </form>
   }
-</form>
+</div>

@@ -1,29 +1,22 @@
 <div class="page">
-  @if (availableTimeRange) {
-    <app-timerange-selection [availableTimeRange]="availableTimeRange"
-      (selectionChanged)="timeSelectionChanged($event)" />
-  }
-  @if (!availableTimeRange) {
-    <div class="loading">
-      <mat-spinner diameter="40" />
-    </div>
+  @if (availableTimeRange(); as available) {
+    <app-timerange-selection [availableTimeRange]="available" (selectionChanged)="timeSelectionChanged($event)" />
   }
 
-  @if (!isLoading && expenses.length == 0) {
-    <div class="empty">
-      Keine Daten vorhanden.
+  <!-- Summe mit Vergleich, Monatsbalken und Kategoriezeilen (design.md 3.2, Mockup 01 B) -->
+  <app-load-state [state]="loadState()" [emptyText]="emptyText" (retry)="retry()">
+    <div class="tot">
+      <span class="v">{{ sum() | number:'1.2-2':'de' }}<small>€</small></span>
+      @if (totalChange(); as change) {
+        <span class="delta" [class]="change.direction">{{ change.text }}</span>
+      }
     </div>
-  }
 
-  @if (isLoading) {
-    <div class="loading">
-      <mat-spinner diameter="40" />
-    </div>
-  }
+    @if (months(); as months) {
+      <app-monthly-bars [months]="months" [highlight]="highlight()" />
+    }
 
-  <!-- Ring, Summe und Legende (ersetzt die bisherige Summen-/Kategorienliste, umsetzung.md Statistik) -->
-  @if (!isLoading && expenses.length > 0 && categories.length > 0) {
-    <app-chart [expenses]="expenses" [categories]="categories" [selectedTimeRange]="selectedTimeRange" [sum]="sum"
-      [hiddenCategories]="hiddenCategories" (visibilityToggled)="toggleCategory($event)" />
-  }
+    <app-category-rows [expenses]="expenses() ?? []" [previousExpenses]="previousExpenses()"
+      (categorySelected)="openCategory($event)" />
+  </app-load-state>
 </div>
