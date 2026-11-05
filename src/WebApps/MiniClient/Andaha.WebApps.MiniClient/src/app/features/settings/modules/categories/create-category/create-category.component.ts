@@ -1,15 +1,13 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CategoryForm, createEmptyForm } from '../functions/form-functions';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
-import { getAllColors } from '../functions/category-functions';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CategoryCreateDto } from 'src/app/api/shopping/dtos/CategoryCreateDto';
-import { MatSelect, MatSelectTrigger, MatOption } from '@angular/material/select';
-import { ColorItemComponent } from '../color-item/color-item.component';
+import { ColorSwatchesComponent } from '../color-swatches/color-swatches.component';
 import { MatIcon } from '@angular/material/icon';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
@@ -21,7 +19,7 @@ import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
     templateUrl: './create-category.component.html',
     styleUrls: ['./create-category.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [PanelBackDirective, FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, ColorItemComponent, MatOption, MatIcon, MatCheckbox, MatProgressSpinner, ShowErrorPipe]
+    imports: [PanelBackDirective, ReactiveFormsModule, ColorSwatchesComponent, MatIcon, MatCheckbox, MatProgressSpinner, ShowErrorPipe]
 })
 export class CreateCategoryComponent implements OnInit {
   private router = inject(Router);
@@ -35,12 +33,9 @@ export class CreateCategoryComponent implements OnInit {
 
   includeToStatisticsCheckbox: boolean;
 
-  colors: string[];
-  
   constructor() {
     this.form = createEmptyForm();
     this.includeToStatisticsCheckbox = true;
-    this.colors = getAllColors();
   }
 
   ngOnInit(): void {

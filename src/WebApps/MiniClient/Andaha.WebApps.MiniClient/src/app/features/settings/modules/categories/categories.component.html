@@ -1,34 +1,26 @@
 <div class="page">
   <div class="body">
-    @if (isLoading) {
-      <div class="loading">
-        <mat-spinner diameter="40" />
+    <app-load-state [state]="loadState" emptyText="Es gibt noch keine Kategorien. Mit „Hinzufügen“ legst du die erste an." (retry)="onRetry()">
+      <!-- Mockup 06, Kategorien: Musterfeld | Name | Chevron; im Modus "Reihenfolge anpassen" Griff links (cdkDragHandle) -->
+      <div class="list" cdkDropList (cdkDropListDropped)="drop($event)">
+        @for (category of categories; track category.id; let i = $index) {
+          <div
+            cdkDrag class="drag-item andaha-drag-item"
+            [cdkDragDisabled]="!isEditing">
+            @if (isEditing) {
+              <span class="grip" cdkDragHandle aria-hidden="true">
+                <mat-icon>drag_indicator</mat-icon>
+              </span>
+            }
+            <a class="row" routerLink="{{category.id}}">
+              <span class="sw" [ngStyle]="{ 'background-color': category.color }"></span>
+              <span class="t">{{ category.name }}</span>
+              <mat-icon class="chev" aria-hidden="true">chevron_right</mat-icon>
+            </a>
+          </div>
+        }
       </div>
-    }
-
-    @if (!isLoading) {
-      <div>
-        <!-- Mockup 06, Kategorien: Musterfeld | Name | Chevron; im Modus "Reihenfolge anpassen" Griff links (cdkDragHandle) -->
-        <div class="list" cdkDropList (cdkDropListDropped)="drop($event)">
-          @for (category of categories; track category.id; let i = $index) {
-            <div
-              cdkDrag class="drag-item andaha-drag-item"
-              [cdkDragDisabled]="!isEditing">
-              @if (isEditing) {
-                <span class="grip" cdkDragHandle aria-hidden="true">
-                  <mat-icon>drag_indicator</mat-icon>
-                </span>
-              }
-              <a class="row" routerLink="{{category.id}}">
-                <span class="sw" [ngStyle]="{ 'background-color': category.color }"></span>
-                <span class="t">{{ category.name }}</span>
-                <mat-icon class="chev" aria-hidden="true">chevron_right</mat-icon>
-              </a>
-            </div>
-          }
-        </div>
-      </div>
-    }
+    </app-load-state>
   </div>
 
   <!--

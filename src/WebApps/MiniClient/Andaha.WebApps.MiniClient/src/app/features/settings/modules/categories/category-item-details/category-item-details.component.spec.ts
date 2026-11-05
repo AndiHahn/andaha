@@ -66,7 +66,66 @@ describe('CategoryItemDetailsComponent', () => {
         fixture = TestBed.createComponent(CategoryItemDetailsComponent);
     });
 
-    it('second save keeps server ids of subcategories created by the first save', () => {
+    function stubConfirmation(confirmed: boolean) {
+        const openDialog = vi.fn().mockResolvedValue({ afterClosed: () => of(confirmed) });
+        (TestBed.inject(ConfirmationDialogService) as unknown as { openDialog: unknown }).openDialog = openDialog;
+        return openDialog;
+    }
+
+    it('removing a subcategory asks confirmation', async () => {
+        fixture.detectChanges();
+        const component = fixture.componentInstance;
+        const openDialog = stubConfirmation(false);
+
+        component.onEditClick();
+        component.onDeleteSubCategoryClick(0);
+        await Promise.resolve();
+        await Promise.resolve();
+        expect(openDialog).toHaveBeenCalledTimes(1);
+        expect(component.subCategoryForms.length).toBe(1);
+
+        stubConfirmation(true);
+        component.onDeleteSubCategoryClick(0);
+        await Promise.resolve();
+        await Promise.resolve();
+        expect(component.subCategoryForms.length).toBe(0);
+    });
+
+    it('after save cancel restores saved state', () => {
+        fixture.detectChanges();
+        const component = fixture.componentInstance;
+        context.updateCategory.mockReturnValue(of(undefined));
+        context.getCategoryById.mockReturnValue({ ...category, name: 'Gespeichert', color: '#2e4fa8' });
+
+        component.onEditClick();
+        component.form.controls.name.setValue('Gespeichert');
+        component.onSaveClick();
+        component.onEditClick();
+        component.form.controls.name.setValue('Verworfen');
+        component.onCancelClick();
+
+        expect(component.form.controls.name.value).toBe('Gespeichert');
+        expect(component.form.controls.color.value).toBe('#2e4fa8');
+    });
+
+    it('default category: delete disabled with explanation', () => {
+        context.categoryById.mockReturnValue(of({ ...category, isDefault: true, subCategories: [] }));
+        fixture.detectChanges();
+        const el: HTMLElement = fixture.nativeElement;
+
+        expect((el.querySelector('.btn.del') as HTMLButtonElement).disabled).toBe(true);
+        expect(el.textContent).toContain('Die Standardkategorie kann nicht gelöscht werden. Rechnungen gelöschter Kategorien landen hier.');
+    });
+
+    it('non-default category: delete enabled and no explanation', () => {
+        fixture.detectChanges();
+        const el: HTMLElement = fixture.nativeElement;
+
+        expect((el.querySelector('.btn.del') as HTMLButtonElement).disabled).toBe(false);
+        expect(el.textContent).not.toContain('Die Standardkategorie kann nicht gelöscht werden');
+    });
+
+    it('save, add subcategory, save again sends server id (no duplicate)', () => {
         fixture.detectChanges();
         const component = fixture.componentInstance;
         const updates: CategoryUpdateDto[] = [];

@@ -11,29 +11,9 @@
             <input formControlName="name" required [attr.aria-invalid]="form.controls.name | showError">
           </span>
         </label>
-        <div class="field" [class.invalid]="form.controls.color | showError">
+        <div class="field swatch-field" [class.invalid]="form.controls.color | showError">
           <span class="field-label">Farbe</span>
-          <span class="field-box">
-            <mat-select [(ngModel)]="selectedColor" name="color" [formControl]="form.controls.color" aria-label="Farbe">
-              @if (selectedColor) {
-                <mat-select-trigger>
-                  <span class="color-opt">
-                    <app-color-item [color]="selectedColor" />
-                    <span class="color-name">{{ selectedColor }}</span>
-                  </span>
-                </mat-select-trigger>
-              }
-              @for (color of colors; track color) {
-                <mat-option [value]="color">
-                  <span class="color-opt">
-                    <app-color-item [color]="color" />
-                    <span class="color-name">{{ color }}</span>
-                  </span>
-                </mat-option>
-              }
-            </mat-select>
-            <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
-          </span>
+          <app-color-swatches [formControl]="form.controls.color" />
         </div>
         <div class="cb">
           <mat-checkbox
@@ -109,9 +89,12 @@
         }
       </button>
       <button type="button" class="btn del" (click)="onDeleteClick()"
-        [disabled]="isEditing || isDeleting || isLoading || isSaving">
+        [disabled]="category.isDefault || isDeleting || isLoading || isSaving">
         <mat-icon>delete</mat-icon><span>Löschen</span>
       </button>
+      @if (category.isDefault) {
+        <p class="note">Die Standardkategorie kann nicht gelöscht werden. Rechnungen gelöschter Kategorien landen hier.</p>
+      }
     </div>
   }
 

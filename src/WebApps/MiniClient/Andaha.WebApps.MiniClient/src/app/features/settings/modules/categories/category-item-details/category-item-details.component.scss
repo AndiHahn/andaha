@@ -110,8 +110,21 @@
   height: 3px;
 }
 
+.actions {
+  flex-wrap: wrap;
+}
+
 .actions .btn.del {
   flex: none;
+}
+
+// Erklaerung unter dem gesperrten Loeschen der Standardkategorie (Mockup 03 A)
+.note {
+  flex: 0 0 100%;
+  margin: 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--faint);
 }
 
 // Desktop: Inhaltsspalte, Aktionen rechtsbuendig am Formularende (DESIGN.md Layout)

@@ -12,27 +12,7 @@
 
     <div class="field" [class.invalid]="form.controls.color | showError">
       <span class="field-label">Farbe</span>
-      <span class="field-box">
-        <mat-select [formControl]="form.controls.color" aria-label="Farbe">
-          @if (form.controls.color.value) {
-            <mat-select-trigger>
-              <span class="color-opt">
-                <app-color-item [color]="form.controls.color.value" />
-                <span class="color-name">{{ form.controls.color.value }}</span>
-              </span>
-            </mat-select-trigger>
-          }
-          @for (color of colors; track color) {
-            <mat-option [value]="color">
-              <span class="color-opt">
-                <app-color-item [color]="color" />
-                <span class="color-name">{{ color }}</span>
-              </span>
-            </mat-option>
-          }
-        </mat-select>
-        <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
-      </span>
+      <app-color-swatches [formControl]="form.controls.color" />
     </div>
 
     <div class="cb">

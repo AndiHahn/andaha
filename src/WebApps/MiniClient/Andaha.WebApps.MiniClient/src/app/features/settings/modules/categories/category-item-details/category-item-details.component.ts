@@ -1,7 +1,7 @@
 import { CdkDragDrop, CdkDropList, CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
-import { FormArray, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -15,10 +15,9 @@ import { ConfirmationDialogData } from 'src/app/shared/confirmation-dialog/Confi
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
-import { getAllColors } from '../functions/category-functions';
 import { CategoryForm, createSubCategoryForm, createCategoryForm, SubCategoryForm } from '../functions/form-functions';
-import { MatSelect, MatSelectTrigger, MatOption } from '@angular/material/select';
-import { ColorItemComponent } from '../color-item/color-item.component';
+import { ColorSwatchesComponent } from '../color-swatches/color-swatches.component';
+import { vibrate } from 'src/app/shared/utils/haptics';
 import { MatIcon } from '@angular/material/icon';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatProgressBar } from '@angular/material/progress-bar';
@@ -31,7 +30,7 @@ import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
     templateUrl: './category-item-details.component.html',
     styleUrls: ['./category-item-details.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [PanelBackDirective, FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, ColorItemComponent, MatOption, MatIcon, MatCheckbox, CdkDropList, CdkDrag, CdkDragHandle, MatProgressBar, MatProgressSpinner, ShowErrorPipe]
+    imports: [PanelBackDirective, ReactiveFormsModule, ColorSwatchesComponent, MatIcon, MatCheckbox, CdkDropList, CdkDrag, CdkDragHandle, MatProgressBar, MatProgressSpinner, ShowErrorPipe]
 })
 export class CategoryItemDetailsComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
@@ -52,19 +51,12 @@ export class CategoryItemDetailsComponent implements OnInit, OnDestroy {
   category?: CategoryDto;
   includeToStatisticsCheckbox: boolean = false;
 
-  colors: string[];
-  selectedColor: string = '';
-
   private destroy$: Subject<void> = new Subject<void>();
 
   get subCategoryForms(): FormArray<FormGroup<SubCategoryForm>> {
     return this.form.controls.subCategories;
   }
   
-  constructor() {
-    this.colors = getAllColors();
-  }
-
   ngOnInit(): void {
     const categoryId = getParametersFromRouteRecursive(this.route.snapshot)["id"];
     if (!categoryId) {
@@ -80,7 +72,6 @@ export class CategoryItemDetailsComponent implements OnInit, OnDestroy {
         }
 
         this.category = category;
-        this.selectedColor = category.color;
         this.includeToStatisticsCheckbox = category.includeToStatistics;
         this.form = createCategoryForm(category);
         this.form.disable();
@@ -100,7 +91,19 @@ export class CategoryItemDetailsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.subCategoryForms.removeAt(index);
+    const name = this.subCategoryForms.at(index).controls.name.value;
+    const data: ConfirmationDialogData = {
+      text: name
+        ? `Soll die Unterkategorie „${name}“ wirklich entfernt werden? Das Entfernen wird mit „Speichern“ übernommen.`
+        : 'Soll die Unterkategorie wirklich entfernt werden?'
+    };
+
+    this.confirmationDialog.openDialog(data).then(dialogRef => dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.subCategoryForms.removeAt(index);
+        vibrate();
+      }
+    }));
   }
 
   onAddSubCategoryClick(): void {
@@ -162,7 +165,6 @@ export class CategoryItemDetailsComponent implements OnInit, OnDestroy {
               order
             }))
           };
-          this.selectedColor = this.category.color;
           this.includeToStatisticsCheckbox = this.category.includeToStatistics;
           this.form = createCategoryForm(this.category);
           this.form.disable();
@@ -201,6 +203,7 @@ export class CategoryItemDetailsComponent implements OnInit, OnDestroy {
       {
         next: _ => {
           this.isDeleting = false;
+          vibrate();
           // zurück zur Liste; Zurück führt danach nicht auf den gelöschten Eintrag
           this.historyTrail.leaveTo('/settings/categories');
         },

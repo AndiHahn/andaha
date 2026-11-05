@@ -11,13 +11,14 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatIcon } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { NgStyle } from '@angular/common';
+import { LoadState, LoadStateComponent } from 'src/app/shared/load-state/load-state.component';
 
 @Component({
     selector: 'app-categories',
     templateUrl: './categories.component.html',
     styleUrls: ['./categories.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [MatProgressSpinner, CdkDropList, CdkDrag, CdkDragHandle, MatIcon, RouterLink, NgStyle]
+    imports: [LoadStateComponent, MatProgressSpinner, CdkDropList, CdkDrag, CdkDragHandle, MatIcon, RouterLink, NgStyle]
 })
 export class CategoriesComponent implements OnInit {
   private snackbar = inject(MatSnackBar);
@@ -30,10 +31,20 @@ export class CategoriesComponent implements OnInit {
 
   isSaving: boolean = false;
   isEditing: boolean = false;
-  isLoading: boolean = false;
+  /** Die Liste wird mit den Kategorien geladen; vor dem ersten Laden ist sie leer (die Standardkategorie gibt es immer). */
+  get loadState(): LoadState {
+    if (this.categories?.length) {
+      return 'ready';
+    }
+    return this.categoryContextService.error() ? 'error' : 'loading';
+  }
 
   ngOnInit(): void {
     this.initSubscriptions();
+  }
+
+  onRetry(): void {
+    this.categoryContextService.retry();
   }
 
   onEditClick(): void {
@@ -80,17 +91,9 @@ export class CategoriesComponent implements OnInit {
   }
   
   private initSubscriptions(): void {
-    this.isLoading = true;
-    
     this.categoryContextService.categories().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
       {
-        next: categories => {
-          if (categories) {
-            this.categories = categories;
-            this.isLoading = false;
-          }
-        },
-        error: _ => this.isLoading = false
+        next: categories => this.categories = categories
       }
     );
   }
