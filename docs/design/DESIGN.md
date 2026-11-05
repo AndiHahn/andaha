@@ -331,7 +331,7 @@ Scrim hinter Sheets und Dialogen: `rgba(40,30,18,.38)`.
 
 **Langer Druck auf Listenzeilen (Rechnungsliste, US-0008):** Langer Druck (500 ms, Desktop: Rechtsklick) öffnet unter der Zeile ein Material-Menü mit „Duplizieren“ (`content_copy`) und „Löschen“ (`delete`); Rechnungen verbundener Konten nur „Duplizieren“. Einträge 48 px, Icons 20 `muted`, Radius 14, wie das Kontextmenü der Vorschlags-Kacheln. Löschen fragt immer nach. Ein normaler Tipp öffnet die Detailseite, Zurück schließt das Menü. Kein Zeilen-Wischen: das Tab-Wischen greift auf der ganzen Liste. Detailseiten bieten dieselben Aktionen als Buttons. [Nutzer, 2026-11-05]
 
-**Monatsköpfe (Rechnungsliste, US-0008):** vor jedem Monat ein Abschnittskopf „November 2026“ links und die Monatssumme rechts (Tabellenziffern); über der Liste die Summe aller Treffer („126 Rechnungen“ · Betrag). Zeilen sind nach dem angezeigten lokalen Datum gruppiert, die Summen kommen vom Backend.
+**Monatsköpfe (Rechnungsliste, US-0008):** vor jedem Monat ein Abschnittskopf „November 2026“ links und die Monatssumme rechts (Tabellenziffern). Keine Summenzeile über der Liste [Nutzer, 2026-11-05]. Zeilen sind nach dem angezeigten lokalen Datum gruppiert, die Summen kommen vom Backend.
 
 **Farbraster (Kategorien, US-0008):** 18 Farbpunkte zum Antippen statt eines Farbwählers; der gewählte Punkt hat einen Ring. Eine bisherige Farbe außerhalb des Rasters (CSS-Name) erscheint vorne als gestrichelt umrandeter Punkt mit dem Hinweis „Gestrichelt: bisherige Farbe „…““ und bleibt gültig.
 
