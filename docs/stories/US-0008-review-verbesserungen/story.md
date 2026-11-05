@@ -20,8 +20,8 @@ Setzt US-0006 und US-0007 voraus (Tabs, Snackbar, Sheet-Verhalten, Vibrieren).
 **Rechnungsliste und Statistik (Review 3)**
 
 - [x] AC1: Die Rechnungsliste ist nach Monaten gruppiert. Der Gruppenkopf zeigt Monat und Monatssumme.
-- [x] AC2: Über der Liste steht die Summe der gefilterten Treffer, z. B. „23 Rechnungen · 412,30 €“. Sie gilt für alle Treffer, nicht nur die geladene Seite, und kommt dafür vom Backend.
-- [x] AC3: Wischaktionen auf Listenzeilen: nach links „Löschen“ mit Rückfrage, nach rechts „Duplizieren“ (öffnet die Erfassung mit gleichen Werten und Datum heute). Beide Aktionen gibt es zusätzlich ohne Geste (z. B. in der Detailansicht).
+- [x] AC2: Entfällt auf Wunsch des Nutzers: Über der Liste steht keine Summenzeile („<N> Rechnungen · <Summe> €“) mehr. Die Monatsköpfe mit der Monatssumme vom Backend (AC1) bleiben. [Nutzer, 2026-11-05]
+- [x] AC3: Langer Druck auf eine Listenzeile (Desktop: Rechtsklick) öffnet ein kleines Menü mit „Duplizieren“ (öffnet die Erfassung mit gleichen Werten und Datum heute) und „Löschen“ (mit Rückfrage); Rechnungen verbundener Konten bieten nur „Duplizieren“. Ein normaler Tipp öffnet weiter die Detailseite. Beide Aktionen gibt es zusätzlich in der Detailseite. Zeilen-Wischen gibt es nicht. [Nutzer, 2026-11-05]
 - [x] AC4: Pull-to-Refresh lädt die Rechnungsliste neu. `overscroll-behavior` ist dafür angepasst.
 - [x] AC5: In der Statistik wechselt der Monat (bzw. das Jahr) per ‹ › neben dem Zeitraum statt über das Select. Das Wischen zwischen den Tabs bleibt dabei funktionsfähig, das Design legt die Abgrenzung fest.
 - [x] AC6: Ein Tipp auf eine Kategorie in der Statistik öffnet die Rechnungsliste, gefiltert nach dieser Kategorie und dem Zeitraum. Die Unterkategorie-Summen bleiben erreichbar.

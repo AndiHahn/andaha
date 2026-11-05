@@ -329,7 +329,7 @@ Scrim hinter Sheets und Dialogen: `rgba(40,30,18,.38)`.
 
 **Offline-Banner (US-0008):** app-weit unter dem Seitenkopf, eine Zeile mit Icon `wifi_off`: „Keine Verbindung – neue Rechnungen werden später übertragen.“ Erscheint nur bei `navigator.onLine === false`; andere Aktionen bleiben bedienbar und melden Fehler per Snackbar.
 
-**Zeilen-Wischaktionen (Rechnungsliste, US-0008):** Nach links wischen deckt „Löschen“ auf (`negative`), nach rechts „Duplizieren“ (`primary`); die Aktion ist 96 px breit und wird per Tipp ausgelöst, ab etwa 40 % der Zeilenbreite direkt. Löschen fragt immer nach. Nur waagrechte Gesten zählen; auf den Zeilen gewinnt das Zeilen-Wischen vor dem Tab-Wischen (`data-no-swipe`). Detailseiten bieten dieselben Aktionen als Buttons.
+**Langer Druck auf Listenzeilen (Rechnungsliste, US-0008):** Langer Druck (500 ms, Desktop: Rechtsklick) öffnet unter der Zeile ein Material-Menü mit „Duplizieren“ (`content_copy`) und „Löschen“ (`delete`); Rechnungen verbundener Konten nur „Duplizieren“. Einträge 48 px, Icons 20 `muted`, Radius 14, wie das Kontextmenü der Vorschlags-Kacheln. Löschen fragt immer nach. Ein normaler Tipp öffnet die Detailseite, Zurück schließt das Menü. Kein Zeilen-Wischen: das Tab-Wischen greift auf der ganzen Liste. Detailseiten bieten dieselben Aktionen als Buttons. [Nutzer, 2026-11-05]
 
 **Monatsköpfe (Rechnungsliste, US-0008):** vor jedem Monat ein Abschnittskopf „November 2026“ links und die Monatssumme rechts (Tabellenziffern); über der Liste die Summe aller Treffer („126 Rechnungen“ · Betrag). Zeilen sind nach dem angezeigten lokalen Datum gruppiert, die Summen kommen vom Backend.
 

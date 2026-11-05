@@ -98,21 +98,21 @@ Die Context-Services liefern dafür einen Fehlerzustand statt nur `loading`. Wie
 
 ### 3.1 Liste (AC1–AC4), Mockup 01 A/C
 
-- **Summe der Treffer (AC2):** Über der Liste steht „126 Rechnungen“ links und „8.412,30 €“ rechts. Die Werte kommen vom Backend und gelten für alle Treffer der aktiven Filter.
+- **Summe der Treffer (AC2) [Nutzer, 2026-11-05]:** Entfällt. Über der Liste steht keine Zeile „<N> Rechnungen · <Summe> €“ mehr; die Monatsköpfe mit Monatssumme bleiben. Das Backend liefert `totalSum` weiter, das Frontend zeigt es nicht an (`totalSum$` im `BillContextService` entfernt).
 - **Monatsgruppen (AC1):** Vor jedem Monat steht ein Kopf „November 2026“ mit der Monatssumme rechts.
   - Die Monatssummen kommen vom Backend für alle Monate der Treffer. Sie stimmen also auch dann, wenn ein Monat erst teilweise geladen ist.
   - Wie Köpfe und virtuelles Scrollen zusammengehen, entscheidet der Umsetzende. Möglich sind Köpfe als eigene Einträge im Viewport oder ein Verzicht auf `cdk-virtual-scroll`, wenn die Leistung reicht.
   - Seitenweises Nachladen (50 Einträge) bleibt.
 - **Backend [Technik]:** `GET api/bill/` liefert zusätzlich `totalSum` und `monthSums: [{ month: "YYYY-MM", sum }]` über alle Treffer. Das bestehende `PagedResultDto` wird dafür erweitert, z. B. als `BillSearchResultDto`. Gerechnet wird mit denselben Filtern wie die Liste: eigene und verbundene Benutzer, Suche, Kategorie, Datum.
-- **Wischaktionen (AC3) [Entscheidung]:**
-  - Eine Zeile nach links wischen deckt „Löschen“ auf (rot). Ein Tipp darauf löst die Rückfrage aus, dann das Löschen.
-  - Nach rechts wischen deckt „Duplizieren“ auf (Primärfarbe). Ein Tipp öffnet das große Formular `/bill/create` mit dem `BillCreatePrefill` aus US-0007: Preis, Shop, Kategorie, Unterkategorie und Notizen übernommen, Datum heute, ohne Foto.
-  - Ab einer Schwelle von etwa 40 % der Zeilenbreite löst die Aktion direkt aus. Darunter bleibt die Zeile offen, bis man tippt oder woanders hinwischt. Den genauen Wert legt der Umsetzende fest.
+- **Langer Druck auf Listenzeilen (AC3) [Nutzer, 2026-11-05]:** Ersetzt die Wischaktionen, weil das Zeilen-Wischen das Tab-Wischen störte.
+  - Langer Druck auf eine Zeile (Touch, 500 ms; Desktop: Rechtsklick) öffnet unter der Zeile ein kleines Menü mit „Duplizieren“ und „Löschen“. Baustein wie bei den Kacheln der Schnellerfassung (US-0007): `appLongPress` und `MatMenu` mit `appMenuBack`, Zurück schließt das Menü.
+  - „Duplizieren“ öffnet das große Formular `/bill/create` mit dem `BillCreatePrefill` aus US-0007: Preis, Shop, Kategorie, Unterkategorie und Notizen übernommen, Datum heute, ohne Foto.
+  - „Löschen“ löst die Rückfrage aus, dann das Löschen mit kurzem Vibrieren. Rechnungen verbundener Konten bieten nur „Duplizieren“.
+  - Ein normaler Tipp öffnet weiter die Detailseite; der Tipp, der einen langen Druck beendet, navigiert nicht.
   - In der Rechnungsdetailseite stehen „Duplizieren“ und „Löschen“ zusätzlich als Buttons.
-- **Abgrenzung zum Tab-Wischen [Entscheidung]:**
-  - Auf den Zeilen der Liste gewinnt das Zeilen-Wischen. Die Zeilen sind mit `data-no-swipe` markiert, damit `tab-swipe.directive` sie ausschließt.
-  - Die Tabs der Rechnungen sind weiter per Tipp und per Wischen über Kopf, Tabs, Suche und Summe erreichbar.
-  - Zeilen-Wischen nutzt Touch Events, wie das Tab-Wischen, mit derselben Winkelregel: nur waagrechte Gesten zählen, senkrechtes Scrollen bleibt frei.
+- **Abgrenzung zum Tab-Wischen [Nutzer, 2026-11-05]:**
+  - Es gibt kein Zeilen-Wischen mehr. Die Zeilen tragen kein `data-no-swipe`, das Tab-Wischen greift auf der ganzen Liste.
+  - Ein langer Druck bricht ab, sobald sich der Finger mehr als 10 px bewegt; Scrollen und Tab-Wischen lösen ihn also nicht aus.
 - **Pull-to-Refresh (AC4) [Technik]:**
   - Am oberen Rand der Liste zieht man einen runden Indikator herunter, wie in Mockup 01 C. Wer über eine Schwelle zieht, lädt neu. Das ruft `refreshBills()` und lädt die Summen mit.
   - `overscroll-behavior` wird so angepasst, dass der Browser nicht selbst neu lädt und die Geste beim Scroll-Container der Liste ankommt.
@@ -396,7 +396,7 @@ Die Context-Services liefern dafür einen Fehlerzustand statt nur `loading`. Wie
 
 ## 10. Entscheidungen zur Prüfung durch den Nutzer
 
-- Zeilen-Wischen gewinnt auf den Rechnungszeilen. Tab-Wischen geht dort nur noch über Kopf, Tabs, Suche und Summe.
+- ~~Zeilen-Wischen gewinnt auf den Rechnungszeilen.~~ Ersetzt [Nutzer, 2026-11-05]: kein Zeilen-Wischen, Duplizieren/Löschen per langem Druck auf die Zeile; das Tab-Wischen greift auf der ganzen Liste (§3.1).
 - Ring-Diagramm und Kategorie-Ausblenden in der Statistik entfallen zugunsten von Balken und Zeilen.
 - Datumsvergleich nur für Monat und Jahr.
 - Offener Betrag mit dem aktuellen Stundensatz.
