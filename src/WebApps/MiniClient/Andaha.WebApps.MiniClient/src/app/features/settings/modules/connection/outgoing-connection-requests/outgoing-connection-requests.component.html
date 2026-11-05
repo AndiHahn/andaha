@@ -1,25 +1,16 @@
-<div class="master-container">
-  @if (loading && !connectionRequests) {
-    <div>
-      <mat-spinner diameter="40" />
+<app-load-state [state]="loadState" emptyText="Keine gesendeten Anfragen." (retry)="onRetry()">
+  @for (connectionRequest of connectionRequests; track connectionRequest.fromUserId + '|' + connectionRequest.targetUserId) {
+    <div class="crow">
+      <div class="main">
+        <div class="t">{{ connectionRequest.targetUserEmailAddress }}</div>
+        <span>{{ connectionRequest.declined ? 'abgelehnt' : 'wartet auf Antwort' }}</span>
+      </div>
+      <button type="button" class="mbtn g" [disabled]="busyTargetUserId === connectionRequest.targetUserId" (click)="onWithdrawClick(connectionRequest)">
+        @if (busyTargetUserId === connectionRequest.targetUserId) {
+          <mat-spinner [diameter]="16" />
+        }
+        <span>Zurückziehen</span>
+      </button>
     </div>
   }
-
-  @if (!loading && connectionRequests && connectionRequests.length == 0) {
-    <div class="empty">
-      Keine ausgehenden Verbindungsanfragen vorhanden.
-    </div>
-  }
-</div>
-
-@for (connectionRequest of connectionRequests; track connectionRequest.fromUserId + '|' + connectionRequest.targetUserId) {
-  <div class="row">
-    <span class="t">{{ connectionRequest.targetUserEmailAddress }}</span>
-    @if (!connectionRequest.declined) {
-      <span class="st wait"><span class="dot"></span>ausstehend</span>
-    }
-    @if (connectionRequest.declined) {
-      <span class="st no"><span class="dot"></span>abgelehnt</span>
-    }
-  </div>
-}
+</app-load-state>

@@ -221,6 +221,47 @@ body.mat-app-background {
   .mat-icon { font-size: 14px; width: 14px; height: 14px; line-height: 14px; }
 }
 
+// Verbindungszeile (Mockup 03 B): Text links, Aktion(en) rechts
+.crow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px 10px 16px;
+  border-bottom: 1px solid var(--line2);
+  min-height: 60px;
+  flex: none;
+
+  .main { flex: 1; min-width: 0; }
+  .t { font-size: 15px; overflow-wrap: anywhere; }
+  .main span { font-size: 13px; color: var(--mut); }
+}
+
+.mbtn {
+  flex: none;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  border: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+
+  &:disabled { opacity: .55; cursor: default; }
+  &.p { background: var(--pri); color: var(--on-pri); }
+  &.g { background: var(--raised); color: var(--fg); box-shadow: inset 0 0 0 1px var(--raised-line); }
+  &.r { background: transparent; color: var(--neg); box-shadow: inset 0 0 0 1px var(--neg-line); }
+
+  .mat-mdc-progress-spinner { --mat-progress-spinner-active-indicator-color: currentColor; }
+}
+
+@media (min-width: 1024px) {
+  .crow { padding-left: 0; padding-right: 0; }
+}
+
 // Leerzustand
 .empty {
   padding: 14px 16px;

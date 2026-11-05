@@ -1,20 +1,16 @@
-<div class="master-container">
-  @if (loading && !connections) {
-    <div>
-      <mat-spinner diameter="40" />
+<app-load-state [state]="loadState" emptyText="Noch keine Verbindungen. Mit „Verbindung herstellen“ teilst du Rechnungen, Haushalt und Stunden mit einer anderen Person." (retry)="onRetry()">
+  @for (connection of connections; track connection.userId) {
+    <div class="crow">
+      <div class="main">
+        <div class="t">{{ connection.userEmailAddress }}</div>
+        <span>teilt Rechnungen, Haushalt und Stunden</span>
+      </div>
+      <button type="button" class="mbtn r" [disabled]="busyUserId === connection.userId" (click)="onRemoveClick(connection)">
+        @if (busyUserId === connection.userId) {
+          <mat-spinner [diameter]="16" />
+        }
+        <span>Trennen</span>
+      </button>
     </div>
   }
-
-  @if (!loading && connections && connections.length == 0) {
-    <div class="empty">
-      Keine Verbindungen vorhanden.
-    </div>
-  }
-</div>
-
-@for (connection of connections; track connection.userEmailAddress) {
-  <div class="row">
-    <span class="t">{{ connection.userEmailAddress }}</span>
-    <span class="st ok"><span class="dot"></span>aktiv</span>
-  </div>
-}
+</app-load-state>

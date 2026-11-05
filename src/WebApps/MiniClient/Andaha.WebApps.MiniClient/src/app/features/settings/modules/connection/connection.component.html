@@ -1,17 +1,17 @@
-<p class="sec">Verbindungen</p>
-
-<app-active-connections />
-
-<div class="connect">
-  <button type="button" class="btn sec2" (click)="onAddConnectionClick()">
-    <mat-icon>link</mat-icon><span>Verbindung herstellen</span>
-  </button>
-</div>
-
-<p class="sec">Eingehende Verbindungsanfragen</p>
+<p class="sec">Anfragen an dich</p>
 
 <app-incoming-connection-requests />
 
-<p class="sec">Ausgehende Verbindungsanfragen</p>
+<p class="sec">Verbunden</p>
+
+<app-active-connections />
+
+<p class="sec">Gesendete Anfragen</p>
 
 <app-outgoing-connection-requests />
+
+<div class="connect">
+  <button type="button" class="btn pri" (click)="onAddConnectionClick()">
+    <mat-icon>add</mat-icon><span>Verbindung herstellen</span>
+  </button>
+</div>

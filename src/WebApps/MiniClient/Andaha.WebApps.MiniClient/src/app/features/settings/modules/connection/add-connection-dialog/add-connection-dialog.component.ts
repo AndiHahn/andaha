@@ -1,6 +1,8 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogContent } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { openSuccessSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { CollaborationContextService } from 'src/app/services/collaboration-context.service';
 import { DialogComponent } from '../../../../../shared/dialog/dialog.component';
 import { CdkScrollable } from '@angular/cdk/scrolling';
@@ -17,6 +19,7 @@ import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe'
 export class AddConnectionDialogComponent implements OnInit {
   private dialogRef = inject<MatDialogRef<AddConnectionDialogComponent>>(MatDialogRef);
   private contextService = inject(CollaborationContextService);
+  private snackbar = inject(MatSnackBar);
 
 
   formGroup: UntypedFormGroup;
@@ -52,11 +55,14 @@ export class AddConnectionDialogComponent implements OnInit {
       {
         next: _ => {
           this.isSaving = false;
+          openSuccessSnackbar(`Anfrage an ${userEmailAddress} gesendet`, this.snackbar);
           this.dialogRef.close(true);
         },
         error: error => {
-          this.isSaving = false
-          this.errorMessage = error.error;
+          this.isSaving = false;
+          this.errorMessage = typeof error?.error === 'string' && error.error
+            ? error.error
+            : 'Die Anfrage konnte nicht gesendet werden.';
         } 
       }
     );

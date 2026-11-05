@@ -1,21 +1,19 @@
-<div class="master-container">
-  @if (loading && !connectionRequests) {
-    <div>
-      <mat-spinner diameter="40" />
+<app-load-state [state]="loadState" emptyText="Keine eingehenden Anfragen. Wenn dir jemand eine Verbindung anbietet, erscheint die Anfrage hier." (retry)="onRetry()">
+  @for (connectionRequest of connectionRequests; track connectionRequest.fromUserId + '|' + connectionRequest.targetUserId) {
+    <div class="crow">
+      <div class="main"><div class="t">{{ connectionRequest.fromUserEmailAddress }}</div></div>
+      <button type="button" class="mbtn g" [disabled]="busyUserId === connectionRequest.fromUserId" (click)="onDeclineClick(connectionRequest)">
+        @if (busyUserId === connectionRequest.fromUserId && busyAction === 'decline') {
+          <mat-spinner [diameter]="16" />
+        }
+        <span>Ablehnen</span>
+      </button>
+      <button type="button" class="mbtn p" [disabled]="busyUserId === connectionRequest.fromUserId" (click)="onAcceptClick(connectionRequest)">
+        @if (busyUserId === connectionRequest.fromUserId && busyAction === 'accept') {
+          <mat-spinner [diameter]="16" />
+        }
+        <span>Annehmen</span>
+      </button>
     </div>
   }
-
-  @if (!loading && connectionRequests && connectionRequests.length == 0) {
-    <div class="empty">
-      Keine eingehenden Verbindungsanfragen vorhanden.
-    </div>
-  }
-</div>
-
-@for (connectionRequest of connectionRequests; track connectionRequest.fromUserId + '|' + connectionRequest.targetUserId) {
-  <div class="row">
-    <span class="t">{{ connectionRequest.fromUserEmailAddress }}</span>
-    <button type="button" class="mini accept" aria-label="Anfrage annehmen" (click)="onAcceptClick(connectionRequest)"><mat-icon>check</mat-icon></button>
-    <button type="button" class="mini decline" aria-label="Anfrage ablehnen" (click)="onDeclineClick(connectionRequest)"><mat-icon>close</mat-icon></button>
-  </div>
-}
+</app-load-state>
