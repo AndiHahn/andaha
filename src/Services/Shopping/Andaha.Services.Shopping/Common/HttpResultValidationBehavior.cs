@@ -24,7 +24,7 @@ internal sealed class HttpResultValidationBehavior<TRequest> : IPipelineBehavior
     {
         var context = new ValidationContext<TRequest>(request);
 
-        // Sequentially: async validators share the scoped DbContext, which does not allow parallel queries.
+        // Sequentially: async validators may share the scoped DbContext, which does not allow parallel queries.
         var failures = new List<ValidationFailure>();
         foreach (var validator in this.validators)
         {

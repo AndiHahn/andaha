@@ -5,13 +5,11 @@ using MediatR;
 namespace Andaha.Services.BudgetPlan.Common;
 
 /// <summary>
-/// Runs the FluentValidation validators of a request before its handler and answers 400 (ValidationProblem) on failures.
+/// Runs the FluentValidation validators of a request whose handler returns an ASP.NET Core <see cref="IResult"/>.
+/// The shared ValidationBehavior of Andaha.CrossCutting.Application is constrained to its own Result type and is
+/// therefore skipped for these requests. On validation failures the request is answered with a 400 validation problem
+/// and the handler is not called.
 /// </summary>
-/// <remarks>
-/// The ValidationBehavior of Andaha.CrossCutting.Application is constrained to responses of its own
-/// <c>Andaha.CrossCutting.Application.Result.IResult</c>. The handlers here return <see cref="IResult"/> of ASP.NET Core,
-/// so the container silently skips that behavior and validators would never run.
-/// </remarks>
 internal sealed class HttpResultValidationBehavior<TRequest> : IPipelineBehavior<TRequest, IResult>
     where TRequest : notnull
 {
@@ -26,6 +24,7 @@ internal sealed class HttpResultValidationBehavior<TRequest> : IPipelineBehavior
     {
         var context = new ValidationContext<TRequest>(request);
 
+        // Sequentially: async validators may share the scoped DbContext, which does not allow parallel queries.
         var failures = new List<ValidationFailure>();
         foreach (var validator in this.validators)
         {
