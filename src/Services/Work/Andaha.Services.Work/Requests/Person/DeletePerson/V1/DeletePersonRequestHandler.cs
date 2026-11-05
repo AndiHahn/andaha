@@ -29,6 +29,7 @@ public class DeletePersonRequestHandler : IRequestHandler<DeletePersonRequest, I
 
         var person = await dbContext.Person
             .Include(person => person.WorkingEntries)
+            .Include(person => person.Payments)
             .FirstOrDefaultAsync(person => person.Id == request.Id, cancellationToken);
         if (person is null)
         {
@@ -40,8 +41,11 @@ public class DeletePersonRequestHandler : IRequestHandler<DeletePersonRequest, I
             return Results.Forbid();
         }
 
+        // Person -> WorkingEntry/Payment is Restrict, so the dependents are deleted explicitly.
+        dbContext.WorkingEntry.RemoveRange(person.WorkingEntries.ToList());
+        dbContext.Payment.RemoveRange(person.Payments.ToList());
         dbContext.Person.Remove(person);
-                
+
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return Results.NoContent();
