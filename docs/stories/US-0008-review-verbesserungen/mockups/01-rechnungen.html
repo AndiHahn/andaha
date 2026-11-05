@@ -1,0 +1,367 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>US-0008</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;display=swap">
+<style>
+:root{--board:#E6DFD3;--bg:#F8F4EC;--well:#F0EADF;--surface:#FFFDF8;--raised:#EFE8DC;--line:#E0D8CA;--line2:#EAE3D7;--line3:#D6CDBD;--act:#ECE3D4;--grab:#CFC5B4;--fg:#1E1913;--fg2:#3B332A;--mut:#685F52;--faint:#72685B;--dim:#A0968A;--pos:#2E7443;--neg:#B63A3A;--scrim:rgba(40,30,18,.38);--sh5:rgba(60,40,20,.18);--sh6:rgba(60,40,20,.16);--sh7:rgba(60,40,20,.22);--pri:#2E4FA8;--on-pri:#FFFFFF;--pri-ring:rgba(46,79,168,.2);--pri-soft:#E3E9F8;--pri-line:#9DB0E0;--pri-chip:#24418F;--sec-soft:#F6E4D3;--sec-text:#9A5220;--kb:#DCD5C9;--key:#FFFDF8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--board)}
+::selection{background:var(--pri);color:var(--on-pri)}
+.board{padding:32px 40px 48px;font-family:'Hanken Grotesk',system-ui,sans-serif;color:var(--fg);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;zoom:.72}
+.intro{max-width:1260px;margin:0 0 28px}
+.intro h1{margin:0 0 6px;font-size:28px;font-weight:600;letter-spacing:-.02em}
+.intro p{margin:0;font-size:17px;line-height:1.5;color:var(--fg2);max-width:70ch}
+.cards{display:flex;gap:40px;align-items:flex-start}
+.card{flex:none;width:390px;display:flex;flex-direction:column;gap:14px;cursor:pointer;border-radius:32px;outline:3px solid transparent;outline-offset:12px;transition:outline-color .15s ease-out}
+.card:hover{outline-color:var(--line3)}
+.card.selected{outline-color:var(--pri)}
+.card h2{margin:0;font-size:20px;font-weight:600;letter-spacing:-.01em}
+.card h2 b{display:inline-flex;width:30px;height:30px;border-radius:8px;background:var(--fg);color:var(--bg);align-items:center;justify-content:center;font-size:16px;margin-right:8px;vertical-align:1px}
+.cap{margin:0;font-size:14px;font-weight:500;color:var(--mut);line-height:20px}
+.notes{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:15px;line-height:1.45;color:var(--fg2)}
+.notes li{display:flex;gap:8px}
+.notes li::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;margin-top:8px;background:var(--pos)}
+.notes li.minus::before{background:var(--neg)}
+
+.phone{position:relative;width:390px;height:844px;padding:12px 0 8px;background:var(--bg);border-radius:28px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 0 1px var(--line),0 24px 48px -24px var(--sh6)}
+.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.top{height:56px;flex:none;display:flex;align-items:center;gap:2px;padding:0 6px 0 16px}
+.top.back{padding-left:6px}
+.top h1{margin:0;font-size:18px;font-weight:600;letter-spacing:-.01em;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top.back h1{margin-left:6px}
+.ib{width:44px;height:44px;border:0;background:transparent;color:var(--fg);border-radius:12px;display:inline-flex;align-items:center;justify-content:center;padding:0;flex:none;position:relative}
+.ib.m{color:var(--mut)}
+.sync{width:32px;height:44px;display:inline-flex;align-items:center;justify-content:center;color:var(--pri)}
+.sync .i{width:18px;height:18px}
+
+.tabs{flex:none;display:flex;border-bottom:1px solid var(--line);padding:0 8px}
+.tabs a{flex:1;height:46px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:15px;font-weight:500;color:var(--mut);text-decoration:none;position:relative}
+.tabs a.on{color:var(--fg);font-weight:600}
+.tabs a.on::after{content:"";position:absolute;left:16px;right:16px;bottom:-1px;height:2px;border-radius:2px 2px 0 0;background:var(--pri)}
+.cnt{min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--sec-soft);color:var(--sec-text);font-size:12px;font-weight:600;display:inline-flex;align-items:center;justify-content:center}
+.swipe{flex:none;display:flex;align-items:center;justify-content:center;gap:6px;height:0;overflow:visible}
+
+.search{display:flex;gap:8px;padding:12px 16px;flex:none}
+.in{height:48px;border-radius:10px;background:var(--surface);border:1px solid var(--line3);color:var(--fg);font:inherit;font-size:16px;padding:0 12px 0 14px;display:flex;align-items:center;gap:8px;width:100%}
+.in .ph{color:var(--faint);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.in .val{flex:1}
+.in .i{color:var(--mut);width:20px;height:20px}
+.in.on{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri-ring)}
+.fb{width:48px;height:48px;border-radius:10px;border:1px solid var(--line3);background:var(--surface)}
+.chips{display:flex;gap:8px;padding:0 16px 12px;overflow:hidden;flex:none}
+.chip{height:40px;padding:0 14px;border-radius:20px;border:1px solid var(--line3);background:transparent;color:var(--fg2);font:inherit;font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;flex:none}
+.chip.on{background:var(--pri-soft);border-color:var(--pri-line);color:var(--pri-chip)}
+.chip .i{width:16px;height:16px}
+.chip.sm{height:36px;padding:0 12px}
+
+.body{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;position:relative}
+.row{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--line2);min-height:64px;flex:none}
+.date{width:34px;flex:none;display:flex;flex-direction:column;line-height:1.15}
+.date b{font-size:17px;font-weight:600}
+.date span{font-size:12px;color:var(--mut)}
+.main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.t{font-size:16px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s{font-size:13px;color:var(--mut);display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden}
+.amt{font-size:16px;font-weight:600;white-space:nowrap;text-align:right}
+.amt small{font-weight:500;color:var(--mut);margin-left:3px;font-size:14px}
+.dot{width:8px;height:8px;border-radius:50%;flex:none;display:inline-block}
+
+.nav{flex:none;height:64px;display:flex;border-top:1px solid var(--line);background:var(--bg);position:relative}
+.nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--faint);text-decoration:none;font-size:12px;font-weight:500;position:relative}
+.nav a.on{color:var(--fg)}
+.nav a.on .i{color:var(--pri)}
+.nav a.on::before{content:"";position:absolute;top:-1px;left:calc(50% - 14px);width:28px;height:2px;background:var(--pri);border-radius:0 0 2px 2px}
+.nav .plus{flex:1;display:flex;align-items:center;justify-content:center}
+.nav .plus span{width:56px;height:44px;border-radius:14px;background:var(--pri);color:var(--on-pri);display:inline-flex;align-items:center;justify-content:center;box-shadow:0 6px 14px -6px rgba(46,79,168,.55)}
+.nav .plus .i{width:26px;height:26px;stroke-width:2}
+
+.fab{position:absolute;right:16px;bottom:16px;height:56px;padding:0 20px 0 16px;border-radius:16px;border:0;background:var(--pri);color:var(--on-pri);font:inherit;font-size:16px;font-weight:600;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 24px -8px var(--sh7),0 2px 6px rgba(46,79,168,.25)}
+.fab .i{width:24px;height:24px;stroke-width:2}
+.mini{position:absolute;right:20px;bottom:88px;width:48px;height:48px;border-radius:14px;border:0;background:var(--surface);color:var(--pri);display:inline-flex;align-items:center;justify-content:center;box-shadow:0 0 0 1px var(--line3),0 8px 20px -8px var(--sh7)}
+
+.dock{flex:none;padding:10px 16px 12px;border-top:1px solid var(--line);background:var(--bg);display:flex;gap:8px}
+.dock .in{height:52px;border-radius:12px;border-color:var(--line3)}
+.dock .in .i{color:var(--pri)}
+.dock .cam{width:52px;height:52px;border-radius:12px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--line3);color:var(--pri)}
+
+.btn{height:52px;border-radius:12px;border:0;font:inherit;font-size:16px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 20px;white-space:nowrap}
+.btn .i{width:20px;height:20px}
+.pri{background:var(--pri);color:var(--on-pri)}
+.sec2{background:var(--raised);color:var(--fg);box-shadow:inset 0 0 0 1px var(--line3)}
+.grow{flex:1}
+.actions{flex:none;display:flex;gap:10px;padding:12px 16px;border-top:1px solid var(--line);background:var(--bg)}
+
+.form{display:flex;flex-direction:column;gap:16px;padding:8px 16px 16px}
+.f{display:flex;flex-direction:column;gap:6px}
+.lbl{font-size:13px;font-weight:500;color:var(--mut)}
+.hint{font-size:12px;color:var(--faint)}
+.sfx{color:var(--mut)}
+.big{font-size:44px;font-weight:600;letter-spacing:-.025em;line-height:1}
+.big small{font-size:22px;font-weight:500;color:var(--mut);margin-left:6px;letter-spacing:0}
+.caret{display:inline-block;width:2px;height:38px;background:var(--pri);margin-left:2px;vertical-align:-4px}
+.seg{display:flex;gap:8px}
+.suggest{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mut)}
+.suggest .i{width:16px;height:16px;color:var(--pri)}
+
+.scrim{position:absolute;inset:0;background:var(--scrim)}
+.scrim.soft{background:rgba(248,244,236,.82)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:20px 20px 0 0;box-shadow:0 -12px 40px var(--sh5);display:flex;flex-direction:column}
+.grab{width:36px;height:4px;border-radius:2px;background:var(--grab);margin:10px auto 2px}
+.sh{display:flex;align-items:center;justify-content:space-between;padding:4px 6px 0 16px}
+.sh h2{margin:0;font-size:18px;font-weight:600}
+.pick{display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid var(--line2);font-size:16px;font-weight:500}
+.pick:last-child{border-bottom:0}
+.pick .ic{width:44px;height:44px;border-radius:12px;background:var(--raised);color:var(--fg2);display:inline-flex;align-items:center;justify-content:center;flex:none}
+.pick.hero .ic{background:var(--pri-soft);color:var(--pri)}
+.pick .main span{font-size:13px;font-weight:400;color:var(--mut)}
+.pick .chev{color:var(--dim);width:18px;height:18px}
+
+.dial{position:absolute;right:16px;bottom:16px;display:flex;flex-direction:column;align-items:flex-end;gap:12px}
+.dial .opt{display:flex;align-items:center;gap:12px}
+.dial .tag{height:36px;padding:0 14px;border-radius:10px;background:var(--surface);font-size:15px;font-weight:600;display:inline-flex;align-items:center;box-shadow:0 0 0 1px var(--line3),0 8px 20px -10px var(--sh7)}
+
+.kb{flex:none;background:var(--kb);padding:8px 6px 10px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.kb span{height:46px;border-radius:8px;background:var(--key);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:500;color:var(--fg);box-shadow:0 1px 0 rgba(60,40,20,.18)}
+.kb span.fn{background:transparent;box-shadow:none}
+.kblabel{position:absolute;right:10px;bottom:-1px;font-size:11px;color:var(--mut)}
+</style>
+<style>
+/* ---- Board für finale Mockups (wie v1, ohne Auswahlrahmen) ---- */
+.board{zoom:1;display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start;padding:40px;background:var(--board)}
+.shot{display:flex;flex-direction:column;gap:12px;flex:none;width:390px}
+.shot .cap{font-size:13px}
+.phone{flex:none}
+.ttl{width:100%;margin:0 0 -16px;font-size:13px;font-weight:600;color:var(--mut);letter-spacing:.02em}
+
+/* ---- Kacheln (Vorlagen und Vorschläge) ---- */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tile{min-height:56px;padding:8px 12px;border-radius:12px;border:1px solid var(--line3);background:var(--surface);display:flex;flex-direction:column;justify-content:center;gap:2px;position:relative}
+.tile b{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:18px}
+.tile span{font-size:12px;color:var(--mut);display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .dot{width:7px;height:7px}
+.tile .pin{position:absolute;top:9px;right:9px;width:14px;height:14px;color:var(--pri)}
+.tile.on{background:var(--pri-soft);border-color:var(--pri-line)}
+.tile.on b{color:var(--pri-chip)}
+.tile.other{align-items:center;flex-direction:row;justify-content:center;gap:8px;color:var(--fg2);font-size:15px;font-weight:500;border-style:dashed}
+.tile.other .i{width:18px;height:18px}
+.shoprow{display:flex;flex-direction:column;gap:8px;padding:10px 12px 12px;border-radius:12px;background:var(--well)}
+.shoprow .lbl{display:flex;justify-content:space-between}
+.shoprow .seg{flex-wrap:nowrap;overflow:hidden}
+.meta{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--fg2)}
+.meta .i{width:18px;height:18px;color:var(--mut)}
+.meta .lnk{margin-left:auto;color:var(--pri);font-weight:600}
+.big .ph0{color:var(--dim)}
+.btn[disabled]{opacity:.45}
+.need{font-size:12px;color:var(--faint);text-align:center;margin-top:-6px}
+.warn{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:var(--sec-soft);color:var(--sec-text);font-size:13px;line-height:1.4}
+.warn .i{width:18px;height:18px;flex:none;margin-top:1px}
+.warn b{display:block;font-weight:600}
+.restored{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mut)}
+.restored .i{width:16px;height:16px;color:var(--pri)}
+.restored a{margin-left:auto;color:var(--pri);font-weight:600;text-decoration:none}
+.switch{display:flex;align-items:center;gap:12px;font-size:15px;font-weight:500}
+.switch .tr{margin-left:auto;width:44px;height:26px;border-radius:13px;background:var(--pri);position:relative;flex:none}
+.switch .tr::after{content:"";position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:var(--surface)}
+.switch .tr.off{background:var(--line3)}
+.switch .tr.off::after{right:auto;left:3px}
+.switch small{display:block;font-size:12px;font-weight:400;color:var(--faint);margin-top:2px}
+.segc{display:flex;padding:3px;border-radius:12px;background:var(--surface);border:1px solid var(--line3);height:44px}
+.segc span{flex:1;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:var(--mut);border-radius:9px}
+.segc span.on{background:var(--raised);color:var(--fg);box-shadow:0 1px 2px rgba(60,40,20,.14);font-weight:600}
+.del{background:transparent;color:var(--neg);box-shadow:inset 0 0 0 1px #E8C3BE}
+
+/* ---- Snackbar ---- */
+.snack{position:absolute;left:12px;right:12px;bottom:12px;min-height:48px;padding:0 16px;border-radius:12px;background:var(--fg);color:var(--bg);display:flex;align-items:center;gap:10px;font-size:15px;font-weight:500;box-shadow:0 10px 24px -8px var(--sh7)}
+.snack .i{width:20px;height:20px;color:#9FD3AE}
+.row.new{background:var(--pri-soft)}
+
+/* ---- Listen in Mehr / Vorlagen ---- */
+.sect{padding:20px 16px 8px;font-size:13px;font-weight:600;color:var(--mut);border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
+.mrow{display:flex;align-items:center;gap:14px;padding:0 12px 0 16px;min-height:56px;border-bottom:1px solid var(--line2);font-size:16px;font-weight:500}
+.mrow .i{color:var(--mut)}
+.mrow .chev{margin-left:auto;color:var(--dim);width:18px;height:18px}
+.mrow .side{margin-left:auto;font-size:14px;font-weight:400;color:var(--mut)}
+.mrow .side+.chev{margin-left:0}
+.legal{display:flex;flex-wrap:wrap;gap:6px 14px;padding:20px 16px;font-size:13px}
+.legal a{color:var(--mut);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--grab)}
+.trow{display:flex;align-items:center;gap:12px;padding:10px 8px 10px 4px;border-bottom:1px solid var(--line2);min-height:64px}
+.trow .drag{width:36px;height:44px;display:flex;align-items:center;justify-content:center;color:var(--dim)}
+.trow .drag .i{width:18px;height:18px}
+.trow .act{height:36px;padding:0 12px;border-radius:10px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--line3);font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px;color:var(--fg)}
+.trow .act .i{width:16px;height:16px;color:var(--pri)}
+.trow .cnt2{font-size:13px;color:var(--mut);white-space:nowrap}
+.press{position:absolute;inset:0;background:rgba(40,30,18,.22)}
+.menu{position:absolute;left:24px;right:24px;background:var(--surface);border-radius:14px;box-shadow:0 0 0 1px var(--line3),0 16px 40px -8px var(--sh7);padding:6px 0}
+.menu div{display:flex;align-items:center;gap:12px;padding:0 16px;height:48px;font-size:15px;font-weight:500}
+.menu div .i{width:20px;height:20px;color:var(--mut)}
+.menu .h{height:auto;padding:10px 16px 8px;display:block;font-size:13px;color:var(--mut);font-weight:500;border-bottom:1px solid var(--line2);margin-bottom:4px}
+.menu .h b{display:block;color:var(--fg);font-size:15px;font-weight:600}
+
+/* ---- Bereichs-Inhalte für die Navigationsübersicht ---- */
+.hero{padding:20px 16px 18px;border-bottom:1px solid var(--line)}
+.hero .lbl{display:block;margin-bottom:8px}
+.kv{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:14px 16px;border-bottom:1px solid var(--line2);font-size:15px}
+.k{color:var(--mut)}
+.v{font-weight:600;text-align:right}
+.v small{font-weight:500;color:var(--mut);margin-left:3px;font-size:13px}
+.tag{height:24px;padding:0 8px;border-radius:6px;background:var(--sec-soft);color:var(--sec-text);font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:5px}
+.tag .i{width:14px;height:14px}
+.ring{display:flex;justify-content:center;padding:18px 0 14px}
+.legend .row{min-height:50px;padding:10px 16px}
+.legend .pc{font-size:13px;color:var(--mut);width:40px;text-align:right}
+.segtop{display:flex;margin:12px 16px 0;padding:3px;border-radius:12px;background:var(--surface);border:1px solid var(--line3);height:44px}
+.segtop span{flex:1;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:var(--mut);border-radius:9px}
+.segtop span.on{background:var(--raised);color:var(--fg);box-shadow:0 1px 2px rgba(60,40,20,.14)}
+.mstep{display:flex;align-items:center;gap:4px;padding:10px 6px 0}
+.mstep b{flex:1;text-align:center;font-size:17px;font-weight:600}
+.swipehint{position:absolute;top:50%;width:28px;height:64px;margin-top:-32px;display:flex;align-items:center;justify-content:center;color:var(--pri);opacity:.85}
+
+/* ---- Homescreen (App-Shortcut) ---- */
+.home{position:relative;width:390px;height:844px;border-radius:28px;overflow:hidden;background:linear-gradient(160deg,#5B6E8F 0%,#8C7A6B 55%,#C49A7A 100%);box-shadow:0 0 0 1px var(--line),0 24px 48px -24px var(--sh6)}
+.home .grid{position:absolute;left:28px;right:28px;top:470px;display:grid;grid-template-columns:repeat(4,1fr);gap:28px 0;justify-items:center}
+.app{display:flex;flex-direction:column;align-items:center;gap:8px;width:64px;font-size:12px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.app i{display:block;width:56px;height:56px;border-radius:16px;background:rgba(255,255,255,.28)}
+.app.me i{background:var(--bg);display:flex;align-items:center;justify-content:center;font-style:normal;font-size:24px;font-weight:700;color:var(--pri);letter-spacing:-.04em;box-shadow:0 0 0 3px rgba(255,255,255,.65)}
+.home .dim{position:absolute;inset:0;background:rgba(20,16,10,.35)}
+.scmenu{position:absolute;left:28px;top:258px;width:260px;background:var(--surface);border-radius:18px;padding:8px 0;box-shadow:0 18px 40px -12px rgba(0,0,0,.45)}
+.scmenu div{display:flex;align-items:center;gap:14px;height:52px;padding:0 16px;font-size:16px;font-weight:500;color:var(--fg)}
+.scmenu div .ic{width:36px;height:36px;border-radius:10px;background:var(--pri-soft);color:var(--pri);display:inline-flex;align-items:center;justify-content:center}
+.scmenu div .ic .i{width:20px;height:20px}
+.scmenu .sep{height:1px;padding:0;margin:6px 16px;background:var(--line2)}
+.scmenu .mut{color:var(--mut);font-size:15px}
+.scmenu .mut .ic{background:var(--raised);color:var(--mut)}
+
+/* ---- Desktop ---- */
+.desk{position:relative;width:1440px;height:900px;border-radius:14px;overflow:hidden;display:flex;background:var(--bg);box-shadow:0 0 0 1px var(--line),0 24px 48px -24px var(--sh6)}
+.dside{width:248px;flex:none;background:#F1EBE1;border-right:1px solid var(--line);padding:24px 14px;display:flex;flex-direction:column;gap:2px}
+.dside .logo{padding:0 12px 24px;font-size:24px;font-weight:700;letter-spacing:-.03em}
+.dl{display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border-radius:10px;color:var(--fg2);font-size:15px;font-weight:500}
+.dl .i{width:20px;height:20px;color:var(--mut)}
+.dl.on{background:var(--act);color:var(--fg)}
+.dl.on .i{color:var(--pri)}
+.dside .grp{padding:18px 12px 6px;font-size:12px;font-weight:600;color:var(--mut)}
+.dmain{flex:1;min-width:0;display:flex;flex-direction:column}
+.dhead{display:flex;align-items:center;gap:12px;padding:18px 40px 0}
+.dhead h1{margin:0;font-size:28px;font-weight:600;letter-spacing:-.02em;flex:1}
+.dtabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:12px 40px 0}
+.dtabs a{display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 14px;color:var(--mut);font-size:15px;font-weight:500;position:relative;text-decoration:none}
+.dtabs a.on{color:var(--fg)}
+.dtabs a.on::after{content:"";position:absolute;left:10px;right:10px;bottom:-1px;height:2px;background:var(--pri);border-radius:2px 2px 0 0}
+.dquick{margin:20px 40px 0;max-width:1120px;display:flex;gap:10px;align-items:center}
+.dquick .in{height:44px;max-width:380px}
+.dquick .in .i{color:var(--pri)}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{text-align:left;font-size:12px;font-weight:600;color:var(--mut);padding:10px 16px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:0 16px;height:52px;border-bottom:1px solid var(--line2);white-space:nowrap}
+td.r,th.r{text-align:right}
+td.amt{font-weight:600}
+td.mut{color:var(--mut)}
+td .dot{margin-right:8px;vertical-align:1px}
+.dlg{position:absolute;left:50%;top:84px;width:480px;margin-left:-116px;background:var(--surface);border-radius:16px;box-shadow:0 0 0 1px var(--line3),0 24px 60px -12px rgba(60,40,20,.35)}
+.kbd{display:inline-flex;align-items:center;height:22px;padding:0 6px;border-radius:5px;border:1px solid var(--line3);background:var(--surface);font-size:12px;font-weight:600;color:var(--mut)}
+</style>
+</head><body>
+<style>
+.sum{display:flex;justify-content:space-between;align-items:baseline;padding:4px 16px 8px;font-size:13px;color:var(--mut);flex:none}
+.sum b{color:var(--fg);font-weight:600;font-size:14px}
+.mh{display:flex;justify-content:space-between;align-items:baseline;padding:14px 16px 6px;font-size:13px;font-weight:600;color:var(--mut);background:var(--bg);border-bottom:1px solid var(--line);flex:none}
+.mh b{color:var(--fg2);font-weight:600}
+.swrap{position:relative;overflow:hidden;flex:none}
+.swrap .under{position:absolute;inset:0;display:flex;justify-content:flex-end;align-items:stretch}
+.swrap .under span{width:96px;background:var(--neg);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:13px;font-weight:600}
+.swrap .under.dup{justify-content:flex-start}
+.swrap .under.dup span{background:var(--pri)}
+.swrap .row{background:var(--bg);position:relative}
+.swrap.left .row{transform:translateX(-96px)}
+.swrap.right .row{transform:translateX(96px)}
+.per{display:flex;align-items:center;gap:4px;padding:6px 8px 0;flex:none}
+.per .lab{flex:1;text-align:center;font-size:17px;font-weight:600}
+.tot{padding:10px 16px 4px;flex:none}
+.tot .v{font-size:32px;font-weight:600;letter-spacing:-.02em}
+.tot .v small{font-size:18px;color:var(--mut);margin-left:4px;font-weight:500}
+.delta{font-size:13px;font-weight:600;padding:2px 8px;border-radius:6px;display:inline-flex;margin-left:8px;vertical-align:6px}
+.up{background:#F6DEDA;color:var(--neg)}
+.down{background:#DCEFE1;color:var(--pos)}
+.bars{display:flex;align-items:flex-end;gap:6px;height:96px;padding:10px 16px 0;flex:none}
+.bars div{flex:1;background:var(--line3);border-radius:4px 4px 0 0}
+.bars div.on{background:var(--pri)}
+.bl{display:flex;gap:6px;padding:4px 16px 10px;font-size:10px;color:var(--faint);flex:none}
+.bl span{flex:1;text-align:center}
+.crow{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line2);flex:none;font-size:15px}
+.crow .n{flex:1;font-weight:500}
+.crow .d{font-size:12px;font-weight:600;width:48px;text-align:right}
+.crow .d.up{background:none}.crow .d.down{background:none}
+.crow .a{font-weight:600;width:84px;text-align:right}
+.crow .chev{color:var(--dim);width:18px;height:18px}
+.sub{padding:0 16px 8px 36px;flex:none;background:var(--well)}
+.sub div{display:flex;justify-content:space-between;font-size:13px;color:var(--fg2);padding:6px 0;border-bottom:1px dashed var(--line)}
+.sub div:last-child{border-bottom:0}
+.ptr{display:flex;justify-content:center;padding:10px 0 4px;flex:none}
+.ptr span{width:36px;height:36px;border-radius:50%;background:var(--surface);box-shadow:0 0 0 1px var(--line3),0 6px 14px -6px var(--sh7);display:inline-flex;align-items:center;justify-content:center;color:var(--pri)}
+.ptr .i{width:20px;height:20px}
+.chip .x{width:14px;height:14px;margin-right:-4px}
+</style>
+<div class="board">
+<p class="ttl">US-0008 · Rechnungen (AC1–AC7) · Entwurf zum Abstimmen</p>
+
+<div class="shot">
+<p class="cap"><b>A · Liste:</b> Summe der Treffer oben, Monatsköpfe mit Monatssumme. Zeile nach links gewischt → Löschen (mit Rückfrage), nach rechts → Duplizieren.</p>
+<div class="phone">
+<header class="top"><h1>Rechnungen</h1><button class="ib"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.2 18.4a7 7 0 0 1 11.6 0"/></svg></button></header>
+<nav class="tabs"><a class="on">Liste</a><a>Analyse <span class="cnt">2</span></a><a>Statistik</a></nav>
+<div class="search"><div class="in"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="ph">Suche Rechnungen …</span></div><button class="ib fb"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M10 17h4"/></svg></button></div>
+<div class="chips"><span class="chip">Lebensmittel</span><span class="chip">Haushalt</span><span class="chip">Freizeit</span><span class="chip">Auto</span></div>
+<div class="sum"><span><b>126 Rechnungen</b></span><span><b>8.412,30 €</b></span></div>
+<div class="body">
+<div class="mh"><b>November 2026</b><span>312,40 €</span></div>
+<div class="row"><div class="date"><b>05</b><span>Do</span></div><div class="main"><div class="t">Billa</div><div class="s"><span class="dot" style="background:#3B7D4F"></span>Lebensmittel</div></div><div class="amt">48,20<small>€</small></div></div>
+<div class="swrap left"><div class="under"><span><svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>Löschen</span></div>
+<div class="row"><div class="date"><b>04</b><span>Mi</span></div><div class="main"><div class="t">Shell Tankstelle</div><div class="s"><span class="dot" style="background:#2E4FA8"></span>Auto · Tanken</div></div><div class="amt">71,90<small>€</small></div></div></div>
+<div class="swrap right"><div class="under dup"><span><svg class="i" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>Duplizieren</span></div>
+<div class="row"><div class="date"><b>03</b><span>Di</span></div><div class="main"><div class="t">Bäckerei Ströck</div><div class="s"><span class="dot" style="background:#3B7D4F"></span>Lebensmittel · Gebäck</div></div><div class="amt">6,40<small>€</small></div></div></div>
+<div class="row"><div class="date"><b>01</b><span>So</span></div><div class="main"><div class="t">Hofer</div><div class="s"><span class="dot" style="background:#3B7D4F"></span>Lebensmittel</div></div><div class="amt">185,90<small>€</small></div></div>
+<div class="mh"><b>Oktober 2026</b><span>820,25 €</span></div>
+<div class="row"><div class="date"><b>30</b><span>Fr</span></div><div class="main"><div class="t">dm</div><div class="s"><span class="dot" style="background:#B5651D"></span>Haushalt</div></div><div class="amt">23,15<small>€</small></div></div>
+</div>
+<div class="dock"><button class="in" style="text-align:left"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span class="ph">Neue Rechnung: Betrag</span><span class="sfx">€</span></button><button class="ib cam"><svg class="i" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></button></div>
+<nav class="nav"><a class="on"><svg class="i" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Rechnungen</a><a><svg class="i" viewBox="0 0 24 24"><path d="M4 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a1 1 0 0 1-1-1z"/><path d="M4 7l11-3v3"/></svg>Haushalt</a><a><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/></svg>Stunden</a><a><svg class="i" viewBox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01" style="stroke-width:2.6"/></svg>Mehr</a></nav>
+</div></div>
+
+<div class="shot">
+<p class="cap"><b>B · Statistik:</b> ‹ › wechselt den Monat (Wischen wechselt weiter die Tabs). Summe mit Vergleich zum Vormonat, Balken der letzten 12 Monate. Tipp auf Kategorie → Rechnungsliste; Pfeil klappt die Unterkategorien auf.</p>
+<div class="phone">
+<header class="top"><h1>Rechnungen</h1><button class="ib"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.2 18.4a7 7 0 0 1 11.6 0"/></svg></button></header>
+<nav class="tabs"><a>Liste</a><a>Analyse <span class="cnt">2</span></a><a class="on">Statistik</a></nav>
+<div class="form" style="padding:12px 16px 0"><div class="segc"><span class="on">Monat</span><span>Jahr</span><span>Gesamt</span></div></div>
+<div class="per"><button class="ib"><svg class="i" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></button><span class="lab">November 2026</span><button class="ib m" style="opacity:.35"><svg class="i" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button></div>
+<div class="tot"><span class="v">912,40<small>€</small></span><span class="delta up">+12 % zum Vormonat</span></div>
+<div class="bars"><div style="height:55%"></div><div style="height:62%"></div><div style="height:48%"></div><div style="height:70%"></div><div style="height:66%"></div><div style="height:58%"></div><div style="height:90%"></div><div style="height:61%"></div><div style="height:57%"></div><div style="height:73%"></div><div style="height:80%"></div><div class="on" style="height:89%"></div></div>
+<div class="bl"><span>D</span><span>J</span><span>F</span><span>M</span><span>A</span><span>M</span><span>J</span><span>J</span><span>A</span><span>S</span><span>O</span><span style="color:var(--pri);font-weight:600">N</span></div>
+<div class="body">
+<div class="crow"><span class="dot" style="background:#3B7D4F"></span><span class="n">Lebensmittel</span><span class="d up" style="color:var(--neg)">+8 %</span><span class="a">412,30 €</span><svg class="i chev" viewBox="0 0 24 24" style="transform:rotate(90deg)"><path d="m9 6 6 6-6 6"/></svg></div>
+<div class="sub"><div><span>Supermarkt</span><span>355,10 €</span></div><div><span>Gebäck</span><span>42,80 €</span></div><div><span>ohne Unterkategorie</span><span>14,40 €</span></div></div>
+<div class="crow"><span class="dot" style="background:#2E4FA8"></span><span class="n">Auto</span><span class="d" style="color:var(--neg)">+31 %</span><span class="a">218,40 €</span><svg class="i chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div>
+<div class="crow"><span class="dot" style="background:#B5651D"></span><span class="n">Haushalt</span><span class="d" style="color:var(--pos)">−14 %</span><span class="a">161,70 €</span><svg class="i chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div>
+<div class="crow"><span class="dot" style="background:#8E5BA8"></span><span class="n">Freizeit</span><span class="d" style="color:var(--mut)">neu</span><span class="a">120,00 €</span><svg class="i chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div>
+</div>
+<nav class="nav"><a class="on"><svg class="i" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Rechnungen</a><a><svg class="i" viewBox="0 0 24 24"><path d="M4 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a1 1 0 0 1-1-1z"/><path d="M4 7l11-3v3"/></svg>Haushalt</a><a><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/></svg>Stunden</a><a><svg class="i" viewBox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01" style="stroke-width:2.6"/></svg>Mehr</a></nav>
+</div></div>
+
+<div class="shot">
+<p class="cap"><b>C · Nach Tipp auf „Lebensmittel“:</b> Liste gefiltert nach Kategorie und Monat (Chips zum Entfernen), Summe der Treffer passt zur Statistik. Oben gezogen: Pull-to-Refresh.</p>
+<div class="phone">
+<header class="top"><h1>Rechnungen</h1><button class="ib"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.2 18.4a7 7 0 0 1 11.6 0"/></svg></button></header>
+<nav class="tabs"><a class="on">Liste</a><a>Analyse <span class="cnt">2</span></a><a>Statistik</a></nav>
+<div class="search"><div class="in"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="ph">Suche Rechnungen …</span></div><button class="ib fb"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M10 17h4"/></svg></button></div>
+<div class="chips"><span class="chip on">November 2026<svg class="i x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></span><span class="chip on">Lebensmittel<svg class="i x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></span><span class="chip">Haushalt</span></div>
+<div class="sum"><span><b>14 Rechnungen</b></span><span><b>412,30 €</b></span></div>
+<div class="ptr"><span><svg class="i" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.3 4.9L20 16"/><path d="M20 20v-4h-4"/></svg></span></div>
+<div class="body">
+<div class="mh"><b>November 2026</b><span>412,30 €</span></div>
+<div class="row"><div class="date"><b>05</b><span>Do</span></div><div class="main"><div class="t">Billa</div><div class="s"><span class="dot" style="background:#3B7D4F"></span>Lebensmittel</div></div><div class="amt">48,20<small>€</small></div></div>
+<div class="row"><div class="date"><b>03</b><span>Di</span></div><div class="main"><div class="t">Bäckerei Ströck</div><div class="s"><span class="dot" style="background:#3B7D4F"></span>Lebensmittel · Gebäck</div></div><div class="amt">6,40<small>€</small></div></div>
+<div class="row"><div class="date"><b>01</b><span>So</span></div><div class="main"><div class="t">Hofer</div><div class="s"><span class="dot" style="background:#3B7D4F"></span>Lebensmittel</div></div><div class="amt">185,90<small>€</small></div></div>
+</div>
+<div class="dock"><button class="in" style="text-align:left"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span class="ph">Neue Rechnung: Betrag</span><span class="sfx">€</span></button><button class="ib cam"><svg class="i" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></button></div>
+<nav class="nav"><a class="on"><svg class="i" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Rechnungen</a><a><svg class="i" viewBox="0 0 24 24"><path d="M4 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a1 1 0 0 1-1-1z"/><path d="M4 7l11-3v3"/></svg>Haushalt</a><a><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/></svg>Stunden</a><a><svg class="i" viewBox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01" style="stroke-width:2.6"/></svg>Mehr</a></nav>
+</div></div>
+</div>
+</body></html>

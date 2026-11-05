@@ -3,9 +3,9 @@
 | Field | Value |
 |-------|-------|
 | ID | US-0008 |
-| Status | Open <!-- Open / In Progress / In Review / Done --> |
+| Status | In Progress <!-- Open / In Progress / In Review / Done --> |
 | Created | 2026-11-03 |
-| Design Doc | — <!-- link to ./design.md once brainstorming is done --> |
+| Design Doc | [design.md](./design.md) |
 
 ## Description
 
