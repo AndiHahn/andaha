@@ -3,7 +3,7 @@
 | Field | Value |
 |-------|-------|
 | ID | US-0008 |
-| Status | In Progress <!-- Open / In Progress / In Review / Done --> |
+| Status | In Review <!-- Open / In Progress / In Review / Done --> |
 | Created | 2026-11-03 |
 | Design Doc | [design.md](./design.md) |
 
@@ -19,62 +19,66 @@ Setzt US-0006 und US-0007 voraus (Tabs, Snackbar, Sheet-Verhalten, Vibrieren).
 
 **Rechnungsliste und Statistik (Review 3)**
 
-- [ ] AC1: Die Rechnungsliste ist nach Monaten gruppiert. Der Gruppenkopf zeigt Monat und Monatssumme.
-- [ ] AC2: Über der Liste steht die Summe der gefilterten Treffer, z. B. „23 Rechnungen · 412,30 €“. Sie gilt für alle Treffer, nicht nur die geladene Seite, und kommt dafür vom Backend.
-- [ ] AC3: Wischaktionen auf Listenzeilen: nach links „Löschen“ mit Rückfrage, nach rechts „Duplizieren“ (öffnet die Erfassung mit gleichen Werten und Datum heute). Beide Aktionen gibt es zusätzlich ohne Geste (z. B. in der Detailansicht).
-- [ ] AC4: Pull-to-Refresh lädt die Rechnungsliste neu. `overscroll-behavior` ist dafür angepasst.
-- [ ] AC5: In der Statistik wechselt der Monat (bzw. das Jahr) per ‹ › neben dem Zeitraum statt über das Select. Das Wischen zwischen den Tabs bleibt dabei funktionsfähig, das Design legt die Abgrenzung fest.
-- [ ] AC6: Ein Tipp auf eine Kategorie in der Statistik öffnet die Rechnungsliste, gefiltert nach dieser Kategorie und dem Zeitraum. Die Unterkategorie-Summen bleiben erreichbar.
-- [ ] AC7: Die Statistik zeigt den Vergleich zum Vormonat bzw. Vorjahr (z. B. „+12 %“) und ein Balkendiagramm der letzten 12 Monate.
+- [x] AC1: Die Rechnungsliste ist nach Monaten gruppiert. Der Gruppenkopf zeigt Monat und Monatssumme.
+- [x] AC2: Über der Liste steht die Summe der gefilterten Treffer, z. B. „23 Rechnungen · 412,30 €“. Sie gilt für alle Treffer, nicht nur die geladene Seite, und kommt dafür vom Backend.
+- [x] AC3: Wischaktionen auf Listenzeilen: nach links „Löschen“ mit Rückfrage, nach rechts „Duplizieren“ (öffnet die Erfassung mit gleichen Werten und Datum heute). Beide Aktionen gibt es zusätzlich ohne Geste (z. B. in der Detailansicht).
+- [x] AC4: Pull-to-Refresh lädt die Rechnungsliste neu. `overscroll-behavior` ist dafür angepasst.
+- [x] AC5: In der Statistik wechselt der Monat (bzw. das Jahr) per ‹ › neben dem Zeitraum statt über das Select. Das Wischen zwischen den Tabs bleibt dabei funktionsfähig, das Design legt die Abgrenzung fest.
+- [x] AC6: Ein Tipp auf eine Kategorie in der Statistik öffnet die Rechnungsliste, gefiltert nach dieser Kategorie und dem Zeitraum. Die Unterkategorie-Summen bleiben erreichbar.
+- [x] AC7: Die Statistik zeigt den Vergleich zum Vormonat bzw. Vorjahr (z. B. „+12 %“) und ein Balkendiagramm der letzten 12 Monate.
 
 **Haushalt (Review 5)**
 
-- [ ] AC8: Der Anteil der Lebenserhaltungskosten ist einstellbar, Standard 35 %. Er wird pro Benutzer im Backend gespeichert. Die feste Kodierung in `overview.component.ts` entfällt.
-- [ ] AC9: Ein Tipp auf eine Kategorie in der Übersicht öffnet die Fixkostenliste, gefiltert nach dieser Kategorie.
-- [ ] AC10: Die Fixkostenliste zeigt Kategoriesummen im Abschnittskopf und pro Zeile den auf den Monat umgerechneten Wert.
-- [ ] AC11: Nach dem Anlegen von Fixkosten oder Einkommen gibt es eine Snackbar, danach geht es zurück zur Liste.
-- [ ] AC12: Texte sind korrigiert: Bei Einkommen heißt das Feld „Betrag“ statt „Kosten“, der Leerzustand „Keine Einkommen.“, und die Fehlermeldung beim Löschen nennt Einkommen.
+- [x] AC8: Der Anteil der Lebenserhaltungskosten ist einstellbar, Standard 35 %. Er wird pro Benutzer im Backend gespeichert. Die feste Kodierung in `overview.component.ts` entfällt.
+- [x] AC9: Ein Tipp auf eine Kategorie in der Übersicht öffnet die Fixkostenliste, gefiltert nach dieser Kategorie.
+- [x] AC10: Die Fixkostenliste zeigt Kategoriesummen im Abschnittskopf und pro Zeile den auf den Monat umgerechneten Wert.
+- [x] AC11: Nach dem Anlegen von Fixkosten oder Einkommen gibt es eine Snackbar, danach geht es zurück zur Liste.
+- [x] AC12: Texte sind korrigiert: Bei Einkommen heißt das Feld „Betrag“ statt „Kosten“, der Leerzustand „Keine Einkommen.“, und die Fehlermeldung beim Löschen nennt Einkommen.
 
 **Stunden (Review 6)**
 
-- [ ] AC13: Auf der Personen-Seite gibt es „Arbeitszeit erfassen“ mit vorgewählter Person.
-- [ ] AC14: Beim Erfassen lässt sich der letzte Eintrag der Person übernehmen (Uhrzeiten, Pause, Notiz), Datum heute.
-- [ ] AC15: Der Zahlungsdialog ist vorbelegt: Betrag = offene Stunden × Stundensatz, Trinkgeld 0. Bezahlte Stunden haben eine Formatprüfung.
-- [ ] AC16: Die Personenliste zeigt den offenen Betrag in Euro. „Zahlung offen“ beruht auf dem offenen Betrag.
-- [ ] AC17: Liegt das Ende vor dem Beginn, erscheint ein Fehler am Feld, und es kann nicht gespeichert werden. Netto wird nicht negativ.
-- [ ] AC18: Die Arbeitszeitenliste ist nach Monaten gruppiert, mit Zwischensumme je Monat. Sie lädt nicht mehr die ganze Historie auf einmal.
-- [ ] AC19: Statistik: Beträge mit Tausender- und Dezimaltrennzeichen, ein Leerzustand mit Erklärung, Filter pro Person (Backend `personFilter`) und Diagramme. Die tote `WorktimeComponent` und der leere Filter-Platzhalter sind entfernt.
-- [ ] AC20: Zahlungen in der Historie lassen sich bearbeiten und löschen (neue Backend-Endpoints). Löschen hat eine Rückfrage.
-- [ ] AC21: Der Export ist aus dem Bereich Stunden heraus erreichbar.
-- [ ] AC22: Beim Anlegen und Bearbeiten landet das gewählte Datum unabhängig von der Zeitzone auf genau diesem Tag. Ein Monatserster landet nicht im Vormonat, und der `getUTCDate() + 1`-Hack entfällt.
-- [ ] AC23: Nach Bearbeiten oder Löschen eines Eintrags stimmen die Gesamtstunden der Person sofort.
-- [ ] AC24: Der Eintragsdialog meldet bei Fehlern „Arbeitszeit konnte nicht gespeichert werden“.
+- [x] AC13: Auf der Personen-Seite gibt es „Arbeitszeit erfassen“ mit vorgewählter Person.
+- [x] AC14: Beim Erfassen lässt sich der letzte Eintrag der Person übernehmen (Uhrzeiten, Pause, Notiz), Datum heute.
+- [x] AC15: Der Zahlungsdialog ist vorbelegt: Betrag = offene Stunden × Stundensatz, Trinkgeld 0. Bezahlte Stunden haben eine Formatprüfung.
+- [x] AC16: Die Personenliste zeigt den offenen Betrag in Euro. „Zahlung offen“ beruht auf dem offenen Betrag.
+- [x] AC17: Liegt das Ende vor dem Beginn, erscheint ein Fehler am Feld, und es kann nicht gespeichert werden. Netto wird nicht negativ.
+- [x] AC18: Die Arbeitszeitenliste ist nach Monaten gruppiert, mit Zwischensumme je Monat. Sie lädt nicht mehr die ganze Historie auf einmal.
+- [x] AC19: Statistik: Beträge mit Tausender- und Dezimaltrennzeichen, ein Leerzustand mit Erklärung, Filter pro Person (Backend `personFilter`) und Diagramme. Die tote `WorktimeComponent` und der leere Filter-Platzhalter sind entfernt.
+- [x] AC20: Zahlungen in der Historie lassen sich bearbeiten und löschen (neue Backend-Endpoints). Löschen hat eine Rückfrage.
+- [x] AC21: Der Export ist aus dem Bereich Stunden heraus erreichbar.
+- [x] AC22: Beim Anlegen und Bearbeiten landet das gewählte Datum unabhängig von der Zeitzone auf genau diesem Tag. Ein Monatserster landet nicht im Vormonat, und der `getUTCDate() + 1`-Hack entfällt.
+- [x] AC23: Nach Bearbeiten oder Löschen eines Eintrags stimmen die Gesamtstunden der Person sofort.
+- [x] AC24: Der Eintragsdialog meldet bei Fehlern „Arbeitszeit konnte nicht gespeichert werden“.
 
 **Einstellungen, Verbindungen, Export, Datenschutz (Review 7)**
 
-- [ ] AC25: Kategoriefarben werden aus einem Swatch-Raster gewählt statt aus einem Select mit CSS-Namen. Bestehende Farben bleiben gültig.
-- [ ] AC26: Löschen von Unterkategorien, Rechnungsfotos und allen anderen Einträgen hat eine Rückfrage. Es gibt kein Rückgängig.
-- [ ] AC27: Der Löschen-Button der Standardkategorie ist deaktiviert, mit Erklärung.
-- [ ] AC28: Nach dem Speichern einer Kategorie setzt „Abbrechen“ auf den gespeicherten Stand zurück. Neue Unterkategorien bekommen nach dem Speichern ihre ID, ein zweites Speichern erzeugt keine Duplikate.
-- [ ] AC29: Verbindungen: Annehmen und Ablehnen zeigen Ladezustand, Rückmeldung und Fehler. Nach dem Senden einer Anfrage gibt es eine Rückmeldung. Eine Verbindung lässt sich trennen und eine ausgehende Anfrage zurückziehen (neue Backend-Endpoints, mit Rückfrage).
-- [ ] AC30: Export: Zeitraum und Kategorie sind wählbar (Backend-Kategoriefilter in `ExportExpensesRequest` aktiviert). Die Datei wird über die Web Share API geteilt, wo verfügbar, sonst heruntergeladen. Fehler werden angezeigt.
-- [ ] AC31: „Benutzerdaten löschen“ funktioniert: Nach doppelter Rückfrage werden alle Daten des Benutzers in allen Services gelöscht (neue Endpoints), danach wird der Benutzer abgemeldet.
+- [x] AC25: Kategoriefarben werden aus einem Swatch-Raster gewählt statt aus einem Select mit CSS-Namen. Bestehende Farben bleiben gültig.
+- [x] AC26: Löschen von Unterkategorien, Rechnungsfotos und allen anderen Einträgen hat eine Rückfrage. Es gibt kein Rückgängig.
+- [x] AC27: Der Löschen-Button der Standardkategorie ist deaktiviert, mit Erklärung.
+- [x] AC28: Nach dem Speichern einer Kategorie setzt „Abbrechen“ auf den gespeicherten Stand zurück. Neue Unterkategorien bekommen nach dem Speichern ihre ID, ein zweites Speichern erzeugt keine Duplikate.
+- [x] AC29: Verbindungen: Annehmen und Ablehnen zeigen Ladezustand, Rückmeldung und Fehler. Nach dem Senden einer Anfrage gibt es eine Rückmeldung. Eine Verbindung lässt sich trennen und eine ausgehende Anfrage zurückziehen (neue Backend-Endpoints, mit Rückfrage).
+- [x] AC30: Export: Zeitraum und Kategorie sind wählbar (Backend-Kategoriefilter in `ExportExpensesRequest` aktiviert). Die Datei wird über die Web Share API geteilt, wo verfügbar, sonst heruntergeladen. Fehler werden angezeigt.
+- [x] AC31: „Benutzerdaten löschen“ funktioniert: Nach doppelter Rückfrage werden alle Daten des Benutzers in allen Services gelöscht (neue Endpoints), danach wird der Benutzer abgemeldet.
 
 **PWA und Allgemeines (Review 8)**
 
-- [ ] AC32: Zoomen ist erlaubt: kein `user-scalable=0`/`maximum-scale=1.0`, das Kontextmenü ist nicht mehr global abgeschaltet.
-- [ ] AC33: Der Fehler-Interceptor zeigt einheitliche Fehler-Snackbars. Bei fehlender Verbindung erscheint ein Offline-Hinweisbanner.
-- [ ] AC34: Jede Liste und Seite hat einen Fehlerzustand mit „Erneut versuchen“ statt endlosem Spinner und einen Leerzustand mit Erklärung (z. B. Stunden-Statistik ohne Arbeitszeiten).
-- [ ] AC35: Löschen löst ein kurzes Vibrieren aus, wo unterstützt (Speichern seit US-0007).
-- [ ] AC36: „Warten auf Login …“ ist durch einen gestalteten Ladezustand ersetzt.
-- [ ] AC37: Komponenten, die Root-BehaviorSubjects abonnieren, melden sich beim Zerstören ab (`takeUntilDestroyed` o. ä.). Betroffen u. a. `overview`, `fixed-cost`, `income`, `person`, `add-working-entry`, `statistics`.
-- [ ] AC38: Der Haushaltsplan wird beim Start einmal geladen, nicht 3–4 Mal.
-- [ ] AC39: Die Statistik zeigt beim Zeitraumwechsel keine Werte des vorherigen Zeitraums. Der verfügbare Zeitraum aktualisiert sich nach neuen Arbeitszeiten.
+- [x] AC32: Zoomen ist erlaubt: kein `user-scalable=0`/`maximum-scale=1.0`, das Kontextmenü ist nicht mehr global abgeschaltet.
+- [x] AC33: Der Fehler-Interceptor zeigt einheitliche Fehler-Snackbars. Bei fehlender Verbindung erscheint ein Offline-Hinweisbanner.
+- [x] AC34: Jede Liste und Seite hat einen Fehlerzustand mit „Erneut versuchen“ statt endlosem Spinner und einen Leerzustand mit Erklärung (z. B. Stunden-Statistik ohne Arbeitszeiten).
+- [x] AC35: Löschen löst ein kurzes Vibrieren aus, wo unterstützt (Speichern seit US-0007).
+- [x] AC36: „Warten auf Login …“ ist durch einen gestalteten Ladezustand ersetzt.
+- [x] AC37: Komponenten, die Root-BehaviorSubjects abonnieren, melden sich beim Zerstören ab (`takeUntilDestroyed` o. ä.). Betroffen u. a. `overview`, `fixed-cost`, `income`, `person`, `add-working-entry`, `statistics`.
+- [x] AC38: Der Haushaltsplan wird beim Start einmal geladen, nicht 3–4 Mal.
+- [x] AC39: Die Statistik zeigt beim Zeitraumwechsel keine Werte des vorherigen Zeitraums. Der verfügbare Zeitraum aktualisiert sich nach neuen Arbeitszeiten.
 
 **Allgemein**
 
-- [ ] AC40: Backend-Tests decken alle neuen und geänderten Endpoints ab: Summe der Treffer, Lebenserhaltungs-Anteil, `personFilter`, Zahlungen bearbeiten/löschen, Verbindung trennen/zurückziehen, Export-Filter, Benutzerdaten löschen. Frontend-Unit-Tests decken die geänderte Logik ab (Gruppierung, Datum/Zeitzone, Zahlungsvorbelegung, Plausibilität). Builds und Tests sind grün.
-- [ ] AC41: Die UI-Prüfung mit Playwright bei 390 px und 1440 px deckt alle Bereiche ab und ist grün.
+- [x] AC40: Backend-Tests decken alle neuen und geänderten Endpoints ab: Summe der Treffer, Lebenserhaltungs-Anteil, `personFilter`, Zahlungen bearbeiten/löschen, Verbindung trennen/zurückziehen, Export-Filter, Benutzerdaten löschen. Frontend-Unit-Tests decken die geänderte Logik ab (Gruppierung, Datum/Zeitzone, Zahlungsvorbelegung, Plausibilität). Builds und Tests sind grün.
+- [x] AC41: Die UI-Prüfung mit Playwright bei 390 px und 1440 px deckt alle Bereiche ab und ist grün.
+
+## UI Verification
+
+- 2026-11-05, **PASSED.** Abschlussprüfung bei 390 px und 1440 px gegen alle sichtbaren ACs, design.md und die Mockups 01–03 (`ui-testing/phase4/`), dazu Sichtprüfungen je UI-Task (`ui-testing/task-*`). Erster Lauf: 41 PASS, 1 FAIL (AC25: Farbpunkte nur 8 px groß), behoben in 885bfd0 und nachgeprüft (`ui-testing/phase4/recheck-*`). „Benutzerdaten löschen“ wurde mit Freigabe des Nutzers echt mit test2 ausgeführt: vier DELETE-Aufrufe mit 204 in Reihenfolge, Abmeldung, Wiederholung ebenfalls 204, frische Standardkategorien beim nächsten Login, eine test1-Rechnung in einer test2-Kategorie landete in der Standardkategorie von test1; test1 blieb unverändert. Lokal nicht prüfbar (durch Unit-/Backend-Tests und frühere Sichtprüfungen abgedeckt): Offline-Kaltstart ohne Service Worker, Senden/Annehmen echter Verbindungsanfragen (B2C Graph und Dapr fehlen lokal), echtes Pinch-Zoom und langer Druck auf eine Kachel. Konsole ohne Fehler außer den absichtlich erzeugten.
 
 ## Technical Notes
 
@@ -99,3 +103,7 @@ Setzt US-0006 und US-0007 voraus (Tabs, Snackbar, Sheet-Verhalten, Vibrieren).
 - Offline-Warteschlange über den Bestand aus US-0005 hinaus
 - Punkte aus US-0007 (Navigation, Erfassen, Vorlagen, Analyse, App-Shortcut, Share Target)
 - Angular-Upgrade (US-0006)
+
+## AI Usage
+
+Siehe [ai-usage.md](./ai-usage.md). Die Session begann noch mit dem Abschluss von US-0007: Die Zeile „Before Planning“ (€106.90) ist US-0007 und dort erfasst. Auf US-0008 entfallen die übrigen Zeilen, zusammen €185.19 und 12h 05m (Planning bis Wrap-up). Die Sichtprüfungen je Task stecken in der Phase Implementation.
