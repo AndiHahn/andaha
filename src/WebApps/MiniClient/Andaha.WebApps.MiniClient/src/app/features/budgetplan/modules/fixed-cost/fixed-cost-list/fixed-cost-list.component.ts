@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CostCategory, CostCategoryLabel } from 'src/app/api/budgetplan/dtos/CostCategory';
-import { DurationLabel } from 'src/app/api/budgetplan/dtos/Duration';
+import { Duration, DurationLabel } from 'src/app/api/budgetplan/dtos/Duration';
+import { monthlyValue } from '../../../functions/monthly-value';
 import { FixedCostDto } from 'src/app/api/budgetplan/dtos/FixedCostDto';
 import { RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
@@ -22,6 +23,13 @@ export class FixedCostListComponent implements OnInit {
 
   costCategoryLabel = CostCategoryLabel;
   durationLabel = DurationLabel;
+  readonly Duration = Duration;
+  readonly monthlyValue = monthlyValue;
+
+  /** Summe der Kategorie je Monat (Abschnittskopf, AC10) */
+  get monthlySum(): number {
+    return this.fixedCosts.reduce((sum, cost) => sum + monthlyValue(cost.value, cost.duration), 0);
+  }
 
   constructor() { }
 

@@ -1,4 +1,4 @@
-<form class="page" [formGroup]="form" #formDirective="ngForm" (ngSubmit)="onSubmit(formDirective)">
+<form class="page" [formGroup]="form" #formDirective="ngForm" (ngSubmit)="onSubmit()">
   <div class="form-body">
     <label class="field" [class.invalid]="form.controls.name | showError: formDirective">
       <span class="field-label">Name</span>
@@ -22,7 +22,7 @@
     </div>
 
     <label class="field" [class.invalid]="form.controls.value | showError: formDirective">
-      <span class="field-label">Kosten</span>
+      <span class="field-label">Betrag</span>
       <span class="field-box">
         <input class="value" formControlName="value" type="number" required [attr.aria-invalid]="form.controls.value | showError: formDirective">
         <span class="suffix" aria-hidden="true">€</span>

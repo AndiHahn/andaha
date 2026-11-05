@@ -1,10 +1,12 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
-import { FormGroup, FormGroupDirective, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
+import { vibrate } from 'src/app/shared/utils/haptics';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CostCategory, CostCategoryLabel } from 'src/app/api/budgetplan/dtos/CostCategory';
 import { Duration, DurationLabel } from 'src/app/api/budgetplan/dtos/Duration';
 import { FixedCostCreateDto } from 'src/app/api/budgetplan/dtos/FixedCostCreateDto';
-import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
+import { openErrorSnackbar, openSuccessSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { FixedCostContextService } from '../../../services/fixed-cost-context.service';
 import { FixedCostForm, getEmptyForm } from '../functions/fixed-cost-form-functions';
 import { MatSelect, MatOption } from '@angular/material/select';
@@ -23,6 +25,7 @@ import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 export class CreateFixedCostComponent implements OnInit {
   private snackbar = inject(MatSnackBar);
   private fixedCostContextService = inject(FixedCostContextService);
+  private historyTrail = inject(HistoryTrailService);
 
 
   form: FormGroup<FixedCostForm>;
@@ -42,7 +45,7 @@ export class CreateFixedCostComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  onSubmit(formDirective: FormGroupDirective): void {
+  onSubmit(): void {
     if (!this.form.valid) {
       return;
     }
@@ -55,7 +58,9 @@ export class CreateFixedCostComponent implements OnInit {
       {
         next: _ => {
           this.isSaving = false;
-          this.resetForm(formDirective);
+          openSuccessSnackbar(`Gespeichert · ${dto.name}`, this.snackbar);
+          vibrate();
+          this.historyTrail.leaveTo('/budgetplan/fixedcost');
         },
         error: _ => {
           this.isSaving = false;
@@ -63,11 +68,6 @@ export class CreateFixedCostComponent implements OnInit {
         } 
       }
     );
-  }
-
-  private resetForm(formDirective: FormGroupDirective): void {
-    formDirective.resetForm();
-    this.form.reset();
   }
 
   private createDtoFromForm(): FixedCostCreateDto {

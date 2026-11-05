@@ -1,4 +1,7 @@
-<p class="sec">{{ costCategoryLabel.get(category) }}</p>
+<p class="sec sec-head">
+  <span>{{ costCategoryLabel.get(category) }}</span>
+  <span class="sec-sum">{{ monthlySum | number:'1.2-2':'de' }} € / Monat</span>
+</p>
 
 @if (fixedCosts.length == 0) {
   <div class="empty">
@@ -11,7 +14,12 @@
     <span class="t">{{ fixedCost.name }}</span>
     <span class="rc">
       <span class="amt">{{ fixedCost.value | number:'1.2-2':'de' }} €</span>
-      <span class="per">{{ durationLabel.get(fixedCost.duration) }}</span>
+      <span class="per">
+        {{ durationLabel.get(fixedCost.duration) }}
+        @if (fixedCost.duration !== Duration.Monthly) {
+          · {{ monthlyValue(fixedCost.value, fixedCost.duration) | number:'1.2-2':'de' }} € / Monat
+        }
+      </span>
     </span>
   </a>
 }

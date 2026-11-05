@@ -1,16 +1,21 @@
 <div class="page">
-  <div class="body">
-    @if (!fixedCosts) {
-      <div class="loading">
-        <mat-spinner diameter="40" />
-      </div>
-    }
+  @if (filterCategory) {
+    <div class="chips">
+      <button type="button" class="chip on" (click)="clearFilter()"
+        [attr.aria-label]="'Filter ' + costCategoryLabel.get(filterCategory) + ' entfernen'">
+        {{ costCategoryLabel.get(filterCategory) }}<mat-icon aria-hidden="true">close</mat-icon>
+      </button>
+    </div>
+  }
 
-    @if (fixedCosts) {
-      @for (costCategoryOption of costCategoryOptions; track costCategoryOption) {
-        <app-fixed-cost-list [category]="costCategoryOption" [fixedCosts]="fixedCosts[costCategoryOption.toString()]" />
+  <div class="body">
+    <app-load-state [state]="loadState" emptyText="Keine Fixkosten. Mit „+“ legst du die erste an." (retry)="retry()">
+      @if (fixedCosts) {
+        @for (costCategoryOption of visibleCategories; track costCategoryOption) {
+          <app-fixed-cost-list [category]="costCategoryOption" [fixedCosts]="fixedCosts[costCategoryOption.toString()]" />
+        }
       }
-    }
+    </app-load-state>
   </div>
 
   <a mat-fab color="primary" class="fab" routerLink="create" aria-label="Fixkosten hinzufügen">

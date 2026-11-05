@@ -1,16 +1,10 @@
 <div class="page">
   <div class="body">
-    @if (!incomes) {
-      <div class="loading">
-        <mat-spinner diameter="40" />
-      </div>
-    }
-
-    @if (incomes) {
-      <div>
+    <app-load-state [state]="loadState" emptyText="Keine Einkommen." (retry)="retry()">
+      @if (incomes) {
         <app-income-list [incomes]="incomes" />
-      </div>
-    }
+      }
+    </app-load-state>
   </div>
 
   <a mat-fab color="primary" class="fab" routerLink="create" aria-label="Einkommen hinzufügen">

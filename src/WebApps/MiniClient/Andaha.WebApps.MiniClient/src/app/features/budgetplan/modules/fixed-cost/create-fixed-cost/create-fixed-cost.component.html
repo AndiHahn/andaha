@@ -1,4 +1,4 @@
-<form class="page" [formGroup]="form" #formDirective="ngForm" (ngSubmit)="onSubmit(formDirective)">
+<form class="page" [formGroup]="form" #formDirective="ngForm" (ngSubmit)="onSubmit()">
   <div class="form-body">
     <label class="field" [class.invalid]="form.controls.name | showError: formDirective">
       <span class="field-label">Name</span>

@@ -1,10 +1,4 @@
-@if (!budgetPlan) {
-  <div class="loading">
-    <mat-spinner diameter="40" />
-  </div>
-}
-
-@if (budgetPlan) {
+<app-load-state [state]="loadState" (retry)="retry()">
   <div class="page">
     <!-- Kopf: Überschuss zuerst (Mockup 04, Übersicht) -->
     <div class="head">
@@ -31,21 +25,29 @@
         </div>
       </div>
     </div>
-    <p class="sec">Einnahmen</p>
-    <div class="kv">
-      <span class="k strong">Einkommen</span>
-      <span class="v">{{ budgetPlan.income | number:'1.2-2':'de' }} €</span>
-    </div>
-    <p class="sec">Ausgaben</p>
-    <div class="kv">
-      <span class="k">Lebenserhaltungskosten</span>
-      <span class="v">{{ livingCosts | number:'1.2-2':'de' }} €</span>
-    </div>
-    @for (expense of budgetPlan.expenses; track expense.category) {
-      <div class="kv">
-        <span class="k">{{ costCategoryLabel.get(expense.category) }}</span>
-        <span class="v">{{ expense.value | number:'1.2-2':'de' }} €</span>
-      </div>
+    @if (budgetPlan) {
+      <p class="sec">Einnahmen</p>
+      <a class="kv link" routerLink="/budgetplan/income">
+        <span class="k strong">Einkommen</span>
+        <span class="v">{{ budgetPlan.income | number:'1.2-2':'de' }} €</span>
+        <mat-icon class="chev" aria-hidden="true">chevron_right</mat-icon>
+      </a>
+      <p class="sec">Ausgaben</p>
+      <button type="button" class="kv link living-costs" (click)="openLivingCostSheet()">
+        <span class="k">
+          <span class="name">Lebenserhaltungskosten</span>
+          <small>{{ livingCostShare }} % vom Einkommen</small>
+        </span>
+        <span class="v">{{ livingCosts | number:'1.2-2':'de' }} €</span>
+        <mat-icon class="chev" aria-hidden="true">chevron_right</mat-icon>
+      </button>
+      @for (expense of budgetPlan.expenses; track expense.category) {
+        <a class="kv link" routerLink="/budgetplan/fixedcost" [queryParams]="{ category: expense.category }">
+          <span class="k">{{ costCategoryLabel.get(expense.category) }}</span>
+          <span class="v">{{ expense.value | number:'1.2-2':'de' }} €</span>
+          <mat-icon class="chev" aria-hidden="true">chevron_right</mat-icon>
+        </a>
+      }
     }
   </div>
-}
+</app-load-state>

@@ -1,0 +1,56 @@
+// Sheet nach Mockup 02 A; Desktop-Dialog wie die Schnellerfassung. Panel in styles.scss (.andaha-sheet / .andaha-dialog)
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: inherit;
+  position: relative;
+}
+
+.grab {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--grab);
+  margin: 10px auto 2px;
+  flex: none;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -10px -60px -8px;
+  }
+}
+
+.sh {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px 0 16px;
+
+  h2 { margin: 0; font-size: 18px; font-weight: 600; }
+}
+
+.close-btn { color: var(--mut); }
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 16px 20px;
+}
+
+.actions-row {
+  display: flex;
+  gap: 10px;
+
+  .btn { flex: 1; }
+}
+
+:host(.dialog) {
+  .sh { padding: 12px 8px 0 20px; }
+  .form { padding: 8px 20px 20px; }
+  .actions-row { justify-content: flex-end; .btn { flex: none; } }
+}

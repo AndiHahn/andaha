@@ -1,11 +1,5 @@
 <p class="sec">Einkommen</p>
 
-@if (incomes.length == 0) {
-  <div class="empty">
-    Keine Ausgaben.
-  </div>
-}
-
 @for (income of incomes; track income.id) {
   <a class="row" routerLink="{{income.id}}">
     <span class="t">{{ income.name }}</span>

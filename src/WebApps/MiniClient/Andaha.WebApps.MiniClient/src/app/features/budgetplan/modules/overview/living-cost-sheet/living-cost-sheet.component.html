@@ -1,0 +1,36 @@
+@if (sheetRef) {
+  <div class="grab" aria-hidden="true" [appSheetDrag]="sheetRef"></div>
+}
+<div class="sh">
+  <h2>Lebenserhaltungskosten</h2>
+  <button type="button" class="icon-btn close-btn" aria-label="Schließen" (click)="close()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<form class="form" (submit)="$event.preventDefault(); save()">
+  <label class="field" [class.invalid]="share.invalid">
+    <span class="field-label">Anteil vom Einkommen</span>
+    <span class="field-box">
+      <input name="share" type="number" inputmode="numeric" min="0" max="100" step="1" required
+        [formControl]="share" [attr.aria-invalid]="share.invalid">
+      <span class="suffix" aria-hidden="true">%</span>
+    </span>
+    @if (share.invalid) {
+      <span class="field-error" role="alert">Bitte eine ganze Zahl von 0 bis 100 eingeben.</span>
+    } @else {
+      <span class="field-hint">Entspricht {{ amount() | number:'1.2-2':'de' }} € im Monat. Standard: {{ defaultShare }} %.</span>
+    }
+  </label>
+
+  <div class="actions-row">
+    <button type="button" class="btn sec2" (click)="close()">Abbrechen</button>
+    <button type="submit" class="btn pri" [disabled]="share.invalid || saving()">
+      @if (!saving()) {
+        <span>Speichern</span>
+      } @else {
+        <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
+      }
+    </button>
+  </div>
+</form>

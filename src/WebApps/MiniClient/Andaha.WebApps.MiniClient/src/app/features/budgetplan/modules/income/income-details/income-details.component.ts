@@ -133,7 +133,7 @@ export class IncomeDetailsComponent implements OnInit, OnDestroy {
 
   onDeleteClick(): void {
     const data: ConfirmationDialogData = {
-      text: 'Soll der Fixkostenpunkt wirklich gelöscht werden?'
+      text: 'Soll das Einkommen wirklich gelöscht werden?'
     }
 
     this.confirmationDialog.openDialog(data).then(dialogRef => dialogRef.afterClosed().subscribe(
