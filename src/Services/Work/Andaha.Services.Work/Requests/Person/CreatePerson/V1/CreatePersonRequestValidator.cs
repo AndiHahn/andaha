@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 
 namespace Andaha.Services.Work.Requests.Person.CreatePerson.V1;
-internal class CreatePersonRequestValidator : AbstractValidator<CreatePersonRequest>
+public class CreatePersonRequestValidator : AbstractValidator<CreatePersonRequest>
 {
     public CreatePersonRequestValidator()
     {

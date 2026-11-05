@@ -2,7 +2,7 @@
 
 namespace Andaha.Services.Work.Requests.Person.UpdatePerson.V1;
 
-internal class UpdatePersonRequestValidator : AbstractValidator<UpdatePersonRequest>
+public class UpdatePersonRequestValidator : AbstractValidator<UpdatePersonRequest>
 {
     public UpdatePersonRequestValidator()
     {

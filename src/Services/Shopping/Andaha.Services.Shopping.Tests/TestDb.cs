@@ -23,4 +23,16 @@ internal static class TestDb
 
         return (context, connection);
     }
+
+    /// <summary>
+    /// Creates a fresh ShoppingDbContext on an existing connection, e.g. for a service container in a pipeline test.
+    /// </summary>
+    public static ShoppingDbContext Open(SqliteConnection connection)
+    {
+        var options = new DbContextOptionsBuilder<ShoppingDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        return new ShoppingDbContext(options);
+    }
 }

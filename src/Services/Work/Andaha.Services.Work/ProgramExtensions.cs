@@ -59,6 +59,7 @@ public static class ProgramExtensions
     internal static WebApplicationBuilder AddCustomApplicationServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddCqrs(Assembly.GetExecutingAssembly());
+        builder.Services.AddHttpResultValidation(Assembly.GetExecutingAssembly());
         builder.Services.AddIdentityServices();
 
         builder.Services.Configure<DaprConfiguration>(builder.Configuration.GetSection("Dapr"));
