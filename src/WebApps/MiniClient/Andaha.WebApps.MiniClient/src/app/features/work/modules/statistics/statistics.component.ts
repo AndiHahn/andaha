@@ -51,22 +51,28 @@ export class StatisticsComponent implements OnInit, OnDestroy {
   private readonly monthlyError = signal(false);
   private readonly monthlyRequests = new Subject<{ range: TimeRange; personIds: string[] } | null>();
 
+  /** Gibt es für die gewählte Person überhaupt Arbeitszeiten? null, solange unbekannt */
+  private readonly hasEntries = signal<boolean | null>(null);
+  private readonly entriesError = signal(false);
+  private readonly entriesRequests = new Subject<string[]>();
+
   readonly isTotal = computed(() => this.selectedRange()?.dateType === DateType.Total);
 
   /** Werte des aktuellen Zeitraums; Gesamt hat eigene Kennzahlen */
   private readonly hasData = computed(() => this.isTotal() ? !!this.fullStatistics() : !!this.statistics());
 
   readonly loadState = computed<LoadState>(() => {
-    if (this.contextService.error() || this.monthlyError()) {
+    if (this.contextService.error() || this.monthlyError() || this.entriesError()) {
       return 'error';
     }
 
-    if (!this.availableTimeRange() || !this.selectedRange() || this.isLoading() || this.monthlyLoading() || !this.hasData()) {
+    const hasEntries = this.hasEntries();
+    if (!this.availableTimeRange() || !this.selectedRange() || this.isLoading() || this.monthlyLoading() || !this.hasData() || hasEntries === null) {
       return 'loading';
     }
 
-    const total = this.isTotal() ? this.fullStatistics()!.totalWorkingTime : this.statistics()!.totalWorkingTime;
-    return total.hours === 0 && total.minutes === 0 ? 'empty' : 'ready';
+    // leer nur, wenn es (für die gewählte Person) gar keine Arbeitszeiten gibt; ein Zeitraum ohne Stunden zeigt „0:00 h“ und das Diagramm
+    return hasEntries ? 'ready' : 'empty';
   });
 
   /** Balkenwerte der Stunden; die Balkenkomponente liest sie aus `costs` */
@@ -85,6 +91,16 @@ export class StatisticsComponent implements OnInit, OnDestroy {
   });
 
   constructor() {
+    this.entriesRequests.pipe(
+      switchMap(personIds => this.statisticsApiService.getFullStatistics(personIds).pipe(
+        catchError(() => {
+          this.entriesError.set(true);
+          return EMPTY;
+        })
+      )),
+      takeUntilDestroyed()
+    ).subscribe(full => this.hasEntries.set(full.totalWorkingTime.hours > 0 || full.totalWorkingTime.minutes > 0));
+
     this.monthlyRequests.pipe(
       switchMap(request => request === null ? EMPTY : this.statisticsApiService.getMonthlyHours(lastBarMonth(request.range), BAR_MONTHS, request.personIds).pipe(
         catchError(() => {
@@ -125,7 +141,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
   retry(): void {
     this.contextService.retry();
 
-    if (this.monthlyError()) {
+    if (this.monthlyError() || this.entriesError()) {
       this.reload();
     }
   }
@@ -153,6 +169,9 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     const personIds = personId ? [personId] : [];
     this.contextService.load(range, personIds);
     this.requestMonthlyHours(range, personIds);
+    this.hasEntries.set(null);
+    this.entriesError.set(false);
+    this.entriesRequests.next(personIds);
   }
 
   /** Diagramm nur bei Monat und Jahr; alte Balken sofort verwerfen */

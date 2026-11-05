@@ -20,7 +20,7 @@ describe('StatisticsComponent', () => {
   let host: HTMLElement;
   let statistics$: BehaviorSubject<StatisticsDto | undefined>;
   let context: { load: ReturnType<typeof vi.fn>; [key: string]: unknown };
-  let api: { getMonthlyHours: ReturnType<typeof vi.fn> };
+  let api: { getMonthlyHours: ReturnType<typeof vi.fn>; getFullStatistics: ReturnType<typeof vi.fn> };
   let personApi: { export: ReturnType<typeof vi.fn> };
   let setAction: ReturnType<typeof vi.fn>;
 
@@ -52,7 +52,10 @@ describe('StatisticsComponent', () => {
       load: vi.fn(() => statistics$.next(stats)),
       retry: vi.fn()
     };
-    api = { getMonthlyHours: vi.fn(() => of(hours)) };
+    api = {
+      getMonthlyHours: vi.fn(() => of(hours)),
+      getFullStatistics: vi.fn(() => of({ totalWorkingTime: { hours: 99, minutes: 0 }, notPayedHours: { hours: 0, minutes: 0 }, payedMoney: 0, notPayedMoney: 0 }))
+    };
     personApi = { export: vi.fn() };
     setAction = vi.fn();
 
@@ -99,11 +102,23 @@ describe('StatisticsComponent', () => {
   });
 
   it('empty state "Noch keine Arbeitszeiten – erfasse sie unter Personen." with link', () => {
+    api.getFullStatistics.mockReturnValue(of({ totalWorkingTime: { hours: 0, minutes: 0 }, notPayedHours: { hours: 0, minutes: 0 }, payedMoney: 0, notPayedMoney: 0 }));
     context.load.mockImplementation(() => statistics$.next({ ...stats, totalWorkingTime: { hours: 0, minutes: 0 } }));
     create();
 
     expect(text('.empty')).toBe('Noch keine Arbeitszeiten – erfasse sie unter Personen.');
     expect(host.querySelector('a.empty-link')!.getAttribute('href')).toBe('/work/person');
+  });
+
+  it('a zero-hours month with hours in other months keeps figures and chart', () => {
+    context.load.mockImplementation(() => statistics$.next({ totalWorkingTime: { hours: 0, minutes: 0 }, extrapolatedMoneyToPay: 0 }));
+    create();
+
+    expect(host.querySelector('.empty')).toBeNull();
+    expect(host.querySelector('a.empty-link')).toBeNull();
+    expect(text('.fig:nth-of-type(1) .value')).toBe('00:00 h');
+    expect(text('.fig:nth-of-type(2) .value')).toBe('0,00 €');
+    expect(host.querySelector('app-monthly-bars')).not.toBeNull();
   });
 
   it('bars show hours per month', () => {
