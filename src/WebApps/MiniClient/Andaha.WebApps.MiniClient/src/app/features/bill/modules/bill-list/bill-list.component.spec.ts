@@ -61,6 +61,7 @@ describe('BillListComponent', () => {
       loading: () => loading$.asObservable(),
       lastAddedId: () => of(null),
       error: signal(false),
+      waitingForBackend: signal(false),
       retry: vi.fn(),
       getSearchText: () => '',
       getCategoryFilter: () => [],
@@ -120,6 +121,17 @@ describe('BillListComponent', () => {
     expect(text('.sum')).toContain('0 Rechnungen');
     expect(text('.sum')).toContain('0,00 €');
     expect(host.querySelector('app-load-state .empty')).not.toBeNull();
+  });
+
+  it('shows loading, not the empty state, while the backend is still waking up (AC34)', () => {
+    const context = TestBed.inject(BillContextService) as unknown as { waitingForBackend: ReturnType<typeof signal<boolean>> };
+    context.waitingForBackend.set(true);
+    bills$.next([]);
+    totalResults$.next(0);
+    fixture.detectChanges();
+
+    expect(host.querySelector('app-load-state .empty')).toBeNull();
+    expect(fixture.componentInstance.loadState).toBe('loading');
   });
 
   it('marks rows with data-no-swipe so tab swiping ignores them', () => {

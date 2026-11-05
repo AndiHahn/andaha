@@ -107,7 +107,8 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.loadFailed()) {
       return 'error';
     }
-    return this.loading ? 'loading' : 'empty';
+    // solange das Backend noch geweckt wird, ist die Liste nicht leer, sondern lädt noch
+    return this.loading || this.billContextService.waitingForBackend() ? 'loading' : 'empty';
   }
 
   get emptyText(): string {

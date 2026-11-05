@@ -1,4 +1,4 @@
-import { Injectable, Signal, inject, signal } from '@angular/core';
+import { Injectable, Signal, inject, signal, computed } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { afterFirstLoad } from 'src/app/shared/utils/load-state';
 import { CreatePersonDto } from 'src/app/api/work/dtos/CreatePersonDto';
@@ -22,8 +22,8 @@ export class PersonContextService {
   private readonly errorState = signal(false);
   private backendIsReady: boolean = false;
 
-  /** true, wenn das letzte Laden der Liste fehlgeschlagen ist (nachdem das Backend bereit war) */
-  readonly error: Signal<boolean> = this.errorState.asReadonly();
+  /** true, wenn das letzte Laden der Liste fehlgeschlagen ist (nachdem das Backend bereit war) oder das Backend nicht erreichbar ist */
+  readonly error: Signal<boolean> = computed(() => this.errorState() || this.contextService.backendUnreachable());
 
   constructor() {
     this.fetchPersons();

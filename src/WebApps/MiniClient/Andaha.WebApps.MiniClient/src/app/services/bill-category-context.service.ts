@@ -1,4 +1,4 @@
-import { Injectable, Signal, inject, signal } from '@angular/core';
+import { Injectable, Signal, inject, signal, computed } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject, filter, take } from 'rxjs';
 import { afterFirstLoad } from '../shared/utils/load-state';
 import { BillCategoryApiService } from '../api/shopping/bill-category-api.service';
@@ -26,8 +26,8 @@ export class BillCategoryContextService {
 
   /** true, solange die Kategorien geladen werden */
   readonly loading: Signal<boolean> = this.loadingState.asReadonly();
-  /** true, wenn das letzte Laden der Kategorien fehlgeschlagen ist */
-  readonly error: Signal<boolean> = this.errorState.asReadonly();
+  /** true, wenn das letzte Laden der Kategorien fehlgeschlagen ist oder das Backend nicht erreichbar ist */
+  readonly error: Signal<boolean> = computed(() => this.errorState() || this.contextService.backendUnreachable());
 
   constructor() {
     this.initSubscriptions();

@@ -1,4 +1,4 @@
-import { Injectable, Signal, WritableSignal, inject, signal } from '@angular/core';
+import { Injectable, Signal, WritableSignal, inject, signal, computed } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { CollaborationApiService } from '../api/collaboration/collaboration-api.service';
 import { ConnectionDto } from '../api/collaboration/dtos/ConnectionDto';
@@ -28,10 +28,10 @@ export class CollaborationContextService {
   private readonly outgoingConnectionRequestsErrorState = signal(false);
   private backendIsReady: boolean = false;
 
-  /** true, wenn das letzte Laden der jeweiligen Liste fehlgeschlagen ist (nachdem das Backend bereit war) */
-  readonly connectionsError: Signal<boolean> = this.connectionsErrorState.asReadonly();
-  readonly incomingConnectionRequestsError: Signal<boolean> = this.incomingConnectionRequestsErrorState.asReadonly();
-  readonly outgoingConnectionRequestsError: Signal<boolean> = this.outgoingConnectionRequestsErrorState.asReadonly();
+  /** true, wenn das letzte Laden der jeweiligen Liste fehlgeschlagen ist (nachdem das Backend bereit war) oder das Backend nicht erreichbar ist */
+  readonly connectionsError: Signal<boolean> = computed(() => this.connectionsErrorState() || this.contextService.backendUnreachable());
+  readonly incomingConnectionRequestsError: Signal<boolean> = computed(() => this.incomingConnectionRequestsErrorState() || this.contextService.backendUnreachable());
+  readonly outgoingConnectionRequestsError: Signal<boolean> = computed(() => this.outgoingConnectionRequestsErrorState() || this.contextService.backendUnreachable());
 
   constructor() {
     this.initSubscriptions();

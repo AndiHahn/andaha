@@ -9,7 +9,7 @@ import { PersonContextService } from './person-context.service';
 function createPersonContextService(api: PersonApiService): PersonContextService {
   TestBed.configureTestingModule({
     providers: [
-      { provide: ContextService, useValue: { backendReady: () => of(false) } },
+      { provide: ContextService, useValue: { backendUnreachable: () => false, backendReady: () => of(false) } },
       { provide: PersonApiService, useValue: api }
     ]
   });
@@ -20,7 +20,7 @@ describe('PersonContextService error state', () => {
   function createReadyService(api: PersonApiService): PersonContextService {
     TestBed.configureTestingModule({
       providers: [
-        { provide: ContextService, useValue: { backendReady: () => of(true), retryWakeUp: vi.fn() } },
+        { provide: ContextService, useValue: { backendUnreachable: () => false, backendReady: () => of(true), retryWakeUp: vi.fn() } },
         { provide: PersonApiService, useValue: api }
       ]
     });

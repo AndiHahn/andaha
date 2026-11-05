@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy, Signal, inject, signal } from '@angular/core';
+import { Injectable, OnDestroy, Signal, inject, signal, computed } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, Subscription, catchError, finalize, firstValueFrom, of, skip, timeout } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
@@ -49,8 +49,13 @@ export class BillContextService implements OnDestroy {
   private backendIsReady: boolean = false;
   private readonly errorState = signal(false);
 
-  /** true, wenn das letzte Laden fehlgeschlagen ist (nachdem das Backend bereit war) */
-  readonly error: Signal<boolean> = this.errorState.asReadonly();
+  private readonly backendReadyState = signal(false);
+
+  /** true, wenn das letzte Laden fehlgeschlagen ist (nachdem das Backend bereit war) oder das Backend nicht erreichbar ist */
+  readonly error: Signal<boolean> = computed(() => this.errorState() || this.contextService.backendUnreachable());
+
+  /** true, solange das Backend geweckt wird: die Liste lädt noch, sie ist nicht leer (AC34) */
+  readonly waitingForBackend: Signal<boolean> = computed(() => !this.backendReadyState() && !this.contextService.backendUnreachable());
 
   /** Summe aller Treffer der aktuellen Suche (nicht nur der geladenen Seiten) */
   readonly totalSum$: Observable<number> = this.totalSumSubject.asObservable();
@@ -293,6 +298,7 @@ export class BillContextService implements OnDestroy {
       {
         next: ready => {
           this.backendIsReady = ready;
+          this.backendReadyState.set(ready);
           if (ready) {
             this.fetchBills();
             this.syncNewBills();

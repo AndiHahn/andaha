@@ -1,4 +1,4 @@
-import { Injectable, Signal, inject, signal } from '@angular/core';
+import { Injectable, Signal, inject, signal, computed } from '@angular/core';
 import { BehaviorSubject, Observable, merge } from 'rxjs';
 import { BudgetPlanApiService } from 'src/app/api/budgetplan/budgetplan-api.service';
 import { BudgetPlanDto } from 'src/app/api/budgetplan/dtos/BudgetPlanDto';
@@ -22,8 +22,8 @@ export class BudgetplanContextService {
   /** Erst wer den Plan braucht, löst das Laden aus; vorher gibt es nichts neu zu laden */
   private loadRequested: boolean = false;
 
-  /** true, wenn das letzte Laden fehlgeschlagen ist */
-  readonly error: Signal<boolean> = this.errorState.asReadonly();
+  /** true, wenn das letzte Laden fehlgeschlagen ist oder das Backend nicht erreichbar ist */
+  readonly error: Signal<boolean> = computed(() => this.errorState() || this.contextService.backendUnreachable());
 
   constructor() {
     this.initSubscriptions();

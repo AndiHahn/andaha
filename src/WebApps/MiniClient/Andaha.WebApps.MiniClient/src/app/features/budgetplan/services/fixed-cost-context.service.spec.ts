@@ -21,6 +21,7 @@ describe('FixedCostContextService byId', () => {
 
     function createService(): FixedCostContextService {
         const contextService = {
+            backendUnreachable: () => false,
             backendReady: vi.fn().mockName("ContextService.backendReady")
         };
         contextService.backendReady.mockReturnValue(backendReady.asObservable());

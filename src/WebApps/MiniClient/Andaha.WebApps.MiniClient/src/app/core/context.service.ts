@@ -1,10 +1,12 @@
-import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { DestroyRef, Injectable, Signal, inject, signal } from '@angular/core';
+import { BehaviorSubject, Observable, finalize } from 'rxjs';
 import { BudgetPlanApiService } from '../api/budgetplan/budgetplan-api.service';
 import { CollaborationApiService } from '../api/collaboration/collaboration-api.service';
 import { ShoppingApiService } from '../api/shopping/shopping-api.service';
 import { AuthService } from './auth.service';
 import { WorkApiService } from '../api/work/work-api.service';
+
+type BackendApi = 'shopping' | 'collaboration' | 'budgetplan' | 'work';
 
 @Injectable({
   providedIn: 'root'
@@ -16,18 +18,31 @@ export class ContextService {
   private workApiService = inject(WorkApiService);
 
   private backendReady$ = new BehaviorSubject<boolean>(false);
+  private readonly backendUnreachableState = signal(false);
 
   private userIsLoggedInInternal: boolean = false;
-  private shoppingApiAwakeInternal: boolean = false;
-  private collaborationApiAwakeInternal: boolean = false;
-  private budgetplanApiAwakeInternal: boolean = false;
-  private workApiAwakeInternal: boolean = false;
+  private readonly awake: Record<BackendApi, boolean> = { shopping: false, collaboration: false, budgetplan: false, work: false };
+  private readonly pending = new Set<BackendApi>();
+
+  /**
+   * true, wenn ein Dienst beim Wecken nicht erreichbar war (offline gestartet, Backend nicht erreichbar).
+   * Die Listen zeigen dann ihren Fehlerzustand mit „Erneut versuchen“; ein neuer Weckversuch setzt es zurück.
+   */
+  readonly backendUnreachable: Signal<boolean> = this.backendUnreachableState.asReadonly();
+
+  private readonly onOnline = () => {
+    if (!this.backendReady$.value) {
+      this.retryWakeUp();
+    }
+  };
 
   constructor() {
       const authService = inject(AuthService);
 
-
       this.wakeUpBackendServices();
+
+      window.addEventListener('online', this.onOnline);
+      inject(DestroyRef).onDestroy(() => window.removeEventListener('online', this.onOnline));
 
       authService.loggedIn().subscribe(
         {
@@ -49,49 +64,34 @@ export class ContextService {
   }
 
   private wakeUpBackendServices(): void {
-    if (!this.shoppingApiAwakeInternal) this.shoppingApiService.wakeUp().subscribe(
+    this.backendUnreachableState.set(false);
+    this.wakeUp('shopping', () => this.shoppingApiService.wakeUp());
+    this.wakeUp('collaboration', () => this.collaborationApiService.wakeUp());
+    this.wakeUp('budgetplan', () => this.budgetPlanApiService.wakeUp());
+    this.wakeUp('work', () => this.workApiService.wakeUp());
+  }
+
+  /** Ein Dienst wird nur geweckt, solange er nicht wach ist und kein Weckruf mehr unterwegs ist */
+  private wakeUp(api: BackendApi, request: () => Observable<void>): void {
+    if (this.awake[api] || this.pending.has(api)) {
+      return;
+    }
+
+    this.pending.add(api);
+    request().pipe(finalize(() => this.pending.delete(api))).subscribe(
       {
         next: _ => {
-          this.shoppingApiAwakeInternal = true;
+          this.awake[api] = true;
           this.refreshBackendReady();
-        }
+        },
+        error: _ => this.backendUnreachableState.set(true)
       }
     );
-
-    if (!this.collaborationApiAwakeInternal) this.collaborationApiService.wakeUp().subscribe(
-      {
-        next: _ => {
-          this.collaborationApiAwakeInternal = true;
-          this.refreshBackendReady();
-        }
-      }
-    );
-
-    if (!this.budgetplanApiAwakeInternal) this.budgetPlanApiService.wakeUp().subscribe(
-      {
-        next: _ => {
-          this.budgetplanApiAwakeInternal = true;
-          this.refreshBackendReady();
-        }
-      }
-    );
-
-    if (!this.workApiAwakeInternal) this.workApiService.wakeUp().subscribe(
-      {
-        next: _ => {
-          this.workApiAwakeInternal = true;
-          this.refreshBackendReady();
-        }
-      }
-    )
   }
 
   private refreshBackendReady() {
-    if (this.userIsLoggedInInternal &&
-        this.shoppingApiAwakeInternal &&
-        this.collaborationApiAwakeInternal &&
-        this.budgetplanApiAwakeInternal &&
-        this.workApiAwakeInternal) {
+    if (this.userIsLoggedInInternal && Object.values(this.awake).every(awake => awake)) {
+      this.backendUnreachableState.set(false);
       this.backendReady$.next(true);
     }
   }

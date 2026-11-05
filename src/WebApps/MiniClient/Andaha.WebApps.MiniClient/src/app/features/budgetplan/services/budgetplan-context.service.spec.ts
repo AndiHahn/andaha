@@ -26,7 +26,7 @@ describe('BudgetplanContextService loading (AC38)', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: ContextService, useValue: { backendReady: () => backendReady.asObservable(), retryWakeUp: vi.fn() } }
+        { provide: ContextService, useValue: { backendUnreachable: () => false, backendReady: () => backendReady.asObservable(), retryWakeUp: vi.fn() } }
       ]
     });
     http = TestBed.inject(HttpTestingController);

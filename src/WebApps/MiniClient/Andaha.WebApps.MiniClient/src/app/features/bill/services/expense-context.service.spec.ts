@@ -25,7 +25,7 @@ describe('ExpenseContextService downloadExpenses', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: BillContextService, useValue: { bills: () => new Subject<any[]>().asObservable() } },
-        { provide: ContextService, useValue: { backendReady: () => of(false) } },
+        { provide: ContextService, useValue: { backendUnreachable: () => false, backendReady: () => of(false) } },
         { provide: ExpenseApiService, useValue: api },
         { provide: DatePipe, useValue: new DatePipe('en-US') }
       ]
@@ -69,7 +69,7 @@ describe('ExpenseContextService error state', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: BillContextService, useValue: { bills: () => new Subject<any[]>().asObservable() } },
-        { provide: ContextService, useValue: { backendReady: () => of(true), retryWakeUp: vi.fn() } },
+        { provide: ContextService, useValue: { backendUnreachable: () => false, backendReady: () => of(true), retryWakeUp: vi.fn() } },
         { provide: ExpenseApiService, useValue: api },
         { provide: DatePipe, useValue: new DatePipe('en-US') }
       ]
@@ -94,7 +94,7 @@ describe('ExpenseContextService error state', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: BillContextService, useValue: { bills: () => new Subject<any[]>().asObservable() } },
-        { provide: ContextService, useValue: { backendReady: () => of(false) } },
+        { provide: ContextService, useValue: { backendUnreachable: () => false, backendReady: () => of(false) } },
         { provide: ExpenseApiService, useValue: api },
         { provide: DatePipe, useValue: new DatePipe('en-US') }
       ]
@@ -110,7 +110,7 @@ describe('ExpenseContextService error state', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: BillContextService, useValue: { bills: () => bills.asObservable() } },
-        { provide: ContextService, useValue: { backendReady: () => of(true) } },
+        { provide: ContextService, useValue: { backendUnreachable: () => false, backendReady: () => of(true) } },
         { provide: ExpenseApiService, useValue: api },
         { provide: DatePipe, useValue: new DatePipe('en-US') }
       ]
@@ -138,7 +138,7 @@ describe('ExpenseContextService error state', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: BillContextService, useValue: { bills: () => new Subject<any[]>().asObservable() } },
-        { provide: ContextService, useValue: { backendReady: () => of(true) } },
+        { provide: ContextService, useValue: { backendUnreachable: () => false, backendReady: () => of(true) } },
         { provide: ExpenseApiService, useValue: api },
         { provide: DatePipe, useValue: new DatePipe('en-US') }
       ]

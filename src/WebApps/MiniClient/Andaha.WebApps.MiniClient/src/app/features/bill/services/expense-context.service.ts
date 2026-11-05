@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Injectable, Signal, inject, signal } from '@angular/core';
+import { Injectable, Signal, inject, signal, computed } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription, from, throwError } from 'rxjs';
 import { switchMap, take } from 'rxjs/operators';
 import { ExpenseDto } from '../../../api/shopping/dtos/ExpenseDto';
@@ -30,8 +30,8 @@ export class ExpenseContextService {
 
   /** true, solange Ausgaben für einen Zeitraum geladen werden */
   readonly loading: Signal<boolean> = this.loadingState.asReadonly();
-  /** true, wenn das Laden des Zeitraums oder zuletzt der Ausgaben fehlgeschlagen ist */
-  readonly error: Signal<boolean> = this.errorState.asReadonly();
+  /** true, wenn das Laden des Zeitraums oder zuletzt der Ausgaben fehlgeschlagen ist oder das Backend nicht erreichbar ist */
+  readonly error: Signal<boolean> = computed(() => this.errorState() || this.contextService.backendUnreachable());
 
   constructor() {
     this.initSubscriptions();

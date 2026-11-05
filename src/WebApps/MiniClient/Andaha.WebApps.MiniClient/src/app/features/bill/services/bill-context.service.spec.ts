@@ -64,6 +64,7 @@ describe('BillContextService search', () => {
         });
 
         const contextService = {
+            backendUnreachable: () => false,
             backendReady: vi.fn().mockName("ContextService.backendReady"),
             retryWakeUp
         };
@@ -296,6 +297,7 @@ describe('BillContextService local save and sync', () => {
         billApi.searchBills.mockReturnValue(of({ values: [], totalCount: 0, totalSum: 0, monthSums: [] }));
 
         const contextService = {
+            backendUnreachable: () => false,
             backendReady: vi.fn().mockName("ContextService.backendReady")
         };
         contextService.backendReady.mockReturnValue(new Subject<boolean>());
@@ -509,6 +511,7 @@ describe('BillContextService loadBillById', () => {
         billApi.searchBills.mockReturnValue(new Subject<BillSearchResultDto>().asObservable());
 
         const contextService = {
+            backendUnreachable: () => false,
             backendReady: vi.fn().mockName("ContextService.backendReady")
         };
         contextService.backendReady.mockReturnValue(new Subject<boolean>());
@@ -559,6 +562,7 @@ describe('BillContextService updateBill', () => {
         billApi.searchBills.mockReturnValue(new Subject<BillSearchResultDto>().asObservable());
 
         const contextService = {
+            backendUnreachable: () => false,
             backendReady: vi.fn().mockName("ContextService.backendReady")
         };
         contextService.backendReady.mockReturnValue(new Subject<boolean>());

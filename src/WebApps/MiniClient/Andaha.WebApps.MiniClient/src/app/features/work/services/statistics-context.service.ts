@@ -1,4 +1,4 @@
-import { Injectable, Signal, inject, signal } from '@angular/core';
+import { Injectable, Signal, inject, signal, computed } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { DateType } from 'src/app/features/bill/modules/expenses/timerange-selection/DateType';
 import { TimeRangeDto } from 'src/app/api/common-dtos/TimeRangeDto';
@@ -26,8 +26,8 @@ export class StatisticsContextService {
   private pending?: Subscription;
   private backendIsReady: boolean = false;
 
-  /** true, wenn das Laden des Zeitraums oder zuletzt der Statistik fehlgeschlagen ist */
-  readonly error: Signal<boolean> = this.errorState.asReadonly();
+  /** true, wenn das Laden des Zeitraums oder zuletzt der Statistik fehlgeschlagen ist oder das Backend nicht erreichbar ist */
+  readonly error: Signal<boolean> = computed(() => this.errorState() || this.contextService.backendUnreachable());
 
   constructor() {
     this.initSubscriptions();

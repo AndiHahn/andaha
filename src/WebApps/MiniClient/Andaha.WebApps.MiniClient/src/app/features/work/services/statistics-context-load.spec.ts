@@ -19,7 +19,7 @@ describe('StatisticsContextService load', () => {
   function createService(api: Partial<StatisticsApiService>): StatisticsContextService {
     TestBed.configureTestingModule({
       providers: [
-        { provide: ContextService, useValue: { backendReady: () => of(false), retryWakeUp: vi.fn() } },
+        { provide: ContextService, useValue: { backendUnreachable: () => false, backendReady: () => of(false), retryWakeUp: vi.fn() } },
         { provide: StatisticsApiService, useValue: { getAvailableTimeRange: () => new Subject(), ...api } }
       ]
     });

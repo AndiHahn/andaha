@@ -9,7 +9,7 @@ describe('StatisticsContextService error state', () => {
   function createService(api: Partial<StatisticsApiService>, backendReady: boolean): StatisticsContextService {
     TestBed.configureTestingModule({
       providers: [
-        { provide: ContextService, useValue: { backendReady: () => of(backendReady), retryWakeUp: vi.fn() } },
+        { provide: ContextService, useValue: { backendUnreachable: () => false, backendReady: () => of(backendReady), retryWakeUp: vi.fn() } },
         { provide: StatisticsApiService, useValue: api }
       ]
     });

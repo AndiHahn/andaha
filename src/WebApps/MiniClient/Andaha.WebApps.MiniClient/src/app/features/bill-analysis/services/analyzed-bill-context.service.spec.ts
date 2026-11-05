@@ -18,7 +18,7 @@ describe('AnalyzedBillContextService', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: BillApiService, useValue: { getAnalyzedBills } },
-        { provide: ContextService, useValue: { backendReady: () => new BehaviorSubject(true) } }
+        { provide: ContextService, useValue: { backendUnreachable: () => false, backendReady: () => new BehaviorSubject(true) } }
       ]
     });
     service = TestBed.inject(AnalyzedBillContextService);

@@ -13,7 +13,7 @@ function create(stats: ShopStatDto[]): ShopStatsContextService {
   TestBed.configureTestingModule({
     providers: [
       { provide: BillApiService, useValue: { getShopStats: () => of(stats) } },
-      { provide: ContextService, useValue: { backendReady: () => of(true) } }
+      { provide: ContextService, useValue: { backendUnreachable: () => false, backendReady: () => of(true) } }
     ]
   });
   return TestBed.inject(ShopStatsContextService);
