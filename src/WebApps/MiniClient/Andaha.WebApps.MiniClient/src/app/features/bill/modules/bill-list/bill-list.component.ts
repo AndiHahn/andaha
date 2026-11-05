@@ -185,6 +185,12 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    // Rechnung eines verbundenen Kontos: nicht löschbar (wie die Detailseite)
+    if (bill.isExternal) {
+      row.close();
+      return;
+    }
+
     void this.confirmDelete(bill, row);
   }
 

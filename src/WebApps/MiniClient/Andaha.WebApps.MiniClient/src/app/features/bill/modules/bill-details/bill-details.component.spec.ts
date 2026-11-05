@@ -83,6 +83,29 @@ describe('BillDetailsComponent', () => {
     });
   });
 
+  it('external bill: "Löschen" is disabled', () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [BillDetailsComponent],
+      providers: [
+        { provide: ActivatedRoute, useValue: { snapshot: { params: { id: 'b1' }, children: [], parent: null } } },
+        { provide: HistoryTrailService, useValue: { leaveTo } },
+        { provide: ConfirmationDialogService, useValue: { openDialog: openConfirmation } },
+        {
+          provide: BillContextService,
+          useValue: { loadBillById: () => of({ ...bill, isExternal: true }), loading: () => of(false), deleteBill }
+        },
+        { provide: BillCategoryContextService, useValue: { categories: () => of([]) } }
+      ]
+    });
+    fixture = TestBed.createComponent(BillDetailsComponent);
+    host = fixture.nativeElement;
+    fixture.detectChanges();
+
+    expect(button('Löschen').disabled).toBe(true);
+    expect(button('Duplizieren').disabled).toBe(false);
+  });
+
   it('delete asks confirmation, deletes and vibrates', async () => {
     const vibrate = vi.spyOn(navigator, 'vibrate').mockImplementation(() => true);
 

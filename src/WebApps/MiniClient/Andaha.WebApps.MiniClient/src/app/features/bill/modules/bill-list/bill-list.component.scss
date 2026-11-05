@@ -90,8 +90,11 @@
     max-width: 1040px;
   }
 
+  // Summe reserviert wie die Kopfzeile die Scrollbar-Spalte der Liste: Betrag buendig mit den Preisen
   .sum {
     padding: 0 16px 10px;
+    overflow-y: hidden;
+    scrollbar-gutter: stable;
   }
 
   // Kopfzeile und Liste reservieren dieselbe Scrollbar-Spalte, damit die Spalten buendig bleiben

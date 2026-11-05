@@ -33,8 +33,9 @@
     </button>
   </div>
 
-  <!-- Aktive Filter als Chips mit × (Mockup 01 C): Datum zuerst, dann die Kategorien -->
-  <div class="chips" data-no-swipe>
+  <!-- Aktive Filter als Chips mit × vorne (Mockup 01 C): Datum, aktive Kategorie, dann die übrigen Kategorien.
+       Nach jeder Filteränderung springt die Zeile an den Anfang, damit die aktiven Chips ganz sichtbar sind. -->
+  <div #chipRow class="chips" data-no-swipe>
     @if (fromDateFilter || untilDateFilter) {
       <span class="chip on date-chip">
         <button type="button" class="date-chip-label" (click)="onFilterClick()">{{ dateLabel }}</button>
@@ -44,18 +45,29 @@
       </span>
     }
     @for (category of categories; track category.category?.id ?? category.displayName; let i = $index) {
-      <button type="button" class="chip"
-        [class.on]="category.selected"
-        [attr.aria-pressed]="category.selected"
-        (click)="onChipClick(i)">
-        @if (category.selected && !category.category) {
-          <mat-icon aria-hidden="true">check</mat-icon>
-        }{{ category.displayName }}@if (category.selected && category.category) {
-          <mat-icon class="x-icon" aria-hidden="true">close</mat-icon>
-        }
-      </button>
+      @if (category.selected && category.category) {
+        <ng-container *ngTemplateOutlet="chip; context: { $implicit: category, index: i }" />
+      }
+    }
+    @for (category of categories; track category.category?.id ?? category.displayName; let i = $index) {
+      @if (!(category.selected && category.category)) {
+        <ng-container *ngTemplateOutlet="chip; context: { $implicit: category, index: i }" />
+      }
     }
   </div>
+
+  <ng-template #chip let-category let-i="index">
+    <button type="button" class="chip"
+      [class.on]="category.selected"
+      [attr.aria-pressed]="category.selected"
+      (click)="onChipClick(i)">
+      @if (category.selected && !category.category) {
+        <mat-icon aria-hidden="true">check</mat-icon>
+      }{{ category.displayName }}@if (category.selected && category.category) {
+        <mat-icon class="x-icon" aria-hidden="true">close</mat-icon>
+      }
+    </button>
+  </ng-template>
 
   <button type="button" class="chip filter-chip" (click)="onFilterClick()">
     <mat-icon aria-hidden="true">calendar_today</mat-icon>Datumfilter

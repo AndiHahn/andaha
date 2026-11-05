@@ -80,6 +80,8 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
         }
 
         this.bill = bill;
+        // Rechnung eines verbundenen Kontos: „Löschen“ gesperrt (das Feld wurde bisher nie gesetzt)
+        this.isExternal = bill.isExternal;
         this.form = getBillForm(bill);
         this.form.disable();
         this.initSubscriptions();

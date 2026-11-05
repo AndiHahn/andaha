@@ -165,6 +165,29 @@ describe('BillListFilterComponent active filter chips', () => {
         expect(first.querySelector('[aria-label="Datumsfilter entfernen"]')).not.toBeNull();
     });
 
+    it('puts the active category right after the date chip', () => {
+        const texts = chips().map(chip => chip.textContent ?? '');
+        expect(texts.length).toBe(4);
+        expect(texts[0]).toContain('November 2026');
+        expect(texts[1]).toContain('Lebensmittel');
+        expect(texts[2]).toContain('Alle');
+        expect(texts[3]).toContain('Haushalt');
+    });
+
+    it('scrolls the chip row back to the start after a filter change, so active chips are fully visible', () => {
+        host.style.display = 'block';
+        host.style.width = '160px';
+        const row = host.querySelector<HTMLElement>('.chips')!;
+        row.scrollLeft = 120;
+        expect(row.scrollLeft).toBeGreaterThan(0);
+
+        chips().find(chip => chip.textContent?.includes('Haushalt'))!.click();
+        fixture.detectChanges();
+
+        expect(row.scrollLeft).toBe(0);
+        expect(chips()[1].textContent).toContain('Haushalt');
+    });
+
     it('removing the date chip clears the date filter', () => {
         const emitted: unknown[] = [];
         component.dateFilterChanged.subscribe(value => emitted.push(value));

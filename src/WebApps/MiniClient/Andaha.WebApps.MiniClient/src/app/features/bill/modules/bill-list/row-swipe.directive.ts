@@ -1,4 +1,4 @@
-import { DestroyRef, Directive, ElementRef, NgZone, inject, output, signal } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, NgZone, inject, input, output, signal } from '@angular/core';
 import { ROW_SWIPE_MIN_DISTANCE, ROW_SWIPE_OPEN_WIDTH, evaluateRowSwipe, isSteep } from './row-swipe';
 
 export type RowSwipeState = 'closed' | 'open-delete' | 'open-duplicate';
@@ -24,6 +24,8 @@ export class RowSwipeDirective {
   /** Aktion ausgelöst: weit gewischt oder Tipp auf die aufgedeckte Aktion */
   readonly rowAction = output<RowSwipeAction>();
   readonly state = signal<RowSwipeState>('closed');
+  /** false: links wischen deckt kein „Löschen“ auf (Rechnung eines verbundenen Kontos) */
+  readonly deletable = input(true);
 
   private readonly zone = inject(NgZone);
   private readonly host: HTMLElement = inject(ElementRef).nativeElement;
@@ -110,7 +112,8 @@ export class RowSwipeDirective {
 
     if (this.direction === 'horizontal') {
       const width = this.host.getBoundingClientRect().width;
-      this.moveTo(Math.max(-width, Math.min(width, this.baseOffset + dx)));
+      const min = this.deletable() ? -width : 0;
+      this.moveTo(Math.max(min, Math.min(width, this.baseOffset + dx)));
     }
   }
 
@@ -133,7 +136,10 @@ export class RowSwipeDirective {
     // offene Zeile zurückgewischt: schließen
     const closing = this.baseOffset !== 0 && Math.sign(dx) === -Math.sign(this.baseOffset)
       && Math.abs(dx) >= ROW_SWIPE_MIN_DISTANCE;
-    const result = closing ? null : evaluateRowSwipe(this.baseOffset + dx, dy, this.host.getBoundingClientRect().width);
+    let result = closing ? null : evaluateRowSwipe(this.baseOffset + dx, dy, this.host.getBoundingClientRect().width);
+    if (!this.deletable() && (result === 'delete' || result === 'open-delete')) {
+      result = null;
+    }
 
     this.zone.run(() => {
       switch (result) {

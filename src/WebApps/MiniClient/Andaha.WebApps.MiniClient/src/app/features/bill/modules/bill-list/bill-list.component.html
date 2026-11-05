@@ -48,12 +48,16 @@
 
           @for (bill of group.bills; track bill.id) {
             <!-- Zeilen-Wischen (AC3): links Löschen, rechts Duplizieren; data-no-swipe nimmt die Zeile vom Tab-Wischen aus -->
-            <div class="swipe-row" data-no-swipe appRowSwipe #row="rowSwipe" (rowAction)="onRowAction(bill, $event, row)">
-              <div class="under under-delete" [inert]="row.state() !== 'open-delete'">
-                <button type="button" (click)="onRowAction(bill, 'delete', row)">
-                  <mat-icon aria-hidden="true">delete</mat-icon>Löschen
-                </button>
-              </div>
+            <!-- Rechnungen verbundener Konten: nur Duplizieren, kein Löschen (wie die Detailseite) -->
+            <div class="swipe-row" data-no-swipe appRowSwipe #row="rowSwipe" [deletable]="!bill.isExternal"
+              (rowAction)="onRowAction(bill, $event, row)">
+              @if (!bill.isExternal) {
+                <div class="under under-delete" [inert]="row.state() !== 'open-delete'">
+                  <button type="button" (click)="onRowAction(bill, 'delete', row)">
+                    <mat-icon aria-hidden="true">delete</mat-icon>Löschen
+                  </button>
+                </div>
+              }
               <div class="under under-duplicate" [inert]="row.state() !== 'open-duplicate'">
                 <button type="button" (click)="onRowAction(bill, 'duplicate', row)">
                   <mat-icon aria-hidden="true">content_copy</mat-icon>Duplizieren

@@ -7,6 +7,7 @@ import { BillListFilterDialogService } from './bill-list-filter-dialog/bill-list
 import { BillListFilterDialogData } from './bill-list-filter-dialog/BillListFilterDialogData';
 import { BillListDateFilter, dateFilterLabel } from './BillListDateFilter';
 import { MatIcon } from '@angular/material/icon';
+import { NgTemplateOutlet } from '@angular/common';
 
 interface CategorySelection {
   selected: boolean;
@@ -19,13 +20,14 @@ interface CategorySelection {
     templateUrl: './bill-list-filter.component.html',
     styleUrls: ['./bill-list-filter.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [MatIcon]
+    imports: [MatIcon, NgTemplateOutlet]
 })
 export class BillListFilterComponent implements OnInit, OnDestroy {
   private billListFilterDialogService = inject(BillListFilterDialogService);
   private billCategoryContextService = inject(BillCategoryContextService);
 
   @ViewChild('searchTerm') searchInput!: ElementRef;
+  @ViewChild('chipRow') chipRow?: ElementRef<HTMLElement>;
   
   @Input()
   deactivate: boolean = false;
@@ -188,7 +190,15 @@ export class BillListFilterComponent implements OnInit, OnDestroy {
       .filter(category => category.selected && category.category)
       .map(category => category.category!);
 
+    this.scrollChipsToStart();
     this.categoryFilterChanged.emit(selectedCategories);
+  }
+
+  /** Aktive Filter stehen vorne: nach einer Änderung die Chipzeile an den Anfang setzen */
+  private scrollChipsToStart(): void {
+    if (this.chipRow) {
+      this.chipRow.nativeElement.scrollLeft = 0;
+    }
   }
 
   private triggerDateFilterChanged(): void {
@@ -197,6 +207,7 @@ export class BillListFilterComponent implements OnInit, OnDestroy {
       untilDate: this.untilDateFilter
     }
 
+    this.scrollChipsToStart();
     this.dateFilterChanged.emit(dateFilter);
   }
 

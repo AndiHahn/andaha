@@ -150,6 +150,34 @@ describe('BillListComponent', () => {
     vibrate.mockRestore();
   });
 
+  it('external bill: swipe left does not delete', async () => {
+    bills$.next([{ ...bill('ext', new Date(2026, 10, 4), 12), isExternal: true }]);
+    fixture.detectChanges();
+    const row = host.querySelector<HTMLElement>('.swipe-row')!;
+    expect(row.querySelector('.under-delete')).toBeNull();
+
+    swipe(row, -0.6 * row.getBoundingClientRect().width);
+    fixture.detectChanges();
+    await new Promise(resolve => setTimeout(resolve));
+
+    expect(openConfirmation).not.toHaveBeenCalled();
+    expect(deleteBill).not.toHaveBeenCalled();
+    expect(row.querySelector<HTMLElement>('.swipe-content')!.style.transform).toBe('');
+  });
+
+  it('external bill: swipe right still duplicates', async () => {
+    const navigate = TestBed.inject(Router).navigate as unknown as ReturnType<typeof vi.fn>;
+    bills$.next([{ ...bill('ext', new Date(2026, 10, 4), 12), isExternal: true }]);
+    fixture.detectChanges();
+    const row = host.querySelector<HTMLElement>('.swipe-row')!;
+
+    swipe(row, 0.6 * row.getBoundingClientRect().width);
+
+    await vi.waitFor(() => expect(navigate).toHaveBeenCalledWith(['/bill/create'], expect.objectContaining({
+      state: { prefill: expect.objectContaining({ shopName: 'Shop ext' }) }
+    })));
+  });
+
   it('does not delete when the confirmation is cancelled', async () => {
     confirmed = false;
     const row = host.querySelectorAll<HTMLElement>('.swipe-row')[0];
