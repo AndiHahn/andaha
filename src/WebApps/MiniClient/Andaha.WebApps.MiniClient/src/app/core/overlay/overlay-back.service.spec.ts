@@ -115,8 +115,21 @@ describe('OverlayBackService', () => {
   let backSpy: ReturnType<typeof vi.spyOn>;
   let goSpy: ReturnType<typeof vi.spyOn>;
   let router: FakeRouter;
+  /** Timer, die während eines Tests gestellt wurden */
+  let testTimers: Set<ReturnType<typeof setTimeout>>;
 
   beforeEach(() => {
+    // Der Service wartet mit echten Timern (Router-Settle bis 2 s, eigene Traversierung bis 1 s). Ein Timer
+    // aus dem vorigen Test liefe sonst nach dessen Ende weiter und schriebe per replaceState/back in die
+    // History-Attrappe des nächsten Tests (z. B. Marker entfernt → der Service geht nicht weiter zurück).
+    testTimers = new Set();
+    const realSetTimeout = window.setTimeout;
+    vi.spyOn(window, 'setTimeout').mockImplementation(((handler: TimerHandler, timeout?: number, ...args: unknown[]) => {
+      const id = realSetTimeout.call(window, handler, timeout, ...args);
+      testTimers.add(id);
+      return id;
+    }) as typeof setTimeout);
+
     fake = new FakeHistory();
     vi.spyOn(history, 'state', 'get').mockImplementation(() => fake.state);
     vi.spyOn(history, 'pushState').mockImplementation(state => fake.push(state));
@@ -135,8 +148,10 @@ describe('OverlayBackService', () => {
   afterEach(() => {
     fake.disposed = true;
     window.removeEventListener('popstate', router.onPopState);
-    vi.restoreAllMocks();
     TestBed.resetTestingModule();
+    // offene Timer des zerstörten Service (und der Attrappen) dürfen nicht in den nächsten Test laufen
+    testTimers.forEach(id => clearTimeout(id));
+    vi.restoreAllMocks();
   });
 
   it('pushes a history entry with the same url and a marker when an overlay opens', () => {
@@ -223,6 +238,7 @@ describe('OverlayBackService', () => {
     expect(fake.index).toBe(2);
 
     releaseUpper();
+    await vi.waitFor(() => expect(fake.index).toBe(0));
     await tick();
     expect(fake.index).toBe(0);
     expect(closeLower).not.toHaveBeenCalled();
@@ -272,6 +288,7 @@ describe('OverlayBackService', () => {
 
     // Zurück von der neuen Seite landet auf dem verwaisten Overlay-Eintrag und geht gleich weiter
     await fake.userBack();
+    await vi.waitFor(() => expect(fake.index).toBe(0));
     await tick();
 
     expect(fake.index).toBe(0);
@@ -373,6 +390,7 @@ describe('OverlayBackService', () => {
 
     // 2. Zurück: Vorseite; der verwaiste Overlay-Eintrag wird gleich übersprungen
     await fake.userBack();
+    await vi.waitFor(() => expect(fake.index).toBe(0));
     await tick();
     expect(fake.index).toBe(0);
     expect(backSpy).toHaveBeenCalledTimes(1);
@@ -384,6 +402,7 @@ describe('OverlayBackService', () => {
     fake.index = 2;
 
     await fake.userBack();
+    await vi.waitFor(() => expect(fake.index).toBe(0));
     await tick();
 
     expect(fake.index).toBe(0);
@@ -463,7 +482,11 @@ describe('OverlayBackService', () => {
     });
 
     release();
-    await tick();
+    // erst wenn das Router-Nachspiel geschrieben (navigationId 7) und der Marker wieder entfernt ist
+    await vi.waitFor(() => {
+      expect(fake.entries[1]).toEqual(expect.objectContaining({ navigationId: 7 }));
+      expect(fake.entries[1]).not.toHaveProperty('overlayBack');
+    });
     await tick();
 
     expect(fake.index).toBe(1);
@@ -487,7 +510,7 @@ describe('OverlayBackService', () => {
       await tick();
 
       service.back(1);
-      await tick();
+      await vi.waitFor(() => expect(fake.index).toBe(0));
       await tick();
 
       expect(fake.index).toBe(0);
@@ -513,7 +536,7 @@ describe('OverlayBackService', () => {
 
       release();
       service.back(1);
-      await tick();
+      await vi.waitFor(() => expect(fake.index).toBe(0));
       await tick();
 
       expect(fake.index).toBe(0);

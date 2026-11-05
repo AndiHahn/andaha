@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
-import { of, Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { TimeRangeDto } from 'src/app/api/common-dtos/TimeRangeDto';
 import { ExpenseApiService } from 'src/app/api/shopping/expense-api.service';
 import { ContextService } from 'src/app/core/context.service';
@@ -60,5 +60,53 @@ describe('ExpenseContextService downloadExpenses', () => {
     timeRange.next(range(30));
 
     expect(exportCalls).toBe(1);
+  });
+});
+
+describe('ExpenseContextService error state', () => {
+  it('time range fails → error() true, retry() refetches', () => {
+    const range = { startTimeUtc: new Date(2026, 0, 1), endTimeUtc: new Date(2026, 10, 5) };
+    let fail = true;
+    let timeRangeCalls = 0;
+    const api = {
+      getAvailableTimeRange: () => { timeRangeCalls++; return fail ? throwError(() => new Error('500')) : of(range); }
+    } as unknown as ExpenseApiService;
+
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: BillContextService, useValue: { bills: () => new Subject<any[]>().asObservable() } },
+        { provide: ContextService, useValue: { backendReady: () => of(true), retryWakeUp: vi.fn() } },
+        { provide: ExpenseApiService, useValue: api },
+        { provide: DatePipe, useValue: new DatePipe('en-US') }
+      ]
+    });
+    const service = TestBed.runInInjectionContext(() => new ExpenseContextService());
+    expect(service.error()).toBe(true);
+    expect(service.loading()).toBe(false);
+
+    fail = false;
+    const callsBefore = timeRangeCalls;
+    let current: TimeRangeDto | undefined;
+    service.availableTimeRange().subscribe(r => current = r);
+    service.retry();
+
+    expect(timeRangeCalls).toBe(callsBefore + 1);
+    expect(service.error()).toBe(false);
+    expect(current).toEqual(range);
+  });
+
+  it('a time range failure before the backend is ready is no error', () => {
+    const api = { getAvailableTimeRange: () => throwError(() => new Error('not ready')) } as unknown as ExpenseApiService;
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: BillContextService, useValue: { bills: () => new Subject<any[]>().asObservable() } },
+        { provide: ContextService, useValue: { backendReady: () => of(false) } },
+        { provide: ExpenseApiService, useValue: api },
+        { provide: DatePipe, useValue: new DatePipe('en-US') }
+      ]
+    });
+    const service = TestBed.runInInjectionContext(() => new ExpenseContextService());
+
+    expect(service.error()).toBe(false);
   });
 });

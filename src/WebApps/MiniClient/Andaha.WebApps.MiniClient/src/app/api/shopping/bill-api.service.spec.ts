@@ -62,6 +62,7 @@ describe('BillApiService addBill', () => {
     expect(result!.values[0].date).toEqual(new Date('2026-11-04T00:00:00Z'));
     expect(result!.totalSum).toBe(12.5);
     expect(result!.monthSums).toEqual([{ month: '2026-11', sum: 12.5 }]);
+    http.verify();
   });
 
   it('deleteUserData calls DELETE api/bill/user-data without global error snackbar', () => {
@@ -70,6 +71,8 @@ describe('BillApiService addBill', () => {
     const req = http.expectOne(r => r.method === 'DELETE');
     expect(new URL(req.request.url).pathname).toBe('/api/bill/user-data');
     expect(req.request.context.get(SKIP_GLOBAL_ERROR)).toBe(true);
+    req.flush(null);
+    http.verify();
   });
 
   it('updateBill sends a chosen subcategory', () => {

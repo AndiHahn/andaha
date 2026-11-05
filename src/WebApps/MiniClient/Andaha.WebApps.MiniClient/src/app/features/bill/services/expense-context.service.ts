@@ -24,10 +24,11 @@ export class ExpenseContextService {
   private readonly loadingState = signal(false);
   private readonly errorState = signal(false);
   private lastTimeRange?: TimeRange;
+  private backendIsReady: boolean = false;
 
   /** true, solange Ausgaben für einen Zeitraum geladen werden */
   readonly loading: Signal<boolean> = this.loadingState.asReadonly();
-  /** true, wenn das letzte Laden der Ausgaben fehlgeschlagen ist */
+  /** true, wenn das Laden des Zeitraums oder zuletzt der Ausgaben fehlgeschlagen ist */
   readonly error: Signal<boolean> = this.errorState.asReadonly();
 
   constructor() {
@@ -96,6 +97,12 @@ export class ExpenseContextService {
 
   /** Zeitraum (falls noch nicht geladen) und die zuletzt angeforderten Ausgaben erneut laden */
   retry(): void {
+    if (!this.backendIsReady) {
+      this.contextService.retryWakeUp();
+      return;
+    }
+
+    this.errorState.set(false);
     if (!this.availableTimeRange$.value) {
       this.fetchTimeRange();
     }
@@ -108,6 +115,7 @@ export class ExpenseContextService {
     this.contextService.backendReady().subscribe(
       {
         next: ready => {
+          this.backendIsReady = ready;
           if (ready) {
             this.fetchTimeRange();
           }
@@ -150,7 +158,13 @@ export class ExpenseContextService {
     this.apiService.getAvailableTimeRange().subscribe(
       {
         next: timeRange => this.availableTimeRange$.next(timeRange),
-        error: _ => { }
+        error: _ => {
+          // ohne Zeitraum kann die Seite nichts laden: Fehlerzustand statt endlosem Spinner
+          if (this.backendIsReady && !this.availableTimeRange$.value) {
+            this.loadingState.set(false);
+            this.errorState.set(true);
+          }
+        }
       }
     );
   }

@@ -21,8 +21,9 @@ export class StatisticsContextService {
   private readonly errorState = signal(false);
   /** Das zuletzt angeforderte Laden, für „Erneut versuchen“ */
   private lastLoad?: () => void;
+  private backendIsReady: boolean = false;
 
-  /** true, wenn das letzte Laden der Statistik fehlgeschlagen ist */
+  /** true, wenn das Laden des Zeitraums oder zuletzt der Statistik fehlgeschlagen ist */
   readonly error: Signal<boolean> = this.errorState.asReadonly();
 
   constructor() {
@@ -58,6 +59,12 @@ export class StatisticsContextService {
 
   /** Zeitraum und die zuletzt angeforderte Statistik erneut laden */
   retry(): void {
+    if (!this.backendIsReady) {
+      this.contextService.retryWakeUp();
+      return;
+    }
+
+    this.errorState.set(false);
     if (!this.availableTimeRange$.value) {
       this.fetchTimeRange();
     }
@@ -68,7 +75,13 @@ export class StatisticsContextService {
     this.apiService.getAvailableTimeRange().subscribe(
       {
         next: timeRange => this.availableTimeRange$.next(timeRange),
-        error: _ => { }
+        error: _ => {
+          // ohne Zeitraum kann die Seite nichts laden: Fehlerzustand statt endlosem Spinner
+          if (this.backendIsReady && !this.availableTimeRange$.value) {
+            this.loading$.next(false);
+            this.errorState.set(true);
+          }
+        }
       }
     );
   }
@@ -124,6 +137,7 @@ export class StatisticsContextService {
     this.contextService.backendReady().subscribe(
       {
         next: ready => {
+          this.backendIsReady = ready;
           if (ready) {
             this.fetchTimeRange();
           }
