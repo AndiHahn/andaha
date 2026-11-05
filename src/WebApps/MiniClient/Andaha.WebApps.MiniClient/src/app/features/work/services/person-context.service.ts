@@ -7,7 +7,6 @@ import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
 import { UpdatePersonDto } from 'src/app/api/work/dtos/PersonUpdateDto';
 import { PersonApiService } from 'src/app/api/work/person-api.service';
 import { ContextService } from 'src/app/core/context.service';
-import { downloadFile, getFileName } from 'src/app/shared/utils/file-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -163,34 +162,6 @@ export class PersonContextService {
     );
 
     return returnSubject.asObservable();
-  }
-
-  downloadPersonInformations(): Observable<void> {
-    const returnSubject = new ReplaySubject<void>(1);
-
-    this.personApiService
-      .export()
-      .subscribe(
-        {
-          next: response => {
-            if (!response || !response.body) {
-              returnSubject.next();
-
-              return;
-            }
-
-            downloadFile(
-              response.body,
-              getFileName(response.headers),
-              response.body.type);
-
-            returnSubject.next();
-          },
-          error: error => returnSubject.error(error)
-        }
-      );
-
-    return returnSubject;
   }
 
   private fetchPersons(): Observable<void> {

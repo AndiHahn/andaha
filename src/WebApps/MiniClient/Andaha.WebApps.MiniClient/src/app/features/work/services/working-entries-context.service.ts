@@ -1,6 +1,6 @@
 import { Injectable, Signal, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { WorkingEntryDto } from 'src/app/api/work/dtos/WorkingEntryDto';
 import { WorkingEntryApiService } from 'src/app/api/work/working-entry-api.service';
 import { getParametersFromRouteRecursive } from 'src/app/shared/utils/routing-helper';
@@ -85,33 +85,6 @@ export class WorkingEntriesContextService {
 
   getById(id: string): WorkingEntryDto | undefined {
     return this.workingEntries$.value?.find(entry => entry.id == id);
-  }
-
-  deleteEntry(id: string): Observable<void> {
-    const returnSubject = new Subject<void>();
-
-    if (!this.workingEntries$.value) {
-      returnSubject.error('No working entries available.')
-
-      return returnSubject.asObservable();
-    }
-
-    const entriesWithoutDeleted = this.workingEntries$.value.filter(entry => entry.id != id);
-    this.workingEntries$.next(entriesWithoutDeleted);
-
-    this.apiService.deleteWorkingEntry(id).subscribe(
-      {
-        next: _ => {
-          returnSubject.next();
-        },
-        error: error => {
-          this.refetch();
-          returnSubject.error(error);
-        } 
-      }
-    );
-
-    return returnSubject.asObservable();
   }
 
   private loadedMonthCount(): number {

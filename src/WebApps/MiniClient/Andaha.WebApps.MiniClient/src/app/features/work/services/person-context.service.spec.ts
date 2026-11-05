@@ -67,21 +67,6 @@ describe('PersonContextService error state', () => {
   });
 });
 
-describe('PersonContextService downloadPersonInformations', () => {
-  it('emits even when the result is produced synchronously', () => {
-    const api = {
-      listPersons: () => of([]),
-      export: () => of({ body: null, headers: undefined } as any)
-    } as unknown as PersonApiService;
-    const service = createPersonContextService(api);
-
-    let emissions = 0;
-    service.downloadPersonInformations().subscribe(() => emissions++);
-
-    expect(emissions).toBe(1);
-  });
-});
-
 describe('PersonContextService addPayment', () => {
   const rawPerson = (payedHours: string) => ({
     id: 'p1', name: 'Anna', hourlyRate: 10, totalHours: '10:00:00', payedHours, payments: []

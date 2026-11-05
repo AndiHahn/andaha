@@ -3,7 +3,6 @@ import { Injectable, inject } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { constructPath, constructVersionedPath } from '../functions/functions';
 import { Observable, map } from 'rxjs';
-import { WorkingEntryDto, WorkingEntryDtoRaw, mapWorkingEntryDtoRawList } from './dtos/WorkingEntryDto';
 import { CreateWorkingEntryDto } from './dtos/CreateWorkingEntryDto';
 import { CreateWorkingEntriesDto } from './dtos/CreateWorkingEntriesDto';
 import { UpdateWorkingEntryDto } from './dtos/UpdateWorkingEntryDto';
@@ -29,12 +28,6 @@ export class WorkingEntryApiService {
     } else {
       this.endpointUrl = 'https://localhost:8200/api/working-entry';
     }
-  }
-
-  listWorkingEntries(personId: string): Observable<WorkingEntryDto[]> {
-    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, personId);
-
-    return this.httpClient.get<WorkingEntryDtoRaw[]>(url).pipe(map(mapWorkingEntryDtoRawList));
   }
 
   /**
