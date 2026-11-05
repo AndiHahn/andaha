@@ -2,18 +2,13 @@
   display: block;
 }
 
-// Arbeitszeit-Zeile (Mockup 05 Person): Datum | von – bis | Dauer, Notiz darunter
-.we {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
+// Zeile als Button (öffnet die Details), Aussehen der globalen .row (Mockup 02 C)
+button.row {
   width: 100%;
-  min-height: 44px;
-  padding: 11px 16px;
+  min-height: 52px;
   border: 0;
   border-bottom: 1px solid var(--line2);
   background: transparent;
-  color: inherit;
   font: inherit;
   text-align: left;
   cursor: pointer;
@@ -23,43 +18,40 @@
   &:focus-visible { outline-offset: -2px; }
 }
 
-.l {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  font-size: 15px;
-}
-
-.d {
-  width: 86px;
-  flex: none;
-  font-weight: 500;
-}
-
-.tm {
-  flex: 1;
+.s-text {
   min-width: 0;
-  color: var(--fg2);
-  white-space: nowrap;
-}
-
-b {
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.n {
-  max-width: 100%;
-  padding-left: 98px;
-  font-size: 13px;
-  color: var(--mut);
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+.more {
+  display: flex;
+  justify-content: center;
+  padding: 12px 16px;
+}
+
+.more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  background: transparent;
+  color: var(--pri);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:disabled { cursor: default; opacity: .7; }
+
+  .mat-mdc-progress-spinner { --mat-progress-spinner-active-indicator-color: currentColor; }
+}
+
 @media (min-width: 1024px) {
-  .we {
+  button.row,
+  .month-head {
     padding-left: 0;
     padding-right: 0;
   }

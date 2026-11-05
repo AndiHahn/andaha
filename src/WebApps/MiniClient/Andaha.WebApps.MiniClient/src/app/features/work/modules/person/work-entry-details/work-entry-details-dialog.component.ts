@@ -12,6 +12,7 @@ import { WorkEntryDetailsDialogData } from './WorkEntryDetailsDialogData';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent } from '@angular/material/dialog';
 import { WorkingEntryApiService } from 'src/app/api/work/working-entry-api.service';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
+import { vibrate } from 'src/app/shared/utils/haptics';
 import { UpdateWorkingEntryDto } from 'src/app/api/work/dtos/UpdateWorkingEntryDto';
 import { formatTime } from 'src/app/api/functions/api-utils';
 import { DialogComponent } from '../../../../../shared/dialog/dialog.component';
@@ -169,6 +170,7 @@ export class WorkEntryDetailsDialogComponent implements OnInit {
       {
         next: _ => {
           this.isDeleting = false;
+          vibrate();
           this.dialogRef.close(true);
         },
         error: _ => {

@@ -3,24 +3,36 @@
   @if (person) {
     <div class="body">
       <!--
-      KENNZAHL-ZEILE (Bezahlt/Offen nur bei Stundensatz > 0, wie bisher)
+      KENNZAHLEN (Mockup 02 C): Gesamt, Offen (h), Offen (€); Offen nur bei Stundensatz > 0, wie bisher
       -->
-      <div class="tri">
+      <div class="figs">
         <div>
-          <span>Gesamtstunden</span>
-          <b>{{ getTimeDisplayName(person.totalHours) }}</b>
+          <span>Gesamt</span>
+          <b>{{ formatTime(person.totalHours) }} h</b>
         </div>
-        @if (form.controls.hourlyRate.value > 0) {
+        @if (person.hourlyRate > 0) {
           <div>
-            <span>Bezahlte Stunden</span>
-            <b>{{ getTimeDisplayName(person.payedHours) }}</b>
+            <span>Offen</span>
+            <b class="open">{{ openHoursDisplayName(person) }} h</b>
           </div>
           <div>
-            <span>Offene Stunden</span>
-            <b class="open">{{ getTimeDisplayName(calculateTimeDifference(person.totalHours, person.payedHours)) }}</b>
+            <span>Offen €</span>
+            <b class="open">{{ openAmount(person) | number:'1.2-2':'de' }} €</b>
           </div>
         }
       </div>
+      @if (!isEditing) {
+        <div class="quick">
+          <button type="button" class="btn pri" (click)="onAddWorkingEntryClick()" [disabled]="isDeleting || isSaving">
+            <mat-icon>add</mat-icon><span>Arbeitszeit erfassen</span>
+          </button>
+          @if (person.hourlyRate > 0) {
+            <button type="button" class="btn sec2" (click)="onAddPaymentClick()" [disabled]="isDeleting || isLoading || isSaving">
+              <span>Zahlung</span>
+            </button>
+          }
+        </div>
+      }
       <!--
       LESEMODUS: WERTEZEILEN (Werte aus dem Formular, wie bisher angezeigt)
       -->
@@ -40,14 +52,22 @@
           <div class="empty">Noch keine Zahlungen.</div>
         }
         @for (payment of person.payments; track payment.id) {
-          <div class="kv">
-            <span class="k">{{ payment.payedAt | date:'dd.MM.yyyy':undefined:'de' }} · {{ getTimeDisplayName(payment.payedHours) }} h</span>
-            <span class="v">
-              {{ payment.payedMoney | number:'1.2-2':'de' }} €
-              @if (payment.payedTip > 0) {
-                <small class="tip">davon {{ payment.payedTip | number:'1.2-2':'de' }} € Trinkgeld</small>
-              }
-            </span>
+          <div class="row payment">
+            <div class="main">
+              <div class="t">{{ payment.payedAt | date:'dd.MM.yyyy':undefined:'de' }} · {{ formatTime(payment.payedHours) }} h</div>
+              <!-- ein Element: .s ist ein Flex-Container, getrennte Textknoten bekämen sonst den Flex-Abstand -->
+              <div class="s"><span>{{ payment.payedMoney | number:'1.2-2':'de' }} €@if (payment.payedTip > 0) { + {{ payment.payedTip | number:'1.2-2':'de' }} € Trinkgeld }</span></div>
+            </div>
+            <div class="pact">
+              <button type="button" class="icon-btn" aria-label="Zahlung bearbeiten" (click)="onEditPaymentClick(payment)"
+                [disabled]="isDeleting || isSaving">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button type="button" class="icon-btn" aria-label="Zahlung löschen" (click)="onDeletePaymentClick(payment)"
+                [disabled]="isDeleting || isSaving">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
           </div>
         }
       }
@@ -78,70 +98,53 @@
         </form>
       }
       <!--
-      ARBEITSZEITEN
+      ARBEITSZEITEN NACH MONATEN (Mockup 02 C)
       -->
-      <p class="sec">Arbeitszeiten</p>
-      @if (workingEntries && workingEntries.length <= 0) {
-        <div class="empty">
-          Es sind noch keine Arbeitszeiten vorhanden.
-        </div>
-      }
-      @if (!workingEntries || isLoading) {
-        <div class="loading">
-          <mat-spinner diameter="40" />
-        </div>
-      }
-      @if (workingEntries && !isLoading) {
-        <app-work-entry-list [workEntries]="workingEntries!" />
-      }
+      <app-load-state [state]="entriesLoadState" emptyText="Noch keine Arbeitszeiten – mit „Arbeitszeit erfassen“ legst du die erste an." (retry)="onRetryEntriesClick()">
+        @if (workingEntries) {
+          <app-work-entry-list [workEntries]="workingEntries" [hourlyRate]="person.hourlyRate" />
+        }
+      </app-load-state>
     </div>
   }
 
-  <!--
-  AKTIONEN
-  -->
   <div class="progress-slot">
     @if (isDeleting || !person) {
       <mat-progress-bar mode="indeterminate" color="accent" />
     }
   </div>
 
-  @if (person && !isEditing) {
-    <div class="actions">
-      @if (!isEditing && form.controls.hourlyRate.value > 0) {
-        <button type="button" class="btn sec2"
-          (click)="onAddPaymentClick()" [disabled]="isDeleting || isLoading || isSaving">
-          <mat-icon>payments</mat-icon><span>Zahlung</span>
+  @if (person) {
+    @if (!isEditing) {
+      <div class="actions">
+        <button type="button" class="btn sec2" (click)="onEditClick()" [disabled]="isDeleting || isSaving">
+          @if (!isSaving) {
+            <mat-icon>edit</mat-icon><span>Bearbeiten</span>
+          }
+          @if (isSaving) {
+            <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
+          }
         </button>
-      }
-      <button type="button" class="btn pri" (click)="onEditClick()" [disabled]="isDeleting || isLoading || isSaving">
-        @if (!isSaving) {
-          <mat-icon>edit</mat-icon><span>Bearbeiten</span>
-        }
-        @if (isSaving) {
-          <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
-        }
-      </button>
-      <button type="button" class="btn del sq" aria-label="Löschen" (click)="onDeleteClick()"
-        [disabled]="isEditing || isDeleting || isLoading || isSaving">
-        <mat-icon>delete</mat-icon>
-      </button>
-    </div>
-  }
-
-  @if (person && isEditing) {
-    <div class="actions">
-      <button type="button" class="btn sec2" (click)="onCancelClick()">
-        <mat-icon>close</mat-icon><span>Abbrechen</span>
-      </button>
-      <button type="button" class="btn pri" (click)="onSaveClick()" [disabled]="isSaving">
-        @if (!isSaving) {
-          <mat-icon>check</mat-icon><span>Speichern</span>
-        }
-        @if (isSaving) {
-          <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
-        }
-      </button>
-    </div>
+        <button type="button" class="btn del sq" aria-label="Löschen" (click)="onDeleteClick()"
+          [disabled]="isDeleting || isSaving">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    }
+    @if (isEditing) {
+      <div class="actions">
+        <button type="button" class="btn sec2" (click)="onCancelClick()">
+          <mat-icon>close</mat-icon><span>Abbrechen</span>
+        </button>
+        <button type="button" class="btn pri" (click)="onSaveClick()" [disabled]="isSaving">
+          @if (!isSaving) {
+            <mat-icon>check</mat-icon><span>Speichern</span>
+          }
+          @if (isSaving) {
+            <mat-spinner class="btn-spinner" [diameter]="18" /><span>Speichert …</span>
+          }
+        </button>
+      </div>
+    }
   }
 </div>

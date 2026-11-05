@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, DestroyRef, inje
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
 import { PersonContextService } from '../../services/person-context.service';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { LoadState, LoadStateComponent } from 'src/app/shared/load-state/load-state.component';
 import { PersonListComponent } from './person-list/person-list.component';
 import { Router, RouterLink } from '@angular/router';
 import { PageTitleService } from 'src/app/core/page-title/page-title.service';
@@ -14,7 +14,7 @@ import { MatFabButton } from '@angular/material/button';
     templateUrl: './person.component.html',
     styleUrls: ['./person.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [MatProgressSpinner, PersonListComponent, RouterLink, MatIcon, MatFabButton]
+    imports: [LoadStateComponent, PersonListComponent, RouterLink, MatIcon, MatFabButton]
 })
 export class PersonComponent implements OnInit, OnDestroy {
   private personContextService = inject(PersonContextService);
@@ -22,8 +22,20 @@ export class PersonComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
 
+  readonly contextError = this.personContextService.error;
 
   persons?: PersonDto[];
+
+  get loadState(): LoadState {
+    if (this.contextError()) {
+      return 'error';
+    }
+    if (!this.persons) {
+      return 'loading';
+    }
+
+    return this.persons.length == 0 ? 'empty' : 'ready';
+  }
 
   ngOnInit(): void {
     this.initSubscriptions();
@@ -34,6 +46,10 @@ export class PersonComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.pageTitleService.setAction(null);
+  }
+
+  retry(): void {
+    this.personContextService.retry();
   }
   
   private initSubscriptions(): void {

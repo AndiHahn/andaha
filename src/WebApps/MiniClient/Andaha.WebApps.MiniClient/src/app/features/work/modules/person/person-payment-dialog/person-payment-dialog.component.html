@@ -1,13 +1,17 @@
-<app-dialog [title]="'Zahlung hinzufügen'">
+<app-dialog [title]="title">
   <form class="dialog-form" [formGroup]="form" (ngSubmit)="onSubmit()">
     <mat-dialog-content>
       <div class="form">
         <label class="field" [class.invalid]="form.controls.payedHours | showError">
           <span class="field-label">Bezahlte Stunden</span>
           <span class="field-box">
-            <input formControlName="payedHours" required autocomplete="off" [attr.aria-invalid]="form.controls.payedHours | showError">
+            <input formControlName="payedHours" required autocomplete="off" placeholder="hh:mm"
+              [attr.aria-invalid]="form.controls.payedHours | showError" [attr.aria-describedby]="(form.controls.payedHours | showError) ? 'payment-hours-error' : null">
             <span class="suffix" aria-hidden="true">h</span>
           </span>
+          @if (form.controls.payedHours | showError) {
+            <span class="field-error" id="payment-hours-error" role="alert">Bitte Stunden im Format hh:mm eingeben, größer als 0:00.</span>
+          }
         </label>
 
         <!-- Betrag und Trinkgeld nebeneinander (Mockup 05, Zahlung) -->
@@ -15,17 +19,25 @@
           <label class="field" [class.invalid]="form.controls.payedMoney | showError">
             <span class="field-label">Bezahlter Betrag</span>
             <span class="field-box">
-              <input formControlName="payedMoney" type="number" required autocomplete="off" [attr.aria-invalid]="form.controls.payedMoney | showError">
+              <input formControlName="payedMoney" type="number" required autocomplete="off"
+                [attr.aria-invalid]="form.controls.payedMoney | showError" [attr.aria-describedby]="(form.controls.payedMoney | showError) ? 'payment-money-error' : null">
               <span class="suffix" aria-hidden="true">€</span>
             </span>
+            @if (form.controls.payedMoney | showError) {
+              <span class="field-error" id="payment-money-error" role="alert">Bitte einen Betrag größer als 0 eingeben.</span>
+            }
           </label>
 
           <label class="field" [class.invalid]="form.controls.payedTip | showError">
             <span class="field-label">Trinkgeld</span>
             <span class="field-box">
-              <input formControlName="payedTip" type="number" required autocomplete="off" [attr.aria-invalid]="form.controls.payedTip | showError">
+              <input formControlName="payedTip" type="number" required autocomplete="off"
+                [attr.aria-invalid]="form.controls.payedTip | showError" [attr.aria-describedby]="(form.controls.payedTip | showError) ? 'payment-tip-error' : null">
               <span class="suffix" aria-hidden="true">€</span>
             </span>
+            @if (form.controls.payedTip | showError) {
+              <span class="field-error" id="payment-tip-error" role="alert">Bitte 0 oder mehr eingeben.</span>
+            }
           </label>
         </div>
 

@@ -17,24 +17,23 @@
   overflow: auto;
 }
 
-// Kennzahl-Zeile (Mockup 05 Person): bis zu drei gleich breite Spalten mit Trennlinie
-.tri {
+// Kennzahlen als Kacheln (Mockup 02 C .figs)
+.figs {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(0, 1fr);
-  border-bottom: 1px solid var(--line);
+  gap: 8px;
+  padding: 12px 16px;
 
   > div {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: 14px 16px;
+    gap: 2px;
     min-width: 0;
-  }
-
-  // ng-container erzeugt keinen Knoten: Trennlinie zwischen allen Spalten
-  > div + div {
-    border-left: 1px solid var(--line);
+    padding: 10px;
+    border-radius: 10px; // $andaha-radius-field
+    background: var(--surface);
+    border: 1px solid var(--line2);
   }
 
   span {
@@ -43,10 +42,11 @@
   }
 
   b {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
-    letter-spacing: -.01em;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .open {
@@ -54,16 +54,38 @@
   }
 }
 
+// „Arbeitszeit erfassen“ (Primär) und „Zahlung“ direkt unter den Kennzahlen (Mockup 02 C)
+.quick {
+  display: flex;
+  gap: 10px;
+  padding: 0 16px 12px;
+
+  .btn.pri { flex: 1; }
+}
+
+// Zahlungszeile mit Bearbeiten und Löschen (Mockup 02 C .pact)
+.payment {
+  min-height: 52px;
+}
+
+.pact {
+  flex: none;
+  display: flex;
+  gap: 4px;
+  margin-left: 4px;
+
+  .icon-btn {
+    color: var(--mut);
+
+    &:disabled { opacity: .55; cursor: default; }
+  }
+
+  .mat-icon { font-size: 20px; width: 20px; height: 20px; line-height: 20px; }
+}
+
 .v {
   min-width: 0;
   overflow-wrap: anywhere;
-}
-
-.tip {
-  display: block;
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--mut);
 }
 
 .notes {
@@ -87,12 +109,6 @@
   flex-direction: column;
   gap: 16px;
   padding: 16px;
-}
-
-.loading {
-  display: flex;
-  justify-content: center;
-  padding: 30px 0;
 }
 
 // Fester Platz fuer den 3-px-Balken (Loeschen), damit nichts springt
@@ -131,10 +147,17 @@
     padding-top: 8px;
   }
 
-  .tri {
-    border-top: 1px solid var(--line);
+  .figs,
+  .quick {
+    padding-left: 0;
+    padding-right: 0;
+  }
 
-    > div:first-child { padding-left: 0; }
+  .quick .btn.pri { flex: none; min-width: 220px; }
+
+  .payment {
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .kv,

@@ -1,5 +1,10 @@
 import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PaymentDto } from 'src/app/api/work/dtos/PaymentDto';
+import { LoadState, LoadStateComponent } from 'src/app/shared/load-state/load-state.component';
+import { vibrate } from 'src/app/shared/utils/haptics';
+import { openAmount, openMinutes } from '../../../functions/payment-functions';
+import { PersonPaymentDialogData } from '../person-payment-dialog/PersonPaymentDialogData';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
 import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
@@ -15,7 +20,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { WorkingEntriesContextService } from '../../../services/working-entries-context.service';
 import { WorkingEntryDto } from 'src/app/api/work/dtos/WorkingEntryDto';
 import { Time, DecimalPipe, DatePipe } from '@angular/common';
-import { calculateTimeDifference, createTimeDisplayName } from '../../../functions/date-time-functions';
+import { calculateTimeDifference, formatDuration, timeToMinutes } from '../../../functions/date-time-functions';
 import { PersonPaymentDialogService } from '../person-payment-dialog/person-payment-dialog.service';
 import { PageTitleService } from 'src/app/core/page-title/page-title.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
@@ -30,11 +35,12 @@ import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe'
     styleUrls: ['./person-details.component.scss'],
     providers: [WorkingEntriesContextService],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [FormsModule, ReactiveFormsModule, MatProgressSpinner, WorkEntryListComponent, MatProgressBar, MatIcon, DecimalPipe, DatePipe, ShowErrorPipe]
+    imports: [FormsModule, ReactiveFormsModule, LoadStateComponent, WorkEntryListComponent, MatProgressBar, MatIcon, MatProgressSpinner, DecimalPipe, DatePipe, ShowErrorPipe]
 })
 export class PersonDetailsComponent implements OnInit, OnDestroy {
   private historyTrail = inject(HistoryTrailService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private snackbar = inject(MatSnackBar);
   private contextService = inject(PersonContextService);
   private confirmationDialog = inject(ConfirmationDialogService);
@@ -42,6 +48,7 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
   private workingEntryContextService = inject(WorkingEntriesContextService);
   private pageTitleService = inject(PageTitleService);
 
+  readonly entriesError = this.workingEntryContextService.error;
 
   form!: FormGroup<PersonForm>;
   
@@ -54,6 +61,17 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
 
   private destroy$: Subject<void> = new Subject<void>();
+
+  get entriesLoadState(): LoadState {
+    if (this.entriesError()) {
+      return 'error';
+    }
+    if (!this.workingEntries) {
+      return 'loading';
+    }
+
+    return this.workingEntries.length == 0 ? 'empty' : 'ready';
+  }
 
   ngOnInit(): void {
     const personId = getParametersFromRouteRecursive(this.route.snapshot)["id"];
@@ -95,12 +113,37 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
     this.form.disable();
   }
 
+  /** Erfassung mit vorgewählter Person (AC13); den Query-Parameter liest die Erfassung */
+  onAddWorkingEntryClick(): void {
+    void this.router.navigate(['/work/person/create-working-entry'], { queryParams: { person: this.person!.id } });
+  }
+
   onAddPaymentClick(): void {
-    this.personPaymentDialogService
-      .openDialog({
-        personId: this.person!.id,
-        openHours: calculateTimeDifference(this.person!.totalHours, this.person!.payedHours)
-      });
+    this.personPaymentDialogService.openDialog(this.paymentDialogData());
+  }
+
+  onEditPaymentClick(payment: PaymentDto): void {
+    this.personPaymentDialogService.openDialog({ ...this.paymentDialogData(), payment });
+  }
+
+  onDeletePaymentClick(payment: PaymentDto): void {
+    const data: ConfirmationDialogData = {
+      text: 'Soll diese Zahlung wirklich gelöscht werden?'
+    }
+
+    this.confirmationDialog.openDialog(data).then(dialogRef => dialogRef.afterClosed().subscribe(
+      {
+        next: confirmed => {
+          if (confirmed) {
+            this.deletePayment(payment);
+          }
+        }
+      }
+    ));
+  }
+
+  onRetryEntriesClick(): void {
+    this.workingEntryContextService.retry();
   }
 
   onSaveClick(): void {
@@ -147,12 +190,43 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
     ));
   }
 
-  getTimeDisplayName(time: Time): string {
-    return createTimeDisplayName(time);
+  /** Dauer als „h:mm“, z. B. „86:30“ bzw. „8:30“ (Mockup 02 C) */
+  formatTime(time: Time): string {
+    return formatDuration(timeToMinutes(time));
   }
 
-  calculateTimeDifference(left: Time, right: Time): Time {
-    return calculateTimeDifference(left, right);
+  openHoursDisplayName(person: PersonDto): string {
+    return formatDuration(openMinutes(person));
+  }
+
+  openAmount(person: PersonDto): number {
+    return openAmount(person);
+  }
+
+  private paymentDialogData(): PersonPaymentDialogData {
+    return {
+      personId: this.person!.id,
+      hourlyRate: this.person!.hourlyRate,
+      openHours: calculateTimeDifference(this.person!.totalHours, this.person!.payedHours)
+    };
+  }
+
+  private deletePayment(payment: PaymentDto): void {
+    this.isDeleting = true;
+
+    // bezahlte Stunden und Zahlungen kommen danach neu vom Backend (PersonContextService)
+    this.contextService.deletePayment(this.person!.id, payment.id).subscribe(
+      {
+        next: _ => {
+          this.isDeleting = false;
+          vibrate();
+        },
+        error: _ => {
+          this.isDeleting = false;
+          openErrorSnackbar("Zahlung konnte nicht gelöscht werden.", this.snackbar);
+        }
+      }
+    );
   }
   
   private delete(): void {
@@ -162,6 +236,7 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
       {
         next: _ => {
           this.isDeleting = false;
+          vibrate();
           // zurück zur Liste; Zurück führt danach nicht auf den gelöschten Eintrag
           this.historyTrail.leaveTo('/work/person');
         },

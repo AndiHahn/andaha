@@ -4,6 +4,10 @@
     @if (isPaymentRequired(person)) {
       <span class="tag"><mat-icon aria-hidden="true">schedule</mat-icon>Zahlung offen</span>
     }
-    <span class="amt">{{ getTimeDisplayName(person.totalHours) }}</span>
+    <!-- offener Betrag neben den offenen Stunden (AC16) -->
+    <span class="open">
+      <b class="open-amount">{{ openAmount(person) | number:'1.2-2':'de' }} €</b>
+      <span class="open-hours">{{ openHoursDisplayName(person) }} h offen</span>
+    </span>
   </a>
 }

@@ -1,12 +1,30 @@
-@for (workEntry of workEntries; track workEntry.id) {
-  <button type="button" class="we" (click)="onOpenWorkEntryDetails(workEntry)">
-    <span class="l">
-      <span class="d">{{ workEntry.from | date:'dd.MM.yyyy' }}</span>
-      <span class="tm">{{ workEntry.from | date:'HH:mm' }} – {{ workEntry.until | date:'HH:mm' }}</span>
-      <b>{{ getTotalWorkingTime(workEntry) }}</b>
-    </span>
-    @if (workEntry.notes) {
-      <span class="n">{{ workEntry.notes }}</span>
-    }
-  </button>
+<!-- Arbeitszeiten nach Monaten, Kopf mit Stunden und Euro (Mockup 02 C) -->
+@for (group of months(); track group.month) {
+  <div class="month-head">
+    <b>{{ group.start | date:'LLLL yyyy':undefined:'de' }}</b>
+    <span>{{ formatDuration(group.minutes) }} h · {{ group.amount | number:'1.2-2':'de' }} €</span>
+  </div>
+  @for (row of group.rows; track row.entry.id) {
+    <button type="button" class="row" (click)="onOpenWorkEntryDetails(row.entry)">
+      <span class="date">
+        <b>{{ row.entry.from | date:'dd':undefined:'de' }}</b>
+        <span>{{ row.entry.from | date:'EEEEEE':undefined:'de' }}</span>
+      </span>
+      <span class="main">
+        <span class="t">{{ row.entry.from | date:'HH:mm':undefined:'de' }} – {{ row.entry.until | date:'HH:mm':undefined:'de' }}</span>
+        <span class="s"><span class="s-text">Pause {{ formatBreak(row.entry) }}@if (row.entry.notes) { · {{ row.entry.notes }} }</span></span>
+      </span>
+      <span class="amt">{{ formatDuration(row.minutes) }} h</span>
+    </button>
+  }
+}
+@if (hasOlder()) {
+  <div class="more">
+    <button type="button" class="more-btn" (click)="onLoadOlderClick()" [disabled]="loadingOlder()">
+      @if (loadingOlder()) {
+        <mat-spinner [diameter]="16" />
+      }
+      <span>Ältere Monate laden</span>
+    </button>
+  </div>
 }

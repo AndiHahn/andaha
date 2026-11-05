@@ -20,12 +20,6 @@
   padding-bottom: 88px;
 }
 
-.loading {
-  display: flex;
-  justify-content: center;
-  padding-top: 30px;
-}
-
 // Desktop: Inhaltsspalte mit 40 px Seitenrand (DESIGN.md Layout), FAB bleibt rechts unten
 @media (min-width: 1024px) {
   // Inhaltsspalte 560 px; der rechte Innenabstand fuellt den Rest, so bleibt die Scrollleiste am Fensterrand

@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
@@ -19,7 +19,7 @@ describe('PersonComponent', () => {
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         provideRouter([]),
-        { provide: PersonContextService, useValue: { persons: () => of([]) } },
+        { provide: PersonContextService, useValue: { persons: () => of([]), error: signal(false), retry: () => undefined } },
         { provide: PageTitleService, useValue: { setAction: (action: HeaderAction | null) => actions.push(action) } }
       ]
     }).compileComponents();
@@ -58,7 +58,7 @@ describe('PersonComponent in the router', () => {
     TestBed.configureTestingModule({
       providers: [
         provideRouter([{ path: 'work/person', component: PersonComponent }]),
-        { provide: PersonContextService, useValue: { persons: () => of([]) } }
+        { provide: PersonContextService, useValue: { persons: () => of([]), error: signal(false), retry: () => undefined } }
       ]
     });
     const harness = await RouterTestingHarness.create();

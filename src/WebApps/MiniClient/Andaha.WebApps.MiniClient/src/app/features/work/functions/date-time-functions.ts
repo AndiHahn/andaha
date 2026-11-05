@@ -87,3 +87,20 @@ export function addTimes(left: Time, right: Time) : Time {
 
   return time;
 }
+
+/** Zeit (Stunden und Minuten) in Minuten; negative Zeiten (z. B. aus calculateTimeDifference) bleiben negativ */
+export function timeToMinutes(time: Time): number {
+  return time.hours * 60 + time.minutes;
+}
+
+/** Dauer in Minuten als „h:mm“ ohne führende Null der Stunden, z. B. „8:30“ (Mockup 02 C) */
+export function formatDuration(minutes: number): string {
+  const total = Math.max(0, Math.round(minutes));
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
+}
+
+/** Netto-Arbeitszeit eines Eintrags in Minuten (Ende − Beginn − Pause), nie unter 0 */
+export function workingMinutes(workingTime: WorkingTime): number {
+  const grossMinutes = Math.round((workingTime.until.getTime() - workingTime.from.getTime()) / 60000);
+  return Math.max(0, grossMinutes - timeToMinutes(workingTime.break));
+}

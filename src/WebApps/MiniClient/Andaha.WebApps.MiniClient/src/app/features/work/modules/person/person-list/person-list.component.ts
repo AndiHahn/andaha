@@ -1,7 +1,8 @@
 import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
-import { createTimeDisplayName } from '../../../functions/date-time-functions';
-import { Time } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
+import { formatDuration } from '../../../functions/date-time-functions';
+import { openAmount, openMinutes } from '../../../functions/payment-functions';
 import { RouterLink } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 
@@ -10,14 +11,12 @@ import { MatIcon } from '@angular/material/icon';
     templateUrl: './person-list.component.html',
     styleUrls: ['./person-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [RouterLink, MatIcon]
+    imports: [RouterLink, MatIcon, DecimalPipe]
 })
 export class PersonListComponent implements OnInit {
 
   @Input()
   persons!: PersonDto[];
-
-  constructor() { }
 
   ngOnInit(): void {
     if (!this.persons) {
@@ -25,13 +24,16 @@ export class PersonListComponent implements OnInit {
     }
   }
 
-  getTimeDisplayName(time: Time): string {
-    return createTimeDisplayName(time);
+  openHoursDisplayName(person: PersonDto): string {
+    return formatDuration(openMinutes(person));
   }
 
+  openAmount(person: PersonDto): number {
+    return openAmount(person);
+  }
+
+  /** „Zahlung offen“, wenn der offene Betrag (auf Cent gerundet) über 0,00 € liegt (AC16) */
   isPaymentRequired(person: PersonDto): boolean {
-    return person.hourlyRate > 0 &&
-      (person.totalHours.hours != person.payedHours.hours ||
-      person.totalHours.minutes != person.payedHours.minutes);
+    return openAmount(person) > 0;
   }
 }

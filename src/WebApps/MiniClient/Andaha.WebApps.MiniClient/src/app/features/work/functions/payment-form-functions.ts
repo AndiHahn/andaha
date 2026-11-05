@@ -1,4 +1,5 @@
-import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { AbstractControl, FormControl, FormGroup, ValidationErrors, Validators } from "@angular/forms";
+import { isValidPayedHours } from "./payment-functions";
 
 export interface PaymentForm {
   payedHours: FormControl<string>;
@@ -7,13 +8,30 @@ export interface PaymentForm {
   notes: FormControl<string | null>;
 }
 
-export function getEmptyPaymentForm(payedHoursDefaultValue: string): FormGroup<PaymentForm> {
+export interface PaymentFormValues {
+  payedHours: string;
+  payedMoney: number | null;
+  payedTip: number | null;
+  notes?: string | null;
+}
+
+/** Zahlungsformular; bezahlte Stunden „h:mm“ größer als 0, Betrag größer als 0, Trinkgeld ab 0 (wie die Backend-Validatoren) */
+export function getPaymentForm(values: PaymentFormValues): FormGroup<PaymentForm> {
   return new FormGroup<PaymentForm>(
     {
-      payedHours: new FormControl(payedHoursDefaultValue, { nonNullable: true, validators: [ Validators.required]}),
-      payedMoney: new FormControl(null, { nonNullable: true, validators: [ Validators.required]}),
-      payedTip: new FormControl(null, { nonNullable: true, validators: [ Validators.required]}),
-      notes: new FormControl(null, { nonNullable: false })
+      payedHours: new FormControl(values.payedHours, { nonNullable: true, validators: [ Validators.required, payedHoursValidator ]}),
+      payedMoney: new FormControl(values.payedMoney, { nonNullable: true, validators: [ Validators.required, greaterThanZeroValidator ]}),
+      payedTip: new FormControl(values.payedTip, { nonNullable: true, validators: [ Validators.required, Validators.min(0) ]}),
+      notes: new FormControl(values.notes ?? null, { nonNullable: false })
     }
   );
+}
+
+function payedHoursValidator(control: AbstractControl<string | null>): ValidationErrors | null {
+  return isValidPayedHours(control.value) ? null : { payedHours: true };
+}
+
+function greaterThanZeroValidator(control: AbstractControl<number | null>): ValidationErrors | null {
+  const value = control.value;
+  return value === null || value === undefined || value > 0 ? null : { greaterThanZero: true };
 }

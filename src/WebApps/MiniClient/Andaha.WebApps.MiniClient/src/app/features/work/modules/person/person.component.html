@@ -1,20 +1,10 @@
 <div class="page">
   <div class="body">
-    @if (!persons) {
-      <div class="loading">
-        <mat-spinner diameter="40" />
-      </div>
-    }
-
-    @if (persons?.length == 0) {
-      <div class="empty">
-        Keine Personen vorhanden.
-      </div>
-    }
-
-    @if (persons) {
-      <app-person-list [persons]="persons" />
-    }
+    <app-load-state [state]="loadState" emptyText="Keine Personen vorhanden. Über „Person hinzufügen“ oben legst du die erste an." (retry)="retry()">
+      @if (persons) {
+        <app-person-list [persons]="persons" />
+      }
+    </app-load-state>
   </div>
 
   <a mat-fab color="primary" class="fab" routerLink="create-working-entry" aria-label="Arbeitszeiten hinzufügen">

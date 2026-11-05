@@ -1,8 +1,9 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent } from '@angular/material/dialog';
 import { PersonPaymentDialogData } from './PersonPaymentDialogData';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { PaymentForm, getEmptyPaymentForm } from '../../../functions/payment-form-functions';
+import { PaymentForm, getPaymentForm } from '../../../functions/payment-form-functions';
+import { paymentPrefillFor } from '../../../functions/payment-functions';
 import { PersonContextService } from '../../../services/person-context.service';
 import { PayPersonDto } from 'src/app/api/work/dtos/PayPersonDto';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
@@ -22,25 +23,34 @@ import { ShowErrorPipe } from '../../../../../shared/form-field/show-error.pipe'
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [DialogComponent, FormsModule, ReactiveFormsModule, CdkScrollable, MatDialogContent, MatIcon, MatProgressSpinner, ShowErrorPipe]
 })
-export class PersonPaymentDialogComponent implements OnInit {
+export class PersonPaymentDialogComponent {
   private snackbar = inject(MatSnackBar);
   private personContextService = inject(PersonContextService);
   private dialogRef = inject<MatDialogRef<PersonPaymentDialogComponent>>(MatDialogRef);
   private data = inject<PersonPaymentDialogData>(MAT_DIALOG_DATA);
 
+  readonly title = this.data.payment ? 'Zahlung bearbeiten' : 'Zahlung hinzufügen';
 
   form: FormGroup<PaymentForm>;
 
   isSaving: boolean = false;
 
   constructor() {
-    const data = this.data;
+    const payment = this.data.payment;
 
-    const openHours = formatTimeWithoutSeconds(data.openHours);
-    this.form = getEmptyPaymentForm(openHours);
-  }
+    this.form = payment
+      ? getPaymentForm({
+          payedHours: formatTimeWithoutSeconds(payment.payedHours),
+          payedMoney: payment.payedMoney,
+          payedTip: payment.payedTip,
+          notes: payment.notes ?? null
+        })
+      : getPaymentForm(paymentPrefillFor(this.data.openHours, this.data.hourlyRate));
 
-  ngOnInit(): void {
+    // z. B. mehr bezahlt als gearbeitet: vorbelegt ist 0:00, der Fehler steht sofort am Feld statt erst beim Speichern
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+    }
   }
 
   onSubmit(): void {
@@ -51,8 +61,12 @@ export class PersonPaymentDialogComponent implements OnInit {
     this.isSaving = true;
 
     const dto = this.createDtoFromForm();
+    const payment = this.data.payment;
+    const save$ = payment
+      ? this.personContextService.updatePayment(this.data.personId, payment.id, dto)
+      : this.personContextService.addPayment(this.data.personId, dto);
 
-    this.personContextService.addPayment(this.data.personId, dto).subscribe(
+    save$.subscribe(
       {
         next: _ =>{
           this.isSaving = false;
