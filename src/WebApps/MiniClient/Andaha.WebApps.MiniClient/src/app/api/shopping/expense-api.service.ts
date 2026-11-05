@@ -7,7 +7,7 @@ import { createHttpParameters } from '../functions/api-utils';
 import { constructPath, constructVersionedPath } from '../functions/functions';
 import { ExpenseDto } from './dtos/ExpenseDto';
 import { MonthlyCostsDto } from './dtos/MonthlyCostsDto';
-import { mapAvailableTimeRangeDtoRaw, TimeRangeDto, TimeRangeDtoRaw } from '../common-dtos/TimeRangeDto';
+import { mapAvailableBillTimeRangeDtoRaw, TimeRangeDto, TimeRangeDtoRaw } from '../common-dtos/TimeRangeDto';
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +44,7 @@ export class ExpenseApiService {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'time-range');
 
     return this.httpClient.get<TimeRangeDtoRaw>(url)
-      .pipe(map(mapAvailableTimeRangeDtoRaw));
+      .pipe(map(mapAvailableBillTimeRangeDtoRaw));
   }
 
   /**

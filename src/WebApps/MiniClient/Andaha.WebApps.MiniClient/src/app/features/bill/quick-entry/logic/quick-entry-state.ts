@@ -91,7 +91,6 @@ export class QuickEntryState {
     this.collapseIfComplete();
   }
 
-  /** „Andere …“: Felder statt Kacheln; die Tastatur macht Platz für Shopname und Kategorie */
   /** „Andere …“: Felder statt Kacheln; die Tastatur bleibt, wie sie ist (erst der Fokus im Shopfeld klappt sie zu) */
   selectOther(): void {
     this.other.set(true);

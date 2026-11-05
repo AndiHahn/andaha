@@ -96,6 +96,8 @@ export class TemplateListComponent {
   readonly hiddenEmptyText = 'Keine ausgeblendeten Vorschläge. „Nicht mehr vorschlagen“ in der Schnellerfassung blendet einen Vorschlag aus.';
   private readonly hidden = signal<HiddenBillSuggestionDto[] | null>(null);
   private readonly hiddenFailed = signal(false);
+  /** Ids, deren „Wieder anzeigen“ gerade läuft (Button gesperrt) */
+  readonly unhiding = signal<ReadonlySet<string>>(new Set());
   private hiddenRequest?: Subscription;
 
   readonly hiddenState = computed<LoadState>(() => {
@@ -136,11 +138,22 @@ export class TemplateListComponent {
 
   /** „Wieder anzeigen“: der Vorschlag verlässt den Abschnitt und erscheint wieder unter „Vorschläge“ */
   async unhide(row: HiddenRow): Promise<void> {
+    // Doppeltipp während des DELETE: nur eine Anfrage
+    if (this.unhiding().has(row.hidden.id)) {
+      return;
+    }
+    this.unhiding.update(ids => new Set(ids).add(row.hidden.id));
     try {
       await this.templateContext.unhideSuggestion(row.hidden.id);
       this.hidden.update(hidden => hidden?.filter(h => h.id !== row.hidden.id) ?? null);
     } catch {
       openErrorSnackbar('Vorschlag konnte nicht wieder angezeigt werden.', this.snackbar);
+    } finally {
+      this.unhiding.update(ids => {
+        const next = new Set(ids);
+        next.delete(row.hidden.id);
+        return next;
+      });
     }
   }
 

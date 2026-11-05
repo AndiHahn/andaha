@@ -11,4 +11,5 @@ public record BillDto(
     bool IsExternal,
     bool ImageAvailable,
     bool FromAnalysis,
-    IReadOnlyCollection<BillLineItemDto> LineItems);
+    IReadOnlyCollection<BillLineItemDto> LineItems,
+    DateTime CreatedAt);

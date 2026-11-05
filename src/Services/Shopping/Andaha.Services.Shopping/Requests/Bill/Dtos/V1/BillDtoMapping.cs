@@ -17,7 +17,8 @@ internal static class BillDtoMapping
             bill.UserId != currentUserId,
             bill.Images.Any(),
             bill.FromAutoAnalysis,
-            BillLineItemDtoMapping.EntityToDto.Invoke(bill.LineItems));
+            BillLineItemDtoMapping.EntityToDto.Invoke(bill.LineItems),
+            bill.CreatedAt);
 
     public static Expression<Func<Core.BillCategory, BillCategoryDto>> CategoryToDto =
         (category) => new BillCategoryDto(category.Id, category.Name, category.Color, category.Order);

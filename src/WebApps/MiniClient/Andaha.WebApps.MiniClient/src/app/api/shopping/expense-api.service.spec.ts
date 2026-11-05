@@ -1,6 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { TimeRangeDto } from '../common-dtos/TimeRangeDto';
 import { ExpenseApiService } from './expense-api.service';
 
 describe('ExpenseApiService', () => {
@@ -48,6 +49,18 @@ describe('ExpenseApiService', () => {
       .flush({ startTimeUtc: '2025-01-15T00:00:00', endTimeUtc: '2026-11-05T00:00:00' });
 
     expect(result).toEqual({ startTimeUtc: new Date('2025-01-15T00:00:00'), endTimeUtc: new Date('2026-11-05T00:00:00') });
+  });
+
+  it('getAvailableTimeRange reads the bill dates as local time, so an end at 23:30 stays in November', () => {
+    let result: TimeRangeDto | null | undefined;
+    api.getAvailableTimeRange().subscribe(r => result = r);
+
+    http.expectOne(r => path(r.url) === '/api/expense/time-range')
+      .flush({ startTimeUtc: '2026-01-01T00:00:00Z', endTimeUtc: '2026-11-30T23:30:00Z' });
+
+    expect(result!.startTimeUtc).toEqual(new Date(2026, 0, 1));
+    expect(result!.endTimeUtc).toEqual(new Date(2026, 10, 30, 23, 30));
+    expect(result!.endTimeUtc.getMonth()).toBe(10);
   });
 
   it('getAvailableTimeRange maps the empty range of an account without bills to null', () => {

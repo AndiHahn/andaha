@@ -168,6 +168,26 @@ describe('TemplateListComponent', () => {
     expect(hiddenRows().map(r => text(r.querySelector('.t')!))).toEqual(['Thalia']);
   });
 
+  it('"Wieder anzeigen" sends only one request while it runs', async () => {
+    await setup(templates, suggestions, false, () => of(hidden));
+    let finish!: () => void;
+    service.unhideSuggestion.mockReturnValue(new Promise<void>(resolve => finish = resolve));
+    const component = fixture.componentInstance;
+    const row = component.hiddenRows()[0];
+
+    void component.unhide(row);
+    void component.unhide(row);
+    fixture.detectChanges();
+
+    expect(service.unhideSuggestion).toHaveBeenCalledTimes(1);
+    expect((hiddenRows()[0].querySelector('button.act') as HTMLButtonElement).disabled).toBe(true);
+
+    finish();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(hiddenRows().map(r => text(r.querySelector('.t')!))).toEqual(['Thalia']);
+  });
+
   it('hidden section explains the empty state', async () => {
     await setup();
     expect(text(fixture.nativeElement)).toContain('Keine ausgeblendeten Vorschläge');

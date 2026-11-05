@@ -48,8 +48,9 @@ function todayAt(hours: number, minutes: number): Date {
 }
 
 function bill(p: Partial<BillDto>): BillDto {
+  // wie vom Server: Rechnungstag ohne Uhrzeit, Zeit des Erfassens in createdAt
   return {
-    id: 'b1', shopName: 'Bäcker Ruetz', price: 6.8, date: todayAt(7, 42),
+    id: 'b1', shopName: 'Bäcker Ruetz', price: 6.8, date: todayAt(0, 0), createdAt: todayAt(7, 42),
     category: { id: 'other-user-c1', name: 'Lebensmittel', color: '#7FB89A', order: 0 },
     subCategory: { id: 'other-user-s1', name: 'Gebäck', order: 0 },
     isExternal: false, fromAnalysis: false, imageAvailable: false, ...p
@@ -306,9 +307,10 @@ describe('QuickEntrySheetComponent', () => {
   });
 
   it('duplicate hint shows time of existing bill, also late in the evening', async () => {
-    // vom Backend gelesen: gespeicherte Ortszeit 23:30, als „Z“ markiert
-    const lateEvening = mapBillDtoRaw({ ...bill({}), date: `${toDayKey(new Date())}T23:30:00Z` }).date;
-    await setup({ dayBills: () => of({ values: [bill({ date: lateEvening })], totalCount: 1 }) });
+    // vom Backend gelesen: Rechnungstag ohne Uhrzeit, erfasst um 23:30 Ortszeit (createdAt als UTC-Zeitpunkt)
+    const { createdAt, date, ...rest } = bill({});
+    const fromServer = mapBillDtoRaw({ ...rest, date: `${toDayKey(new Date())}T00:00:00Z`, createdAt: todayAt(23, 30).toISOString() });
+    await setup({ dayBills: () => of({ values: [fromServer], totalCount: 1 }) });
     await type('6,80');
     await click(byText('[role="radio"]', 'Bäcker Ruetz'));
 
@@ -316,10 +318,9 @@ describe('QuickEntrySheetComponent', () => {
     expect(warn.textContent).toContain('Bäcker Ruetz · 6,80 € um 23:30. Trotzdem speichern?');
   });
 
-  it('duplicate hint leaves out the time for a bill stored without time (local midnight)', async () => {
-    // ohne Uhrzeit gespeichert („…T00:00:00Z“) kommt die Rechnung als lokale Mitternacht an
-    const midnight = mapBillDtoRaw({ ...bill({}), date: `${toDayKey(new Date())}T00:00:00Z` }).date;
-    await setup({ dayBills: () => of({ values: [bill({ date: midnight })], totalCount: 1 }) });
+  it('duplicate hint leaves out the time when the creation time is unknown', async () => {
+    // ohne Zeit des Erfassens (z. B. ohne createdAt) keine Uhrzeit; das Rechnungsdatum selbst hat keine
+    await setup({ dayBills: () => of({ values: [bill({ createdAt: undefined })], totalCount: 1 }) });
     await type('6,80');
     await click(byText('[role="radio"]', 'Bäcker Ruetz'));
 

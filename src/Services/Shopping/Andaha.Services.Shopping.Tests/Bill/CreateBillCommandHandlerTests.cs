@@ -57,6 +57,26 @@ public class CreateBillCommandHandlerTests
         }
     }
 
+
+    [Fact]
+    public async Task Created_bill_dto_carries_the_creation_time_in_utc()
+    {
+        var (context, connection) = TestDb.CreateShopping();
+        using (connection)
+        using (context)
+        {
+            var f = Create(context, UserA);
+            var before = DateTime.UtcNow.AddSeconds(-1);
+
+            var result = await f.Handler.Handle(Command(f, Guid.NewGuid()), CancellationToken.None);
+
+            // Bill.Date is date-only; the quick entry shows the time of an existing bill from CreatedAt
+            var dto = Assert.IsType<Ok<BillDto>>(result).Value!;
+            Assert.Equal(DateTimeKind.Utc, dto.CreatedAt.Kind);
+            Assert.InRange(dto.CreatedAt, before, DateTime.UtcNow.AddSeconds(1));
+        }
+    }
+
     [Fact]
     public async Task Create_existing_id_of_other_user_returns_conflict()
     {

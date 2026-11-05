@@ -33,16 +33,19 @@ internal class GetAvailableTimeRangeQueryHandler : IRequestHandler<GetAvailableT
             .AsNoTracking()
             .Where(GetUserFilterExpression(userId, connectedUsers));
 
-        // Nullable projection: an account without bills has no Min/Max and gets the empty range.
+        // Nullable projections: an account without bills has no Min/Max and gets the empty range,
+        // also when its last bill is deleted between the two queries.
         DateTime? startDate = await bills.MinAsync(bill => (DateTime?)bill.Date, cancellationToken);
-        if (startDate is null)
+        DateTime? endDate = startDate is null
+            ? null
+            : await bills.MaxAsync(bill => (DateTime?)bill.Date, cancellationToken);
+
+        if (startDate is null || endDate is null)
         {
             return Results.Ok(new TimeRangeDto());
         }
 
-        DateTime endDate = await bills.MaxAsync(bill => bill.Date, cancellationToken);
-
-        return Results.Ok(new TimeRangeDto(startDate.Value, endDate));
+        return Results.Ok(new TimeRangeDto(startDate.Value, endDate.Value));
     }
 
     private Expression<Func<Core.Bill, bool>> GetUserFilterExpression(Guid userId, IReadOnlyCollection<Guid> connectedUsers)

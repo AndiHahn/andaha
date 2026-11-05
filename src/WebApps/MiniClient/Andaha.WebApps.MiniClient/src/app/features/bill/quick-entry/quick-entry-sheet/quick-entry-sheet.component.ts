@@ -48,11 +48,6 @@ export const QUICK_ENTRY_RESTORE_TIMEOUT_MS = new InjectionToken<number>('QUICK_
   factory: () => 4000
 });
 
-/** Ohne Uhrzeit gespeichert: lokale Mitternacht (anderer Tag gewählt bzw. Datum ohne Zeit vom Server) */
-function hasTime(date: Date): boolean {
-  return date.getHours() !== 0 || date.getMinutes() !== 0 || date.getSeconds() !== 0;
-}
-
 /**
  * Schnellerfassung (v2 `02-schnellerfassung` a–g, AC8–AC19, AC21): mobil als Bottom Sheet mit eigener
  * Zifferntastatur, ab 1024 px als Dialog mit normalem Eingabefeld (geöffnet über QuickEntryService).
@@ -143,7 +138,8 @@ export class QuickEntrySheetComponent {
     if (!bill) {
       return '';
     }
-    const time = hasTime(bill.date) ? ` um ${formatDate(bill.date, 'HH:mm', 'de')}` : '';
+    // Das Rechnungsdatum hat keine Uhrzeit (Spalte `date`): die Zeit des Erfassens, in Ortszeit
+    const time = bill.createdAt ? ` um ${formatDate(bill.createdAt, 'HH:mm', 'de')}` : '';
     return `${bill.shopName} · ${formatAmount(bill.price)} €${time}. Trotzdem speichern?`;
   });
 

@@ -3,6 +3,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
+    // vitest/browser (cdp() in test-setup.ts) bringt Typen mit, die Node-Typen voraussetzen
+    "skipLibCheck": true,
     "types": [
       "vitest/globals"
     ]

@@ -58,7 +58,7 @@
                 }{{ row.subtitle }}
               </span>
             </div>
-            <button type="button" class="act" (click)="unhide(row)">
+            <button type="button" class="act" [disabled]="unhiding().has(row.hidden.id)" (click)="unhide(row)">
               <mat-icon aria-hidden="true">visibility</mat-icon>Wieder anzeigen
             </button>
           </div>
