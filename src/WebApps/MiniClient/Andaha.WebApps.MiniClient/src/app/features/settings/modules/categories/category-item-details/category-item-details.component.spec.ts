@@ -7,7 +7,8 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { CategoryUpdateDto } from 'src/app/api/shopping/dtos/CategoryUpdateDto';
 import { PageTitleService } from 'src/app/core/page-title/page-title.service';
@@ -147,5 +148,21 @@ describe('CategoryItemDetailsComponent', () => {
 
         expect(updates.length).toBe(2);
         expect(updates[1].subCategories.map(s => s.id)).toEqual(['sub-0', 'srv-1']);
+    });
+
+    it('save failed: German text only, no server response in the snackbar', () => {
+        fixture.detectChanges();
+        const component = fixture.componentInstance;
+        const snackbar = TestBed.inject(MatSnackBar) as unknown as { openFromComponent: ReturnType<typeof vi.fn> };
+        context.updateCategory.mockReturnValue(throwError(() => new HttpErrorResponse({
+            status: 400, error: { title: 'One or more validation errors occurred.' }
+        })));
+
+        component.onEditClick();
+        component.onSaveClick();
+
+        expect(snackbar.openFromComponent).toHaveBeenCalledTimes(1);
+        expect(snackbar.openFromComponent.mock.calls[0][1].data).toBe('Kategorie konnte nicht gespeichert werden.');
+        expect(component.isEditing).toBe(true);
     });
 });

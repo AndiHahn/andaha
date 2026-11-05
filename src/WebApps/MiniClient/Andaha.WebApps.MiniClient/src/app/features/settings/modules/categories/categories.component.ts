@@ -6,7 +6,6 @@ import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle } fro
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { openErrorSnackbar, openInformationSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { CategoryOrderDto } from 'src/app/api/shopping/dtos/CategoryOrderDto';
-import { HttpErrorResponse } from '@angular/common/http';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatIcon } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
@@ -74,9 +73,10 @@ export class CategoriesComponent implements OnInit {
           this.isSaving = false;
           this.isEditing = false;
         },
-        error: (err: HttpErrorResponse) => {
+        error: _ => {
           this.isSaving = false;
-          openErrorSnackbar("Reihenfolge der Kategorien konnte nicht gespeichert werden. (" + err.error + ")", this.snackbar);
+          // nur der deutsche Text, keine Server-Antwort (SKIP_GLOBAL_ERROR: das ist die einzige Meldung)
+          openErrorSnackbar("Reihenfolge der Kategorien konnte nicht gespeichert werden.", this.snackbar);
         }
       }
     );

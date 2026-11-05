@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
-import { HttpErrorResponse } from '@angular/common/http';
 import { CategoryCreateDto } from 'src/app/api/shopping/dtos/CategoryCreateDto';
 import { ColorSwatchesComponent } from '../color-swatches/color-swatches.component';
 import { MatIcon } from '@angular/material/icon';
@@ -61,10 +60,11 @@ export class CreateCategoryComponent implements OnInit {
           this.isSaving = false;
           this.router.navigateByUrl('/settings/categories/' + createdCategory.id);
         },
-        error: (err: HttpErrorResponse) => {
+        error: _ => {
           this.isSaving = false;
           this.form.enable();
-          openErrorSnackbar("Kategorie konnte nicht erstellt werden. (" + err.error + ")", this.snackbar);
+          // nur der deutsche Text, keine Server-Antwort (SKIP_GLOBAL_ERROR: das ist die einzige Meldung)
+          openErrorSnackbar("Kategorie konnte nicht erstellt werden.", this.snackbar);
         } 
       }
     );

@@ -1,5 +1,4 @@
 import { CdkDragDrop, CdkDropList, CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormArray, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -170,11 +169,12 @@ export class CategoryItemDetailsComponent implements OnInit, OnDestroy {
           this.form.disable();
           this.pageTitleService.set(dto.name);
         },
-        error: (err: HttpErrorResponse) => {
+        error: _ => {
           this.isSaving = false;
           this.isEditing = true;
           this.form.enable();
-          openErrorSnackbar("Kategorie konnte nicht gespeichert werden. (" + err.error + ")", this.snackbar);
+          // nur der deutsche Text, keine Server-Antwort (SKIP_GLOBAL_ERROR: das ist die einzige Meldung)
+          openErrorSnackbar("Kategorie konnte nicht gespeichert werden.", this.snackbar);
         } 
       }
     );
