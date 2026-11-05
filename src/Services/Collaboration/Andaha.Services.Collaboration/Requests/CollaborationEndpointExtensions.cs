@@ -18,6 +18,9 @@ public static class ConnectionEndpointExtensions
         app.MapListIncomingConnectionRequests(groupBuilder);
         app.MapListOutgoingConnectionRequests(groupBuilder);
         app.MapRequestAccountConnection(groupBuilder);
+        app.MapRemoveConnection(groupBuilder);
+        app.MapWithdrawConnectionRequest(groupBuilder);
+        app.MapDeleteUserData(groupBuilder);
 
         return app;
     }
@@ -99,6 +102,43 @@ public static class ConnectionEndpointExtensions
             .Produces(StatusCodes.Status204NoContent)
             .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
             .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        return app;
+    }
+
+    // Route disambiguation: "{userId:guid}" matches a single guid segment only, "user-data" is a literal
+    // (and not a guid), "request/{targetUserId:guid}" has two segments and "decline/{fromUserId}" a different prefix.
+    private static WebApplication MapRemoveConnection(
+        this WebApplication app,
+        RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediateDelete<RemoveConnection.V1.RemoveConnectionRequest>("{userId:guid}")
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        return app;
+    }
+
+    private static WebApplication MapWithdrawConnectionRequest(
+        this WebApplication app,
+        RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediateDelete<WithdrawConnectionRequest.V1.WithdrawConnectionRequestRequest>("request/{targetUserId:guid}")
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        return app;
+    }
+
+    private static WebApplication MapDeleteUserData(
+        this WebApplication app,
+        RouteGroupBuilder groupBuilder)
+    {
+        groupBuilder
+            .MediateDelete<DeleteUserData.V1.DeleteUserDataRequest>("user-data")
+            .Produces(StatusCodes.Status204NoContent);
 
         return app;
     }
