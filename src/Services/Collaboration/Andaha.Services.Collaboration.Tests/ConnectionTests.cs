@@ -1,5 +1,7 @@
 using Andaha.CrossCutting.Application.Identity;
 using Andaha.Services.Collaboration.Core;
+using Andaha.Services.Collaboration.Dtos.V1;
+using Andaha.Services.Collaboration.Requests.ListConnectedAccounts.V1;
 using Andaha.Services.Collaboration.Requests.RemoveConnection.V1;
 using Andaha.Services.Collaboration.Requests.WithdrawConnectionRequest.V1;
 using Microsoft.AspNetCore.Http;
@@ -126,5 +128,28 @@ public class ConnectionTests
         Assert.Contains(declinedId, ids);
         Assert.Contains(foreignId, ids);
         Assert.Equal(4, ids.Count);
+    }
+
+
+    [Fact]
+    public async Task List_connections_returns_partner_user_id_in_both_directions()
+    {
+        var (seed, connection) = TestDb.CreateCollaboration();
+        using var _ = connection;
+        using (seed)
+        {
+            seed.ConnectionRequest.AddRange(AcceptedRequest(UserA, UserB), AcceptedRequest(UserC, UserA));
+            await seed.SaveChangesAsync();
+        }
+
+        using var context = TestDb.NewContext(connection);
+        var handler = new ListConnectedAccountsRequestHandler(IdentityOf(UserA), context);
+
+        var result = await handler.Handle(new ListConnectedAccountsRequest(), CancellationToken.None);
+
+        var ok = Assert.IsType<Ok<IEnumerable<ConnectionDto>>>(result);
+        Assert.Equal(
+            new[] { (UserB, "to@example.com"), (UserC, "from@example.com") }.OrderBy(c => c.Item1),
+            ok.Value!.Select(c => (c.UserId, c.UserEmailAddress)).OrderBy(c => c.Item1));
     }
 }

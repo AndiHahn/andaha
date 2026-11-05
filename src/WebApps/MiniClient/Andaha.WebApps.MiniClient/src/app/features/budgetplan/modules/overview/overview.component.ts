@@ -1,4 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BudgetPlanDto } from 'src/app/api/budgetplan/dtos/BudgetPlanDto';
 import { CostCategoryLabel } from 'src/app/api/budgetplan/dtos/CostCategory';
 import { BudgetplanContextService } from '../../services/budgetplan-context.service';
@@ -14,6 +15,7 @@ import { DecimalPipe } from '@angular/common';
 })
 export class OverviewComponent implements OnInit {
   private budgetPlanContextService = inject(BudgetplanContextService);
+  private destroyRef = inject(DestroyRef);
 
 
   budgetPlan?: BudgetPlanDto;
@@ -71,7 +73,7 @@ export class OverviewComponent implements OnInit {
   }
 
   private initSubscriptions(): void {
-    this.budgetPlanContextService.budgetPlan().subscribe(
+    this.budgetPlanContextService.budgetPlan().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
       {
         next: budgetPlan => {
           if (budgetPlan) {

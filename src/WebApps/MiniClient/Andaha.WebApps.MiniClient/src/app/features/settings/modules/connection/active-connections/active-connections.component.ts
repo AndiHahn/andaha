@@ -1,4 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ConnectionDto } from 'src/app/api/collaboration/dtos/ConnectionDto';
 import { CollaborationContextService } from 'src/app/services/collaboration-context.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
@@ -12,6 +13,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 })
 export class ActiveConnectionsComponent implements OnInit {
   private collaborationContextService = inject(CollaborationContextService);
+  private destroyRef = inject(DestroyRef);
 
 
   loading: boolean = false;
@@ -22,13 +24,13 @@ export class ActiveConnectionsComponent implements OnInit {
   }
 
   private initSubscriptions(): void {
-    this.collaborationContextService.connections().subscribe(
+    this.collaborationContextService.connections().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
       {
         next: result => this.connections = result
       }
     );
 
-    this.collaborationContextService.connectionsLoading().subscribe(
+    this.collaborationContextService.connectionsLoading().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
       {
         next: loading => this.loading = loading
       }

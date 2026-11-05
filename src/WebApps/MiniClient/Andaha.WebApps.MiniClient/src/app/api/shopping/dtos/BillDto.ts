@@ -1,4 +1,3 @@
-import { PagedResultDto } from "../../common-dtos/PagedResultDto";
 import { BillCategoryDto } from "./BillCategoryDto";
 import { BillSubCategoryDto } from "./BillSubCategoryDto";
 
@@ -26,12 +25,5 @@ export function mapBillDtoRaw(raw: BillDtoRaw): BillDto {
   return {
     ...raw,
     date: new Date(raw.date)
-  }
-}
-
-export function mapPagedBillDtoResultRaw(raw: PagedResultDto<BillDtoRaw>): PagedResultDto<BillDto> {
-  return {
-    ...raw,
-    values: raw.values.map(mapBillDtoRaw)
   }
 }

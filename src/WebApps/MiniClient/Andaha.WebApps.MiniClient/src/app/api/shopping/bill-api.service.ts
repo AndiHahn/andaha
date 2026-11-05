@@ -3,11 +3,12 @@ import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { getRecordOfProperties } from 'src/app/shared/utils/utils';
 import { environment } from 'src/environments/environment';
-import { PagedResultDto } from '../common-dtos/PagedResultDto';
+import { skipGlobalError } from 'src/app/core/http/skip-global-error';
 import { createHttpParameters } from '../functions/api-utils';
 import { constructPath, constructVersionedPath } from '../functions/functions';
 import { BillCreateDto } from './dtos/BillCreateDto';
-import { BillDto, BillDtoRaw, mapBillDtoRaw, mapPagedBillDtoResultRaw } from './dtos/BillDto';
+import { BillDto, BillDtoRaw, mapBillDtoRaw } from './dtos/BillDto';
+import { BillSearchResultDto, mapBillSearchResultDtoRaw } from './dtos/BillSearchResultDto';
 import { BillUpdateDto } from './dtos/BillUpdateDto';
 import { BillAnalyzedDto, BillAnalyzedDtoRaw, mapBillAnalyzedDtoRaw } from './dtos/BillAnalyzedDto';
 import { AnalyzeBillResultDto } from './dtos/AnalyzeBillResultDto';
@@ -33,13 +34,13 @@ export class BillApiService {
     }
   }
 
-  searchBills(parameters: SearchBillsParameters): Observable<PagedResultDto<BillDto>> {
+  searchBills(parameters: SearchBillsParameters): Observable<BillSearchResultDto> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl);
 
     const httpParameters = createHttpParameters(getSearchBillsHttpParams(parameters));
 
-    return this.httpClient.get<PagedResultDto<BillDtoRaw>>(url, { params: httpParameters})
-      .pipe(map(mapPagedBillDtoResultRaw));
+    return this.httpClient.get<BillSearchResultDto<BillDtoRaw>>(url, { params: httpParameters})
+      .pipe(map(mapBillSearchResultDtoRaw));
   }
 
   getBill(id: string): Observable<BillDto> {
@@ -61,7 +62,8 @@ export class BillApiService {
       formData.set(key, createDtoData[key]);
     }
 
-    return this.httpClient.post<BillDtoRaw>(url, formData)
+    // Aufrufer melden Fehler selbst (Offline-Speicher bzw. Übernehmen aus der Analyse, Review Focus 5)
+    return this.httpClient.post<BillDtoRaw>(url, formData, skipGlobalError())
       .pipe(map(mapBillDtoRaw));
   }
 
@@ -77,14 +79,14 @@ export class BillApiService {
       formData.set(key, updateDtoData[key]);
     }
 
-    return this.httpClient.put<BillDtoRaw>(url, formData)
+    return this.httpClient.put<BillDtoRaw>(url, formData, skipGlobalError())
       .pipe(map(mapBillDtoRaw));
   }
 
   deleteBill(id: string): Observable<void> {
-    let url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
-    
-    return this.httpClient.delete<void>(url);
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
+
+    return this.httpClient.delete<void>(url, skipGlobalError());
   }
 
   uploadImage(billId: string, file: File): Observable<void> {
@@ -99,13 +101,13 @@ export class BillApiService {
   downloadImage(billId: string) {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, billId, 'image');
 
-    return this.httpClient.get(url, { responseType: 'blob' as 'blob' });
+    return this.httpClient.get(url, { responseType: 'blob' as 'blob', ...skipGlobalError() });
   }
 
   deleteImage(billId: string): Observable<void> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, billId, 'image');
 
-    return this.httpClient.delete<void>(url);
+    return this.httpClient.delete<void>(url, skipGlobalError());
   }
 
   uploadForAnalysis(file: File): Observable<void> {
@@ -120,7 +122,7 @@ export class BillApiService {
   downloadAnalyzedBillImage(id: string) {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'analyzed', id, 'image');
 
-    return this.httpClient.get(url, { responseType: 'blob' as 'blob' });
+    return this.httpClient.get(url, { responseType: 'blob' as 'blob', ...skipGlobalError() });
   }
 
   /** Alle offenen Analysen; der Endpoint kennt keine Seitenparameter (AC36) */
@@ -137,13 +139,14 @@ export class BillApiService {
     const formData = new FormData();
     formData.set('file', file);
 
-    return this.httpClient.post<AnalyzeBillResultDto>(url, formData);
+    // bei Fehlern öffnet der Scan das Formular mit eigenem Hinweis
+    return this.httpClient.post<AnalyzeBillResultDto>(url, formData, skipGlobalError());
   }
 
   deleteAnalyzedBill(id: string): Observable<void> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'analyzed', id);
 
-    return this.httpClient.delete<void>(url);
+    return this.httpClient.delete<void>(url, skipGlobalError());
   }
 
   getShopStats(): Observable<ShopStatDto[]> {
@@ -151,5 +154,12 @@ export class BillApiService {
 
     return this.httpClient.get<ShopStatDtoRaw[]>(url)
       .pipe(map(raw => raw.map(mapShopStatDtoRaw)));
+  }
+
+  /** Löscht alle Rechnungsdaten des Benutzers (AC31). Der Aufrufer zeigt bei Fehlern eine eigene Meldung. */
+  deleteUserData(): Observable<void> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'user-data');
+
+    return this.httpClient.delete<void>(url, skipGlobalError());
   }
 }

@@ -72,6 +72,21 @@ describe('Shopping template/stats api', () => {
       expect(req.request.body).toEqual({ shopName: 'Rewe', categoryId: 'c', subCategoryId: null });
       req.flush(null);
     });
+
+    it('listHiddenSuggestions: GET /hidden-suggestions', () => {
+      const api = TestBed.inject(BillTemplateApiService);
+      let result: unknown;
+      api.listHiddenSuggestions().subscribe(r => result = r);
+      const hidden = [{ id: 'h1', shopName: 'Rewe', categoryId: 'c', categoryName: 'Essen', subCategoryId: null, subCategoryName: null }];
+      expectReq('GET', '/api/bill-template/hidden-suggestions').flush(hidden);
+      expect(result).toEqual(hidden);
+    });
+
+    it('unhideSuggestion: DELETE /hidden-suggestions/{id}', () => {
+      const api = TestBed.inject(BillTemplateApiService);
+      api.unhideSuggestion('h1').subscribe();
+      expectReq('DELETE', '/api/bill-template/hidden-suggestions/h1').flush(null);
+    });
   });
 
   describe('BillApiService (US-0007)', () => {

@@ -30,6 +30,8 @@ public class ListConnectedAccountsRequestHandler : IRequestHandler<ListConnected
             .ToListAsync(cancellationToken);
 
         return Results.Ok(connections
-            .Select(request => new ConnectionDto(request.FromUserId == currentUserId ? request.TargetUserEmail : request.FromUserEmail)));
+            .Select(request => request.FromUserId == currentUserId
+                ? new ConnectionDto(request.TargetUserId, request.TargetUserEmail)
+                : new ConnectionDto(request.FromUserId, request.FromUserEmail)));
     }
 }

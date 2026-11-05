@@ -124,4 +124,26 @@ describe('FixedCostContextService byId', () => {
         expect(emitted).toBe(true);
         expect(result).toBeUndefined();
     });
+
+    it('exposes error and retry reloads', () => {
+        backendReady.next(true);
+        api.list.mockReturnValue(throwError(() => new Error('500')));
+        const service = createService();
+        expect(service.error()).toBe(true);
+
+        api.list.mockReturnValue(of([cost]));
+        let costs: FixedCostDto[] | undefined;
+        service.fixedCosts().subscribe(c => costs = c);
+        service.retry();
+
+        expect(service.error()).toBe(false);
+        expect(costs).toEqual([cost]);
+    });
+
+    it('no error while the backend is not ready yet', () => {
+        api.list.mockReturnValue(throwError(() => new Error('not ready')));
+        const service = createService();
+
+        expect(service.error()).toBe(false);
+    });
 });

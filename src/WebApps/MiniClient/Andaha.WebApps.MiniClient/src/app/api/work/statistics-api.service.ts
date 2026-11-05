@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { constructPath, constructVersionedPath } from '../functions/functions';
@@ -8,6 +8,9 @@ import { GetStatisticsParameters } from './dtos/GetStatisticsParameters';
 import { TimeRangeDto, TimeRangeDtoRaw, mapTimeRangeDtoRaw } from '../common-dtos/TimeRangeDto';
 import { DatePipe } from '@angular/common';
 import { FullStatisticsDto, FullStatisticsDtoRaw, mapFullStatisticsDtoRaw } from './dtos/FullStatisticsDto';
+import { MonthlyHoursDto } from './dtos/MonthlyHoursDto';
+import { createHttpParameters } from '../functions/api-utils';
+import { currentTimeZone } from 'src/app/shared/utils/time-zone';
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +50,7 @@ export class StatisticsApiService {
     const parameters: GetStatisticsParameters = {
       startTimeUtc:  this.datePipe.transform(startTimeUtc, 'yyyy-MM-ddTHH:mm:ssZZZZZ')!,
       endTimeUtc: this.datePipe.transform(endTimeUtc, 'yyyy-MM-ddTHH:mm:ssZZZZZ')!,
+      personFilter: personFilter ?? []
     }
 
     return this.httpClient
@@ -60,7 +64,25 @@ export class StatisticsApiService {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'full');
 
     return this.httpClient
-      .get<FullStatisticsDtoRaw>(url)
+      .get<FullStatisticsDtoRaw>(url, { params: personFilterParams(personFilter) })
       .pipe(map(mapFullStatisticsDtoRaw));
   }
+
+  /** Stunden je lokalem Monat ("yyyy-MM"), aufsteigend, genau `months` Einträge bis einschließlich `until` */
+  getMonthlyHours(until: string, months: number, personFilter?: string[]): Observable<MonthlyHoursDto[]> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'monthly');
+
+    const params = personFilterParams(personFilter)
+      .append('until', until)
+      .append('months', months.toString())
+      .append('tz', currentTimeZone());
+
+    return this.httpClient.get<MonthlyHoursDto[]>(url, { params });
+  }
+}
+
+
+/** Wiederholter Query-Parameter `personFilter`; leer heißt alle eigenen und verbundenen Personen */
+function personFilterParams(personFilter?: string[]): HttpParams {
+  return createHttpParameters((personFilter ?? []).map(id => ({ key: 'personFilter', value: id })));
 }

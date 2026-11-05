@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, Signal, inject, signal } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { TimeRangeDto } from 'src/app/api/common-dtos/TimeRangeDto';
 import { FullStatisticsDto } from 'src/app/api/work/dtos/FullStatisticsDto';
@@ -18,6 +18,12 @@ export class StatisticsContextService {
   private availableTimeRange$: BehaviorSubject<TimeRangeDto | undefined> = new BehaviorSubject<TimeRangeDto | undefined>(undefined);
   private statistics$: BehaviorSubject<StatisticsDto | undefined> = new BehaviorSubject<StatisticsDto | undefined>(undefined);
   private fullStatistics$: BehaviorSubject<FullStatisticsDto | undefined> = new BehaviorSubject<FullStatisticsDto | undefined>(undefined);
+  private readonly errorState = signal(false);
+  /** Das zuletzt angeforderte Laden, für „Erneut versuchen“ */
+  private lastLoad?: () => void;
+
+  /** true, wenn das letzte Laden der Statistik fehlgeschlagen ist */
+  readonly error: Signal<boolean> = this.errorState.asReadonly();
 
   constructor() {
     this.initSubscriptions();
@@ -41,20 +47,28 @@ export class StatisticsContextService {
   }
 
   loadStatistics(timeRange: TimeRange): void {
-    this.fetchStatistics(
-      timeRange.startDate,
-      timeRange.endDate
-    );
+    this.lastLoad = () => this.fetchStatistics(timeRange.startDate, timeRange.endDate);
+    this.lastLoad();
   }
 
   loadFullStatistics(): void {
-    this.fetchFullStatistics();
+    this.lastLoad = () => this.fetchFullStatistics();
+    this.lastLoad();
+  }
+
+  /** Zeitraum und die zuletzt angeforderte Statistik erneut laden */
+  retry(): void {
+    if (!this.availableTimeRange$.value) {
+      this.fetchTimeRange();
+    }
+    this.lastLoad?.();
   }
 
   private fetchTimeRange(): void {
     this.apiService.getAvailableTimeRange().subscribe(
       {
-        next: timeRange => this.availableTimeRange$.next(timeRange)
+        next: timeRange => this.availableTimeRange$.next(timeRange),
+        error: _ => { }
       }
     );
   }
@@ -64,6 +78,7 @@ export class StatisticsContextService {
     endTimeUtc: Date
   ) {
     this.loading$.next(true);
+    this.errorState.set(false);
 
     this.apiService
       .getStatistics(
@@ -77,13 +92,17 @@ export class StatisticsContextService {
             this.loading$.next(false);
             this.statistics$.next(result);
           },
-          error: _ => this.loading$.next(false)
+          error: _ => {
+            this.loading$.next(false);
+            this.errorState.set(true);
+          }
         }
     );
   }
 
   private fetchFullStatistics() {
     this.loading$.next(true);
+    this.errorState.set(false);
 
     this.apiService
       .getFullStatistics(undefined)
@@ -93,7 +112,10 @@ export class StatisticsContextService {
             this.loading$.next(false);
             this.fullStatistics$.next(result);
           },
-          error: _ => this.loading$.next(false)
+          error: _ => {
+            this.loading$.next(false);
+            this.errorState.set(true);
+          }
         }
     );
   }

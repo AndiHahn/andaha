@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, Signal, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { WorkingEntryDto } from 'src/app/api/work/dtos/WorkingEntryDto';
@@ -14,7 +14,11 @@ export class WorkingEntriesContextService {
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private workingEntries$: BehaviorSubject<WorkingEntryDto[] | undefined> = new BehaviorSubject<WorkingEntryDto[] | undefined>(undefined);
   
+  private readonly errorState = signal(false);
   private personId: string;
+
+  /** true, wenn das letzte Laden der Arbeitszeiten fehlgeschlagen ist */
+  readonly error: Signal<boolean> = this.errorState.asReadonly();
 
   constructor() {
     const params = getParametersFromRouteRecursive(this.route.snapshot);
@@ -35,6 +39,10 @@ export class WorkingEntriesContextService {
   }
 
   refetch(): void {
+    this.fetchWorkingEntries();
+  }
+
+  retry(): void {
     this.fetchWorkingEntries();
   }
 
@@ -71,6 +79,7 @@ export class WorkingEntriesContextService {
 
   private fetchWorkingEntries() {
     this.loading$.next(true);
+    this.errorState.set(false);
 
     this.apiService
       .listWorkingEntries(this.personId)
@@ -80,7 +89,10 @@ export class WorkingEntriesContextService {
             this.loading$.next(false);
             this.workingEntries$.next(result);
           },
-          error: _ => this.loading$.next(false)
+          error: _ => {
+            this.loading$.next(false);
+            this.errorState.set(true);
+          }
         }
     );
   }

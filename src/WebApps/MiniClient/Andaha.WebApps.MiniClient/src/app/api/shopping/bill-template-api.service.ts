@@ -5,6 +5,8 @@ import { environment } from 'src/environments/environment';
 import { constructPath, constructVersionedPath } from '../functions/functions';
 import { BillSuggestionDto, BillSuggestionKey } from './dtos/BillSuggestionDto';
 import { BillTemplateCreateDto, BillTemplateDto } from './dtos/BillTemplateDto';
+import { HiddenBillSuggestionDto } from './dtos/HiddenBillSuggestionDto';
+import { skipGlobalError } from 'src/app/core/http/skip-global-error';
 
 @Injectable({
   providedIn: 'root'
@@ -30,24 +32,26 @@ export class BillTemplateApiService {
     return this.httpClient.get<BillTemplateDto[]>(url);
   }
 
+  // Ändernde Aufrufe: jeder Aufrufer zeigt bei Fehlern eine eigene Snackbar (SKIP_GLOBAL_ERROR)
+
   create(dto: BillTemplateCreateDto): Observable<BillTemplateDto> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl);
-    return this.httpClient.post<BillTemplateDto>(url, dto);
+    return this.httpClient.post<BillTemplateDto>(url, dto, skipGlobalError());
   }
 
   update(id: string, dto: BillTemplateCreateDto): Observable<void> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
-    return this.httpClient.put<void>(url, { ...dto, id });
+    return this.httpClient.put<void>(url, { ...dto, id }, skipGlobalError());
   }
 
   delete(id: string): Observable<void> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
-    return this.httpClient.delete<void>(url);
+    return this.httpClient.delete<void>(url, skipGlobalError());
   }
 
   updateOrder(ids: string[]): Observable<void> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'order');
-    return this.httpClient.put<void>(url, { ids });
+    return this.httpClient.put<void>(url, { ids }, skipGlobalError());
   }
 
   suggestions(): Observable<BillSuggestionDto[]> {
@@ -61,6 +65,18 @@ export class BillTemplateApiService {
       shopName: s.shopName,
       categoryId: s.categoryId,
       subCategoryId: s.subCategoryId ?? null
-    });
+    }, skipGlobalError());
+  }
+
+  /** Ausgeblendete Vorschläge, sortiert nach Shop und Kategorie */
+  listHiddenSuggestions(): Observable<HiddenBillSuggestionDto[]> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'hidden-suggestions');
+    return this.httpClient.get<HiddenBillSuggestionDto[]>(url);
+  }
+
+  /** „Wieder anzeigen“. Der Aufrufer zeigt bei Fehlern eine eigene Meldung. */
+  unhideSuggestion(id: string): Observable<void> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'hidden-suggestions', id);
+    return this.httpClient.delete<void>(url, skipGlobalError());
   }
 }

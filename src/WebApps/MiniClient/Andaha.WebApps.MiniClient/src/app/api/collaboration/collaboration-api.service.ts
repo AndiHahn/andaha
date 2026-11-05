@@ -7,6 +7,7 @@ import { constructPath, constructVersionedPath } from '../functions/functions';
 import { ConnectionDto } from './dtos/ConnectionDto';
 import { ConnectionRequestDto } from './dtos/ConnectionRequestDto';
 import { RequestAccountConnectionRequest } from './dtos/RequestAccountConnectionRequest';
+import { skipGlobalError } from 'src/app/core/http/skip-global-error';
 
 @Injectable({
   providedIn: 'root'
@@ -69,5 +70,23 @@ export class CollaborationApiService {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'connection', 'established');
 
     return this.httpClient.get<ConnectionDto[]>(url);
+  }
+
+  /** Verbindung zu `userId` trennen (beide Richtungen). Der Aufrufer zeigt bei Fehlern eine eigene Meldung. */
+  removeConnection(userId: string): Observable<void> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'connection', userId);
+    return this.httpClient.delete<void>(url, skipGlobalError());
+  }
+
+  /** Eigene offene Anfrage an `targetUserId` zurückziehen. Der Aufrufer zeigt bei Fehlern eine eigene Meldung. */
+  withdrawRequest(targetUserId: string): Observable<void> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'connection', 'request', targetUserId);
+    return this.httpClient.delete<void>(url, skipGlobalError());
+  }
+
+  /** Löscht alle Verbindungen und Anfragen des Benutzers (AC31). Der Aufrufer zeigt bei Fehlern eine eigene Meldung. */
+  deleteUserData(): Observable<void> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'connection', 'user-data');
+    return this.httpClient.delete<void>(url, skipGlobalError());
   }
 }

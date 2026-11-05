@@ -1,4 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
@@ -21,6 +22,7 @@ import { NgStyle } from '@angular/common';
 export class CategoriesComponent implements OnInit {
   private snackbar = inject(MatSnackBar);
   private categoryContextService = inject(BillCategoryContextService);
+  private destroyRef = inject(DestroyRef);
 
 
   categories?: CategoryDto[];
@@ -80,7 +82,7 @@ export class CategoriesComponent implements OnInit {
   private initSubscriptions(): void {
     this.isLoading = true;
     
-    this.categoryContextService.categories().subscribe(
+    this.categoryContextService.categories().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
       {
         next: categories => {
           if (categories) {

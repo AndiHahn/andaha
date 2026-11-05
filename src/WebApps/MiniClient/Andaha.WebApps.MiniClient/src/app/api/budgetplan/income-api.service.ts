@@ -8,6 +8,7 @@ import { IncomeDto } from './dtos/IncomeDto';
 import { IncomeHistoryDto, RawIncomeHistoryDto } from './dtos/IncomeHistoryDto';
 import { IncomeUpdateDto } from './dtos/IncomeUpdateDto';
 import { mapIncomeHistoryList } from './pipes/income-history-pipe';
+import { skipGlobalError } from 'src/app/core/http/skip-global-error';
 
 @Injectable({
   providedIn: 'root'
@@ -41,21 +42,23 @@ export class IncomeApiService {
       .pipe(map(mapIncomeHistoryList));
   }
 
+  // Ändernde Aufrufe: Anlegen/Detail zeigen bei Fehlern eine eigene Snackbar (SKIP_GLOBAL_ERROR)
+
   create(createDto: IncomeCreateDto): Observable<void> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl);
 
-    return this.httpClient.post<void>(url, createDto);
+    return this.httpClient.post<void>(url, createDto, skipGlobalError());
   }
 
   update(id: string, updateDto: IncomeUpdateDto): Observable<void> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
 
-    return this.httpClient.put<void>(url, updateDto);
+    return this.httpClient.put<void>(url, updateDto, skipGlobalError());
   }
 
   delete(id: string): Observable<void> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
 
-    return this.httpClient.delete<void>(url);
+    return this.httpClient.delete<void>(url, skipGlobalError());
   }
 }

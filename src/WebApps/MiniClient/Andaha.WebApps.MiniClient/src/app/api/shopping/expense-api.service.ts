@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import { createHttpParameters } from '../functions/api-utils';
 import { constructPath, constructVersionedPath } from '../functions/functions';
 import { ExpenseDto } from './dtos/ExpenseDto';
+import { MonthlyCostsDto } from './dtos/MonthlyCostsDto';
 import { mapTimeRangeDtoRaw, TimeRangeDto, TimeRangeDtoRaw } from '../common-dtos/TimeRangeDto';
 
 @Injectable({
@@ -44,15 +45,39 @@ export class ExpenseApiService {
       .pipe(map(mapTimeRangeDtoRaw));
   }
 
-  exportExpenses(timeRange: TimeRangeDtoRaw): Observable<HttpResponse<Blob>> {
+  /**
+   * Export als Datei. `start`/`end` zählen als lokale Kalendertage; `categoryNames` filtert nach
+   * Kategorie-Namen (wiederholter Query-Parameter `categoryFilter`), leer oder weggelassen heißt alle.
+   */
+  exportExpenses(start: Date, end: Date, categoryNames?: string[]): Observable<HttpResponse<Blob>> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'export');
 
     const httpParameters = createHttpParameters([
-      { key: 'startTimeUtc', value: timeRange.startTimeUtc.toString() },
-      { key: 'endTimeUtc', value: timeRange.endTimeUtc.toString() }
+      { key: 'startTimeUtc', value: formatUsDate(start) },
+      { key: 'endTimeUtc', value: formatUsDate(end) },
+      ...(categoryNames ?? []).map(name => ({ key: 'categoryFilter', value: name }))
     ]);
 
     return this.httpClient
       .get(url, { params: httpParameters, responseType: 'blob' as 'blob', observe: 'response'});
   }
+
+  /** Ausgaben je Monat ("yyyy-MM"), aufsteigend, `months` Monate bis einschließlich `until` */
+  getMonthlyExpenses(until: string, months: number): Observable<MonthlyCostsDto[]> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'monthly');
+
+    const httpParameters = createHttpParameters([
+      { key: 'until', value: until },
+      { key: 'months', value: months.toString() }
+    ]);
+
+    return this.httpClient.get<MonthlyCostsDto[]>(url, { params: httpParameters });
+  }
+}
+
+
+/** Lokaler Kalendertag als MM/dd/yyyy, wie bisher per DatePipe an den Export-Endpoint gesendet */
+function formatUsDate(date: Date): string {
+  const pad = (value: number) => value.toString().padStart(2, '0');
+  return `${pad(date.getMonth() + 1)}/${pad(date.getDate())}/${date.getFullYear()}`;
 }

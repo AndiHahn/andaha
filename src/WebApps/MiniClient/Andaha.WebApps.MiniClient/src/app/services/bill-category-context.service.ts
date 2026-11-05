@@ -1,5 +1,5 @@
-import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
+import { Injectable, Signal, inject, signal } from '@angular/core';
+import { BehaviorSubject, Observable, ReplaySubject, Subject, filter, take } from 'rxjs';
 import { afterFirstLoad } from '../shared/utils/load-state';
 import { BillCategoryApiService } from '../api/shopping/bill-category-api.service';
 import { CategoryDto } from '../api/shopping/dtos/CategoryDto';
@@ -20,15 +20,30 @@ export class BillCategoryContextService {
   
   private categories$: BehaviorSubject<CategoryDto[]> = new BehaviorSubject<CategoryDto[]>([]);
   private loadState$ = new ReplaySubject<'loaded' | 'failed'>(1);
+  private readonly loadingState = signal(false);
+  private readonly errorState = signal(false);
   private backendIsReady: boolean = false;
+
+  /** true, solange die Kategorien geladen werden */
+  readonly loading: Signal<boolean> = this.loadingState.asReadonly();
+  /** true, wenn das letzte Laden der Kategorien fehlgeschlagen ist */
+  readonly error: Signal<boolean> = this.errorState.asReadonly();
 
   constructor() {
     this.initSubscriptions();
-    this.fetchBillCategories();
   }
 
   categories(): Observable<CategoryDto[]> {
     return this.categories$.asObservable();
+  }
+
+  /** Kategorien erneut laden (bzw. Backend erneut wecken, solange es nicht bereit ist) */
+  retry(): void {
+    if (this.backendIsReady) {
+      this.fetchBillCategories();
+    } else {
+      this.contextService.retryWakeUp();
+    }
   }
 
   createCategory(category: CategoryCreateDto): Observable<CategoryDto> {
@@ -101,28 +116,34 @@ export class BillCategoryContextService {
   }
   
   private initSubscriptions(): void {
-    this.contextService.backendReady().subscribe(
+    // Genau einmal beim Start laden, sobald das Backend bereit ist: zwei gleichzeitige erste Abrufe
+    // haben beim ersten Login doppelte Standardkategorien angelegt (design §8.4)
+    this.contextService.backendReady().pipe(filter(ready => ready), take(1)).subscribe(
       {
-        next: ready => {
-          this.backendIsReady = ready;
-          if (ready) {
-            this.fetchBillCategories();
-          }
+        next: () => {
+          this.backendIsReady = true;
+          this.fetchBillCategories();
         }
       }
     );
   }
 
   private fetchBillCategories(onDone?: () => void): void {
+    this.loadingState.set(true);
+    this.errorState.set(false);
+
     this.billCategoryApiService.getAll().subscribe(
       {
         next: categories => {
+          this.loadingState.set(false);
           this.categories$.next(categories);
           this.loadState$.next('loaded');
           onDone?.();
         },
         error: _ => {
+          this.loadingState.set(false);
           if (this.backendIsReady) {
+            this.errorState.set(true);
             this.loadState$.next('failed');
           }
           onDone?.();

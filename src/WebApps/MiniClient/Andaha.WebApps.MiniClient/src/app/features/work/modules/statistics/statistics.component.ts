@@ -1,4 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TimeRange, mapTimeRangeDto } from 'src/app/shared/models/TimeRange';
 import { StatisticsContextService } from '../../services/statistics-context.service';
 import { StatisticsDto } from 'src/app/api/work/dtos/StatisticsDto';
@@ -18,6 +19,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 })
 export class StatisticsComponent implements OnInit {
   private contextService = inject(StatisticsContextService);
+  private destroyRef = inject(DestroyRef);
 
 
   availableTimeRange?: TimeRange;
@@ -60,13 +62,13 @@ export class StatisticsComponent implements OnInit {
   }
 
   private initSubscriptions(): void {
-    this.contextService.loading().subscribe(
+    this.contextService.loading().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
       {
         next: loading => this.isLoading = loading
       }
     );
     
-    this.contextService.availableTimeRange().subscribe(
+    this.contextService.availableTimeRange().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
       {
         next: timeRange => {
           if (timeRange) {
@@ -76,7 +78,7 @@ export class StatisticsComponent implements OnInit {
       }
     );
 
-    this.contextService.statistics().subscribe(
+    this.contextService.statistics().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
       {
         next: statistics => {
           if (statistics) {
@@ -86,7 +88,7 @@ export class StatisticsComponent implements OnInit {
       }
     );
 
-    this.contextService.fullStatistics().subscribe(
+    this.contextService.fullStatistics().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
       {
         next: statistics => {
           if (statistics) {

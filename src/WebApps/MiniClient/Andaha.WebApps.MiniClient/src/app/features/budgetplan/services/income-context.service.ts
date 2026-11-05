@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, Signal, inject, signal } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { afterFirstLoad } from 'src/app/shared/utils/load-state';
 import { IncomeCreateDto } from 'src/app/api/budgetplan/dtos/IncomeCreateDto';
@@ -17,7 +17,12 @@ export class IncomeContextService {
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private incomes$: BehaviorSubject<IncomeDto[] | undefined> = new BehaviorSubject<IncomeDto[] | undefined>(undefined);
   private loadState$ = new ReplaySubject<'loaded' | 'failed'>(1);
+  private changed$ = new Subject<void>();
+  private readonly errorState = signal(false);
   private backendIsReady: boolean = false;
+
+  /** true, wenn das letzte Laden der Liste fehlgeschlagen ist (nachdem das Backend bereit war) */
+  readonly error: Signal<boolean> = this.errorState.asReadonly();
 
   constructor() {
     this.fetchIncomes();
@@ -30,6 +35,20 @@ export class IncomeContextService {
 
   loading(): Observable<boolean> {
     return this.loading$.asObservable();
+  }
+
+  /** Meldet jede vom Server bestätigte Änderung (Anlegen, Ändern, Löschen); nie beim optimistischen Entfernen */
+  changed(): Observable<void> {
+    return this.changed$.asObservable();
+  }
+
+  /** Liste erneut laden (bzw. Backend erneut wecken, solange es nicht bereit ist) */
+  retry(): void {
+    if (this.backendIsReady) {
+      this.fetchIncomes();
+    } else {
+      this.contextService.retryWakeUp();
+    }
   }
 
   getById(id: string): IncomeDto | undefined {
@@ -48,6 +67,7 @@ export class IncomeContextService {
         next: _ => {
           returnSubject.next();
           this.fetchIncomes();
+          this.changed$.next();
         },
         error: error => returnSubject.error(error)
       }
@@ -64,6 +84,7 @@ export class IncomeContextService {
         next: _ => {
           returnSubject.next();
           this.fetchIncomes();
+          this.changed$.next();
         },
         error: error => returnSubject.error(error)
       }
@@ -81,7 +102,10 @@ export class IncomeContextService {
 
     this.incomeApiService.delete(id).subscribe(
       {
-        next: _ => returnSubject.next(),
+        next: _ => {
+          returnSubject.next();
+          this.changed$.next();
+        },
         error: error => {
           returnSubject.error(error);
           this.fetchIncomes();
@@ -94,6 +118,7 @@ export class IncomeContextService {
 
   private fetchIncomes() {
     this.loading$.next(true);
+    this.errorState.set(false);
 
     this.incomeApiService
       .list()
@@ -107,6 +132,7 @@ export class IncomeContextService {
           error: _ => {
             this.loading$.next(false);
             if (this.backendIsReady) {
+              this.errorState.set(true);
               this.loadState$.next('failed');
             }
           }

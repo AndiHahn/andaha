@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, Signal, inject, signal } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { afterFirstLoad } from 'src/app/shared/utils/load-state';
 import { CreatePersonDto } from 'src/app/api/work/dtos/CreatePersonDto';
@@ -19,7 +19,11 @@ export class PersonContextService {
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private persons$: BehaviorSubject<PersonDto[] | undefined> = new BehaviorSubject<PersonDto[] | undefined>(undefined);
   private loadState$ = new ReplaySubject<'loaded' | 'failed'>(1);
+  private readonly errorState = signal(false);
   private backendIsReady: boolean = false;
+
+  /** true, wenn das letzte Laden der Liste fehlgeschlagen ist (nachdem das Backend bereit war) */
+  readonly error: Signal<boolean> = this.errorState.asReadonly();
 
   constructor() {
     this.fetchPersons();
@@ -110,9 +114,32 @@ export class PersonContextService {
   }
 
   addPayment(personId: string, dto: PayPersonDto): Observable<void> {
+    return this.refetchAfter(this.personApiService.payPerson(personId, dto));
+  }
+
+  /** Zahlung bearbeiten; danach kommen bezahlte Stunden und Zahlungen neu vom Backend */
+  updatePayment(personId: string, paymentId: string, dto: PayPersonDto): Observable<void> {
+    return this.refetchAfter(this.personApiService.updatePayment(personId, paymentId, dto));
+  }
+
+  /** Zahlung löschen; danach kommen bezahlte Stunden und Zahlungen neu vom Backend */
+  deletePayment(personId: string, paymentId: string): Observable<void> {
+    return this.refetchAfter(this.personApiService.deletePayment(personId, paymentId));
+  }
+
+  /** Liste erneut laden (bzw. Backend erneut wecken, solange es nicht bereit ist) */
+  retry(): void {
+    if (this.backendIsReady) {
+      this.fetchPersons();
+    } else {
+      this.contextService.retryWakeUp();
+    }
+  }
+
+  private refetchAfter(change: Observable<void>): Observable<void> {
     const returnSubject = new ReplaySubject<void>(1);
 
-    this.personApiService.payPerson(personId, dto).subscribe(
+    change.subscribe(
       {
         next: _ => {
           // Zahlungen und bezahlte Stunden kommen vom Backend, keine lokale Addition
@@ -123,8 +150,8 @@ export class PersonContextService {
                 returnSubject.complete();
               },
               error: error => {
-                // Zahlung ist gespeichert; ein fehlgeschlagener Refetch darf keinen zweiten Versuch ausloesen
-                console.error('Refetching persons after payment failed', error);
+                // Änderung ist gespeichert; ein fehlgeschlagener Refetch darf keinen zweiten Versuch ausloesen
+                console.error('Refetching persons after payment change failed', error);
                 returnSubject.next();
                 returnSubject.complete();
               }
@@ -169,6 +196,7 @@ export class PersonContextService {
   private fetchPersons(): Observable<void> {
     const result$ = new ReplaySubject<void>(1);
     this.loading$.next(true);
+    this.errorState.set(false);
 
     this.personApiService
       .listPersons()
@@ -184,6 +212,7 @@ export class PersonContextService {
           error: error => {
             this.loading$.next(false);
             if (this.backendIsReady) {
+              this.errorState.set(true);
               this.loadState$.next('failed');
             }
             result$.error(error);

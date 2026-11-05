@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, Signal, WritableSignal, inject, signal } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { CollaborationApiService } from '../api/collaboration/collaboration-api.service';
 import { ConnectionDto } from '../api/collaboration/dtos/ConnectionDto';
@@ -22,6 +22,16 @@ export class CollaborationContextService {
   
   private outgoingConnectionRequests$: BehaviorSubject<ConnectionRequestDto[] | undefined> = new BehaviorSubject<ConnectionRequestDto[] | undefined>(undefined);
   private outgoingConnectionRequestsLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+  private readonly connectionsErrorState = signal(false);
+  private readonly incomingConnectionRequestsErrorState = signal(false);
+  private readonly outgoingConnectionRequestsErrorState = signal(false);
+  private backendIsReady: boolean = false;
+
+  /** true, wenn das letzte Laden der jeweiligen Liste fehlgeschlagen ist (nachdem das Backend bereit war) */
+  readonly connectionsError: Signal<boolean> = this.connectionsErrorState.asReadonly();
+  readonly incomingConnectionRequestsError: Signal<boolean> = this.incomingConnectionRequestsErrorState.asReadonly();
+  readonly outgoingConnectionRequestsError: Signal<boolean> = this.outgoingConnectionRequestsErrorState.asReadonly();
 
   constructor() {
     this.initSubscriptions();
@@ -52,6 +62,18 @@ export class CollaborationContextService {
 
   outgoingConnectionRequests(): Observable<ConnectionRequestDto[] | undefined> {
     return this.outgoingConnectionRequests$.asObservable();
+  }
+
+  /** Alle drei Listen erneut laden (bzw. Backend erneut wecken, solange es nicht bereit ist) */
+  retry(): void {
+    if (!this.backendIsReady) {
+      this.contextService.retryWakeUp();
+      return;
+    }
+
+    this.fetchConnections();
+    this.fetchIncomingConnectionRequests();
+    this.fetchOutgoingConnectionRequests();
   }
 
   requestConnection(targetUserEmailAddress: string): Observable<void> {
@@ -104,10 +126,49 @@ export class CollaborationContextService {
     return returnSubject.asObservable();
   }
 
+  /**
+   * Verbindung trennen. Danach werden Verbindungen und Rechnungen neu geladen; den Haushaltsplan lädt
+   * der Aufrufer über `BudgetplanContextService.refresh()` neu. Der Aufrufer zeigt Fehler selbst an.
+   */
+  removeConnection(userId: string): Observable<void> {
+    const returnSubject = new Subject<void>();
+
+    this.collaborationApiService.removeConnection(userId).subscribe(
+      {
+        next: _ => {
+          returnSubject.next();
+          this.fetchConnections();
+          this.billContextService.refreshBills();
+        },
+        error: error => returnSubject.error(error)
+      }
+    );
+
+    return returnSubject.asObservable();
+  }
+
+  /** Eigene offene Anfrage zurückziehen; danach werden die ausgehenden Anfragen neu geladen */
+  withdrawRequest(targetUserId: string): Observable<void> {
+    const returnSubject = new Subject<void>();
+
+    this.collaborationApiService.withdrawRequest(targetUserId).subscribe(
+      {
+        next: _ => {
+          returnSubject.next();
+          this.fetchOutgoingConnectionRequests();
+        },
+        error: error => returnSubject.error(error)
+      }
+    );
+
+    return returnSubject.asObservable();
+  }
+
   private initSubscriptions(): void {
     this.contextService.backendReady().subscribe(
       {
         next: ready => {
+          this.backendIsReady = ready;
           if (ready) {
             this.fetchConnections();
             this.fetchIncomingConnectionRequests();
@@ -119,50 +180,50 @@ export class CollaborationContextService {
   }
 
   private fetchConnections() {
-    this.connectionsLoading$.next(true);
-
-    this.collaborationApiService
-      .listConnections()
-      .subscribe(
-        {
-          next: result => {
-            this.connectionsLoading$.next(false);
-            this.connections$.next(result);
-          },
-          error: _ => this.connectionsLoading$.next(false)
-        }
-    );
+    this.fetchList(
+      this.collaborationApiService.listConnections(),
+      this.connections$,
+      this.connectionsLoading$,
+      this.connectionsErrorState);
   }
 
   private fetchIncomingConnectionRequests() {
-    this.incomingConnectionRequestsLoading$.next(true);
-
-    this.collaborationApiService
-      .listIncomingConnectionRequests()
-      .subscribe(
-        {
-          next: result => {
-            this.incomingConnectionRequestsLoading$.next(false);
-            this.incomingConnectionRequests$.next(result);
-          },
-          error: _ => this.incomingConnectionRequestsLoading$.next(false)
-        }
-    );
+    this.fetchList(
+      this.collaborationApiService.listIncomingConnectionRequests(),
+      this.incomingConnectionRequests$,
+      this.incomingConnectionRequestsLoading$,
+      this.incomingConnectionRequestsErrorState);
   }
 
   private fetchOutgoingConnectionRequests() {
-    this.outgoingConnectionRequestsLoading$.next(true);
+    this.fetchList(
+      this.collaborationApiService.listOutgoingConnectionRequests(),
+      this.outgoingConnectionRequests$,
+      this.outgoingConnectionRequestsLoading$,
+      this.outgoingConnectionRequestsErrorState);
+  }
 
-    this.collaborationApiService
-      .listOutgoingConnectionRequests()
-      .subscribe(
-        {
-          next: result => {
-            this.outgoingConnectionRequestsLoading$.next(false);
-            this.outgoingConnectionRequests$.next(result);
-          },
-          error: _ => this.outgoingConnectionRequestsLoading$.next(false)
+  private fetchList<T>(
+    request: Observable<T[]>,
+    list$: BehaviorSubject<T[] | undefined>,
+    loading$: BehaviorSubject<boolean>,
+    errorState: WritableSignal<boolean>) {
+    loading$.next(true);
+    errorState.set(false);
+
+    request.subscribe(
+      {
+        next: result => {
+          loading$.next(false);
+          list$.next(result);
+        },
+        error: _ => {
+          loading$.next(false);
+          if (this.backendIsReady) {
+            errorState.set(true);
+          }
         }
+      }
     );
   }
 }

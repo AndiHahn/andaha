@@ -24,6 +24,8 @@ export class BillContextService implements OnDestroy {
 
   private bills$: BehaviorSubject<BillDto[]> = new BehaviorSubject<BillDto[]>([]);
   private totalResults$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  private totalSumSubject = new BehaviorSubject<number>(0);
+  private monthSumsSubject = new BehaviorSubject<Map<string, number>>(new Map<string, number>());
   private pageIndex$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   private pageSize$: BehaviorSubject<number> = new BehaviorSubject<number>(50);
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -41,6 +43,11 @@ export class BillContextService implements OnDestroy {
 
   private syncRunning: boolean = false;
   private syncAgain: boolean = false;
+
+  /** Summe aller Treffer der aktuellen Suche (nicht nur der geladenen Seiten) */
+  readonly totalSum$: Observable<number> = this.totalSumSubject.asObservable();
+  /** Summe je Monat ("yyyy-MM") über alle Treffer der aktuellen Suche */
+  readonly monthSums$: Observable<Map<string, number>> = this.monthSumsSubject.asObservable();
 
   private readonly onOnline = () => void this.syncNewBills();
   private readonly onVisibilityChange = () => {
@@ -156,6 +163,7 @@ export class BillContextService implements OnDestroy {
     } catch (error) {
       this.bills$.next(this.bills$.value.filter(bill => bill.id != dto.id));
       this.totalResults$.next(this.totalResults$.value - 1);
+      this.adjustSums(billDto.date, -billDto.price);
       throw error;
     }
 
@@ -189,6 +197,8 @@ export class BillContextService implements OnDestroy {
       imageAvailable: bill.imageAvailable
     } : undefined;
     if (bill) {
+      this.adjustSums(bill.date, -bill.price);
+      this.adjustSums(updateDto.date, updateDto.price);
       bill.shopName = updateDto.shopName;
       bill.notes = updateDto.notes;
       bill.price = updateDto.price;
@@ -219,9 +229,13 @@ export class BillContextService implements OnDestroy {
   deleteBill(id: string): Observable<void> {
     const returnSubject = new Subject<void>();
 
+    const deleted = this.bills$.value.find(bill => bill.id == id);
     const billsWithoutDeleted = this.bills$.value.filter(bill => bill.id != id);
     this.bills$.next(billsWithoutDeleted);
     this.totalResults$.next(this.totalResults$.value - 1);
+    if (deleted) {
+      this.adjustSums(deleted.date, -deleted.price);
+    }
 
     this.billApiService.deleteBill(id).subscribe(
       {
@@ -327,6 +341,8 @@ export class BillContextService implements OnDestroy {
 
             this.updateBillList(result.values);
             this.totalResults$.next(result.totalCount);
+            this.totalSumSubject.next(result.totalSum ?? 0);
+            this.monthSumsSubject.next(new Map((result.monthSums ?? []).map(monthSum => [monthSum.month, monthSum.sum])));
           },
           error: _ => { }
         }
@@ -369,6 +385,22 @@ export class BillContextService implements OnDestroy {
 
     this.bills$.next(bills);
     this.totalResults$.next(this.totalResults$.value + 1);
+    this.adjustSums(bill.date, bill.price);
+  }
+
+  /** Gesamt- und Monatssumme sofort mitführen, bis die nächste Server-Antwort sie ersetzt */
+  private adjustSums(date: Date, amount: number): void {
+    this.totalSumSubject.next(this.totalSumSubject.value + amount);
+
+    const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    const monthSums = new Map(this.monthSumsSubject.value);
+    const monthSum = (monthSums.get(month) ?? 0) + amount;
+    if (Math.abs(monthSum) < 0.005) {
+      monthSums.delete(month);
+    } else {
+      monthSums.set(month, monthSum);
+    }
+    this.monthSumsSubject.next(monthSums);
   }
 
   private async syncNewBills(): Promise<void> {

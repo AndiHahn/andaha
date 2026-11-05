@@ -1,3 +1,3 @@
 ﻿namespace Andaha.Services.Collaboration.Dtos.V1;
 
-public readonly record struct ConnectionDto(string UserEmailAddress);
+public readonly record struct ConnectionDto(Guid UserId, string UserEmailAddress);

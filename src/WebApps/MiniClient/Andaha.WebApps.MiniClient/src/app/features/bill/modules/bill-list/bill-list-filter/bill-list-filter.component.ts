@@ -190,7 +190,7 @@ export class BillListFilterComponent implements OnInit, OnDestroy {
   }
 
   private loadBillCategories() {
-    this.billCategoryContextService.categories().subscribe({
+    this.billCategoryContextService.categories().pipe(takeUntil(this.destroyed)).subscribe({
       next: categories => {
         if (categories.length <= 0) {
           return;

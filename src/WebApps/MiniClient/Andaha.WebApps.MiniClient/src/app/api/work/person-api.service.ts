@@ -7,6 +7,7 @@ import { Observable, map } from 'rxjs';
 import { CreatePersonDto } from './dtos/CreatePersonDto';
 import { UpdatePersonDto } from './dtos/PersonUpdateDto';
 import { PayPersonDto } from './dtos/PayPersonDto';
+import { skipGlobalError } from 'src/app/core/http/skip-global-error';
 
 @Injectable({
   providedIn: 'root'
@@ -33,28 +34,51 @@ export class PersonApiService {
     return this.httpClient.get<PersonDtoRaw[]>(url).pipe(map(mapPersonDtoRawList));
   }
 
+  // Ändernde Aufrufe: Seiten und Dialoge zeigen bei Fehlern eine eigene Snackbar (SKIP_GLOBAL_ERROR)
+
   createPerson(dto: CreatePersonDto): Observable<PersonDto> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl);
 
-    return this.httpClient.post<PersonDtoRaw>(url, dto).pipe(map(mapPersonDtoRaw));
+    return this.httpClient.post<PersonDtoRaw>(url, dto, skipGlobalError()).pipe(map(mapPersonDtoRaw));
   }
 
   updatePerson(id: string, dto: UpdatePersonDto): Observable<PersonDto> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
 
-    return this.httpClient.put<PersonDtoRaw>(url, dto).pipe(map(mapPersonDtoRaw));
+    return this.httpClient.put<PersonDtoRaw>(url, dto, skipGlobalError()).pipe(map(mapPersonDtoRaw));
   }
 
   payPerson(personId: string, dto: PayPersonDto): Observable<void> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, personId, 'pay');
 
-    return this.httpClient.post<void>(url, dto);
+    return this.httpClient.post<void>(url, dto, skipGlobalError());
+  }
+
+  /** Zahlung bearbeiten; gleiche Felder und Einheiten wie `payPerson`. Der Aufrufer zeigt bei Fehlern eine eigene Meldung. */
+  updatePayment(personId: string, paymentId: string, dto: PayPersonDto): Observable<void> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, personId, 'payments', paymentId);
+
+    return this.httpClient.put<void>(url, dto, skipGlobalError());
+  }
+
+  /** Zahlung löschen. Der Aufrufer zeigt bei Fehlern eine eigene Meldung. */
+  deletePayment(personId: string, paymentId: string): Observable<void> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, personId, 'payments', paymentId);
+
+    return this.httpClient.delete<void>(url, skipGlobalError());
   }
 
   deletePerson(id: string): Observable<void> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
     
-    return this.httpClient.delete<void>(url);
+    return this.httpClient.delete<void>(url, skipGlobalError());
+  }
+
+  /** Löscht alle Stunden-Daten des Benutzers (AC31). Der Aufrufer zeigt bei Fehlern eine eigene Meldung. */
+  deleteUserData(): Observable<void> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'user-data');
+
+    return this.httpClient.delete<void>(url, skipGlobalError());
   }
 
   export(): Observable<HttpResponse<Blob>> {

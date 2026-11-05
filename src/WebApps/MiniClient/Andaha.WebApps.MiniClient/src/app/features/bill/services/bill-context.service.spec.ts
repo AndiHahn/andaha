@@ -6,6 +6,7 @@ import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { SearchBillsParameters } from 'src/app/api/shopping/dtos/SearchBillsParameters';
 import { PagedResultDto } from 'src/app/api/common-dtos/PagedResultDto';
+import { BillSearchResultDto } from 'src/app/api/shopping/dtos/BillSearchResultDto';
 import { ContextService } from 'src/app/core/context.service';
 import { BillCacheService } from './bill-cache.service';
 import { BillContextService } from './bill-context.service';
@@ -167,6 +168,38 @@ describe('BillContextService search', () => {
         expect(loadingValues[loadingValues.length - 1]).toBe(false);
     });
 
+    it('bill search exposes totalSum and monthSums', () => {
+        let totalSum = -1;
+        let monthSums = new Map<string, number>();
+        service.totalSum$.subscribe(s => totalSum = s);
+        service.monthSums$.subscribe(m => monthSums = m);
+        answerInitialRequest();
+
+        service.setCategoryFilter(['c1']);
+        service.searchBills();
+        (requests[requests.length - 1] as Subject<unknown>).next({
+            values: [createBill('b1', 2)],
+            totalCount: 126,
+            totalSum: 1234.5,
+            monthSums: [{ month: '2024-02', sum: 34.5 }, { month: '2024-01', sum: 1200 }]
+        });
+
+        expect(totalSum).toBe(1234.5);
+        expect(Array.from(monthSums.entries())).toEqual([['2024-02', 34.5], ['2024-01', 1200]]);
+    });
+
+    it('a search without matches exposes zero sum and no months', () => {
+        let totalSum = -1;
+        let monthSums = new Map<string, number>([['x', 1]]);
+        service.totalSum$.subscribe(s => totalSum = s);
+        service.monthSums$.subscribe(m => monthSums = m);
+
+        (requests[0] as Subject<unknown>).next({ values: [], totalCount: 0, totalSum: 0, monthSums: [] });
+
+        expect(totalSum).toBe(0);
+        expect(monthSums.size).toBe(0);
+    });
+
     it('starts a new generation on page size change', () => {
         const initialRequest = requests[0];
         expect(initialRequest.observers.length).toBe(1);
@@ -215,7 +248,7 @@ describe('BillContextService local save and sync', () => {
             searchBills: vi.fn().mockName("BillApiService.searchBills"),
             addBill: vi.fn().mockName("BillApiService.addBill")
         } as unknown as MockedObject<BillApiService>;
-        billApi.searchBills.mockReturnValue(of({ values: [], totalCount: 0 }));
+        billApi.searchBills.mockReturnValue(of({ values: [], totalCount: 0, totalSum: 0, monthSums: [] }));
 
         const contextService = {
             backendReady: vi.fn().mockName("ContextService.backendReady")
@@ -428,7 +461,7 @@ describe('BillContextService loadBillById', () => {
             searchBills: vi.fn().mockName("BillApiService.searchBills"),
             getBill: vi.fn().mockName("BillApiService.getBill")
         } as unknown as MockedObject<BillApiService>;
-        billApi.searchBills.mockReturnValue(new Subject<PagedResultDto<BillDto>>().asObservable());
+        billApi.searchBills.mockReturnValue(new Subject<BillSearchResultDto>().asObservable());
 
         const contextService = {
             backendReady: vi.fn().mockName("ContextService.backendReady")
@@ -478,7 +511,7 @@ describe('BillContextService updateBill', () => {
             searchBills: vi.fn().mockName("BillApiService.searchBills"),
             updateBill: vi.fn().mockName("BillApiService.updateBill")
         } as unknown as MockedObject<BillApiService>;
-        billApi.searchBills.mockReturnValue(new Subject<PagedResultDto<BillDto>>().asObservable());
+        billApi.searchBills.mockReturnValue(new Subject<BillSearchResultDto>().asObservable());
 
         const contextService = {
             backendReady: vi.fn().mockName("ContextService.backendReady")

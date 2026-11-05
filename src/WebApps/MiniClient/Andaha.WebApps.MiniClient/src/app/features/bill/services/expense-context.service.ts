@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, Signal, inject, signal } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { ExpenseDto } from '../../../api/shopping/dtos/ExpenseDto';
@@ -21,6 +21,14 @@ export class ExpenseContextService {
 
   private availableTimeRange$: BehaviorSubject<TimeRangeDto | undefined> = new BehaviorSubject<TimeRangeDto | undefined>(undefined);
   private expenses$ : BehaviorSubject<ExpenseDto[] | undefined> = new BehaviorSubject<ExpenseDto[] | undefined>(undefined);
+  private readonly loadingState = signal(false);
+  private readonly errorState = signal(false);
+  private lastTimeRange?: TimeRange;
+
+  /** true, solange Ausgaben für einen Zeitraum geladen werden */
+  readonly loading: Signal<boolean> = this.loadingState.asReadonly();
+  /** true, wenn das letzte Laden der Ausgaben fehlgeschlagen ist */
+  readonly error: Signal<boolean> = this.errorState.asReadonly();
 
   constructor() {
     this.initSubscriptions();
@@ -48,12 +56,7 @@ export class ExpenseContextService {
           }
 
           this.apiService
-            .exportExpenses(
-              {
-                startTimeUtc: this.datePipe.transform(timeRange.startTimeUtc, 'MM/dd/yyyy')!,
-                endTimeUtc: this.datePipe.transform(timeRange.endTimeUtc, 'MM/dd/yyyy')!
-              }
-            )
+            .exportExpenses(timeRange.startTimeUtc, timeRange.endTimeUtc)
             .subscribe(
               {
                 next: response => {
@@ -82,12 +85,23 @@ export class ExpenseContextService {
   }
 
   loadExpenses(timeRange: TimeRange): void {
+    this.lastTimeRange = timeRange;
     this.fetchExpenses(
       {
         startTimeUtc: this.datePipe.transform(timeRange.startDate, 'MM/dd/yyyy')!,
         endTimeUtc: this.datePipe.transform(timeRange.endDate, 'MM/dd/yyyy')!
       }
     );
+  }
+
+  /** Zeitraum (falls noch nicht geladen) und die zuletzt angeforderten Ausgaben erneut laden */
+  retry(): void {
+    if (!this.availableTimeRange$.value) {
+      this.fetchTimeRange();
+    }
+    if (this.lastTimeRange) {
+      this.loadExpenses(this.lastTimeRange);
+    }
   }
   
   private initSubscriptions(): void {
@@ -135,15 +149,26 @@ export class ExpenseContextService {
   private fetchTimeRange(): void {
     this.apiService.getAvailableTimeRange().subscribe(
       {
-        next: timeRange => this.availableTimeRange$.next(timeRange)
+        next: timeRange => this.availableTimeRange$.next(timeRange),
+        error: _ => { }
       }
     );
   }
 
   private fetchExpenses(timeRange: TimeRangeDtoRaw): void {
+    this.loadingState.set(true);
+    this.errorState.set(false);
+
     this.apiService.getExpenses(timeRange).subscribe(
       {
-        next: expenses => this.expenses$.next(expenses)
+        next: expenses => {
+          this.loadingState.set(false);
+          this.expenses$.next(expenses);
+        },
+        error: _ => {
+          this.loadingState.set(false);
+          this.errorState.set(true);
+        }
       }
     );
   }

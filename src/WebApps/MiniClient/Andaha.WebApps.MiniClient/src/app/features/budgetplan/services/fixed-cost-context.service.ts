@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, Signal, inject, signal } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { afterFirstLoad } from 'src/app/shared/utils/load-state';
 import { FixedCostCreateDto } from 'src/app/api/budgetplan/dtos/FixedCostCreateDto';
@@ -17,7 +17,12 @@ export class FixedCostContextService {
   private loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private fixedCosts$: BehaviorSubject<FixedCostDto[] | undefined> = new BehaviorSubject<FixedCostDto[] | undefined>(undefined);
   private loadState$ = new ReplaySubject<'loaded' | 'failed'>(1);
+  private changed$ = new Subject<void>();
+  private readonly errorState = signal(false);
   private backendIsReady: boolean = false;
+
+  /** true, wenn das letzte Laden der Liste fehlgeschlagen ist (nachdem das Backend bereit war) */
+  readonly error: Signal<boolean> = this.errorState.asReadonly();
 
   constructor() {
     this.fetchFixedCosts();
@@ -30,6 +35,20 @@ export class FixedCostContextService {
 
   loading(): Observable<boolean> {
     return this.loading$.asObservable();
+  }
+
+  /** Meldet jede vom Server bestätigte Änderung (Anlegen, Ändern, Löschen); nie beim optimistischen Entfernen */
+  changed(): Observable<void> {
+    return this.changed$.asObservable();
+  }
+
+  /** Liste erneut laden (bzw. Backend erneut wecken, solange es nicht bereit ist) */
+  retry(): void {
+    if (this.backendIsReady) {
+      this.fetchFixedCosts();
+    } else {
+      this.contextService.retryWakeUp();
+    }
   }
 
   getById(id: string): FixedCostDto | undefined {
@@ -48,6 +67,7 @@ export class FixedCostContextService {
         next: _ => {
           returnSubject.next();
           this.fetchFixedCosts();
+          this.changed$.next();
         },
         error: error => returnSubject.error(error)
       }
@@ -64,6 +84,7 @@ export class FixedCostContextService {
         next: _ => {
           returnSubject.next();
           this.fetchFixedCosts();
+          this.changed$.next();
         },
         error: error => returnSubject.error(error)
       }
@@ -81,7 +102,10 @@ export class FixedCostContextService {
 
     this.fixedCostApiService.delete(id).subscribe(
       {
-        next: _ => returnSubject.next(),
+        next: _ => {
+          returnSubject.next();
+          this.changed$.next();
+        },
         error: error => {
           returnSubject.error(error);
           this.fetchFixedCosts();
@@ -94,6 +118,7 @@ export class FixedCostContextService {
 
   private fetchFixedCosts() {
     this.loading$.next(true);
+    this.errorState.set(false);
 
     this.fixedCostApiService
       .list()
@@ -107,6 +132,7 @@ export class FixedCostContextService {
           error: _ => {
             this.loading$.next(false);
             if (this.backendIsReady) {
+              this.errorState.set(true);
               this.loadState$.next('failed');
             }
           }

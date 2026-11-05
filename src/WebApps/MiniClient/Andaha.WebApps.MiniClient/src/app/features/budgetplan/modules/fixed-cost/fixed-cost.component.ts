@@ -1,4 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CostCategory } from 'src/app/api/budgetplan/dtos/CostCategory';
 import { FixedCostDto } from 'src/app/api/budgetplan/dtos/FixedCostDto';
 import { FixedCostContextService } from '../../services/fixed-cost-context.service';
@@ -21,6 +22,7 @@ interface CostCategoryDictionary {
 })
 export class FixedCostComponent implements OnInit {
   private fixedCostContextService = inject(FixedCostContextService);
+  private destroyRef = inject(DestroyRef);
 
 
   fixedCosts?: CostCategoryDictionary;
@@ -45,7 +47,7 @@ export class FixedCostComponent implements OnInit {
   }
 
   private initSubscriptions(): void {
-    this.fixedCostContextService.fixedCosts().subscribe(
+    this.fixedCostContextService.fixedCosts().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
       {
         next: fixedCosts => {
           if (fixedCosts) {

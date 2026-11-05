@@ -1,4 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CreateWorkingEntriesDto } from 'src/app/api/work/dtos/CreateWorkingEntriesDto';
 import { WorkingEntryForm, getEmptyWorkingEntryForm } from '../../../functions/working-entry-form-functions';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -30,6 +31,7 @@ import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 export class AddWorkingEntryComponent implements OnInit {
   private snackbar = inject(MatSnackBar);
   private personContextService = inject(PersonContextService);
+  private destroyRef = inject(DestroyRef);
   private contextService = inject(WorkingEntriesContextGlobalService);
 
 
@@ -45,7 +47,7 @@ export class AddWorkingEntryComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.personContextService.persons().subscribe(
+    this.personContextService.persons().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
       {
         next: persons => {
           if (!this.persons) {

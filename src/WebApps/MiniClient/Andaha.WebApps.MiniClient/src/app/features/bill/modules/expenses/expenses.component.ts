@@ -1,4 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { ExpenseDto } from 'src/app/api/shopping/dtos/ExpenseDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
@@ -18,6 +19,7 @@ import { ChartComponent } from './chart/chart.component';
 export class ExpensesComponent implements OnInit {
   private expenseContextService = inject(ExpenseContextService);
   private categoryContextService = inject(BillCategoryContextService);
+  private destroyRef = inject(DestroyRef);
 
 
   availableTimeRange?: TimeRange;
@@ -68,7 +70,7 @@ export class ExpensesComponent implements OnInit {
   }
 
   private initSubscriptions(): void {
-    this.expenseContextService.availableTimeRange().subscribe(
+    this.expenseContextService.availableTimeRange().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
       {
         next: timeRange => {
           if (timeRange) {
@@ -78,7 +80,7 @@ export class ExpensesComponent implements OnInit {
       }
     );
 
-    this.expenseContextService.expenses().subscribe(
+    this.expenseContextService.expenses().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
       {
         next: expenses => {
           if (expenses) {
@@ -90,7 +92,7 @@ export class ExpensesComponent implements OnInit {
       }
     );
 
-    this.categoryContextService.categories().subscribe(
+    this.categoryContextService.categories().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
       {
         next: categories => {
           this.categories = categories;

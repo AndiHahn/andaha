@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PersonDto } from 'src/app/api/work/dtos/PersonDto';
 import { PersonContextService } from '../../services/person-context.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
@@ -19,6 +20,7 @@ export class PersonComponent implements OnInit, OnDestroy {
   private personContextService = inject(PersonContextService);
   private pageTitleService = inject(PageTitleService);
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
 
   persons?: PersonDto[];
@@ -35,7 +37,7 @@ export class PersonComponent implements OnInit, OnDestroy {
   }
   
   private initSubscriptions(): void {
-    this.personContextService.persons().subscribe(
+    this.personContextService.persons().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
       {
         next: persons => this.persons = persons
       }

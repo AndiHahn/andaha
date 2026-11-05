@@ -1,4 +1,4 @@
-import { HttpContextToken } from '@angular/common/http';
+import { HttpContext, HttpContextToken } from '@angular/common/http';
 
 /**
  * Anfragen, deren Aufrufer selbst eine genauere Meldung zeigt (z. B. das Offline-Speichern von Rechnungen),
@@ -8,3 +8,8 @@ import { HttpContextToken } from '@angular/common/http';
  * `http.post(url, body, { context: new HttpContext().set(SKIP_GLOBAL_ERROR, true) })`
  */
 export const SKIP_GLOBAL_ERROR = new HttpContextToken<boolean>(() => false);
+
+/** Request-Optionen für Anfragen, deren Aufrufer bei jedem Fehler eine eigene Meldung zeigt. */
+export function skipGlobalError(): { context: HttpContext } {
+  return { context: new HttpContext().set(SKIP_GLOBAL_ERROR, true) };
+}

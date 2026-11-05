@@ -1,4 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IncomeDto } from 'src/app/api/budgetplan/dtos/IncomeDto';
 import { IncomeContextService } from '../../services/income-context.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
@@ -16,6 +17,7 @@ import { MatFabButton } from '@angular/material/button';
 })
 export class IncomeComponent implements OnInit {
   private incomeContextService = inject(IncomeContextService);
+  private destroyRef = inject(DestroyRef);
 
 
   incomes?: IncomeDto[];
@@ -28,7 +30,7 @@ export class IncomeComponent implements OnInit {
   }
 
   private initSubscriptions(): void {
-    this.incomeContextService.incomes().subscribe(
+    this.incomeContextService.incomes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
       {
         next: incomes => {
           if (incomes) {

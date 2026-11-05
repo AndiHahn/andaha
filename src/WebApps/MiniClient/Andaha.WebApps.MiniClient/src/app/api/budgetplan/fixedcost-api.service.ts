@@ -8,6 +8,7 @@ import { FixedCostDto } from './dtos/FixedCostDto';
 import { FixedCostHistoryDto, RawFixedCostHistoryDto } from './dtos/FixedCostHistoryDto';
 import { FixedCostUpdateDto } from './dtos/FixedCostUpdateDto';
 import { mapFixedCostHistoryList } from './pipes/fixed-cost-history-pipe';
+import { skipGlobalError } from 'src/app/core/http/skip-global-error';
 
 @Injectable({
   providedIn: 'root'
@@ -41,21 +42,23 @@ export class FixedCostApiService {
       .pipe(map(mapFixedCostHistoryList));
   }
 
+  // Ändernde Aufrufe: Anlegen/Detail zeigen bei Fehlern eine eigene Snackbar (SKIP_GLOBAL_ERROR)
+
   create(createDto: FixedCostCreateDto): Observable<void> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl);
     
-    return this.httpClient.post<void>(url, createDto);
+    return this.httpClient.post<void>(url, createDto, skipGlobalError());
   }
 
   update(id: string, updateDto: FixedCostUpdateDto): Observable<void> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
 
-    return this.httpClient.put<void>(url, updateDto);
+    return this.httpClient.put<void>(url, updateDto, skipGlobalError());
   }
 
   delete(id: string): Observable<void> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
 
-    return this.httpClient.delete<void>(url);
+    return this.httpClient.delete<void>(url, skipGlobalError());
   }
 }
