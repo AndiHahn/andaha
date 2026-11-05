@@ -10,7 +10,9 @@
   padding: 4px;
 }
 
-.dot {
+.swatch {
+  display: block;
+  width: 100%;
   aspect-ratio: 1;
   border: 0;
   border-radius: 50%;

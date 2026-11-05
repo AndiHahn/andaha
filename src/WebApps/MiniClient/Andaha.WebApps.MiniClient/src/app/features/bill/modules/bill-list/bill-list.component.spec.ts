@@ -132,6 +132,7 @@ describe('BillListComponent', () => {
 
     expect(host.querySelector('app-load-state .empty')).toBeNull();
     expect(fixture.componentInstance.loadState).toBe('loading');
+    expect(host.querySelector('.sum')).toBeNull();
   });
 
   it('marks rows with data-no-swipe so tab swiping ignores them', () => {
@@ -232,6 +233,7 @@ describe('BillListComponent', () => {
 
     const retry = Array.from(host.querySelectorAll('button')).find(b => b.textContent?.includes('Erneut versuchen'));
     expect(retry).toBeDefined();
+    expect(host.querySelector('.sum')).toBeNull();
     retry!.click();
     expect(context.retry).toHaveBeenCalled();
   });

@@ -13,10 +13,12 @@
 </div>
 
 <!-- Summe aller Treffer der aktiven Filter (AC2, Mockup 01 A) -->
-<div class="sum">
-  <b>{{ totalResults | number:'1.0-0':'de' }} {{ totalResults === 1 ? 'Rechnung' : 'Rechnungen' }}</b>
-  <b>{{ totalSum | number:'1.2-2':'de' }} €</b>
-</div>
+@if (loadState === 'ready' || loadState === 'empty') {
+  <div class="sum">
+    <b>{{ totalResults | number:'1.0-0':'de' }} {{ totalResults === 1 ? 'Rechnung' : 'Rechnungen' }}</b>
+    <b>{{ totalSum | number:'1.2-2':'de' }} €</b>
+  </div>
+}
 
 <div class="progress-slot">
   @if (loading && bills.length > 0) {

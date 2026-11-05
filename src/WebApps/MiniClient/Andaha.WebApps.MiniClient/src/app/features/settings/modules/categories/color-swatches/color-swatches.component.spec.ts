@@ -15,7 +15,7 @@ class HostComponent {
 describe('ColorSwatchesComponent', () => {
   let fixture: ComponentFixture<HostComponent>;
   let host: HostComponent;
-  const dots = () => Array.from((fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('button.dot'));
+  const dots = () => Array.from((fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('button.swatch'));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(HostComponent);
@@ -52,6 +52,18 @@ describe('ColorSwatchesComponent', () => {
     fixture.detectChanges();
     expect(host.control.value).toBe(CATEGORY_COLORS[1]);
     expect(dots()[0].classList).toContain('old');
+  });
+
+  it('swatches fill their grid cell as large circles', () => {
+    const el = fixture.nativeElement as HTMLElement;
+    el.style.display = 'block';
+    el.style.width = '390px';
+    fixture.detectChanges();
+
+    const rect = dots()[0].getBoundingClientRect();
+    expect(rect.width).toBeGreaterThan(30);
+    expect(Math.abs(rect.width - rect.height)).toBeLessThan(1);
+    expect(getComputedStyle(dots()[0]).borderRadius).toBe('50%');
   });
 
   it('disabled control blocks selection', () => {

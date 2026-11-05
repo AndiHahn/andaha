@@ -1,10 +1,10 @@
 <div class="sw" role="radiogroup" aria-label="Farbe">
   @if (legacyColor(); as legacy) {
-    <button type="button" class="dot old" role="radio" [class.on]="isSelected(legacy)" [attr.aria-checked]="isSelected(legacy)" [disabled]="disabled()"
+    <button type="button" class="swatch old" role="radio" [class.on]="isSelected(legacy)" [attr.aria-checked]="isSelected(legacy)" [disabled]="disabled()"
       [style.background-color]="legacy" [attr.aria-label]="'Bisherige Farbe ' + legacy" (click)="select(legacy)"></button>
   }
   @for (color of palette; track color) {
-    <button type="button" class="dot" role="radio" [class.on]="isSelected(color)" [disabled]="disabled()"
+    <button type="button" class="swatch" role="radio" [class.on]="isSelected(color)" [disabled]="disabled()"
       [attr.aria-checked]="isSelected(color)" [style.background-color]="color" [attr.aria-label]="color"
       (click)="select(color)"></button>
   }
