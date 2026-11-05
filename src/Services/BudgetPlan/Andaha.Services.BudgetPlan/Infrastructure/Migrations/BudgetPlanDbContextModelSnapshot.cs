@@ -17,10 +17,23 @@ namespace Andaha.Services.BudgetPlan.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.9")
+                .HasAnnotation("ProductVersion", "10.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Andaha.Services.BudgetPlan.Core.BudgetPlanSettings", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("LivingCostShare")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("BudgetPlanSettings", (string)null);
+                });
 
             modelBuilder.Entity("Andaha.Services.BudgetPlan.Core.FixedCost", b =>
                 {
@@ -61,15 +74,15 @@ namespace Andaha.Services.BudgetPlan.Infrastructure.Migrations
                     b.ToTable("FixedCost", (string)null);
 
                     b.ToTable(tb => tb.IsTemporal(ttb =>
-                        {
-                            ttb
-                                .HasPeriodStart("ValidFrom")
-                                .HasColumnName("ValidFrom");
-                            ttb
-                                .HasPeriodEnd("ValidTo")
-                                .HasColumnName("ValidTo");
-                        }
-                    ));
+                            {
+                                ttb.UseHistoryTable("FixedCostHistory");
+                                ttb
+                                    .HasPeriodStart("ValidFrom")
+                                    .HasColumnName("ValidFrom");
+                                ttb
+                                    .HasPeriodEnd("ValidTo")
+                                    .HasColumnName("ValidTo");
+                            }));
                 });
 
             modelBuilder.Entity("Andaha.Services.BudgetPlan.Core.Income", b =>
@@ -108,15 +121,15 @@ namespace Andaha.Services.BudgetPlan.Infrastructure.Migrations
                     b.ToTable("Income", (string)null);
 
                     b.ToTable(tb => tb.IsTemporal(ttb =>
-                        {
-                            ttb
-                                .HasPeriodStart("ValidFrom")
-                                .HasColumnName("ValidFrom");
-                            ttb
-                                .HasPeriodEnd("ValidTo")
-                                .HasColumnName("ValidTo");
-                        }
-                    ));
+                            {
+                                ttb.UseHistoryTable("IncomeHistory");
+                                ttb
+                                    .HasPeriodStart("ValidFrom")
+                                    .HasColumnName("ValidFrom");
+                                ttb
+                                    .HasPeriodEnd("ValidTo")
+                                    .HasColumnName("ValidTo");
+                            }));
                 });
 #pragma warning restore 612, 618
         }

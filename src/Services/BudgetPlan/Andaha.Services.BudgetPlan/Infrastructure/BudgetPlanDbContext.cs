@@ -10,6 +10,8 @@ public class BudgetPlanDbContext : DbContext
 
     public DbSet<FixedCost> FixedCost { get; set; } = null!;
 
+    public DbSet<BudgetPlanSettings> BudgetPlanSettings { get; set; } = null!;
+
     public BudgetPlanDbContext(DbContextOptions<BudgetPlanDbContext> options)
 		: base(options)
 	{

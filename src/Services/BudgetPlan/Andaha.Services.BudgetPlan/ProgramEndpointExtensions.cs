@@ -1,6 +1,8 @@
 ﻿using Andaha.Services.BudgetPlan.Requests.BudgetPlan;
 using Andaha.Services.BudgetPlan.Requests.FixedCost;
 using Andaha.Services.BudgetPlan.Requests.Income;
+using Andaha.Services.BudgetPlan.Requests.Settings;
+using Andaha.Services.BudgetPlan.Requests.UserData;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
@@ -15,6 +17,10 @@ public static class ProgramEndpointExtensions
         app.MapFixedCostEndpoint();
 
         app.MapBudgetPlanEndpoint();
+
+        app.MapSettingsEndpoint();
+
+        app.MapUserDataEndpoint();
 
         return app;
     }

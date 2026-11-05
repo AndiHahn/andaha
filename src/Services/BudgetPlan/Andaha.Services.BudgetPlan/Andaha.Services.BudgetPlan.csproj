@@ -44,6 +44,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Andaha.Services.BudgetPlan.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Infrastructure\Migrations\" />
   </ItemGroup>
 
