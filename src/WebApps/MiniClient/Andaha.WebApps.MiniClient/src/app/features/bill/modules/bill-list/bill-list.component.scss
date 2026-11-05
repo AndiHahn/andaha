@@ -1,7 +1,16 @@
-// Seite im Flex-Fluss der .area: Filter, Summe, Ladebalken und Kopfzeile fest, die Liste fuellt den Rest und scrollt
+// Seite im Flex-Fluss der .area: Filter, Ladebalken und Kopfzeile fest, die Liste fuellt den Rest und scrollt
 :host {
+  position: relative;
   display: flex;
   flex-direction: column;
+}
+
+// Unsichtbarer Anker des Zeilen-Kontextmenues, von onRowPress unter die gedrueckte Zeile gesetzt
+.menu-anchor {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
 }
 
 // Filterleiste: wird beim Runterscrollen eingeklappt (showFilterBar), bleibt aber im DOM
@@ -65,6 +74,9 @@
   contain: inline-size;
   color: inherit;
   text-decoration: none;
+  // langer Druck oeffnet das Zeilenmenue, keine Textauswahl
+  -webkit-user-select: none;
+  user-select: none;
 
   // Zeile reicht bis an den Rand der Liste: Fokusring nach innen, sonst abgeschnitten
   &:focus-visible { outline-offset: -2px; }
@@ -82,19 +94,11 @@
   }
 
   .filter-container,
-  .sum,
   .progress-slot,
   .table-head,
   .list-wrap {
     margin: 0 40px;
     max-width: 1040px;
-  }
-
-  // Summe reserviert wie die Kopfzeile die Scrollbar-Spalte der Liste: Betrag buendig mit den Preisen
-  .sum {
-    padding: 0 16px 10px;
-    overflow-y: hidden;
-    scrollbar-gutter: stable;
   }
 
   // Kopfzeile und Liste reservieren dieselbe Scrollbar-Spalte, damit die Spalten buendig bleiben

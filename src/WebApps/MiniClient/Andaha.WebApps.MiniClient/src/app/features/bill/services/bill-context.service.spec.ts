@@ -214,10 +214,8 @@ describe('BillContextService search', () => {
         expect(loadingValues[loadingValues.length - 1]).toBe(false);
     });
 
-    it('bill search exposes totalSum and monthSums', () => {
-        let totalSum = -1;
+    it('bill search exposes monthSums', () => {
         let monthSums = new Map<string, number>();
-        service.totalSum$.subscribe(s => totalSum = s);
         service.monthSums$.subscribe(m => monthSums = m);
         answerInitialRequest();
 
@@ -230,19 +228,15 @@ describe('BillContextService search', () => {
             monthSums: [{ month: '2024-02', sum: 34.5 }, { month: '2024-01', sum: 1200 }]
         });
 
-        expect(totalSum).toBe(1234.5);
         expect(Array.from(monthSums.entries())).toEqual([['2024-02', 34.5], ['2024-01', 1200]]);
     });
 
-    it('a search without matches exposes zero sum and no months', () => {
-        let totalSum = -1;
+    it('a search without matches exposes no months', () => {
         let monthSums = new Map<string, number>([['x', 1]]);
-        service.totalSum$.subscribe(s => totalSum = s);
         service.monthSums$.subscribe(m => monthSums = m);
 
         (requests[0] as Subject<unknown>).next({ values: [], totalCount: 0, totalSum: 0, monthSums: [] });
 
-        expect(totalSum).toBe(0);
         expect(monthSums.size).toBe(0);
     });
 

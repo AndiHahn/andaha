@@ -12,14 +12,6 @@
   </app-bill-list-filter>
 </div>
 
-<!-- Summe aller Treffer der aktiven Filter (AC2, Mockup 01 A) -->
-@if (loadState === 'ready' || loadState === 'empty') {
-  <div class="sum">
-    <b>{{ totalResults | number:'1.0-0':'de' }} {{ totalResults === 1 ? 'Rechnung' : 'Rechnungen' }}</b>
-    <b>{{ totalSum | number:'1.2-2':'de' }} €</b>
-  </div>
-}
-
 <div class="progress-slot">
   @if (loading && bills.length > 0) {
     <mat-progress-bar mode="indeterminate" color="accent" />
@@ -49,32 +41,34 @@
           </div>
 
           @for (bill of group.bills; track bill.id) {
-            <!-- Zeilen-Wischen (AC3): links Löschen, rechts Duplizieren; data-no-swipe nimmt die Zeile vom Tab-Wischen aus -->
-            <!-- Rechnungen verbundener Konten: nur Duplizieren, kein Löschen (wie die Detailseite) -->
-            <div class="swipe-row" data-no-swipe appRowSwipe #row="rowSwipe" [deletable]="!bill.isExternal"
-              (rowAction)="onRowAction(bill, $event, row)">
-              @if (!bill.isExternal) {
-                <div class="under under-delete" [inert]="row.state() !== 'open-delete'">
-                  <button type="button" (click)="onRowAction(bill, 'delete', row)">
-                    <mat-icon aria-hidden="true">delete</mat-icon>Löschen
-                  </button>
-                </div>
-              }
-              <div class="under under-duplicate" [inert]="row.state() !== 'open-duplicate'">
-                <button type="button" (click)="onRowAction(bill, 'duplicate', row)">
-                  <mat-icon aria-hidden="true">content_copy</mat-icon>Duplizieren
-                </button>
-              </div>
-              <a class="bill-link swipe-content" routerLink="/bill/{{bill.id}}">
-                <app-bill-list-item [bill]="bill" [isNew]="bill.id === lastAddedId" />
-              </a>
-            </div>
+            <!-- Langer Druck bzw. Rechtsklick (AC3): Menü „Duplizieren“/„Löschen“; ein Tipp öffnet die Detailseite -->
+            <a #rowEl class="bill-link" routerLink="/bill/{{bill.id}}" appLongPress (longPress)="onRowPress(bill, rowEl)">
+              <app-bill-list-item [bill]="bill" [isNew]="bill.id === lastAddedId" />
+            </a>
           }
         </section>
       }
     </app-load-state>
   </div>
 </div>
+
+<!-- Kontextmenü einer Zeile (langer Druck), unter der gedrückten Zeile; Zurück schließt es -->
+<span class="menu-anchor" [style.top.px]="menuTop()" [style.left.px]="menuLeft()" #menuTrigger="matMenuTrigger"
+  [matMenuTriggerFor]="rowMenu" appMenuBack aria-hidden="true"></span>
+<mat-menu #rowMenu="matMenu" class="bill-row-menu" [overlapTrigger]="false"
+  [aria-label]="'Rechnung ' + (menuBill()?.shopName ?? '')">
+  @if (menuBill(); as bill) {
+    <button mat-menu-item (click)="duplicate(bill)">
+      <mat-icon>content_copy</mat-icon>Duplizieren
+    </button>
+    <!-- Rechnungen verbundener Konten: nur Duplizieren, kein Löschen (wie die Detailseite) -->
+    @if (!bill.isExternal) {
+      <button mat-menu-item (click)="confirmDelete(bill)">
+        <mat-icon>delete</mat-icon>Löschen
+      </button>
+    }
+  }
+</mat-menu>
 
 @if (!isDesktop) {
   <app-quick-entry-dock (openEntry)="openQuickEntry()" (scan)="onScan($event)" />

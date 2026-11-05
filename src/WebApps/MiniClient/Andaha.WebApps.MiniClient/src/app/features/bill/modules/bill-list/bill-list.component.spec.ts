@@ -2,8 +2,9 @@ import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, of, throwError } from 'rxjs';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
+import { OverlayBackService } from 'src/app/core/overlay/overlay-back.service';
 import { BillContextService } from 'src/app/features/bill/services/bill-context.service';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
@@ -29,22 +30,23 @@ describe('BillListComponent', () => {
   let host: HTMLElement;
   let bills$: BehaviorSubject<BillDto[]>;
   let totalResults$: BehaviorSubject<number>;
-  let totalSum$: BehaviorSubject<number>;
   let monthSums$: BehaviorSubject<Map<string, number>>;
   let loading$: BehaviorSubject<boolean>;
   let deleteBill: ReturnType<typeof vi.fn>;
   let refreshBills: ReturnType<typeof vi.fn>;
   let openConfirmation: ReturnType<typeof vi.fn>;
   let confirmed: boolean;
+  /** zuletzt beim OverlayBackService angemeldete Schließen-Funktion (Zurück-Taste) */
+  let backClose: (() => void) | null;
 
   beforeEach(async () => {
+    backClose = null;
     bills$ = new BehaviorSubject<BillDto[]>([
       bill('b1', new Date(2026, 10, 5), 48.2),
       bill('b2', new Date(2026, 10, 1, 0, 30), 185.9),
       bill('b3', new Date(2026, 9, 30), 23.15)
     ]);
     totalResults$ = new BehaviorSubject(126);
-    totalSum$ = new BehaviorSubject(8412.3);
     monthSums$ = new BehaviorSubject(new Map([['2026-11', 312.4], ['2026-10', 820.25]]));
     loading$ = new BehaviorSubject(false);
     deleteBill = vi.fn(() => of(undefined));
@@ -55,7 +57,6 @@ describe('BillListComponent', () => {
     const context: Partial<Record<keyof BillContextService, unknown>> = {
       bills: () => bills$.asObservable(),
       totalResults: () => totalResults$.asObservable(),
-      totalSum$: totalSum$.asObservable(),
       monthSums$: monthSums$.asObservable(),
       pageSize: () => of(50),
       loading: () => loading$.asObservable(),
@@ -80,6 +81,7 @@ describe('BillListComponent', () => {
         { provide: ConfirmationDialogService, useValue: { openDialog: openConfirmation } },
         { provide: QuickEntryService, useValue: { open: vi.fn() } },
         { provide: ScanService, useValue: { start: vi.fn() } },
+        { provide: OverlayBackService, useValue: { register: (close: () => void) => { backClose = close; return () => undefined; } } },
         { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap({}) } } }
       ]
     });
@@ -93,11 +95,43 @@ describe('BillListComponent', () => {
     fixture.detectChanges();
   });
 
-  const text = (selector: string) => host.querySelector(selector)?.textContent?.replace(/\s+/g, ' ').trim();
+  const rows = () => Array.from(host.querySelectorAll<HTMLElement>('.bill-link'));
+  const menuItems = () => Array.from(document.querySelectorAll<HTMLElement>('.mat-mdc-menu-panel [mat-menu-item]'));
+  const itemText = (item: HTMLElement) => item.querySelector('.mat-mdc-menu-item-text')!.textContent!.trim();
+  const menuItem = (label: string) => menuItems().find(item => itemText(item) === label)!;
 
-  it('shows total line "126 Rechnungen" and sum', () => {
-    expect(text('.sum')).toContain('126 Rechnungen');
-    expect(text('.sum')).toContain('8.412,30 €');
+  async function settle(): Promise<void> {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+  }
+
+  function pointer(type: string): PointerEvent {
+    return new PointerEvent(type, { bubbles: true, cancelable: true, pointerId: 1, clientX: 10, clientY: 10, pointerType: 'touch', isPrimary: true });
+  }
+
+  /** Touch: 500 ms halten und loslassen */
+  function longPress(row: HTMLElement): void {
+    vi.useFakeTimers();
+    try {
+      row.dispatchEvent(pointer('pointerdown'));
+      vi.advanceTimersByTime(500);
+      row.dispatchEvent(pointer('pointerup'));
+    } finally {
+      vi.useRealTimers();
+    }
+  }
+
+  /** Desktop: Rechtsklick wie bei den Kacheln der Schnellerfassung */
+  async function openMenu(row: HTMLElement): Promise<void> {
+    row.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true }));
+    await settle();
+  }
+
+  it('no total line above the list', () => {
+    expect(host.querySelector('.sum')).toBeNull();
+    expect(host.textContent).not.toContain('126 Rechnungen');
+    expect(host.textContent).not.toContain('8.412,30');
   });
 
   it('renders month header with backend sum', () => {
@@ -113,13 +147,10 @@ describe('BillListComponent', () => {
   it('shows no month headers but the empty state when nothing matches', () => {
     bills$.next([]);
     totalResults$.next(0);
-    totalSum$.next(0);
     monthSums$.next(new Map());
     fixture.detectChanges();
 
     expect(host.querySelectorAll('.month-head').length).toBe(0);
-    expect(text('.sum')).toContain('0 Rechnungen');
-    expect(text('.sum')).toContain('0,00 €');
     expect(host.querySelector('app-load-state .empty')).not.toBeNull();
   });
 
@@ -132,30 +163,41 @@ describe('BillListComponent', () => {
 
     expect(host.querySelector('app-load-state .empty')).toBeNull();
     expect(fixture.componentInstance.loadState).toBe('loading');
-    expect(host.querySelector('.sum')).toBeNull();
   });
 
-  it('marks rows with data-no-swipe so tab swiping ignores them', () => {
-    const rows = host.querySelectorAll('.swipe-row');
-    expect(rows.length).toBe(3);
-    rows.forEach(row => expect(row.hasAttribute('data-no-swipe')).toBe(true));
+  it('tab swipe: rows no longer carry data-no-swipe', () => {
+    expect(rows().length).toBe(3);
+    rows().forEach(row => expect(row.closest('[data-no-swipe]')).toBeNull());
+    expect(host.querySelector('[data-no-swipe] .bill-link')).toBeNull();
   });
 
-  function swipe(row: HTMLElement, dx: number): void {
-    const rect = row.getBoundingClientRect();
-    const x = rect.left + rect.width / 2;
-    const y = rect.top + rect.height / 2;
-    const touch = (clientX: number) => new Touch({ identifier: 1, target: row, clientX, clientY: y });
-    row.dispatchEvent(new TouchEvent('touchstart', { touches: [touch(x)], changedTouches: [touch(x)], bubbles: true }));
-    row.dispatchEvent(new TouchEvent('touchmove', { touches: [touch(x + dx)], changedTouches: [touch(x + dx)], bubbles: true }));
-    row.dispatchEvent(new TouchEvent('touchend', { touches: [], changedTouches: [touch(x + dx)], bubbles: true }));
-  }
+  it('long press on a bill row opens menu with Duplizieren and Löschen', async () => {
+    longPress(rows()[0]);
+    await settle();
 
-  it('delete via swipe asks confirmation then deletes and vibrates', async () => {
+    expect(menuItems().map(itemText)).toEqual(['Duplizieren', 'Löschen']);
+  });
+
+  it('right click on a bill row opens the same menu (desktop)', async () => {
+    await openMenu(rows()[1]);
+
+    expect(menuItems().map(itemText)).toEqual(['Duplizieren', 'Löschen']);
+  });
+
+  it('external bill: menu offers only Duplizieren', async () => {
+    bills$.next([{ ...bill('ext', new Date(2026, 10, 4), 12), isExternal: true }]);
+    fixture.detectChanges();
+
+    await openMenu(rows()[0]);
+
+    expect(menuItems().map(itemText)).toEqual(['Duplizieren']);
+  });
+
+  it('Löschen asks confirmation, deletes, vibrates', async () => {
     const vibrate = vi.spyOn(navigator, 'vibrate').mockImplementation(() => true);
-    const row = host.querySelectorAll<HTMLElement>('.swipe-row')[0];
+    await openMenu(rows()[0]);
 
-    swipe(row, -0.6 * row.getBoundingClientRect().width);
+    menuItem('Löschen').click();
     await vi.waitFor(() => expect(deleteBill).toHaveBeenCalledWith('b1'));
 
     expect(openConfirmation).toHaveBeenCalledTimes(1);
@@ -163,65 +205,64 @@ describe('BillListComponent', () => {
     vibrate.mockRestore();
   });
 
-  it('external bill: swipe left does not delete', async () => {
-    bills$.next([{ ...bill('ext', new Date(2026, 10, 4), 12), isExternal: true }]);
-    fixture.detectChanges();
-    const row = host.querySelector<HTMLElement>('.swipe-row')!;
-    expect(row.querySelector('.under-delete')).toBeNull();
-
-    swipe(row, -0.6 * row.getBoundingClientRect().width);
-    fixture.detectChanges();
-    await new Promise(resolve => setTimeout(resolve));
-
-    expect(openConfirmation).not.toHaveBeenCalled();
-    expect(deleteBill).not.toHaveBeenCalled();
-    expect(row.querySelector<HTMLElement>('.swipe-content')!.style.transform).toBe('');
-  });
-
-  it('external bill: swipe right still duplicates', async () => {
-    const navigate = TestBed.inject(Router).navigate as unknown as ReturnType<typeof vi.fn>;
-    bills$.next([{ ...bill('ext', new Date(2026, 10, 4), 12), isExternal: true }]);
-    fixture.detectChanges();
-    const row = host.querySelector<HTMLElement>('.swipe-row')!;
-
-    swipe(row, 0.6 * row.getBoundingClientRect().width);
-
-    await vi.waitFor(() => expect(navigate).toHaveBeenCalledWith(['/bill/create'], expect.objectContaining({
-      state: { prefill: expect.objectContaining({ shopName: 'Shop ext' }) }
-    })));
-  });
-
   it('does not delete when the confirmation is cancelled', async () => {
     confirmed = false;
-    const row = host.querySelectorAll<HTMLElement>('.swipe-row')[0];
+    await openMenu(rows()[0]);
 
-    swipe(row, -0.6 * row.getBoundingClientRect().width);
+    menuItem('Löschen').click();
     await vi.waitFor(() => expect(openConfirmation).toHaveBeenCalledTimes(1));
     await new Promise(resolve => setTimeout(resolve));
 
     expect(deleteBill).not.toHaveBeenCalled();
   });
 
-  it('duplicate via swipe opens the large form with prefill', async () => {
-    const navigate = TestBed.inject(Router).navigate as unknown as ReturnType<typeof vi.fn>;
-    const row = host.querySelectorAll<HTMLElement>('.swipe-row')[2];
+  it('reports a failed delete', async () => {
+    deleteBill.mockReturnValue(throwError(() => new Error('offline')));
+    const snackbar = TestBed.inject(MatSnackBar).openFromComponent as unknown as ReturnType<typeof vi.fn>;
+    await openMenu(rows()[0]);
 
-    swipe(row, 0.6 * row.getBoundingClientRect().width);
+    menuItem('Löschen').click();
+
+    await vi.waitFor(() => expect(snackbar).toHaveBeenCalled());
+    expect(JSON.stringify(snackbar.mock.calls[0])).toContain('Rechnung konnte nicht gelöscht werden.');
+  });
+
+  it('Duplizieren navigates to /bill/create with prefill', async () => {
+    const navigate = TestBed.inject(Router).navigate as unknown as ReturnType<typeof vi.fn>;
+    await openMenu(rows()[2]);
+
+    menuItem('Duplizieren').click();
 
     await vi.waitFor(() => expect(navigate).toHaveBeenCalledWith(['/bill/create'], expect.objectContaining({
       state: { prefill: expect.objectContaining({ shopName: 'Shop b3', price: 23.15, categoryId: 'c1' }) }
     })));
   });
 
-  it('a short swipe opens the row and a tap on "Löschen" asks confirmation', async () => {
-    const row = host.querySelectorAll<HTMLElement>('.swipe-row')[1];
+  it('tap after long press does not navigate', async () => {
+    const navigateByUrl = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+    const row = rows()[0];
 
-    swipe(row, -0.3 * row.getBoundingClientRect().width);
-    fixture.detectChanges();
-    expect(openConfirmation).not.toHaveBeenCalled();
+    longPress(row);
+    row.click();
+    await settle();
+    expect(navigateByUrl).not.toHaveBeenCalled();
 
-    row.querySelector<HTMLButtonElement>('.under-delete button')!.click();
-    await vi.waitFor(() => expect(deleteBill).toHaveBeenCalledWith('b2'));
+    // ein normaler Tipp öffnet weiter die Detailseite
+    row.dispatchEvent(pointer('pointerdown'));
+    row.dispatchEvent(pointer('pointerup'));
+    row.click();
+    expect(navigateByUrl).toHaveBeenCalledTimes(1);
+    expect(String(navigateByUrl.mock.calls[0][0])).toBe('/bill/b1');
+  });
+
+  it('back closes the row menu', async () => {
+    await openMenu(rows()[0]);
+    expect(menuItems().length).toBe(2);
+
+    backClose!();
+    await settle();
+
+    await vi.waitFor(() => expect(document.querySelector('.mat-mdc-menu-panel')).toBeNull());
   });
 
   it('shows the error state with retry when loading failed', () => {
@@ -233,7 +274,6 @@ describe('BillListComponent', () => {
 
     const retry = Array.from(host.querySelectorAll('button')).find(b => b.textContent?.includes('Erneut versuchen'));
     expect(retry).toBeDefined();
-    expect(host.querySelector('.sum')).toBeNull();
     retry!.click();
     expect(context.retry).toHaveBeenCalled();
   });

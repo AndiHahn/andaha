@@ -1,6 +1,6 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { CdkScrollable } from '@angular/cdk/scrolling';
-import { AfterViewInit, Component, OnDestroy, OnInit, ChangeDetectionStrategy, NgZone, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ChangeDetectionStrategy, NgZone, ViewChild, inject, signal, viewChild } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { takeUntil } from 'rxjs/operators';
 import { PageEvent, MatPaginator } from '@angular/material/paginator';
@@ -25,8 +25,10 @@ import { LoadState, LoadStateComponent } from 'src/app/shared/load-state/load-st
 import { groupByMonth, monthStart } from 'src/app/shared/utils/month-groups';
 import { vibrate } from 'src/app/shared/utils/haptics';
 import { duplicatePrefill } from '../../functions/duplicate-prefill';
-import { RowSwipeAction, RowSwipeDirective } from './row-swipe.directive';
 import { PullToRefreshDirective } from './pull-to-refresh.directive';
+import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
+import { MenuBackDirective } from 'src/app/core/overlay/menu-back.directive';
+import { LongPressDirective } from 'src/app/shared/directives/long-press.directive';
 
 /** Monatskopf mit der Monatssumme des Backends über alle Treffer (design.md §3.1, AC1) */
 interface BillMonthGroup {
@@ -41,7 +43,7 @@ interface BillMonthGroup {
     templateUrl: './bill-list.component.html',
     styleUrls: ['./bill-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [BillListFilterComponent, MatProgressBar, MatIcon, CdkScrollable, RouterLink, BillListItemComponent, MatPaginator, QuickEntryDockComponent, LoadStateComponent, RowSwipeDirective, PullToRefreshDirective, DatePipe, DecimalPipe]
+    imports: [BillListFilterComponent, MatProgressBar, MatIcon, CdkScrollable, RouterLink, BillListItemComponent, MatPaginator, QuickEntryDockComponent, LoadStateComponent, PullToRefreshDirective, LongPressDirective, MatMenu, MatMenuItem, MatMenuTrigger, MenuBackDirective, DatePipe, DecimalPipe]
 })
 export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   private billContextService = inject(BillContextService);
@@ -53,8 +55,15 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   private snackbar = inject(MatSnackBar);
   private confirmationDialog = inject(ConfirmationDialogService);
   private zone = inject(NgZone);
+  private host: HTMLElement = inject(ElementRef).nativeElement;
 
   @ViewChild(CdkScrollable) private scrollable?: CdkScrollable;
+  private readonly menuTrigger = viewChild.required<MatMenuTrigger>('menuTrigger');
+
+  /** Rechnung, deren Kontextmenü (langer Druck, AC3) offen ist, und die Lage des Menüs */
+  readonly menuBill = signal<BillDto | null>(null);
+  readonly menuTop = signal(0);
+  readonly menuLeft = signal(0);
 
   /** Fehlerzustand der Liste (nach dem Wecken des Backends) */
   readonly loadFailed = this.billContextService.error;
@@ -69,7 +78,6 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   pageSize?: number;
   totalResults: number = 0;
-  totalSum: number = 0;
 
   showFilterBar: boolean = true;
   initialSearchValue?: string;
@@ -178,40 +186,34 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
     this.billContextService.retry();
   }
 
-  /** Wischaktion bzw. Tipp auf die aufgedeckte Aktion einer Zeile (AC3) */
-  onRowAction(bill: BillDto, action: RowSwipeAction, row: RowSwipeDirective): void {
-    if (action === 'duplicate') {
-      row.close();
-      void this.router.navigate(['/bill/create'], { state: { prefill: duplicatePrefill(bill, new Date()) } });
-      return;
-    }
-
-    // Rechnung eines verbundenen Kontos: nicht löschbar (wie die Detailseite)
-    if (bill.isExternal) {
-      row.close();
-      return;
-    }
-
-    void this.confirmDelete(bill, row);
+  /** Langer Druck bzw. Rechtsklick auf eine Zeile: Menü unter der Zeile öffnen (AC3) */
+  onRowPress(bill: BillDto, row: HTMLElement): void {
+    const hostRect = this.host.getBoundingClientRect();
+    const rowRect = row.getBoundingClientRect();
+    this.menuTop.set(rowRect.bottom - hostRect.top);
+    this.menuLeft.set(rowRect.left - hostRect.left + 16);
+    this.menuBill.set(bill);
+    this.menuTrigger().openMenu();
   }
 
-  private async confirmDelete(bill: BillDto, row: RowSwipeDirective): Promise<void> {
+  duplicate(bill: BillDto): void {
+    void this.router.navigate(['/bill/create'], { state: { prefill: duplicatePrefill(bill, new Date()) } });
+  }
+
+  /** Rückfrage, dann löschen; Rechnungen verbundener Konten bietet das Menü nicht zum Löschen an */
+  async confirmDelete(bill: BillDto): Promise<void> {
     const dialogRef = await this.confirmationDialog.openDialog({
       text: 'Soll die Rechnung und alle damit verbundenen Daten wirklich gelöscht werden?'
     });
 
     dialogRef.afterClosed().subscribe(confirmed => {
       if (!confirmed) {
-        row.close();
         return;
       }
 
       this.billContextService.deleteBill(bill.id).subscribe({
         next: () => vibrate(),
-        error: () => {
-          row.close();
-          openErrorSnackbar('Rechnung konnte nicht gelöscht werden.', this.snackbar);
-        }
+        error: () => openErrorSnackbar('Rechnung konnte nicht gelöscht werden.', this.snackbar)
       });
     });
   }
@@ -299,12 +301,6 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
     this.billContextService.totalResults().pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: totalResults => this.totalResults = totalResults
-      }
-    );
-
-    this.billContextService.totalSum$.pipe(takeUntil(this.destroy$)).subscribe(
-      {
-        next: totalSum => this.totalSum = totalSum
       }
     );
 

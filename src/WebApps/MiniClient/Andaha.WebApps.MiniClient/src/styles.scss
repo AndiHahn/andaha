@@ -270,19 +270,6 @@ body.mat-app-background {
   border-bottom: 1px solid var(--line2);
 }
 
-// Summe der Treffer (Mockup 01 A .sum): Anzahl links, Betrag rechts
-.sum {
-  flex: none;
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding: 4px 16px 8px;
-  font-size: 13px;
-  color: var(--mut);
-
-  b { color: var(--fg); font-weight: 600; font-size: 14px; }
-}
-
 // Monatskopf (Mockup 01 A .mh): bleibt beim Scrollen oben stehen, bis der naechste Monat kommt
 .month-head {
   position: sticky;
@@ -299,57 +286,6 @@ body.mat-app-background {
   border-bottom: 1px solid var(--line);
 
   b { color: var(--fg2); font-weight: 600; }
-}
-
-// Zeilen-Wischen (Mockup 01 A .swrap, RowSwipeDirective): die Zeile (.swipe-content) verschiebt sich,
-// darunter liegt die Aktion; data-swipe sagt, welche Seite aufgedeckt ist
-.swipe-row {
-  position: relative;
-  overflow: hidden;
-  // waagrechte Gesten gehoeren der Zeile, senkrechtes Scrollen und Zoomen bleiben beim Browser
-  touch-action: pan-y pinch-zoom;
-
-  .under {
-    position: absolute;
-    inset: 0;
-    display: none;
-    align-items: stretch;
-  }
-
-  .under button {
-    width: 96px;
-    border: 0;
-    padding: 0;
-    background: transparent;
-    color: var(--on-pri);
-    font: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    cursor: pointer;
-
-    .mat-icon { font-size: 22px; width: 22px; height: 22px; line-height: 22px; }
-
-    &:focus-visible { outline-color: var(--on-pri); outline-offset: -4px; }
-  }
-
-  .under-delete { justify-content: flex-end; background: var(--neg); }
-  .under-duplicate { justify-content: flex-start; background: var(--pri); }
-
-  &[data-swipe='left'] .under-delete,
-  &[data-swipe='right'] .under-duplicate { display: flex; }
-
-  .swipe-content {
-    position: relative;
-    background: var(--bg);
-    transition: transform .2s ease;
-  }
-
-  &.dragging .swipe-content { transition: none; }
 }
 
 // Pull-to-Refresh-Indikator (Mockup 01 C .ptr, PullToRefreshDirective): rund, Flaeche surface, Pfeile in Primaer
@@ -394,7 +330,6 @@ body.mat-app-background {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .swipe-row .swipe-content,
   .ptr { transition: none; }
 
   .ptr.spinning > span { animation-duration: 2.4s; }
@@ -898,7 +833,6 @@ body .cdk-drag-preview.andaha-drag-item {
 .cdk-overlay-container .mat-mdc-menu-panel.quick-suggestion-menu {
   width: calc(100vw - 48px);
   max-width: 432px;
-  border-radius: 14px !important;
 
   .menu-head {
     padding: 10px 16px 8px;
@@ -911,9 +845,15 @@ body .cdk-drag-preview.andaha-drag-item {
     b { display: block; color: var(--fg); font-size: 15px; font-weight: 600; }
   }
 
+  .mat-mdc-menu-item .mat-icon.pin-icon { color: var(--pri); }
+}
+
+// Kontextmenüs per langem Druck (Vorschlags-Kachel, Rechnungszeile): runde Ecken, Einträge 48 px
+.cdk-overlay-container .mat-mdc-menu-panel:is(.quick-suggestion-menu, .bill-row-menu) {
+  border-radius: 14px !important;
+
   .mat-mdc-menu-item { min-height: 48px; font-weight: 500; }
   .mat-mdc-menu-item .mat-icon { width: 20px; height: 20px; font-size: 20px; color: var(--mut); }
-  .mat-mdc-menu-item .mat-icon.pin-icon { color: var(--pri); }
 }
 
 .cdk-overlay-container .andaha-sheet,

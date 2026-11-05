@@ -24,7 +24,6 @@ export class BillContextService implements OnDestroy {
 
   private bills$: BehaviorSubject<BillDto[]> = new BehaviorSubject<BillDto[]>([]);
   private totalResults$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-  private totalSumSubject = new BehaviorSubject<number>(0);
   private monthSumsSubject = new BehaviorSubject<Map<string, number>>(new Map<string, number>());
   private pageIndex$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   private pageSize$: BehaviorSubject<number> = new BehaviorSubject<number>(50);
@@ -57,8 +56,6 @@ export class BillContextService implements OnDestroy {
   /** true, solange das Backend geweckt wird: die Liste lädt noch, sie ist nicht leer (AC34) */
   readonly waitingForBackend: Signal<boolean> = computed(() => !this.backendReadyState() && !this.contextService.backendUnreachable());
 
-  /** Summe aller Treffer der aktuellen Suche (nicht nur der geladenen Seiten) */
-  readonly totalSum$: Observable<number> = this.totalSumSubject.asObservable();
   /** Summe je Monat ("yyyy-MM") über alle Treffer der aktuellen Suche */
   readonly monthSums$: Observable<Map<string, number>> = this.monthSumsSubject.asObservable();
 
@@ -378,7 +375,6 @@ export class BillContextService implements OnDestroy {
               this.updateBillList(result.values);
             }
             this.totalResults$.next(result.totalCount);
-            this.totalSumSubject.next(result.totalSum ?? 0);
             this.monthSumsSubject.next(new Map((result.monthSums ?? []).map(monthSum => [monthSum.month, monthSum.sum])));
           },
           error: _ => {
@@ -429,10 +425,8 @@ export class BillContextService implements OnDestroy {
     this.adjustSums(bill.date, bill.price);
   }
 
-  /** Gesamt- und Monatssumme sofort mitführen, bis die nächste Server-Antwort sie ersetzt */
+  /** Monatssumme sofort mitführen, bis die nächste Server-Antwort sie ersetzt */
   private adjustSums(date: Date, amount: number): void {
-    this.totalSumSubject.next(this.totalSumSubject.value + amount);
-
     const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
     const monthSums = new Map(this.monthSumsSubject.value);
     const monthSum = (monthSums.get(month) ?? 0) + amount;
