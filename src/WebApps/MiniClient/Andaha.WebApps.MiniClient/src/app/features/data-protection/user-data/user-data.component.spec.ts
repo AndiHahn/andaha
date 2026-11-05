@@ -1,0 +1,113 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Observable, Subject, of, throwError } from 'rxjs';
+import { UserDataApiService } from 'src/app/api/user-data/user-data-api.service';
+import { AuthService } from 'src/app/core/auth.service';
+import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
+import { DELETE_ALL_FAILED, UserDataComponent } from './user-data.component';
+
+describe('UserDataComponent', () => {
+  let fixture: ComponentFixture<UserDataComponent>;
+  let host: HTMLElement;
+  let firstConfirmed: boolean;
+  let finalConfirmed: boolean;
+  let openConfirmation: ReturnType<typeof vi.fn>;
+  let openFinal: ReturnType<typeof vi.fn>;
+  let deleteAll: ReturnType<typeof vi.fn>;
+  let logout: ReturnType<typeof vi.fn>;
+  let openFromComponent: ReturnType<typeof vi.fn>;
+
+  beforeEach(async () => {
+    firstConfirmed = true;
+    finalConfirmed = true;
+    openConfirmation = vi.fn(() => Promise.resolve({ afterClosed: () => of(firstConfirmed || undefined) }));
+    openFinal = vi.fn(() => ({ afterClosed: () => of(finalConfirmed || undefined) }));
+    deleteAll = vi.fn(() => of(undefined));
+    logout = vi.fn();
+    openFromComponent = vi.fn();
+
+    await TestBed.configureTestingModule({
+      imports: [UserDataComponent],
+      providers: [
+        { provide: ConfirmationDialogService, useValue: { openDialog: openConfirmation } },
+        { provide: MatDialog, useValue: { open: openFinal } },
+        { provide: UserDataApiService, useValue: { deleteAll } },
+        { provide: AuthService, useValue: { logout } },
+        { provide: MatSnackBar, useValue: { openFromComponent } }
+      ]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(UserDataComponent);
+    host = fixture.nativeElement;
+    fixture.detectChanges();
+  });
+
+  function deleteButton(): HTMLButtonElement {
+    return host.querySelector('button.del') as HTMLButtonElement;
+  }
+
+  async function clickDelete(): Promise<void> {
+    deleteButton().click();
+    await fixture.whenStable();
+    fixture.detectChanges();
+  }
+
+  it('first confirm lists what is deleted', async () => {
+    await clickDelete();
+
+    const text: string = openConfirmation.mock.calls[0][0].text;
+    for (const part of ['Rechnungen', 'Fotos', 'Kategorien', 'Vorlagen', 'Haushalt', 'Stunden', 'Verbindungen']) {
+      expect(text).toContain(part);
+    }
+    expect(openFinal).toHaveBeenCalledTimes(1);
+  });
+
+  it('declining the first question deletes nothing', async () => {
+    firstConfirmed = false;
+
+    await clickDelete();
+
+    expect(openFinal).not.toHaveBeenCalled();
+    expect(deleteAll).not.toHaveBeenCalled();
+  });
+
+  it('declining the second question deletes nothing', async () => {
+    finalConfirmed = false;
+
+    await clickDelete();
+
+    expect(deleteAll).not.toHaveBeenCalled();
+    expect(logout).not.toHaveBeenCalled();
+  });
+
+  it('success logs out', async () => {
+    await clickDelete();
+
+    expect(deleteAll).toHaveBeenCalledTimes(1);
+    expect(logout).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows loading and locks the button while deleting', async () => {
+    const pending = new Subject<void>();
+    deleteAll.mockReturnValue(pending.asObservable() as Observable<void>);
+
+    await clickDelete();
+
+    expect(deleteButton().disabled).toBe(true);
+    expect(host.querySelectorAll('mat-spinner').length).toBe(1);
+    expect(logout).not.toHaveBeenCalled();
+  });
+
+  it('failure shows "Löschen nicht vollständig. Bitte erneut versuchen." and stays logged in', async () => {
+    deleteAll.mockReturnValue(throwError(() => new Error('boom')));
+
+    await clickDelete();
+
+    expect(logout).not.toHaveBeenCalled();
+    expect(openFromComponent).toHaveBeenCalledTimes(1);
+    expect(openFromComponent.mock.calls[0][1].data).toBe(DELETE_ALL_FAILED);
+    expect(DELETE_ALL_FAILED).toBe('Löschen nicht vollständig. Bitte erneut versuchen.');
+    expect(deleteButton().disabled).toBe(false);
+  });
+});

@@ -16,6 +16,8 @@ import { PersonApiService } from 'src/app/api/work/person-api.service';
 import { PageTitleService } from 'src/app/core/page-title/page-title.service';
 import { LoadState, LoadStateComponent } from 'src/app/shared/load-state/load-state.component';
 import { getFileName, shareOrDownload } from 'src/app/shared/utils/file-utils';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 
 @Component({
     selector: 'app-statistics',
@@ -31,6 +33,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
   private personApiService = inject(PersonApiService);
   private pageTitleService = inject(PageTitleService);
   private destroyRef = inject(DestroyRef);
+  private snackbar = inject(MatSnackBar);
 
   readonly emptyText = 'Noch keine Arbeitszeiten – erfasse sie unter Personen.';
   readonly dateType = DateType;
@@ -152,10 +155,14 @@ export class StatisticsComponent implements OnInit, OnDestroy {
 
   /** Personen-Export teilen bzw. herunterladen (AC21) */
   private exportPersons(): void {
-    this.personApiService.export().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(response => {
-      if (response.body) {
-        void shareOrDownload(response.body, getFileName(response.headers), response.body.type);
-      }
+    this.personApiService.export().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: response => {
+        if (response.body) {
+          void shareOrDownload(response.body, getFileName(response.headers), response.body.type)
+            .catch(() => openErrorSnackbar('Export fehlgeschlagen. Bitte erneut versuchen.', this.snackbar));
+        }
+      },
+      error: () => openErrorSnackbar('Export fehlgeschlagen. Bitte erneut versuchen.', this.snackbar)
     });
   }
 

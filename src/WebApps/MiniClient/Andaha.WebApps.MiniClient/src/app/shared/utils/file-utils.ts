@@ -61,9 +61,14 @@ export function downloadFile(blob: Blob, fileName: string, mimeType: string) {
 
 export type ShareOrDownloadResult = 'shared' | 'downloaded' | 'cancelled';
 
-/** true, wenn der Browser Dateien über das Teilen-Menü (Web Share API) weitergeben kann, z. B. für „teilen“ statt „herunterladen“. */
-export function canShareFiles(): boolean {
-  return canShare(new File([''], 'probe.txt', { type: 'text/plain' }));
+export const XLSX_MIME_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+/**
+ * true, wenn der Browser Dateien über das Teilen-Menü (Web Share API) weitergeben kann, z. B. für „teilen“ statt „herunterladen“.
+ * Geprüft wird mit einer leeren Datei von Name und Typ der späteren Datei, denn `canShare` entscheidet je Dateityp.
+ */
+export function canShareFiles(fileName = 'probe.txt', mimeType = 'text/plain'): boolean {
+  return canShare(new File([''], fileName, { type: mimeType }));
 }
 
 /**

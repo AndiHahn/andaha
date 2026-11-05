@@ -2,61 +2,38 @@
   display: block;
 }
 
-// Mockup 06 (Export): Abschnittskopf direkt unter dem Kopf
-:host > .sec:first-child {
-  padding-top: 8px;
-}
-
-// Zeilen-Button: Icon-Kachel | Text | Download-Icon bzw. Spinner
-.ex {
+// Mockup 03 C: Formular mit 16 px Abstand
+.form {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 16px;
-  width: 100%;
-  padding: 18px 16px;
-  border: 0;
-  border-bottom: 1px solid var(--line2);
-  background: transparent;
-  color: var(--fg);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
+  padding: 8px 16px 24px;
+}
 
-  &:disabled {
-    opacity: .5;
-    cursor: default;
+.f {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stunden {
+  margin-top: 12px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dates {
+  display: flex;
+  gap: 10px;
+
+  app-date-picker-form-field {
+    flex: 1;
+    min-width: 0;
   }
-
-  // Zeile reicht bis an den Rand des Scroll-Containers: Fokusring nach innen, sonst abgeschnitten
-  &:focus-visible { outline-offset: -2px; }
-}
-
-.ic {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: var(--raised);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--pri-text);
-  flex: none;
-}
-
-.tx {
-  flex: 1;
-  min-width: 0;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.dl-icon {
-  color: var(--mut);
-  flex: none;
-}
-
-.mat-mdc-progress-spinner {
-  flex: none;
 }
 
 // Desktop: Inhaltsspalte wie Verbindungen (max. 560 px, 40 px Rand)
@@ -67,13 +44,12 @@
     padding-bottom: 24px;
   }
 
-  .sec {
+  .form {
     padding-left: 0;
     padding-right: 0;
   }
 
-  .ex {
-    padding-left: 0;
-    padding-right: 0;
+  .btn {
+    align-self: flex-start;
   }
 }

@@ -84,6 +84,7 @@ export class PersonApiService {
   export(): Observable<HttpResponse<Blob>> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'export');
 
-    return this.httpClient.get(url, { responseType: 'blob' as 'blob', observe: 'response'});
+    // Aufrufer (Export, Stunden-Statistik) zeigen bei Fehlern eine eigene Snackbar (SKIP_GLOBAL_ERROR)
+    return this.httpClient.get(url, { responseType: 'blob' as 'blob', observe: 'response', ...skipGlobalError() });
   }
 }

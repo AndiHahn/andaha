@@ -2,6 +2,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { skipGlobalError } from 'src/app/core/http/skip-global-error';
 import { createHttpParameters } from '../functions/api-utils';
 import { constructPath, constructVersionedPath } from '../functions/functions';
 import { ExpenseDto } from './dtos/ExpenseDto';
@@ -59,7 +60,8 @@ export class ExpenseApiService {
     ]);
 
     return this.httpClient
-      .get(url, { params: httpParameters, responseType: 'blob' as 'blob', observe: 'response'});
+      // Der Export zeigt bei Fehlern eine eigene Snackbar (SKIP_GLOBAL_ERROR)
+      .get(url, { params: httpParameters, responseType: 'blob' as 'blob', observe: 'response', ...skipGlobalError() });
   }
 
   /** Ausgaben je Monat ("yyyy-MM"), aufsteigend, `months` Monate bis einschließlich `until` */

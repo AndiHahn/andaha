@@ -1,3 +1,4 @@
+import { HttpHeaders, HttpResponse } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { of, Subject, throwError } from 'rxjs';
@@ -8,22 +9,17 @@ import { BillContextService } from './bill-context.service';
 import { ExpenseContextService } from './expense-context.service';
 
 describe('ExpenseContextService downloadExpenses', () => {
-  let timeRange: Subject<TimeRangeDto>;
-  let exportCalls: number;
+  let exportExpenses: ReturnType<typeof vi.fn>;
   let service: ExpenseContextService;
-
-  const range = (day: number): TimeRangeDto => ({
-    startTimeUtc: new Date(2024, 0, 1),
-    endTimeUtc: new Date(2024, 0, day)
-  });
+  const start = new Date(2026, 0, 1);
+  const end = new Date(2026, 11, 31);
 
   beforeEach(() => {
-    timeRange = new Subject<TimeRangeDto>();
-    exportCalls = 0;
+    exportExpenses = vi.fn(() => of({ body: null, headers: new HttpHeaders() } as unknown as HttpResponse<Blob>));
 
     const api = {
-      getAvailableTimeRange: () => timeRange.asObservable(),
-      exportExpenses: () => { exportCalls++; return of({ body: null, headers: undefined } as any); }
+      getAvailableTimeRange: () => new Subject<TimeRangeDto>().asObservable(),
+      exportExpenses
     } as unknown as ExpenseApiService;
 
     TestBed.configureTestingModule({
@@ -37,29 +33,27 @@ describe('ExpenseContextService downloadExpenses', () => {
     service = TestBed.runInInjectionContext(() => new ExpenseContextService());
   });
 
-  it('emits even when the result is produced synchronously', () => {
-    // no time range loaded yet -> result is produced synchronously inside downloadExpenses()
-    const result = service.downloadExpenses();
-    let emissions = 0;
+  it('requests the given range and category names', () => {
+    service.downloadExpenses(start, end, ['Lebensmittel']).subscribe({ error: () => { } });
 
-    result.subscribe(() => emissions++);
-
-    expect(emissions).toBe(1);
-    expect(exportCalls).toBe(0);
+    expect(exportExpenses).toHaveBeenCalledWith(start, end, ['Lebensmittel']);
   });
 
-  it('downloads only once even if the time range changes later', () => {
-    timeRange.next(range(10));
-    let emissions = 0;
+  it('errors when the export has no content', () => {
+    let failed = false;
 
-    service.downloadExpenses().subscribe(() => emissions++);
-    expect(exportCalls).toBe(1);
-    expect(emissions).toBe(1);
+    service.downloadExpenses(start, end).subscribe({ error: () => failed = true });
 
-    timeRange.next(range(20));
-    timeRange.next(range(30));
+    expect(failed).toBe(true);
+  });
 
-    expect(exportCalls).toBe(1);
+  it('propagates api errors', () => {
+    exportExpenses.mockReturnValue(throwError(() => new Error('boom')));
+    let failed = false;
+
+    service.downloadExpenses(start, end).subscribe({ error: () => failed = true });
+
+    expect(failed).toBe(true);
   });
 });
 

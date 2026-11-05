@@ -1,0 +1,21 @@
+<app-dialog>
+  <mat-dialog-content>
+    <div class="content">
+      <h3>Wirklich alle Daten löschen?</h3>
+      <p>Rechnungen, Fotos, Kategorien, Vorlagen, Haushalt, Stunden und Verbindungen werden endgültig gelöscht. Das lässt sich nicht rückgängig machen.</p>
+      <label class="field">
+        <span class="field-label">Zur Bestätigung {{ confirmWord }} eingeben</span>
+        <span class="field-box">
+          <input type="text" autocomplete="off" autocapitalize="characters" spellcheck="false"
+            [value]="typed()" (input)="onInput($event)" (keydown.enter)="onConfirmClick()"
+            [attr.aria-label]="'Zur Bestätigung ' + confirmWord + ' eingeben'">
+        </span>
+      </label>
+    </div>
+  </mat-dialog-content>
+
+  <div class="actions">
+    <button type="button" class="btn sec2" (click)="onCancelClick()">Abbrechen</button>
+    <button type="button" class="btn confirm" [disabled]="!canConfirm()" (click)="onConfirmClick()">Endgültig löschen</button>
+  </div>
+</app-dialog>

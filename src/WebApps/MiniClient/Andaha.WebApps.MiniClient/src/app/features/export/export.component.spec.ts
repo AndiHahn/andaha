@@ -1,99 +1,206 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Subject } from 'rxjs';
+import { HttpHeaders, HttpResponse } from '@angular/common/http';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { BehaviorSubject, Subject, of, throwError } from 'rxjs';
+import { PersonApiService } from 'src/app/api/work/person-api.service';
+import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { ExpenseContextService } from '../bill/services/expense-context.service';
-import { PersonContextService } from '../work/services/person-context.service';
 import { ExportComponent } from './export.component';
 
 describe('ExportComponent', () => {
   let fixture: ComponentFixture<ExportComponent>;
-  let expensesExport: Subject<void>;
-  let workExport: Subject<void>;
+  let component: ExportComponent;
+  let host: HTMLElement;
+  let downloadExpenses: ReturnType<typeof vi.fn>;
+  let personExport: ReturnType<typeof vi.fn>;
+  let openFromComponent: ReturnType<typeof vi.fn>;
+  let categoryRetry: ReturnType<typeof vi.fn>;
+  let categoryError: ReturnType<typeof signal<boolean>>;
 
-  beforeEach(async () => {
-    expensesExport = new Subject<void>();
-    workExport = new Subject<void>();
+  function setShareSupport(supported: boolean): void {
+    Object.defineProperty(navigator, 'canShare', { value: supported ? () => true : undefined, configurable: true });
+    Object.defineProperty(navigator, 'share', { value: supported ? () => Promise.resolve() : undefined, configurable: true });
+  }
+
+  async function create(shareSupported = false): Promise<void> {
+    setShareSupport(shareSupported);
+    downloadExpenses = vi.fn(() => of('downloaded'));
+    personExport = vi.fn(() => of(new HttpResponse<Blob>({ body: null, headers: new HttpHeaders() })));
+    openFromComponent = vi.fn();
+    categoryRetry = vi.fn();
+    categoryError = signal(false);
 
     await TestBed.configureTestingModule({
-    imports: [MatProgressSpinnerModule, ExportComponent],
-    schemas: [NO_ERRORS_SCHEMA],
-    providers: [
-        { provide: ExpenseContextService, useValue: { downloadExpenses: () => expensesExport.asObservable() } },
-        { provide: PersonContextService, useValue: { downloadPersonInformations: () => workExport.asObservable() } }
-    ]
-}).compileComponents();
+      imports: [ExportComponent],
+      providers: [
+        {
+          provide: ExpenseContextService,
+          useValue: {
+            availableTimeRange: () => new BehaviorSubject({ startTimeUtc: new Date(2023, 0, 5), endTimeUtc: new Date(2026, 10, 5) }).asObservable(),
+            downloadExpenses
+          }
+        },
+        { provide: PersonApiService, useValue: { export: personExport } },
+        {
+          provide: BillCategoryContextService,
+          useValue: {
+            categories: () => of([{ id: '1', name: 'Lebensmittel' }, { id: '2', name: 'Auto' }]),
+            loading: signal(false),
+            error: categoryError,
+            retry: categoryRetry
+          }
+        },
+        { provide: MatSnackBar, useValue: { openFromComponent } }
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ExportComponent);
-    fixture.detectChanges();
-  });
-
-  function buttons(): HTMLButtonElement[] {
-    return Array.from(fixture.nativeElement.querySelectorAll('button.ex'));
-  }
-
-  function spinnersIn(button: HTMLButtonElement): number {
-    return button.querySelectorAll('mat-spinner').length;
-  }
-
-  function click(index: number): void {
-    buttons()[index].click();
+    component = fixture.componentInstance;
+    host = fixture.nativeElement;
     fixture.detectChanges();
   }
 
-  it('shows the spinner only in the expenses row', () => {
-    click(0);
-
-    expect(spinnersIn(buttons()[0])).toBe(1);
-    expect(spinnersIn(buttons()[1])).toBe(0);
-    expect(document.querySelectorAll('mat-spinner').length).toBe(1);
+  afterEach(() => {
+    Reflect.deleteProperty(navigator, 'canShare');
+    Reflect.deleteProperty(navigator, 'share');
   });
 
-  it('shows the spinner only in the work row', () => {
-    click(1);
+  function expensesButton(): HTMLButtonElement {
+    return host.querySelector('button.btn.pri') as HTMLButtonElement;
+  }
 
-    expect(spinnersIn(buttons()[0])).toBe(0);
-    expect(spinnersIn(buttons()[1])).toBe(1);
-    expect(document.querySelectorAll('mat-spinner').length).toBe(1);
+  function workButton(): HTMLButtonElement {
+    return host.querySelector('button.btn.sec2') as HTMLButtonElement;
+  }
+
+  it('defaults to "Dieses Jahr" and exports the whole current year', async () => {
+    await create();
+    const year = new Date().getFullYear();
+
+    expect(host.querySelector('.chip.on')?.textContent?.trim()).toBe('Dieses Jahr');
+
+    expensesButton().click();
+
+    expect(downloadExpenses).toHaveBeenCalledWith(new Date(year, 0, 1), new Date(year, 11, 31), []);
   });
 
-  it('disables both buttons while an export runs', () => {
-    click(0);
+  it('sends selected category names', async () => {
+    await create();
+    component.categoryControl.setValue(['Auto']);
 
-    expect(buttons()[0].disabled).toBe(true);
-    expect(buttons()[1].disabled).toBe(true);
+    expensesButton().click();
+
+    expect(downloadExpenses.mock.calls[0][2]).toEqual(['Auto']);
   });
 
-  it('resets after success', () => {
-    click(0);
+  it('picking a preset updates the range and manual dates clear the preset', async () => {
+    await create();
 
-    expensesExport.next();
+    (host.querySelectorAll('.chip')[2] as HTMLButtonElement).click();
+    fixture.detectChanges();
+    const year = new Date().getFullYear() - 1;
+    expensesButton().click();
+    expect(downloadExpenses).toHaveBeenCalledWith(new Date(year, 0, 1), new Date(year, 11, 31), []);
+    expect(host.querySelector('.chip.on')?.textContent?.trim()).toBe('Letztes Jahr');
+
+    component.fromControl.setValue(new Date(year, 2, 1));
+    fixture.detectChanges();
+    expect(host.querySelector('.chip.on')).toBeNull();
+  });
+
+  it('"Alles" uses the available time range', async () => {
+    await create();
+
+    (host.querySelectorAll('.chip')[3] as HTMLButtonElement).click();
+    expensesButton().click();
+
+    expect(downloadExpenses).toHaveBeenCalledWith(new Date(2023, 0, 5), new Date(2026, 10, 5), []);
+  });
+
+  it('disables the export when "Von" lies after "Bis"', async () => {
+    await create();
+    component.fromControl.setValue(new Date(2026, 5, 1));
+    component.toControl.setValue(new Date(2026, 4, 1));
     fixture.detectChanges();
 
-    expect(document.querySelectorAll('mat-spinner').length).toBe(0);
-    expect(buttons()[0].disabled).toBe(false);
-    expect(buttons()[1].disabled).toBe(false);
+    expect(expensesButton().disabled).toBe(true);
+    expect(host.querySelector('.field-error')).not.toBeNull();
   });
 
-  it('resets when the export completes without a value', () => {
-    click(1);
+  it('button label is "teilen" when files can be shared', async () => {
+    await create(true);
 
-    workExport.complete();
-    fixture.detectChanges();
-
-    expect(document.querySelectorAll('mat-spinner').length).toBe(0);
-    expect(buttons()[0].disabled).toBe(false);
-    expect(buttons()[1].disabled).toBe(false);
+    expect(expensesButton().textContent).toContain('Ausgaben teilen');
+    expect(workButton().textContent).toContain('Stunden teilen');
   });
 
-  it('resets after error', () => {
-    click(1);
+  it('button label is "herunterladen" otherwise', async () => {
+    await create(false);
 
-    workExport.error(new Error('export failed'));
+    expect(expensesButton().textContent).toContain('Ausgaben herunterladen');
+  });
+
+  it('cancelled share is no error', async () => {
+    await create(true);
+    downloadExpenses.mockReturnValue(of('cancelled'));
+
+    expensesButton().click();
     fixture.detectChanges();
 
-    expect(document.querySelectorAll('mat-spinner').length).toBe(0);
-    expect(buttons()[0].disabled).toBe(false);
-    expect(buttons()[1].disabled).toBe(false);
+    expect(openFromComponent).not.toHaveBeenCalled();
+    expect(expensesButton().disabled).toBe(false);
+  });
+
+  it('error shows snackbar and re-enables the buttons', async () => {
+    await create();
+    downloadExpenses.mockReturnValue(throwError(() => new Error('boom')));
+
+    expensesButton().click();
+    fixture.detectChanges();
+
+    expect(openFromComponent).toHaveBeenCalledTimes(1);
+    expect(expensesButton().disabled).toBe(false);
+    expect(workButton().disabled).toBe(false);
+  });
+
+  it('work export error shows snackbar', async () => {
+    await create();
+    personExport.mockReturnValue(throwError(() => new Error('boom')));
+
+    workButton().click();
+
+    expect(openFromComponent).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows a spinner and disables both buttons while an export runs', async () => {
+    await create();
+    const pending = new Subject<string>();
+    downloadExpenses.mockReturnValue(pending.asObservable());
+
+    expensesButton().click();
+    fixture.detectChanges();
+
+    expect(expensesButton().querySelectorAll('mat-spinner').length).toBe(1);
+    expect(workButton().querySelectorAll('mat-spinner').length).toBe(0);
+    expect(expensesButton().disabled).toBe(true);
+    expect(workButton().disabled).toBe(true);
+
+    pending.next('downloaded');
+    fixture.detectChanges();
+
+    expect(host.querySelectorAll('mat-spinner').length).toBe(0);
+    expect(expensesButton().disabled).toBe(false);
+  });
+
+  it('shows the load error with retry when the categories failed', async () => {
+    await create();
+    categoryError.set(true);
+    fixture.detectChanges();
+
+    (host.querySelector('.state-retry') as HTMLButtonElement).click();
+
+    expect(categoryRetry).toHaveBeenCalled();
+    expect(host.querySelector('button.btn.pri')).toBeNull();
   });
 });

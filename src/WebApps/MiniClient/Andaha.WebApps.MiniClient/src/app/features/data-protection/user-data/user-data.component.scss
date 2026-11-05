@@ -5,6 +5,10 @@
   font-size: 15px;
   line-height: 1.5;
   color: var(--fg2);
+
+  p {
+    margin: 0;
+  }
 }
 
 .action {
@@ -14,6 +18,11 @@
   .btn {
     flex: 1;
   }
+}
+
+.mat-mdc-progress-spinner {
+  flex: none;
+  --mat-progress-spinner-active-indicator-color: currentColor;
 }
 
 @media (min-width: 1024px) {

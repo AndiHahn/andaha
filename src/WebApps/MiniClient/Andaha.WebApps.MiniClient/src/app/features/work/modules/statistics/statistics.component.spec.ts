@@ -1,3 +1,4 @@
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
@@ -63,6 +64,7 @@ describe('StatisticsComponent', () => {
       imports: [StatisticsComponent],
       providers: [
         provideRouter([]),
+        { provide: MatSnackBar, useValue: { openFromComponent: vi.fn() } },
         { provide: StatisticsContextService, useValue: context },
         { provide: PersonContextService, useValue: { persons: () => of(persons) } },
         { provide: StatisticsApiService, useValue: api },

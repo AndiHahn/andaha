@@ -1,14 +1,14 @@
 import { DatePipe } from '@angular/common';
 import { Injectable, Signal, inject, signal } from '@angular/core';
-import { BehaviorSubject, Observable, ReplaySubject, Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subscription, from, throwError } from 'rxjs';
+import { switchMap, take } from 'rxjs/operators';
 import { ExpenseDto } from '../../../api/shopping/dtos/ExpenseDto';
 import { TimeRangeDto, TimeRangeDtoRaw } from '../../../api/common-dtos/TimeRangeDto';
 import { ExpenseApiService } from '../../../api/shopping/expense-api.service';
 import { ContextService } from '../../../core/context.service';
 import { TimeRange } from '../../../shared/models/TimeRange';
 import { BillContextService } from './bill-context.service';
-import { downloadFile, getFileName } from 'src/app/shared/utils/file-utils';
+import { ShareOrDownloadResult, XLSX_MIME_TYPE, getFileName, shareOrDownload } from 'src/app/shared/utils/file-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -45,45 +45,17 @@ export class ExpenseContextService {
     return this.expenses$.asObservable();
   }
 
-  downloadExpenses(): Observable<void> {
-    const returnSubject = new ReplaySubject<void>(1);
-
-    this.availableTimeRange().pipe(take(1)).subscribe(
-      {
-        next: timeRange => {
-          if (!timeRange) {
-            returnSubject.next();
-
-            return;
-          }
-
-          this.apiService
-            .exportExpenses(timeRange.startTimeUtc, timeRange.endTimeUtc)
-            .subscribe(
-              {
-                next: response => {
-                  if (!response || !response.body) {
-                    returnSubject.next();
-
-                    return;
-                  }
-
-                  downloadFile(
-                    response.body,
-                    getFileName(response.headers),
-                    response.body.type);
-
-                  returnSubject.next();
-                },
-                error: error => returnSubject.error(error)
-              }
-            );
-        },
-        error: error => returnSubject.error(error)
-      }
+  /**
+   * Exportiert die Ausgaben des Zeitraums (leere Kategorienamen = alle) und teilt bzw. lädt die Datei.
+   * Fehler (auch beim Teilen) gehen an den Aufrufer, der eine eigene Meldung zeigt (SKIP_GLOBAL_ERROR).
+   */
+  downloadExpenses(start: Date, end: Date, categoryNames: string[] = []): Observable<ShareOrDownloadResult> {
+    return this.apiService.exportExpenses(start, end, categoryNames).pipe(
+      take(1),
+      switchMap(response => response.body
+        ? from(shareOrDownload(response.body, getFileName(response.headers), XLSX_MIME_TYPE))
+        : throwError(() => new Error('Export without content')))
     );
-
-    return returnSubject;
   }
 
   loadExpenses(timeRange: TimeRange): void {

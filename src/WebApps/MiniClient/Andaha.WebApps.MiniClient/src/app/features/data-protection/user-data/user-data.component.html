@@ -1,6 +1,13 @@
 <div class="master-container">
-  Das löschen aller Daten umfasst sowohl den Account, als auch alle Daten, die in dieser Anwendung gespeichert wurden.
+  <p>Gelöscht werden alle Daten, die in dieser Anwendung gespeichert wurden: Rechnungen, Fotos, Kategorien, Vorlagen, Haushalt, Stunden und Verbindungen. Dein Login-Konto bleibt bestehen. Beim nächsten Anmelden beginnst du mit einem leeren Benutzer.</p>
   <div class="action">
-    <button class="btn del">Alle Benutzerdaten löschen</button>
+    <button type="button" class="btn del" (click)="onDeleteClick()" [disabled]="deleting()">
+      @if (deleting()) {
+        <mat-spinner [diameter]="20" aria-hidden="true" />
+        <span role="status">Daten werden gelöscht …</span>
+      } @else {
+        Alle Benutzerdaten löschen
+      }
+    </button>
   </div>
 </div>

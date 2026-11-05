@@ -1,23 +1,55 @@
-<p class="sec">Exportieren</p>
+<app-load-state [state]="categoriesState()" (retry)="retryCategories()">
+  <div class="form">
+    <div class="f">
+      <span class="field-label" id="export-expenses-label">Ausgaben</span>
+      <div class="chips" role="group" aria-labelledby="export-expenses-label">
+        @for (item of presets; track item.value) {
+          <button type="button" class="chip" [class.on]="preset() === item.value" [attr.aria-pressed]="preset() === item.value"
+            [disabled]="item.value === 'all' && !availableRange()" (click)="selectPreset(item.value)">{{ item.label }}</button>
+        }
+      </div>
+    </div>
 
-<button type="button" class="ex" (click)="onExportExpensesClick()" [disabled]="exporting !== null">
-  <span class="ic"><mat-icon aria-hidden="true">receipt_long</mat-icon></span>
-  <span class="tx">Ausgaben exportieren</span>
-  @if (exporting === 'expenses') {
-    <mat-spinner [diameter]="20" aria-label="Export läuft" />
-  }
-  @if (exporting !== 'expenses') {
-    <mat-icon class="dl-icon" aria-hidden="true">download</mat-icon>
-  }
-</button>
+    <div class="dates">
+      <app-date-picker-form-field label="Von" [control]="fromControl" />
+      <app-date-picker-form-field label="Bis" [control]="toControl" />
+    </div>
+    @if (rangeIsReversed()) {
+      <span class="field-error" role="alert">„Von“ darf nicht nach „Bis“ liegen.</span>
+    }
 
-<button type="button" class="ex" (click)="onExportWorkInformationClick()" [disabled]="exporting !== null">
-  <span class="ic"><mat-icon aria-hidden="true">group</mat-icon></span>
-  <span class="tx">Personen/Arbeitszeiten exportieren</span>
-  @if (exporting === 'work') {
-    <mat-spinner [diameter]="20" aria-label="Export läuft" />
-  }
-  @if (exporting !== 'work') {
-    <mat-icon class="dl-icon" aria-hidden="true">download</mat-icon>
-  }
-</button>
+    <div class="field">
+      <span class="field-label">Kategorien</span>
+      <span class="field-box">
+        <mat-select [formControl]="categoryControl" multiple aria-label="Kategorien" placeholder="Alle Kategorien">
+          @for (name of categoryNames(); track name) {
+            <mat-option [value]="name">{{ name }}</mat-option>
+          }
+        </mat-select>
+        <mat-icon class="suffix" aria-hidden="true">expand_more</mat-icon>
+      </span>
+    </div>
+
+    <button type="button" class="btn pri" (click)="onExportExpensesClick()" [disabled]="exporting() !== null || !selectedRange()">
+      @if (exporting() === 'expenses') {
+        <mat-spinner [diameter]="20" aria-label="Export läuft" />
+      } @else {
+        <mat-icon aria-hidden="true">{{ actionIcon }}</mat-icon>
+      }
+      Ausgaben {{ shareVerb }}
+    </button>
+
+    <div class="f stunden">
+      <span class="field-label">Stunden</span>
+      <span class="field-hint">Personen, Arbeitszeiten und Zahlungen</span>
+    </div>
+    <button type="button" class="btn sec2" (click)="onExportWorkInformationClick()" [disabled]="exporting() !== null">
+      @if (exporting() === 'work') {
+        <mat-spinner [diameter]="20" aria-label="Export läuft" />
+      } @else {
+        <mat-icon aria-hidden="true">{{ actionIcon }}</mat-icon>
+      }
+      Stunden {{ shareVerb }}
+    </button>
+  </div>
+</app-load-state>
