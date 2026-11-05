@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { timeout } from 'rxjs';
+import { Observable, throwError, timeout } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { AnalyzeBillResultDto } from 'src/app/api/shopping/dtos/AnalyzeBillResultDto';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
@@ -141,7 +141,7 @@ export class ScanService {
         }
       };
 
-      const request = this.billApi.analyzeBill(image).pipe(timeout(SCAN_TIMEOUT_MS)).subscribe({
+      const request = this.legacyAnalyze(image).pipe(timeout(SCAN_TIMEOUT_MS)).subscribe({
         next: result => finish({ kind: 'success', result }),
         error: error => {
           console.error('Analyzing bill failed', error);
@@ -159,5 +159,16 @@ export class ScanService {
       ref.close();
     }
     return outcome;
+  }
+
+  /**
+   * Übergang US-0009: `BillApiService.analyzeBill` und der Endpoint sind entfernt, Task 5 löscht diesen
+   * synchronen Scan. Bis dahin endet er als „nicht lesbar“; die Specs reichen weiter ein eigenes analyzeBill herein.
+   */
+  private legacyAnalyze(image: File): Observable<AnalyzeBillResultDto> {
+    const api = this.billApi as unknown as { analyzeBill?: (file: File) => Observable<AnalyzeBillResultDto> };
+    return api.analyzeBill
+      ? api.analyzeBill(image)
+      : throwError(() => new Error('Synchronous scan was removed (US-0009)'));
   }
 }

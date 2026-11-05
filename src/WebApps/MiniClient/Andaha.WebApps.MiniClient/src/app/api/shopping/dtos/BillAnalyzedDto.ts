@@ -26,6 +26,8 @@ interface BillAnalyzedDtoBase {
   totalAmountConfidence?: number | null;
   imageAvailable: boolean;
   lineItems: AnalyzedBillLineItemDto[];
+  /** Bild-ID des Uploads, aus dem die Analyse entstand (Zuordnung im Tab Analyse) */
+  sourceUploadId?: string | null;
 }
 
 export function mapBillAnalyzedDtoRaw(raw: BillAnalyzedDtoRaw): BillAnalyzedDto {

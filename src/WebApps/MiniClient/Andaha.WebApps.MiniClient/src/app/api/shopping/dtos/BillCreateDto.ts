@@ -1,6 +1,7 @@
 import { BillDto } from "./BillDto";
 import { BillCategoryDto } from "./BillCategoryDto";
 import { BillSubCategoryDto } from "./BillSubCategoryDto";
+import { BillLineItemInputDto } from "./BillLineItemDto";
 
 export interface BillCreateDto extends BillCreateDtoBase {
   image?: File;
@@ -18,6 +19,7 @@ interface BillCreateDtoBase {
   price: number;
   date: Date;
   notes?: string;
+  lineItems?: BillLineItemInputDto[];
 }
 
 export function billCreateDtoToBillDto(bill: BillCreateDto, category: BillCategoryDto, subCategory?: BillSubCategoryDto): BillDto {

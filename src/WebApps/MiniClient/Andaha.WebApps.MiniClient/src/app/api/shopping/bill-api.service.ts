@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEvent } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { getRecordOfProperties } from 'src/app/shared/utils/utils';
@@ -11,9 +11,34 @@ import { BillDto, BillDtoRaw, mapBillDtoRaw } from './dtos/BillDto';
 import { BillSearchResultDto, mapBillSearchResultDtoRaw } from './dtos/BillSearchResultDto';
 import { BillUpdateDto } from './dtos/BillUpdateDto';
 import { BillAnalyzedDto, BillAnalyzedDtoRaw, mapBillAnalyzedDtoRaw } from './dtos/BillAnalyzedDto';
-import { AnalyzeBillResultDto } from './dtos/AnalyzeBillResultDto';
+import { AutoCreatedBillDto, AutoCreatedBillDtoRaw, mapAutoCreatedBillDtoRaw } from './dtos/AutoCreatedBillDto';
+import { mapPendingAnalysisDtoRaw, PendingAnalysisDto, PendingAnalysisDtoRaw } from './dtos/PendingAnalysisDto';
+import { currentTimeZone } from 'src/app/shared/utils/time-zone';
 import { mapShopStatDtoRaw, ShopStatDto, ShopStatDtoRaw } from './dtos/ShopStatDto';
 import { getSearchBillsHttpParams, SearchBillsParameters } from './dtos/SearchBillsParameters';
+
+/**
+ * Formularfelder für Anlegen/Bearbeiten. Positionen gehen als JSON-Text in `lineItems`:
+ * ohne Feld bleiben sie beim Bearbeiten unverändert, [] entfernt sie.
+ */
+function toBillFormData(dto: BillCreateDto | BillUpdateDto): FormData {
+  const { lineItems, ...fields } = dto;
+
+  const formData = new FormData();
+  const fieldData = getRecordOfProperties(fields);
+  for (const key in fieldData) {
+    if (fieldData[key] == null) {
+      continue; // sonst landet der Text "undefined" im Formular
+    }
+    formData.set(key, fieldData[key]);
+  }
+
+  if (lineItems) {
+    formData.set('lineItems', JSON.stringify(lineItems));
+  }
+
+  return formData;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -53,33 +78,15 @@ export class BillApiService {
   addBill(dto: BillCreateDto): Observable<BillDto> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl);
 
-    const formData = new FormData();
-    const createDtoData = getRecordOfProperties<BillCreateDto>(dto);
-    for (const key in createDtoData) {
-      if (createDtoData[key] == null) {
-        continue; // sonst landet der Text "undefined" im Formular
-      }
-      formData.set(key, createDtoData[key]);
-    }
-
     // Aufrufer melden Fehler selbst (Offline-Speicher bzw. Übernehmen aus der Analyse, Review Focus 5)
-    return this.httpClient.post<BillDtoRaw>(url, formData, skipGlobalError())
+    return this.httpClient.post<BillDtoRaw>(url, toBillFormData(dto), skipGlobalError())
       .pipe(map(mapBillDtoRaw));
   }
 
   updateBill(id: string, dto: BillUpdateDto): Observable<BillDto> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, id);
 
-    const formData = new FormData();
-    const updateDtoData = getRecordOfProperties<BillUpdateDto>(dto);
-    for (const key in updateDtoData) {
-      if (updateDtoData[key] == null) {
-        continue;
-      }
-      formData.set(key, updateDtoData[key]);
-    }
-
-    return this.httpClient.put<BillDtoRaw>(url, formData, skipGlobalError())
+    return this.httpClient.put<BillDtoRaw>(url, toBillFormData(dto), skipGlobalError())
       .pipe(map(mapBillDtoRaw));
   }
 
@@ -110,13 +117,38 @@ export class BillApiService {
     return this.httpClient.delete<void>(url, skipGlobalError());
   }
 
-  uploadForAnalysis(file: File): Observable<void> {
+  /**
+   * Lädt ein Foto zur Analyse hoch; liefert Fortschritts-Events und zuletzt die Antwort (202, Bild-ID).
+   * Fehler zeigt der Upload-Eintrag selbst („Upload fehlgeschlagen“), keine globale Snackbar.
+   */
+  uploadForAnalysis(file: Blob, fileName: string): Observable<HttpEvent<{ id: string }>> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'upload-for-analysis');
 
     const formData = new FormData();
-    formData.set('file', file);
+    formData.set('file', file, fileName);
 
-    return this.httpClient.post<void>(url, formData);
+    // reportUploadProgress statt des in Angular 22 veralteten reportProgress; braucht withXhr() (app.config)
+    return this.httpClient.post<{ id: string }>(url, formData, {
+      reportUploadProgress: true,
+      observe: 'events',
+      ...skipGlobalError()
+    });
+  }
+
+  /** Eigene Bilder, deren Analyse noch läuft. Wird abgefragt: Fehler ohne globale Snackbar. */
+  getPendingAnalyses(): Observable<PendingAnalysisDto[]> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'analyzed', 'pending');
+
+    return this.httpClient.get<PendingAnalysisDtoRaw[]>(url, skipGlobalError())
+      .pipe(map(raw => raw.map(mapPendingAnalysisDtoRaw)));
+  }
+
+  /** Heute (lokaler Tag über `tz`) automatisch angelegte Rechnungen. Wird abgefragt: Fehler ohne globale Snackbar. */
+  getTodayAutoCreated(): Observable<AutoCreatedBillDto[]> {
+    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'analyzed', 'today');
+
+    return this.httpClient.get<AutoCreatedBillDtoRaw[]>(url, { params: { tz: currentTimeZone() }, ...skipGlobalError() })
+      .pipe(map(raw => raw.map(mapAutoCreatedBillDtoRaw)));
   }
 
   downloadAnalyzedBillImage(id: string) {
@@ -131,16 +163,6 @@ export class BillApiService {
 
     return this.httpClient.get<BillAnalyzedDtoRaw[]>(url)
       .pipe(map(raw => raw.map(mapBillAnalyzedDtoRaw)));
-  }
-
-  analyzeBill(file: File): Observable<AnalyzeBillResultDto> {
-    const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'analyze');
-
-    const formData = new FormData();
-    formData.set('file', file);
-
-    // bei Fehlern öffnet der Scan das Formular mit eigenem Hinweis
-    return this.httpClient.post<AnalyzeBillResultDto>(url, formData, skipGlobalError());
   }
 
   deleteAnalyzedBill(id: string): Observable<void> {

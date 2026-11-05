@@ -90,18 +90,6 @@ describe('Shopping template/stats api', () => {
   });
 
   describe('BillApiService (US-0007)', () => {
-    it('analyzeBill: POST /analyze multipart file', () => {
-      const api = TestBed.inject(BillApiService);
-      const file = new File(['x'], 'bill.jpg');
-      let result: unknown;
-      api.analyzeBill(file).subscribe(r => result = r);
-      const req = expectReq('POST', '/api/bill/analyze');
-      expect(req.request.body instanceof FormData).toBe(true);
-      expect((req.request.body as FormData).get('file')).toBeInstanceOf(File);
-      req.flush({ lineItems: [] });
-      expect(result).toEqual({ lineItems: [] });
-    });
-
     it('deleteAnalyzedBill: DELETE /analyzed/{id}', () => {
       const api = TestBed.inject(BillApiService);
       api.deleteAnalyzedBill('a1').subscribe();
