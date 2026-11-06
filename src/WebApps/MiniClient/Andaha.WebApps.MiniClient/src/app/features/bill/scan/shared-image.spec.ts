@@ -4,9 +4,11 @@ import { SHARED_IMAGE_CACHE, readLaunchIntent, sharedImageKey, takeSharedImages 
 /** Minimaler Cache-Storage-Ersatz: eine benannte Map von URL auf Response */
 function createCacheStorage(): { storage: CacheStorage; entries: Map<string, Response> } {
   const entries = new Map<string, Response>();
+  const path = (key: string | Request) => typeof key === 'string' ? key : new URL(key.url).pathname;
   const cache = {
-    match: async (key: string) => entries.get(key),
-    delete: async (key: string) => entries.delete(key)
+    keys: async () => Array.from(entries.keys()).map(key => new Request(new URL(key, location.origin))),
+    match: async (key: string | Request) => entries.get(path(key)),
+    delete: async (key: string | Request) => entries.delete(path(key))
   };
   const storage = { open: async () => cache } as unknown as CacheStorage;
   return { storage, entries };
@@ -37,6 +39,37 @@ describe('takeSharedImages', () => {
     const files = await takeSharedImages(storage);
 
     expect(files.map(f => f.name)).toEqual(['a.jpg', 'b.jpg', 'c.jpg']);
+    expect(entries.size).toBe(0);
+  });
+
+  it('reads all entries despite an index gap, including the legacy single key, and ignores other keys', async () => {
+    const { storage, entries } = createCacheStorage();
+    const add = (key: string, name: string) => entries.set(key, new Response(new Blob([name]), {
+      headers: { 'Content-Type': 'image/jpeg', 'X-File-Name': name }
+    }));
+    add(sharedImageKey(2), 'c.jpg');
+    add(sharedImageKey(0), 'a.jpg');
+    add('/shared-image', 'legacy.jpg');
+    add(sharedImageKey(5), 'f.jpg');
+    add('/other', 'other.jpg');
+
+    const files = await takeSharedImages(storage);
+
+    expect(files.map(f => f.name)).toEqual(['legacy.jpg', 'a.jpg', 'c.jpg', 'f.jpg']);
+    expect(Array.from(entries.keys())).toEqual(['/other']);
+  });
+
+  it('deletes every entry even if reading one fails', async () => {
+    const { storage, entries } = createCacheStorage();
+    const broken = new Response(new Blob(['x']));
+    vi.spyOn(broken, 'blob').mockRejectedValue(new Error('boom'));
+    entries.set(sharedImageKey(0), broken);
+    entries.set(sharedImageKey(1), new Response(new Blob(['b']), { headers: { 'X-File-Name': 'b.jpg' } }));
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    const files = await takeSharedImages(storage);
+
+    expect(files.map(f => f.name)).toEqual(['b.jpg']);
     expect(entries.size).toBe(0);
   });
 

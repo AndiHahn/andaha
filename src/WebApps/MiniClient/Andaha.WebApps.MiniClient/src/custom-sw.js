@@ -34,6 +34,14 @@ importScripts('./ngsw-worker.js');
       var images = formData.getAll('image').filter(isImageCandidate);
       if (images.length > 0) {
         var cache = await caches.open(CACHE_NAME);
+        // Reste eines früheren, nie abgeholten Teilens (auch der frühere Einzelschlüssel) entfernen,
+        // sonst würden sie zusätzlich hochgeladen
+        var existing = await cache.keys();
+        for (var k = 0; k < existing.length; k++) {
+          if (new URL(existing[k].url).pathname.indexOf(IMAGE_KEY) === 0) {
+            await cache.delete(existing[k]);
+          }
+        }
         for (var i = 0; i < images.length; i++) {
           var image = images[i];
           // Header-Werte nur Latin-1: Dateiname kodiert (takeSharedImages dekodiert ihn)

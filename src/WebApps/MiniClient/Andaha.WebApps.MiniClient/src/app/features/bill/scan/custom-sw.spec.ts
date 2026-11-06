@@ -16,7 +16,11 @@ describe('custom-sw.js share target', () => {
     expect(source).toContain("importScripts('./ngsw-worker.js')");
 
     stored = new Map();
-    const cache = { put: async (key: string, value: Response) => void stored.set(key, value) };
+    const cache = {
+      put: async (key: string, value: Response) => void stored.set(key, value),
+      keys: async () => Array.from(stored.keys()).map(key => new Request(new URL(key, location.origin))),
+      delete: async (key: Request) => stored.delete(new URL(key.url).pathname)
+    };
     const self = { addEventListener: (type: string, handler: FetchHandler) => { if (type === 'fetch') { fetchHandler = handler; } } };
     // eslint-disable-next-line @typescript-eslint/no-implied-eval
     new Function('self', 'importScripts', 'caches', source)(self, () => undefined, { open: async () => cache });
@@ -39,12 +43,27 @@ describe('custom-sw.js share target', () => {
   }
 
   function cachedEntry(): CacheStorage {
+    const path = (key: string | Request) => typeof key === 'string' ? key : new URL(key.url).pathname;
     const cache = {
-      match: async (key: string) => stored.get(key),
-      delete: async (key: string) => stored.delete(key)
+      keys: async () => Array.from(stored.keys()).map(key => new Request(new URL(key, location.origin))),
+      match: async (key: string | Request) => stored.get(path(key)),
+      delete: async (key: string | Request) => stored.delete(path(key))
     };
     return { open: async () => cache } as unknown as CacheStorage;
   }
+
+  it('a second share with fewer images replaces the first set, legacy key included', async () => {
+    stored.set('/shared-image', new Response('old'));
+    await share(
+      new File(['1'], 'a.jpg', { type: 'image/jpeg' }), new File(['2'], 'b.jpg', { type: 'image/jpeg' }),
+      new File(['3'], 'c.jpg', { type: 'image/jpeg' }), new File(['4'], 'd.jpg', { type: 'image/jpeg' })
+    );
+    await share(new File(['5'], 'e.jpg', { type: 'image/jpeg' }), new File(['6'], 'f.jpg', { type: 'image/jpeg' }));
+
+    expect(Array.from(stored.keys()).sort()).toEqual([sharedImageKey(0), sharedImageKey(1)]);
+    const files = await takeSharedImages(cachedEntry());
+    expect(files.map(f => f.name)).toEqual(['e.jpg', 'f.jpg']);
+  });
 
   it('caches an image and opens the list with shared=1', async () => {
     const response = await share(new File(['png'], 'beleg.png', { type: 'image/png' }));

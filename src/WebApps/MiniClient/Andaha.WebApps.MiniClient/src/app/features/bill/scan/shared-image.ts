@@ -50,21 +50,36 @@ export async function takeSharedImages(cacheStorage: CacheStorage | undefined = 
   }
   try {
     const cache = await cacheStorage.open(SHARED_IMAGE_CACHE);
-    for (let index = 0; ; index++) {
-      const key = sharedImageKey(index);
-      const response = await cache.match(key);
-      if (!response) {
-        break;
+    // alle Einträge mit dem Präfix, nach Index sortiert (der frühere Einzelschlüssel ohne Index zuerst);
+    // Lücken im Index sind egal
+    const requests = (await cache.keys())
+      .filter(request => new URL(request.url).pathname.startsWith(SHARED_IMAGE_KEY))
+      .sort((a, b) => indexOf(a) - indexOf(b));
+    for (const request of requests) {
+      try {
+        const response = await cache.match(request);
+        if (!response) {
+          continue;
+        }
+        const blob = await response.blob();
+        // ohne MIME-Typ geteilt: kein JPEG annehmen, sonst übernähme compressImage die Datei ungeprüft;
+        // so kodiert es neu bzw. die Analyse-Vorbereitung meldet ein nicht lesbares Foto
+        const type = blob.type || response.headers.get('Content-Type') || 'application/octet-stream';
+        files.push(new File([blob], fileNameOf(response), { type }));
+      } catch (error) {
+        console.error('Reading shared image failed', error);
+      } finally {
+        // jeder Eintrag wird gelöscht, auch wenn sein Lesen scheitert
+        await cache.delete(request);
       }
-      await cache.delete(key);
-      const blob = await response.blob();
-      // ohne MIME-Typ geteilt: kein JPEG annehmen, sonst übernähme compressImage die Datei ungeprüft;
-      // so kodiert es neu bzw. die Analyse-Vorbereitung meldet ein nicht lesbares Foto
-      const type = blob.type || response.headers.get('Content-Type') || 'application/octet-stream';
-      files.push(new File([blob], fileNameOf(response), { type }));
     }
   } catch (error) {
     console.error('Reading shared images failed', error);
   }
   return files;
+}
+
+function indexOf(request: Request): number {
+  const suffix = new URL(request.url).pathname.slice(SHARED_IMAGE_KEY.length + 1);
+  return /^\d+$/.test(suffix) ? Number(suffix) : -1;
 }
