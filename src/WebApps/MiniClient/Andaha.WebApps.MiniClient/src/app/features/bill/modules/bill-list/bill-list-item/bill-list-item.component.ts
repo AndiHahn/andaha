@@ -18,6 +18,14 @@ export class BillListItemComponent implements OnInit {
   /** gerade gespeichert: Zeile kurz hervorgehoben (v2 „Hervorgehobene neue Zeile“) */
   @Input()
   isNew = false;
+
+  /** aktiver Suchbegriff; ohne ihn gibt es keine Treffer-Zeile */
+  @Input()
+  searchTerm = '';
+
+  get matchedLineItem() {
+    return this.searchTerm && this.bill.matchedLineItem ? this.bill.matchedLineItem : null;
+  }
   
   constructor() { }
 

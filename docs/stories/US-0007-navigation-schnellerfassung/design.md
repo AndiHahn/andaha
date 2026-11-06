@@ -108,6 +108,8 @@ Stil wie vorhanden: Minimal APIs + MediatR, `Requests/<Bereich>/<Name>/V1/`, Flu
 ## 5. Rechnung scannen und Analyse (AC30–AC36)
 
 ### 5.1 Scan-Ablauf [Nutzer: synchron]
+> **Hinweis: Ersetzt durch US-0009.** Der synchrone Scan-Ablauf unten gilt nicht mehr. Seit US-0009 laden Kamera-Knopf und Share Target ein oder mehrere Fotos asynchron hoch, die Analyse läuft im Hintergrund und erscheint im Analyse-Tab („In Arbeit“, „Zu prüfen“, „Angelegt“). Siehe `docs/stories/US-0009-rechnungspositionen/`.
+
 - Einstiege: Kamera-Knopf im Dock (Mobil), „Scannen“ neben der Eingabezeile (Desktop), Share Target (5.4), App-Shortcut nicht (der öffnet das Sheet).
 - Ablauf: Foto (`input capture`) → `compressImage` → Vollbild-Ladezustand mit Foto-Vorschau und „Rechnung wird gelesen …“ sowie „Abbrechen“ **[Entscheidung]** → `POST /api/bill/analyze` → `/bill/create` mit Router-State {Foto, Shop, Datum, Betrag, Kategorie, Unterkategorie} → prüfen → Speichern (Foto wird mitgespeichert, bestehender Multipart-Weg).
 - Zeitlimit 30 s im Frontend (`timeout`), Abbrechen bricht den Request ab **[Entscheidung]**. Bei Fehler/Zeitüberschreitung/Abbruch: Formular mit Foto und leeren Feldern, Hinweis „Die Rechnung konnte nicht gelesen werden. Bitte die Felder ausfüllen.“ (AC31; bei Abbruch ohne Hinweis).

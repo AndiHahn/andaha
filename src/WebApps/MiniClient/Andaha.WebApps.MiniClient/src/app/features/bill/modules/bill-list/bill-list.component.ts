@@ -107,6 +107,16 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
 
+  /** aktueller Suchbegriff der Liste; nur bei einer Suche zeigt eine Zeile ihre passende Position */
+  get searchTerm(): string {
+    return this.billContextService.getSearchText().trim();
+  }
+
+  /** Tipp auf eine Zeile mit Positions-Treffer öffnet die Rechnung mit voreingestelltem Positionsfilter */
+  matchParams(bill: BillDto): { q: string } | null {
+    return this.searchTerm && bill.matchedLineItem ? { q: this.searchTerm } : null;
+  }
+
   /** Laden, Fehler und Leerzustand (AC34); geladene Zeilen bleiben bei Fehlern späterer Seiten stehen */
   get loadState(): LoadState {
     if (this.bills.length > 0) {

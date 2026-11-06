@@ -335,6 +335,16 @@ Scrim hinter Sheets und Dialogen: `rgba(40,30,18,.38)`.
 
 **Farbraster (Kategorien, US-0008):** 18 Farbpunkte zum Antippen statt eines Farbwählers; der gewählte Punkt hat einen Ring. Eine bisherige Farbe außerhalb des Rasters (CSS-Name) erscheint vorne als gestrichelt umrandeter Punkt mit dem Hinweis „Gestrichelt: bisherige Farbe „…““ und bleibt gültig.
 
+**Analyse-Tab (US-0009):** drei Abschnitte untereinander auf einer Scrollfläche, jeder mit Abschnittskopf und nur sichtbar, wenn er Einträge hat: „In Arbeit“ (Uploads und laufende Analysen), „Zu prüfen“ (fertige Analysen, virtuell gescrollt, Tipp öffnet die Analyse-Details) und „Angelegt“ (automatisch angelegte Rechnungen, werden mit „Verstanden“ bestätigt). Laden, Fehler und Leer über `app-load-state`. Die Zeile eines neu eingegangenen Fotos wird kurz hervorgehoben.
+
+**Upload-Fortschrittszeile (In Arbeit, US-0009):** Zeile mit 48-px-Vorschaubild (Foto, sonst Icon `receipt_long`) und rechts Statuszeile mit 4-px-Fortschrittsbalken: „Wird hochgeladen · 42 %“ (Balken bestimmt), „Wird analysiert …“ (Balken unbestimmt, nach längerer Zeit Zusatz „dauert länger als üblich“). Scheitert ein Upload, steht „Upload fehlgeschlagen“ in `negative` mit den Knöpfen „Erneut versuchen“ und „Entfernen“; die anderen Uploads laufen weiter, es gibt keine Snackbar.
+
+**Positionsliste (Rechnungsdetails, US-0009):** Abschnittskopf „Positionen“, darunter Zeilen mit Beschreibung (bei Menge und Einzelpreis eine Zusatzzeile „2 × 1,49 €“) und rechts Gesamtpreis (negative Preise in `negative`). Ab 8 Positionen steht darüber ein Suchfeld „Positionen durchsuchen“; Treffer sind hervorgehoben. Darunter die Zeile „Summe der Positionen: … €“ und, wenn die Summe vom Rechnungsbetrag abweicht, der Hinweis „Weicht vom Rechnungsbetrag ab (… €)“.
+
+**Positionseditor (US-0009):** im Bearbeiten-Modus je Position eine Zeile aus Beschreibung (Pflicht), Menge, Gesamtpreis mit Suffix € und einem Entfernen-Icon (`close`, ohne Rückfrage, nur Entwurf bis zum Speichern). Darunter der Sekundär-Button „Position hinzufügen“ (höchstens 200 Positionen). Felder wie die normalen Felder mit Fehlertext „Pflichtfeld“ bzw. „Ungültiger Wert“. Positionen werden nur gesendet, wenn sie bearbeitet wurden.
+
+**Treffer-Zeile (Rechnungsliste, US-0009):** Trifft die Suche eine Position (nicht Shop oder Notiz), bekommt die Listenzeile eine dritte Zeile in `muted` (13 px) mit Such-Icon und „Druckerpatronen XL · 34,99 €“, einzeilig mit Ellipsis, unter dem Text der Zeile eingerückt. Die Zeile wächst um genau diese Zeile, sie ist nicht mehr fest 64 px hoch; ohne Suchbegriff gibt es sie nicht. Ein Tipp öffnet die Rechnung mit `?q=<Suchbegriff>`, die Detailseite stellt den Positionsfilter darauf ein. Langer Druck und Pull-to-Refresh bleiben.
+
 ## Do's and Don'ts
 
 **Do**

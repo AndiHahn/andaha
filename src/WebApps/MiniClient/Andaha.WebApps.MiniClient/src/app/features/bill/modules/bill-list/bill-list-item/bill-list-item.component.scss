@@ -25,6 +25,42 @@
   }
 }
 
+// Treffer der Positionssuche: dritte Zeile, die Zeile waechst um genau diese Zeile (kein feste Hoehe, kein Ueberlappen)
+.bill-row.has-match {
+  height: auto;
+  flex-wrap: wrap;
+  row-gap: 2px;
+  padding-bottom: 8px;
+}
+
+.match-row {
+  flex: 0 0 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  // unter dem Text der Zeile, nicht unter dem Datum (Datum 34 px + Abstand 14 px)
+  padding-left: 48px;
+  color: var(--mut);
+  font-size: 13px;
+  line-height: 18px;
+
+  .mat-icon {
+    flex: none;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+  }
+}
+
+.match-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .date-full,
 .origin-cell {
   display: none;
@@ -54,6 +90,16 @@
   .bill-row > *,
   .main > * {
     padding: 0 16px;
+  }
+
+  .bill-row.has-match {
+    height: auto;
+    padding-bottom: 8px;
+  }
+
+  .bill-row > .match-row {
+    grid-column: 1 / -1;
+    padding: 4px 16px 0 130px;
   }
 
   .date {

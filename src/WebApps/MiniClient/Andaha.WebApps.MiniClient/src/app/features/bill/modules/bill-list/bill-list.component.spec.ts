@@ -42,11 +42,13 @@ describe('BillListComponent', () => {
   let backClose: (() => void) | null;
 
   let uploadAll: ReturnType<typeof vi.fn>;
+  let searchText: string;
   let queryParams: Record<string, string>;
   let openFromComponent: ReturnType<typeof vi.spyOn>;
 
   beforeEach(async () => {
     backClose = null;
+    searchText = '';
     uploadAll = vi.fn();
     queryParams = {};
     bills$ = new BehaviorSubject<BillDto[]>([
@@ -72,7 +74,7 @@ describe('BillListComponent', () => {
       error: signal(false),
       waitingForBackend: signal(false),
       retry: vi.fn(),
-      getSearchText: () => '',
+      getSearchText: () => searchText,
       getCategoryFilter: () => [],
       getFromDateFilter: () => undefined,
       getUntilDateFilter: () => undefined,
@@ -193,6 +195,41 @@ describe('BillListComponent', () => {
       await vi.waitFor(() => expect(openFromComponent).toHaveBeenCalled());
       expect(JSON.stringify(openFromComponent.mock.calls[0][1])).toContain(SHARED_IMAGE_FAILED);
       expect(uploadAll).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('line item search match', () => {
+    async function showWithMatch(term: string): Promise<void> {
+      searchText = term;
+      bills$.next([
+        { ...bill('b1', new Date(2026, 10, 5), 48.2), matchedLineItem: { description: 'Druckerpatronen XL', totalPrice: 34.99 } },
+        bill('b2', new Date(2026, 10, 1, 0, 30), 185.9)
+      ]);
+      await settle();
+    }
+
+    it('shows matched line item row during search', async () => {
+      await showWithMatch('Drucker');
+
+      const match = rows()[0].querySelector('.match-row')!;
+      expect(match.textContent).toContain('Druckerpatronen XL · 34,99 €');
+      expect(match.querySelector('mat-icon')?.textContent?.trim()).toBe('search');
+      expect(rows()[1].querySelector('.match-row')).toBeNull();
+    });
+
+    it('tap opens bill with q param', async () => {
+      const navigateByUrl = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+      await showWithMatch('Drucker');
+
+      rows()[0].click();
+
+      expect(String(navigateByUrl.mock.calls[0][0])).toBe('/bill/b1?q=Drucker');
+    });
+
+    it('no extra row without search', async () => {
+      await showWithMatch('');
+
+      expect(host.querySelector('.match-row')).toBeNull();
     });
   });
 
