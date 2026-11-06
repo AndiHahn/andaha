@@ -18,8 +18,6 @@ export interface BillCreatePrefill {
   imageKey?: string;
   /** „Als Rechnung übernehmen“: Formular speichert direkt beim Server und löscht danach diesen Analyse-Eintrag */
   analyzedBillId?: string;
-  /** Hinweis über dem Formular (Scan ohne Ergebnis) */
-  notice?: 'analysis-failed';
   /** Aus „Alle Felder“ der Schnellerfassung: nach dem Speichern wird deren Entwurf verworfen */
   fromQuickEntry?: boolean;
 }

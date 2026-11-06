@@ -300,20 +300,11 @@ describe('AddBillComponent', () => {
     expect(component.form.controls.category.value?.id).toBe('c2');
   });
 
-  it('shows the hint when the analysis failed', async () => {
-    await setup({ prefill: { notice: 'analysis-failed' }, image: await png(20, 10) });
-
-    const notice = host.querySelector('[role="status"]')!;
-    expect(notice.textContent).toContain('Die Rechnung konnte nicht gelesen werden. Bitte die Felder ausfüllen.');
-    expect(host.querySelector('app-photo-picker img')).toBeTruthy();
-  });
-
   // design.md §9: das Foto liegt nur im Speicher; nach Neuladen ist es weg, das Formular geht ohne
   it('opens without the photo after a reload (image key no longer known) and still saves', async () => {
-    await setup({ prefill: { notice: 'analysis-failed', imageKey: 'vor-dem-neuladen' } });
+    await setup({ prefill: { imageKey: 'vor-dem-neuladen' } });
 
     expect(host.querySelector('app-photo-picker img')).toBeNull();
-    expect(host.querySelector('[role="status"]')!.textContent).toContain('Die Rechnung konnte nicht gelesen werden.');
 
     await fillValid();
     await save();

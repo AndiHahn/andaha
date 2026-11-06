@@ -1,4 +1,4 @@
-/** Cache und Schlüssel, in die der Service Worker (custom-sw.js) ein per Share Target geteiltes Bild legt */
+/** Cache und Schlüsselpräfix, unter denen der Service Worker (custom-sw.js) per Share Target geteilte Bilder ablegt */
 export const SHARED_IMAGE_CACHE = 'share-target';
 export const SHARED_IMAGE_KEY = '/shared-image';
 
@@ -34,28 +34,37 @@ function fileNameOf(response: Response): string {
   }
 }
 
+/** Cache-Schlüssel des n-ten geteilten Bildes (der Service Worker legt sie fortlaufend ab, ab 0) */
+export function sharedImageKey(index: number): string {
+  return `${SHARED_IMAGE_KEY}/${index}`;
+}
+
 /**
- * Holt das geteilte Bild aus dem Cache und löscht den Eintrag, damit es genau einmal verarbeitet wird.
- * Liefert null, wenn nichts geteilt wurde oder der Cache nicht verfügbar ist.
+ * Holt alle geteilten Bilder aus dem Cache und löscht die Einträge, damit sie genau einmal verarbeitet werden.
+ * Liefert eine leere Liste, wenn nichts geteilt wurde oder der Cache nicht verfügbar ist.
  */
-export async function takeSharedImage(cacheStorage: CacheStorage | undefined = globalThis.caches): Promise<File | null> {
+export async function takeSharedImages(cacheStorage: CacheStorage | undefined = globalThis.caches): Promise<File[]> {
+  const files: File[] = [];
   if (!cacheStorage) {
-    return null;
+    return files;
   }
   try {
     const cache = await cacheStorage.open(SHARED_IMAGE_CACHE);
-    const response = await cache.match(SHARED_IMAGE_KEY);
-    if (!response) {
-      return null;
+    for (let index = 0; ; index++) {
+      const key = sharedImageKey(index);
+      const response = await cache.match(key);
+      if (!response) {
+        break;
+      }
+      await cache.delete(key);
+      const blob = await response.blob();
+      // ohne MIME-Typ geteilt: kein JPEG annehmen, sonst übernähme compressImage die Datei ungeprüft;
+      // so kodiert es neu bzw. die Analyse-Vorbereitung meldet ein nicht lesbares Foto
+      const type = blob.type || response.headers.get('Content-Type') || 'application/octet-stream';
+      files.push(new File([blob], fileNameOf(response), { type }));
     }
-    await cache.delete(SHARED_IMAGE_KEY);
-    const blob = await response.blob();
-    // ohne MIME-Typ geteilt: kein JPEG annehmen, sonst übernähme compressImage die Datei ungeprüft;
-    // so kodiert es neu bzw. der Scan meldet ein nicht lesbares Foto
-    const type = blob.type || response.headers.get('Content-Type') || 'application/octet-stream';
-    return new File([blob], fileNameOf(response), { type });
   } catch (error) {
-    console.error('Reading shared image failed', error);
-    return null;
+    console.error('Reading shared images failed', error);
   }
+  return files;
 }

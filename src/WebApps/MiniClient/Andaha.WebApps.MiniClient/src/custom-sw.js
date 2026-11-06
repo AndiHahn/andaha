@@ -1,7 +1,7 @@
-// Erweitert den Angular Service Worker um das Web Share Target (AC38): Ein geteiltes Bild wird per
-// POST /share-target angenommen, im Cache „share-target“ abgelegt und die App per 303 auf die
-// Rechnungsliste geleitet (/bill/list?shared=1), die es mit takeSharedImage() abholt; ohne brauchbares
-// Bild auf /bill/list?shared=0 (Hinweis in der Liste).
+// Erweitert den Angular Service Worker um das Web Share Target (AC38): Geteilte Bilder (eins oder mehrere)
+// werden per POST /share-target angenommen, fortlaufend (/shared-image/0, /1, …) im Cache „share-target“
+// abgelegt und die App per 303 auf die Rechnungsliste geleitet (/bill/list?shared=1), die sie mit
+// takeSharedImages() abholt; ohne brauchbares Bild auf /bill/list?shared=0 (Hinweis in der Liste).
 importScripts('./ngsw-worker.js');
 
 (function () {
@@ -19,7 +19,7 @@ importScripts('./ngsw-worker.js');
   });
 
   // Bild: image/*; manche Android-Apps teilen ohne oder mit generischem MIME-Typ. Ob es wirklich ein
-  // Bild ist, prüft der Scan (nicht dekodierbar → „Das Foto konnte nicht gelesen werden.“).
+  // Bild ist, prüft die Analyse-Vorbereitung (nicht dekodierbar → Upload-Fehler).
   function isImageCandidate(file) {
     if (!file || typeof file === 'string' || !file.size) {
       return false;
@@ -31,15 +31,18 @@ importScripts('./ngsw-worker.js');
   async function handleShare(request) {
     try {
       var formData = await request.formData();
-      var image = formData.get('image');
-      if (isImageCandidate(image)) {
-        // Header-Werte nur Latin-1: Dateiname kodiert (takeSharedImage dekodiert ihn)
-        var headers = { 'X-File-Name': encodeURIComponent(image.name || 'shared-image') };
-        if (image.type) {
-          headers['Content-Type'] = image.type;
-        }
+      var images = formData.getAll('image').filter(isImageCandidate);
+      if (images.length > 0) {
         var cache = await caches.open(CACHE_NAME);
-        await cache.put(IMAGE_KEY, new Response(image, { headers: headers }));
+        for (var i = 0; i < images.length; i++) {
+          var image = images[i];
+          // Header-Werte nur Latin-1: Dateiname kodiert (takeSharedImages dekodiert ihn)
+          var headers = { 'X-File-Name': encodeURIComponent(image.name || 'shared-image') };
+          if (image.type) {
+            headers['Content-Type'] = image.type;
+          }
+          await cache.put(IMAGE_KEY + '/' + i, new Response(image, { headers: headers }));
+        }
         return Response.redirect('/bill/list?shared=1', 303);
       }
     } catch (error) {

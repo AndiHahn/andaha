@@ -1,5 +1,5 @@
 import { compressImage } from 'src/app/shared/utils/image-utils';
-import { SHARED_IMAGE_CACHE, SHARED_IMAGE_KEY, readLaunchIntent, takeSharedImage } from './shared-image';
+import { SHARED_IMAGE_CACHE, readLaunchIntent, sharedImageKey, takeSharedImages } from './shared-image';
 
 /** Minimaler Cache-Storage-Ersatz: eine benannte Map von URL auf Response */
 function createCacheStorage(): { storage: CacheStorage; entries: Map<string, Response> } {
@@ -12,34 +12,49 @@ function createCacheStorage(): { storage: CacheStorage; entries: Map<string, Res
   return { storage, entries };
 }
 
-describe('takeSharedImage', () => {
+const KEY = sharedImageKey(0);
+
+describe('takeSharedImages', () => {
   it('returns the cached image as a file with its type and deletes the entry', async () => {
     const { storage, entries } = createCacheStorage();
-    entries.set(SHARED_IMAGE_KEY, new Response(new Blob(['abc'], { type: 'image/png' }), { headers: { 'Content-Type': 'image/png' } }));
+    entries.set(KEY, new Response(new Blob(['abc'], { type: 'image/png' }), { headers: { 'Content-Type': 'image/png' } }));
 
-    const file = await takeSharedImage(storage);
+    const files = await takeSharedImages(storage);
 
-    expect(file).toBeInstanceOf(File);
-    expect(file!.type).toBe('image/png');
-    expect(file!.size).toBe(3);
-    expect(entries.has(SHARED_IMAGE_KEY)).toBe(false);
+    expect(files).toHaveLength(1);
+    expect(files[0]).toBeInstanceOf(File);
+    expect(files[0].type).toBe('image/png');
+    expect(files[0].size).toBe(3);
+    expect(entries.has(KEY)).toBe(false);
   });
 
-  it('returns null for an empty cache', async () => {
-    const { storage } = createCacheStorage();
-    expect(await takeSharedImage(storage)).toBeNull();
-  });
-
-  it('returns null on the second call', async () => {
+  it('returns all shared images in order and deletes every entry', async () => {
     const { storage, entries } = createCacheStorage();
-    entries.set(SHARED_IMAGE_KEY, new Response(new Blob(['abc'], { type: 'image/jpeg' }), { headers: { 'Content-Type': 'image/jpeg' } }));
+    ['a', 'b', 'c'].forEach((name, index) => entries.set(sharedImageKey(index), new Response(new Blob([name]), {
+      headers: { 'Content-Type': 'image/jpeg', 'X-File-Name': `${name}.jpg` }
+    })));
 
-    expect(await takeSharedImage(storage)).not.toBeNull();
-    expect(await takeSharedImage(storage)).toBeNull();
+    const files = await takeSharedImages(storage);
+
+    expect(files.map(f => f.name)).toEqual(['a.jpg', 'b.jpg', 'c.jpg']);
+    expect(entries.size).toBe(0);
   });
 
-  it('returns null when the cache storage is unavailable', async () => {
-    expect(await takeSharedImage(undefined as unknown as CacheStorage)).toBeNull();
+  it('returns an empty list for an empty cache', async () => {
+    const { storage } = createCacheStorage();
+    expect(await takeSharedImages(storage)).toEqual([]);
+  });
+
+  it('returns an empty list on the second call', async () => {
+    const { storage, entries } = createCacheStorage();
+    entries.set(KEY, new Response(new Blob(['abc'], { type: 'image/jpeg' }), { headers: { 'Content-Type': 'image/jpeg' } }));
+
+    expect(await takeSharedImages(storage)).toHaveLength(1);
+    expect(await takeSharedImages(storage)).toEqual([]);
+  });
+
+  it('returns an empty list when the cache storage is unavailable', async () => {
+    expect(await takeSharedImages(undefined as unknown as CacheStorage)).toEqual([]);
   });
 
   it('uses the share-target cache', () => {
@@ -48,40 +63,40 @@ describe('takeSharedImage', () => {
 
   it('decodes the URI encoded file name of the service worker', async () => {
     const { storage, entries } = createCacheStorage();
-    entries.set(SHARED_IMAGE_KEY, new Response(new Blob(['abc'], { type: 'image/jpeg' }), {
+    entries.set(KEY, new Response(new Blob(['abc'], { type: 'image/jpeg' }), {
       headers: { 'Content-Type': 'image/jpeg', 'X-File-Name': encodeURIComponent('Kassabon 🧾 ä.jpg') }
     }));
 
-    expect((await takeSharedImage(storage))!.name).toBe('Kassabon 🧾 ä.jpg');
+    expect((await takeSharedImages(storage))[0].name).toBe('Kassabon 🧾 ä.jpg');
   });
 
   it('keeps a name that is not URI encoded', async () => {
     const { storage, entries } = createCacheStorage();
-    entries.set(SHARED_IMAGE_KEY, new Response(new Blob(['abc'], { type: 'image/jpeg' }), { headers: { 'X-File-Name': '100%.jpg' } }));
+    entries.set(KEY, new Response(new Blob(['abc'], { type: 'image/jpeg' }), { headers: { 'X-File-Name': '100%.jpg' } }));
 
-    expect((await takeSharedImage(storage))!.name).toBe('100%.jpg');
+    expect((await takeSharedImages(storage))[0].name).toBe('100%.jpg');
   });
 
   it('does not assume JPEG for a file shared without MIME type', async () => {
     const { storage, entries } = createCacheStorage();
-    entries.set(SHARED_IMAGE_KEY, new Response(new Blob(['abc'])));
+    entries.set(KEY, new Response(new Blob(['abc'])));
 
-    const file = await takeSharedImage(storage);
+    const [file] = await takeSharedImages(storage);
 
-    expect(file!.type).toBe('application/octet-stream');
-    expect(file!.name).toBe('shared-image');
+    expect(file.type).toBe('application/octet-stream');
+    expect(file.name).toBe('shared-image');
   });
 
-  it('hands an untyped photo to the scan as decodable image (compressImage → JPEG)', async () => {
+  it('hands an untyped photo on as decodable image (compressImage → JPEG)', async () => {
     const canvas = document.createElement('canvas');
     canvas.width = 20;
     canvas.height = 10;
     canvas.getContext('2d')!.fillRect(0, 0, 20, 10);
     const png = await new Promise<Blob>(resolve => canvas.toBlob(b => resolve(b!), 'image/png'));
     const { storage, entries } = createCacheStorage();
-    entries.set(SHARED_IMAGE_KEY, new Response(new Blob([png])));
+    entries.set(KEY, new Response(new Blob([png])));
 
-    const compressed = await compressImage((await takeSharedImage(storage))!);
+    const compressed = await compressImage((await takeSharedImages(storage))[0]);
 
     expect(compressed.type).toBe('image/jpeg');
   });

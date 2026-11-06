@@ -1,12 +1,5 @@
 <form class="page" [formGroup]="form" #formDirective="ngForm" (ngSubmit)="onSubmit()">
   <div class="form-body">
-    @if (prefill.notice === 'analysis-failed') {
-      <div class="notice" role="status">
-        <mat-icon aria-hidden="true">info</mat-icon>
-        <span>Die Rechnung konnte nicht gelesen werden. Bitte die Felder ausfüllen.</span>
-      </div>
-    }
-
     <label class="field" [class.invalid]="form.controls.price | showError: formDirective">
       <span class="field-label">Preis</span>
       <span class="field-box">

@@ -3,13 +3,15 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, of, throwError } from 'rxjs';
+import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { OverlayBackService } from 'src/app/core/overlay/overlay-back.service';
 import { BillContextService } from 'src/app/features/bill/services/bill-context.service';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { QuickEntryService } from '../../quick-entry/quick-entry.service';
-import { ScanService } from '../../scan/scan.service';
+import { AnalysisUploadService } from 'src/app/features/bill-analysis/services/analysis-upload.service';
+import { SHARED_IMAGE_CACHE, SHARED_IMAGE_FAILED, sharedImageKey } from '../../scan/shared-image';
 import { BillListComponent } from './bill-list.component';
 
 function bill(id: string, date: Date, price: number): BillDto {
@@ -39,8 +41,14 @@ describe('BillListComponent', () => {
   /** zuletzt beim OverlayBackService angemeldete Schließen-Funktion (Zurück-Taste) */
   let backClose: (() => void) | null;
 
+  let uploadAll: ReturnType<typeof vi.fn>;
+  let queryParams: Record<string, string>;
+  let openFromComponent: ReturnType<typeof vi.spyOn>;
+
   beforeEach(async () => {
     backClose = null;
+    uploadAll = vi.fn();
+    queryParams = {};
     bills$ = new BehaviorSubject<BillDto[]>([
       bill('b1', new Date(2026, 10, 5), 48.2),
       bill('b2', new Date(2026, 10, 1, 0, 30), 185.9),
@@ -80,12 +88,12 @@ describe('BillListComponent', () => {
         { provide: BillCategoryContextService, useValue: { categories: () => of([]) } },
         { provide: ConfirmationDialogService, useValue: { openDialog: openConfirmation } },
         { provide: QuickEntryService, useValue: { open: vi.fn() } },
-        { provide: ScanService, useValue: { start: vi.fn() } },
+        { provide: AnalysisUploadService, useValue: { uploadAll } },
         { provide: OverlayBackService, useValue: { register: (close: () => void) => { backClose = close; return () => undefined; } } },
-        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap({}) } } }
+        { provide: ActivatedRoute, useValue: { snapshot: { get queryParamMap() { return convertToParamMap(queryParams); } } } }
       ]
     });
-    vi.spyOn(TestBed.inject(MatSnackBar), 'openFromComponent').mockReturnValue(undefined as never);
+    openFromComponent = vi.spyOn(TestBed.inject(MatSnackBar), 'openFromComponent').mockReturnValue(undefined as never);
     vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
 
     fixture = TestBed.createComponent(BillListComponent);
@@ -127,6 +135,66 @@ describe('BillListComponent', () => {
     row.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true }));
     await settle();
   }
+
+  describe('async scan and share target', () => {
+    async function openListWith(query: Record<string, string>): Promise<void> {
+      queryParams = query;
+      fixture = TestBed.createComponent(BillListComponent);
+      host = fixture.nativeElement;
+      await settle();
+      // handleLaunchIntent: Parameter entfernen, dann handeln
+      await vi.waitFor(() => expect(TestBed.inject(Router).navigate).toHaveBeenCalled());
+      await settle();
+    }
+
+    it('camera input allows multiple and has no capture; choosing 3 files starts one upload of 3', () => {
+      const input = host.querySelector<HTMLInputElement>('input[type="file"]')!;
+      expect(input.multiple).toBe(true);
+      expect(input.hasAttribute('capture')).toBe(false);
+
+      const transfer = new DataTransfer();
+      ['a', 'b', 'c'].forEach(name => transfer.items.add(new File([name], `${name}.jpg`, { type: 'image/jpeg' })));
+      input.files = transfer.files;
+      input.dispatchEvent(new Event('change'));
+
+      expect(uploadAll).toHaveBeenCalledTimes(1);
+      expect((uploadAll.mock.calls[0][0] as File[]).map(f => f.name)).toEqual(['a.jpg', 'b.jpg', 'c.jpg']);
+    });
+
+    it('no scan overlay or synchronous analyze call remains', async () => {
+      const input = host.querySelector<HTMLInputElement>('input[type="file"]')!;
+      const transfer = new DataTransfer();
+      transfer.items.add(new File(['a'], 'a.jpg', { type: 'image/jpeg' }));
+      input.files = transfer.files;
+      input.dispatchEvent(new Event('change'));
+      await settle();
+
+      expect(document.querySelector('app-scan-overlay, .andaha-scan')).toBeNull();
+      expect('analyzeBill' in BillApiService.prototype).toBe(false);
+      expect(TestBed.inject(Router).navigate).not.toHaveBeenCalledWith(['/bill/create'], expect.anything());
+    });
+
+    it('?shared=1 uploads all shared images from the cache', async () => {
+      const cache = await caches.open(SHARED_IMAGE_CACHE);
+      await cache.put(sharedImageKey(0), new Response(new Blob(['1'], { type: 'image/jpeg' }), { headers: { 'Content-Type': 'image/jpeg', 'X-File-Name': 'a.jpg' } }));
+      await cache.put(sharedImageKey(1), new Response(new Blob(['2'], { type: 'image/jpeg' }), { headers: { 'Content-Type': 'image/jpeg', 'X-File-Name': 'b.jpg' } }));
+
+      await openListWith({ shared: '1' });
+      await vi.waitFor(() => expect(uploadAll).toHaveBeenCalled());
+
+      expect((uploadAll.mock.calls[0][0] as File[]).map(f => f.name)).toEqual(['a.jpg', 'b.jpg']);
+      expect(await cache.match(sharedImageKey(0))).toBeUndefined();
+      expect(await cache.match(sharedImageKey(1))).toBeUndefined();
+    });
+
+    it('?shared=0 shows the existing failure snackbar', async () => {
+      await openListWith({ shared: '0' });
+
+      await vi.waitFor(() => expect(openFromComponent).toHaveBeenCalled());
+      expect(JSON.stringify(openFromComponent.mock.calls[0][1])).toContain(SHARED_IMAGE_FAILED);
+      expect(uploadAll).not.toHaveBeenCalled();
+    });
+  });
 
   it('no total line above the list', () => {
     expect(host.querySelector('.sum')).toBeNull();

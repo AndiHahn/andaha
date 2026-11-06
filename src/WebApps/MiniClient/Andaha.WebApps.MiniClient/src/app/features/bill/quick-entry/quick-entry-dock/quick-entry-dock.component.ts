@@ -21,8 +21,8 @@ export class QuickEntryDockComponent implements OnInit {
   @Input() layout: 'mobile' | 'desktop' = 'mobile';
 
   @Output() readonly openEntry = new EventEmitter<void>();
-  /** Foto für den Scan gewählt (Kamera-Knopf mobil, „Scannen“ am Desktop) */
-  @Output() readonly scan = new EventEmitter<File>();
+  /** Fotos für die Analyse gewählt (Kamera-Knopf mobil, „Scannen“ am Desktop); mehrere auf einmal möglich */
+  @Output() readonly scan = new EventEmitter<File[]>();
 
   private readonly root = inject(DOCUMENT).documentElement;
   private readonly destroyRef = inject(DestroyRef);
@@ -35,11 +35,11 @@ export class QuickEntryDockComponent implements OnInit {
   }
 
   onPhotoChosen(fileInput: HTMLInputElement): void {
-    const file = fileInput.files?.[0];
-    // gleiche Datei erneut wählbar machen
+    const files = Array.from(fileInput.files ?? []);
+    // gleiche Dateien erneut wählbar machen
     fileInput.value = '';
-    if (file) {
-      this.scan.emit(file);
+    if (files.length > 0) {
+      this.scan.emit(files);
     }
   }
 }

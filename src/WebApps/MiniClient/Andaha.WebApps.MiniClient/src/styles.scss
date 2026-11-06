@@ -929,25 +929,7 @@ body .cdk-drag-preview.andaha-drag-item {
   }
 }
 
-// Scan-Ladezustand (ScanService): Vollbild ohne Rundung und Schatten, Grund bg
-.cdk-overlay-container .andaha-scan {
-  .mat-mdc-dialog-container {
-    --mat-dialog-container-shape: 0;
-    --mat-dialog-container-color: var(--bg);
-    --mat-dialog-container-max-width: 100vw;
-    --mat-dialog-container-small-max-width: 100vw;
-    --mat-dialog-container-min-width: 0;
-    --mat-dialog-container-elevation-shadow: none;
-    color: var(--fg);
-  }
 
-  .mdc-dialog__surface {
-    display: flex;
-    flex-direction: column;
-
-    > * { flex: 1 1 auto; min-height: 0; }
-  }
-}
 
 // Zeitauswahl (ngx-mat-timepicker 15, MDC-Buttons) wie mit Material 14 --------------
 .cdk-overlay-container .ngx-mat-timepicker-dialog {

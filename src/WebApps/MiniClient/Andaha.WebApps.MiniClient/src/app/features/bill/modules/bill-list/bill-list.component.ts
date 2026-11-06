@@ -16,10 +16,10 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BillListItemComponent } from './bill-list-item/bill-list-item.component';
 import { QuickEntryDockComponent } from '../../quick-entry/quick-entry-dock/quick-entry-dock.component';
 import { QuickEntryService } from '../../quick-entry/quick-entry.service';
-import { ScanService } from '../../scan/scan.service';
+import { AnalysisUploadService } from 'src/app/features/bill-analysis/services/analysis-upload.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
-import { SHARED_IMAGE_FAILED, readLaunchIntent, takeSharedImage } from '../../scan/shared-image';
+import { SHARED_IMAGE_FAILED, readLaunchIntent, takeSharedImages } from '../../scan/shared-image';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { LoadState, LoadStateComponent } from 'src/app/shared/load-state/load-state.component';
 import { groupByMonth, monthStart } from 'src/app/shared/utils/month-groups';
@@ -49,7 +49,7 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   private billContextService = inject(BillContextService);
   private breakpointObserver = inject(BreakpointObserver);
   private quickEntry = inject(QuickEntryService);
-  private scanService = inject(ScanService);
+  private analysisUpload = inject(AnalysisUploadService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private snackbar = inject(MatSnackBar);
@@ -138,9 +138,9 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
     this.quickEntry.open();
   }
 
-  // Kamera-Knopf (mobil) bzw. „Scannen“ (Desktop): Scan-Ablauf mit dem gewählten Foto (AC30)
-  onScan(photo: File): void {
-    void this.scanService.start(photo);
+  // Kamera-Knopf (mobil) bzw. „Scannen“ (Desktop): alle gewählten Fotos asynchron analysieren lassen
+  onScan(photos: File[]): void {
+    this.analysisUpload.uploadAll(photos);
   }
 
   ngOnDestroy(): void {
@@ -255,7 +255,7 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // App-Shortcut „Rechnung eintragen“ (/bill/list?quick=1) und Share Target (/bill/list?shared=1 bzw. =0):
   // Parameter erst entfernen (replaceUrl), dann handeln, sonst ersetzt die Navigation den History-Eintrag
-  // des Sheets (OverlayBackService) bzw. die Scan-Navigation. Ein geteiltes Bild wird auch ohne
+  // des Sheets (OverlayBackService). Geteilte Bilder werden auch ohne
   // Parameter abgeholt (z. B. wenn der Login-Redirect ?shared=1 verloren hat); der Cache-Eintrag
   // überlebt den Redirect und wird beim ersten Öffnen der Liste genau einmal verarbeitet.
   private handleLaunchIntent(): void {
@@ -272,9 +272,9 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
       if (shared === 'failed') {
         openErrorSnackbar(SHARED_IMAGE_FAILED, this.snackbar);
       }
-      const image = await takeSharedImage();
-      if (image) {
-        await this.scanService.start(image);
+      const images = await takeSharedImages();
+      if (images.length > 0) {
+        this.analysisUpload.uploadAll(images);
       }
     });
   }

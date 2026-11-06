@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { NavigationBehaviorOptions, NavigationEnd, NavigationSkipped, NavigationStart, Router, Event as RouterEvent } from '@angular/router';
 import { Subject } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
-import { ScanService } from 'src/app/features/bill/scan/scan.service';
+import { PrefillImageStore } from 'src/app/features/bill/services/prefill-image-store.service';
 import { OverlayBackService } from '../overlay/overlay-back.service';
 import { HistoryTrailService } from './history-trail.service';
 
@@ -257,11 +257,11 @@ describe('leaving a page (HistoryTrailService + OverlayBackService)', () => {
   // Phase 4 F1: Formular aus dem Scan (Foto als Vorbelegung), Kategorie per Auswahl, dann Speichern
   // mit offenem Shop-Autocomplete: genau ein Listen-Eintrag, der nächste Zurück-Druck verlässt die Liste
   it('leaves a scanned form with a photo to the list after a select was used', async () => {
-    // ohne Netz geht der Scan ohne Overlay gleich ins Formular (Foto + Hinweis)
-    vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
     await router.navigateByUrl('/more');
     await router.navigateByUrl('/bill/list');
-    await TestBed.inject(ScanService).start(await png(20, 20));
+    // Formular mit Foto als Vorbelegung (Foto im Speicher, nur der Schlüssel im Router-State)
+    const imageKey = TestBed.inject(PrefillImageStore).put(await png(20, 20));
+    await router.navigate(['/bill/create'], { state: { prefill: { imageKey } } });
     expect(router.url).toBe('/bill/create');
     expect(fake.index).toBe(2);
 

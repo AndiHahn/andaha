@@ -1,4 +1,4 @@
-import { SHARED_IMAGE_KEY, takeSharedImage } from './shared-image';
+import { sharedImageKey, takeSharedImages } from './shared-image';
 
 type FetchHandler = (event: { request: Request; respondWith: (response: Promise<Response>) => void }) => void;
 
@@ -26,11 +26,9 @@ describe('custom-sw.js share target', () => {
     stored.clear();
   });
 
-  async function share(file?: File): Promise<Response> {
+  async function share(...files: File[]): Promise<Response> {
     const body = new FormData();
-    if (file) {
-      body.append('image', file);
-    }
+    files.forEach(file => body.append('image', file));
     let result: Promise<Response> | undefined;
     fetchHandler({
       request: new Request(new URL('/share-target?ngsw-bypass=true', location.origin), { method: 'POST', body }),
@@ -53,28 +51,44 @@ describe('custom-sw.js share target', () => {
 
     expect(response.status).toBe(303);
     expect(response.headers.get('Location')).toMatch(/\/bill\/list\?shared=1$/);
-    const file = await takeSharedImage(cachedEntry());
-    expect(file!.name).toBe('beleg.png');
-    expect(file!.type).toBe('image/png');
+    const [file] = await takeSharedImages(cachedEntry());
+    expect(file.name).toBe('beleg.png');
+    expect(file.type).toBe('image/png');
+  });
+
+  it('stores and hands on all shared images, skipping unusable files', async () => {
+    const response = await share(
+      new File(['1'], 'a.jpg', { type: 'image/jpeg' }),
+      new File(['hallo'], 'notiz.txt', { type: 'text/plain' }),
+      new File(['22'], 'Rechnung 🧾 東京.jpg', { type: 'image/jpeg' }),
+      new File(['333'], 'IMG_0003', { type: '' })
+    );
+
+    expect(response.headers.get('Location')).toMatch(/shared=1$/);
+    expect(stored.size).toBe(3);
+    const files = await takeSharedImages(cachedEntry());
+    expect(files.map(f => f.name)).toEqual(['a.jpg', 'Rechnung 🧾 東京.jpg', 'IMG_0003']);
+    expect(files.map(f => f.size)).toEqual([1, 2, 3]);
+    expect(stored.size).toBe(0);
   });
 
   it('keeps a file name outside Latin-1 (emoji, CJK)', async () => {
     const response = await share(new File(['jpg'], 'Rechnung 🧾 東京.jpg', { type: 'image/jpeg' }));
 
     expect(response.headers.get('Location')).toMatch(/shared=1$/);
-    expect(stored.has(SHARED_IMAGE_KEY)).toBe(true);
-    const file = await takeSharedImage(cachedEntry());
-    expect(file!.name).toBe('Rechnung 🧾 東京.jpg');
+    expect(stored.has(sharedImageKey(0))).toBe(true);
+    const [file] = await takeSharedImages(cachedEntry());
+    expect(file.name).toBe('Rechnung 🧾 東京.jpg');
   });
 
-  it('accepts a file without MIME type and leaves the check to the scan', async () => {
+  it('accepts a file without MIME type and leaves the check to the image preparation', async () => {
     const response = await share(new File(['jpg'], 'IMG_0001', { type: '' }));
 
     expect(response.headers.get('Location')).toMatch(/shared=1$/);
-    const file = await takeSharedImage(cachedEntry());
-    expect(file!.size).toBe(3);
-    // kein angenommenes JPEG: compressImage kodiert neu bzw. der Scan meldet „nicht lesbar“
-    expect(file!.type).not.toBe('image/jpeg');
+    const [file] = await takeSharedImages(cachedEntry());
+    expect(file.size).toBe(3);
+    // kein angenommenes JPEG: compressImage kodiert neu
+    expect(file.type).not.toBe('image/jpeg');
   });
 
   it('reports a share without usable file with shared=0 instead of dropping it silently', async () => {

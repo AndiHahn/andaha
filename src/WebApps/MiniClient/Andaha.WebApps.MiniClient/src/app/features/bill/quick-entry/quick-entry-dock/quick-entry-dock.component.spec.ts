@@ -17,7 +17,7 @@ describe('QuickEntryDockComponent', () => {
     return host.querySelector<HTMLInputElement>('input[type="file"]')!;
   }
 
-  it('mobil: Kamera-Knopf öffnet die native Kamera', () => {
+  it('mobil: Kamera-Knopf öffnet die Foto-Auswahl, mehrere Fotos, ohne capture', () => {
     setup('mobile');
     const click = vi.spyOn(fileInput(), 'click').mockImplementation(() => undefined);
 
@@ -25,7 +25,8 @@ describe('QuickEntryDockComponent', () => {
 
     expect(click).toHaveBeenCalled();
     expect(fileInput().accept).toBe('image/*');
-    expect(fileInput().getAttribute('capture')).toBe('environment');
+    expect(fileInput().multiple).toBe(true);
+    expect(fileInput().hasAttribute('capture')).toBe(false);
   });
 
   it('Desktop: „Scannen“ neben der Eingabezeile öffnet die Foto-Auswahl', () => {
@@ -39,18 +40,25 @@ describe('QuickEntryDockComponent', () => {
     expect(click).toHaveBeenCalled();
   });
 
-  it('gewähltes Foto startet den Scan', () => {
+  it('Desktop: der Eingabe-Input erlaubt ebenfalls mehrere Fotos', () => {
+    setup('desktop');
+
+    expect(fileInput().multiple).toBe(true);
+    expect(fileInput().hasAttribute('capture')).toBe(false);
+  });
+
+  it('gewählte Fotos werden gemeinsam gemeldet', () => {
     setup('mobile');
-    const emitted: File[] = [];
-    fixture.componentInstance.scan.subscribe(file => emitted.push(file));
-    const photo = new File(['x'], 'photo.jpg', { type: 'image/jpeg' });
+    const emitted: File[][] = [];
+    fixture.componentInstance.scan.subscribe(files => emitted.push(files));
+    const photos = ['a', 'b', 'c'].map(name => new File([name], `${name}.jpg`, { type: 'image/jpeg' }));
     const transfer = new DataTransfer();
-    transfer.items.add(photo);
+    photos.forEach(photo => transfer.items.add(photo));
     fileInput().files = transfer.files;
 
     fileInput().dispatchEvent(new Event('change'));
 
-    expect(emitted).toEqual([photo]);
+    expect(emitted).toEqual([photos]);
     // gleiche Datei erneut wählbar
     expect(fileInput().value).toBe('');
   });
