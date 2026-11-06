@@ -9,6 +9,7 @@ import { getDialogBaseConfig } from 'src/app/shared/dialog/dialog-functions';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { vibrate } from 'src/app/shared/utils/haptics';
 import { BillCacheService } from 'src/app/features/bill/services/bill-cache.service';
+import { BillContextService } from 'src/app/features/bill/services/bill-context.service';
 import { DeleteConfirmDialogComponent } from './delete-confirm-dialog/delete-confirm-dialog.component';
 
 export const DELETE_ALL_CONFIRMATION_TEXT =
@@ -29,6 +30,7 @@ export class UserDataComponent {
   private dialog = inject(MatDialog);
   private snackbar = inject(MatSnackBar);
   private billCacheService = inject(BillCacheService);
+  private billContextService = inject(BillContextService);
 
   /** true, solange gelöscht wird; sperrt den Button */
   readonly deleting = signal(false);
@@ -68,6 +70,8 @@ export class UserDataComponent {
         } catch (error) {
           console.error('Clearing the local bill queue failed', error);
         }
+        // die Liste soll keine Rechnung mehr als „wartet auf Sync“ führen (Detail-404 = nicht vorhanden)
+        this.billContextService.clearPendingSync();
         this.authService.logout();
       },
       error: () => {

@@ -199,7 +199,7 @@ export class BillContextService implements OnDestroy {
     } catch (error) {
       this.pendingSyncIds.delete(dto.id);
       this.bills$.next(this.bills$.value.filter(bill => bill.id != dto.id));
-      this.totalResults$.next(this.totalResults$.value - 1);
+      this.totalResults$.next(Math.max(0, this.totalResults$.value - 1));
       this.adjustSums(billDto.date, -billDto.price);
       throw error;
     }
@@ -293,10 +293,6 @@ export class BillContextService implements OnDestroy {
   }
 
   /**
-   * Rechnung, die es am Server nicht mehr gibt (Detail-GET 404): aus der Liste nehmen, und auch eine spätere,
-   * veraltete Listenantwort bringt sie nicht zurück.
-   */
-/**
    * Lädt Seite 0 der aktuellen Suche (Suchtext und Filter bleiben) und ergänzt die Liste nur: nichts wird
    * abgeschnitten, die Seitenposition bleibt, lokale noch nicht übertragene Rechnungen bleiben stehen.
    * Für neu angelegte Rechnungen von außen (automatisch aus der Analyse).
@@ -310,6 +306,15 @@ export class BillContextService implements OnDestroy {
     return this.pendingSyncIds.has(id);
   }
 
+  /** Lokaler Speicher wurde geleert (Benutzerdaten gelöscht): keine Rechnung wartet mehr auf den Sync */
+  clearPendingSync(): void {
+    this.pendingSyncIds.clear();
+  }
+
+  /**
+   * Rechnung, die es am Server nicht mehr gibt (Detail-GET 404): aus der Liste nehmen, und auch eine spätere,
+   * veraltete Listenantwort bringt sie nicht zurück.
+   */
   forgetBill(id: string): void {
     this.deletedIds.add(id);
 

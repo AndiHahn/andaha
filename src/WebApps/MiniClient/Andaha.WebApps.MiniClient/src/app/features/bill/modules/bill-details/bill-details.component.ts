@@ -108,12 +108,17 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
 
   private loadLineItems(billId: string): void {
     this.initialQuery = this.route.snapshot.queryParamMap.get('q') ?? '';
+    // vor dem Request merken: kommt die Sync-Antwort (POST) vor dem 404 eines vor dem Commit gelesenen GET,
+    // ist die Rechnung beim 404 schon nicht mehr „wartend“, existiert aber
+    const pendingAtStart = this.billContextService.isPendingSync(billId);
     this.billApiService.getBill(billId).pipe(
       catchError(error => {
         // Die Rechnung kam aus der Liste, gibt es am Server aber nicht mehr: wie „unbekannte Rechnung“ behandeln.
-        // Ausnahme: lokal gespeichert und noch nicht übertragen (US-0005), dann kennt der Server sie nur noch nicht.
-        // Andere Fehler: Detail bleibt nutzbar, nur ohne Positionen (kein Editor, lineItems werden nicht gesendet)
-        if (error instanceof HttpErrorResponse && error.status === 404 && !this.billContextService.isPendingSync(billId)) {
+        // Ausnahme: lokal gespeichert und noch nicht übertragen (US-0005), beim Start oder beim 404; dann kennt der
+        // Server sie (noch) nicht. Andere Fehler: Detail bleibt nutzbar, nur ohne Positionen (kein Editor, lineItems
+        // werden nicht gesendet)
+        const pending = pendingAtStart || this.billContextService.isPendingSync(billId);
+        if (error instanceof HttpErrorResponse && error.status === 404 && !pending) {
           this.billContextService.forgetBill(billId);
           leaveDetailNotFound(this.historyTrail, this.snackbar, '/bill/list');
         }

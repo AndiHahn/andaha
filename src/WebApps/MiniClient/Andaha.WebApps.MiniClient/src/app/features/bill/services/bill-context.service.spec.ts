@@ -305,12 +305,24 @@ describe('BillContextService search', () => {
         expect(total).toBe(1);
     });
 
-    it('deleteBill and forgetBill never let the total drop below 0', () => {
+    it('deleteBill never lets the total drop below 0', () => {
         let total = -1;
         service.totalResults().subscribe(t => total = t);
         requests[0].next({ values: [], totalCount: 0 });
 
         service.deleteBill('gone').subscribe();
+        expect(total).toBe(0);
+    });
+
+    it('forgetBill never lets the total drop below 0', () => {
+        let total = -1;
+        service.totalResults().subscribe(t => total = t);
+        // gelistete Rechnung, die Gesamtzahl steht (veraltete Antwort) schon bei 0
+        requests[0].next({ values: [createBill('b1', 2)], totalCount: 0 });
+
+        service.forgetBill('b1');
+
+        expect(currentBills.map(b => b.id)).toEqual([]);
         expect(total).toBe(0);
     });
 
@@ -475,6 +487,31 @@ describe('BillContextService local save and sync', () => {
         billAdded.next();
         await flush();
         expect(service.isPendingSync('n1')).toBe(false);
+    });
+
+    it('clearPendingSync forgets all pending bills (local store cleared)', async () => {
+        await service.addBill(createDto('n1'), category);
+        expect(service.isPendingSync('n1')).toBe(true);
+
+        service.clearPendingSync();
+
+        expect(service.isPendingSync('n1')).toBe(false);
+    });
+
+    it('addBill rollback never lets the total drop below 0', async () => {
+        let rejectSave!: (error: Error) => void;
+        cacheService.saveNewBillLocal.mockReturnValue(new Promise<void>((_, reject) => rejectSave = reject));
+
+        const adding = service.addBill(createDto('n1'), category);
+        expect(totalResults).toBe(1);
+        // eine Listenantwort setzt die Gesamtzahl inzwischen auf 0
+        service.refreshBills();
+        expect(totalResults).toBe(0);
+
+        rejectSave(new Error('quota'));
+        await expect(adding).rejects.toThrow();
+
+        expect(totalResults).toBe(0);
     });
 
     it('a bill still waiting in the local store after a reload counts as pending sync', async () => {

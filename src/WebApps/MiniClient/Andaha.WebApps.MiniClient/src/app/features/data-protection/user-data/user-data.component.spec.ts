@@ -5,6 +5,7 @@ import { Observable, Subject, of, throwError } from 'rxjs';
 import { UserDataApiService } from 'src/app/api/user-data/user-data-api.service';
 import { AuthService } from 'src/app/core/auth.service';
 import { BillCacheService } from 'src/app/features/bill/services/bill-cache.service';
+import { BillContextService } from 'src/app/features/bill/services/bill-context.service';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { DELETE_ALL_FAILED, UserDataComponent } from './user-data.component';
 
@@ -19,6 +20,7 @@ describe('UserDataComponent', () => {
   let logout: ReturnType<typeof vi.fn>;
   let openFromComponent: ReturnType<typeof vi.fn>;
   let clearLocal: ReturnType<typeof vi.fn>;
+  let clearPendingSync: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     firstConfirmed = true;
@@ -29,6 +31,7 @@ describe('UserDataComponent', () => {
     logout = vi.fn();
     openFromComponent = vi.fn();
     clearLocal = vi.fn(() => Promise.resolve());
+    clearPendingSync = vi.fn();
 
     await TestBed.configureTestingModule({
       imports: [UserDataComponent],
@@ -38,7 +41,8 @@ describe('UserDataComponent', () => {
         { provide: UserDataApiService, useValue: { deleteAll } },
         { provide: AuthService, useValue: { logout } },
         { provide: MatSnackBar, useValue: { openFromComponent } },
-        { provide: BillCacheService, useValue: { clearLocal } }
+        { provide: BillCacheService, useValue: { clearLocal } },
+        { provide: BillContextService, useValue: { clearPendingSync } }
       ]
     }).compileComponents();
 
@@ -97,6 +101,21 @@ describe('UserDataComponent', () => {
 
     expect(clearLocal).toHaveBeenCalledTimes(1);
     expect(clearLocal.mock.invocationCallOrder[0]).toBeLessThan(logout.mock.invocationCallOrder[0]);
+  });
+
+  it('success also forgets the pending-sync marks of the bill list', async () => {
+    await clickDelete();
+
+    expect(clearPendingSync).toHaveBeenCalledTimes(1);
+    expect(clearLocal.mock.invocationCallOrder[0]).toBeLessThan(clearPendingSync.mock.invocationCallOrder[0]);
+  });
+
+  it('failure keeps the pending-sync marks', async () => {
+    deleteAll.mockReturnValue(throwError(() => new Error('boom')));
+
+    await clickDelete();
+
+    expect(clearPendingSync).not.toHaveBeenCalled();
   });
 
   it('clearing the local queue fails: still logs out', async () => {

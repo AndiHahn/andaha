@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { of, throwError } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { BillUpdateDto } from 'src/app/api/shopping/dtos/BillUpdateDto';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
@@ -62,7 +62,7 @@ describe('BillDetailsComponent', () => {
         { provide: ConfirmationDialogService, useValue: { openDialog: openConfirmation } },
         {
           provide: BillContextService,
-          useValue: { loadBillById: () => of({ ...bill }), loading: () => of(false), deleteBill, updateBill }
+          useValue: { loadBillById: () => of({ ...bill }), loading: () => of(false), isPendingSync: () => false, deleteBill, updateBill }
         },
         { provide: BillCategoryContextService, useValue: { categories: () => of([]) } }
       ]
@@ -110,7 +110,7 @@ describe('BillDetailsComponent', () => {
         { provide: ConfirmationDialogService, useValue: { openDialog: openConfirmation } },
         {
           provide: BillContextService,
-          useValue: { loadBillById: () => of({ ...bill, isExternal: true }), loading: () => of(false), deleteBill }
+          useValue: { loadBillById: () => of({ ...bill, isExternal: true }), loading: () => of(false), isPendingSync: () => false, deleteBill }
         },
         { provide: BillCategoryContextService, useValue: { categories: () => of([]) } }
       ]
@@ -141,7 +141,7 @@ describe('BillDetailsComponent', () => {
         { provide: BillApiService, useValue: { getBill } },
         { provide: HistoryTrailService, useValue: { leaveTo } },
         { provide: ConfirmationDialogService, useValue: { openDialog: openConfirmation } },
-        { provide: BillContextService, useValue: { loadBillById: () => of({ ...bill }), loading: () => of(false), deleteBill } },
+        { provide: BillContextService, useValue: { loadBillById: () => of({ ...bill }), loading: () => of(false), isPendingSync: () => false, deleteBill } },
         { provide: BillCategoryContextService, useValue: { categories: () => of([]) } }
       ]
     });
@@ -212,6 +212,42 @@ describe('BillDetailsComponent', () => {
     expect(button('Löschen').disabled).toBe(false);
   });
 
+  it('a bill that was pending when the detail request started is not forgotten even if its sync finished before the 404 arrived', () => {
+    TestBed.resetTestingModule();
+    const detail = new Subject<never>();
+    getBill = vi.fn(() => detail.asObservable());
+    const forgetBill = vi.fn();
+    let pending = true;
+    const isPendingSync = vi.fn(() => pending);
+    TestBed.configureTestingModule({
+      imports: [BillDetailsComponent],
+      providers: [
+        { provide: ActivatedRoute, useValue: route() },
+        { provide: BillApiService, useValue: { getBill } },
+        { provide: HistoryTrailService, useValue: { leaveTo } },
+        { provide: ConfirmationDialogService, useValue: { openDialog: openConfirmation } },
+        {
+          provide: BillContextService,
+          useValue: { loadBillById: () => of({ ...bill }), loading: () => of(false), deleteBill, forgetBill, isPendingSync }
+        },
+        { provide: BillCategoryContextService, useValue: { categories: () => of([]) } }
+      ]
+    });
+    vi.spyOn(TestBed.inject(MatSnackBar), 'openFromComponent').mockReturnValue(undefined as never);
+    fixture = TestBed.createComponent(BillDetailsComponent);
+    host = fixture.nativeElement;
+    fixture.detectChanges();
+
+    // die Sync-Antwort (POST) kommt vor dem 404 des Detail-GET, der vor dem Commit gelesen hat
+    pending = false;
+    detail.error(new HttpErrorResponse({ status: 404, statusText: 'Not Found' }));
+    fixture.detectChanges();
+
+    expect(forgetBill).not.toHaveBeenCalled();
+    expect(leaveTo).not.toHaveBeenCalled();
+    expect(host.textContent).toContain('Bäckerei Ströck');
+  });
+
   it('partner bill shows items read-only', () => {
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
@@ -221,7 +257,7 @@ describe('BillDetailsComponent', () => {
         { provide: BillApiService, useValue: { getBill } },
         { provide: HistoryTrailService, useValue: { leaveTo } },
         { provide: ConfirmationDialogService, useValue: { openDialog: openConfirmation } },
-        { provide: BillContextService, useValue: { loadBillById: () => of({ ...bill, isExternal: true }), loading: () => of(false), deleteBill } },
+        { provide: BillContextService, useValue: { loadBillById: () => of({ ...bill, isExternal: true }), loading: () => of(false), isPendingSync: () => false, deleteBill } },
         { provide: BillCategoryContextService, useValue: { categories: () => of([]) } }
       ]
     });
@@ -244,7 +280,7 @@ describe('BillDetailsComponent', () => {
         { provide: BillApiService, useValue: { getBill } },
         { provide: HistoryTrailService, useValue: { leaveTo } },
         { provide: ConfirmationDialogService, useValue: { openDialog: openConfirmation } },
-        { provide: BillContextService, useValue: { loadBillById: () => of({ ...shown }), loading: () => of(false), deleteBill, updateBill } },
+        { provide: BillContextService, useValue: { loadBillById: () => of({ ...shown }), loading: () => of(false), isPendingSync: () => false, deleteBill, updateBill } },
         { provide: BillCategoryContextService, useValue: { categories: () => of([]) } }
       ]
     });
