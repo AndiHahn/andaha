@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, of, throwError } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillAnalyzedDto } from 'src/app/api/shopping/dtos/BillAnalyzedDto';
 import { ContextService } from 'src/app/core/context.service';
@@ -40,5 +40,23 @@ describe('AnalyzedBillContextService', () => {
 
     expect(current.map(b => b.id)).toEqual(['a1', 'a3']);
     expect(service.getBillById('a2')).toBeUndefined();
+  });
+
+  it('refresh({ silent: true }) lädt still: ohne Ladezustand, Fehler ändern die Liste nicht (US-0009)', () => {
+    let current: BillAnalyzedDto[] = [];
+    const loading: boolean[] = [];
+    service.bills().subscribe(bills => current = bills);
+    service.loading().subscribe(value => loading.push(value));
+
+    getAnalyzedBills.mockReturnValueOnce(of([analyzed('a4')]));
+    service.refresh({ silent: true });
+    expect(getAnalyzedBills).toHaveBeenLastCalledWith({ silent: true });
+    expect(current.map(b => b.id)).toEqual(['a4']);
+
+    getAnalyzedBills.mockReturnValueOnce(throwError(() => new Error('offline')));
+    service.refresh({ silent: true });
+    expect(current.map(b => b.id)).toEqual(['a4']);
+
+    expect(loading).toEqual([false]);
   });
 });

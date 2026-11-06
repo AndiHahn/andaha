@@ -158,10 +158,11 @@ export class BillApiService {
   }
 
   /** Alle offenen Analysen; der Endpoint kennt keine Seitenparameter (AC36) */
-  getAnalyzedBills(): Observable<BillAnalyzedDto[]> {
+  getAnalyzedBills(options?: { silent?: boolean }): Observable<BillAnalyzedDto[]> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'analyzed');
 
-    return this.httpClient.get<BillAnalyzedDtoRaw[]>(url)
+    // silent: Abfragen im Takt (US-0009), Fehler ohne globale Snackbar
+    return this.httpClient.get<BillAnalyzedDtoRaw[]>(url, options?.silent ? skipGlobalError() : undefined)
       .pipe(map(raw => raw.map(mapBillAnalyzedDtoRaw)));
   }
 

@@ -164,4 +164,17 @@ describe('BillApiService addBill', () => {
     }]);
     http.verify();
   });
+
+  it('getAnalyzedBills skips the global error snackbar only when silent', () => {
+    const api = TestBed.inject(BillApiService);
+
+    api.getAnalyzedBills().subscribe();
+    expect(http.expectOne(r => r.method === 'GET').request.context.get(SKIP_GLOBAL_ERROR)).toBe(false);
+
+    api.getAnalyzedBills({ silent: true }).subscribe();
+    const silent = http.expectOne(r => r.method === 'GET');
+    expect(new URL(silent.request.url).pathname).toBe('/api/bill/analyzed');
+    expect(silent.request.context.get(SKIP_GLOBAL_ERROR)).toBe(true);
+    http.verify();
+  });
 });

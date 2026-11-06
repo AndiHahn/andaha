@@ -28,7 +28,24 @@ export class AnalyzedBillContextService {
   bills(): Observable<BillAnalyzedDto[]> { return this.bills$.asObservable(); }
   loading(): Observable<boolean> { return this.loading$.asObservable(); }
 
-  refresh() { this.fetchAnalyzedBills(); }
+  /**
+   * Neu laden. `silent` (Abfragen im Takt, US-0009): kein Ladezustand (kein Flackern), Fehler ohne globale
+   * Snackbar und ohne Fehlerzustand; die Liste bleibt dann wie sie ist.
+   */
+  refresh(options?: { silent?: boolean }) {
+    if (options?.silent) {
+      this.billApi.getAnalyzedBills({ silent: true }).subscribe({
+        next: result => {
+          this.bills$.next(result);
+          this.loadState$.next('loaded');
+        },
+        error: () => undefined
+      });
+      return;
+    }
+
+    this.fetchAnalyzedBills();
+  }
 
   /** Eintrag sofort entfernen (nach Verwerfen); der Badge zählt mit */
   remove(id: string): void {

@@ -1,4 +1,4 @@
-import { HttpEventType, HttpRequest, provideHttpClient } from '@angular/common/http';
+import { HttpEventType, HttpRequest, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, TestRequest, provideHttpClientTesting } from '@angular/common/http/testing';
 import { WritableSignal, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
@@ -8,6 +8,9 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { Mock } from 'vitest';
 import { ContextService } from 'src/app/core/context.service';
 import { OnlineStatusService } from 'src/app/core/online-status.service';
+import { errorInterceptor } from 'src/app/core/http/error.interceptor';
+import { SKIP_GLOBAL_ERROR } from 'src/app/core/http/skip-global-error';
+import { compressImage } from 'src/app/shared/utils/image-utils';
 import { AnalysisUploadService } from './analysis-upload.service';
 import { AnalyzedBillContextService } from './analyzed-bill-context.service';
 
@@ -33,6 +36,18 @@ function nextMacrotask(): Promise<void> {
   });
 }
 
+/** Wartet (echte Zeit, höchstens 5 s), bis die nach dem Komprimieren gestarteten Upload-Requests offen sind */
+async function waitForUploadRequests(http: HttpTestingController, count: number): Promise<TestRequest[]> {
+  const requests: TestRequest[] = [];
+  const deadline = performance.now() + 5_000;
+  while (requests.length < count && performance.now() < deadline) {
+    await nextMacrotask();
+    requests.push(...http.match(isUpload));
+  }
+  expect(requests.length).toBe(count);
+  return requests;
+}
+
 describe('AnalysisUploadService', () => {
   let service: AnalysisUploadService;
   let http: HttpTestingController;
@@ -45,14 +60,8 @@ describe('AnalysisUploadService', () => {
   let visibility: DocumentVisibilityState;
 
   /** Wartet, bis die (nach dem Komprimieren gestarteten) Upload-Requests offen sind */
-  async function uploadRequests(count: number): Promise<TestRequest[]> {
-    const requests: TestRequest[] = [];
-    for (let i = 0; i < 200 && requests.length < count; i++) {
-      await nextMacrotask();
-      requests.push(...http.match(isUpload));
-    }
-    expect(requests.length).toBe(count);
-    return requests;
+  function uploadRequests(count: number): Promise<TestRequest[]> {
+    return waitForUploadRequests(http, count);
   }
 
   function accept(request: TestRequest, id: string): void {
@@ -101,9 +110,12 @@ describe('AnalysisUploadService', () => {
   });
 
   afterEach(() => {
-    http.verify();
-    vi.useRealTimers();
-    vi.restoreAllMocks();
+    try {
+      http.verify();
+    } finally {
+      vi.useRealTimers();
+      vi.restoreAllMocks();
+    }
   });
 
   it('sets upload progress from UploadProgress events and links the server id', async () => {
@@ -190,6 +202,7 @@ describe('AnalysisUploadService', () => {
     vi.advanceTimersByTime(1);
     answerPoll([pendingRaw('img-1')]);
     expect(refreshAnalyzed).toHaveBeenCalledTimes(1);
+    expect(refreshAnalyzed).toHaveBeenCalledWith({ silent: true });
 
     // 2 Minuten lang unverändert: weiter im 3-Sekunden-Takt
     for (let i = 0; i < 40; i++) {
@@ -320,5 +333,130 @@ describe('AnalysisUploadService', () => {
     expect(snackbarMessages()).toEqual([{ message: '3 Rechnungen werden analysiert', action: 'Anzeigen' }]);
 
     (await uploadRequests(3)).forEach((request, index) => accept(request, `img-${index}`));
+  });
+
+  it('pauses polling while offline and polls once when back online', async () => {
+    service.uploadAll([photo('bon.jpg')]);
+    accept((await uploadRequests(1))[0], 'img-1');
+
+    online.set(false);
+    TestBed.tick();
+    vi.advanceTimersByTime(10 * 60_000);
+    http.expectNone(isPending);
+
+    // auch das Zurückkommen in den Vordergrund fragt ohne Verbindung nicht ab
+    setVisibility('hidden');
+    setVisibility('visible');
+    http.expectNone(isPending);
+
+    online.set(true);
+    TestBed.tick();
+    answerPoll([pendingRaw('img-1')]);
+
+    vi.advanceTimersByTime(3_000);
+    answerPoll([pendingRaw('img-1')]);
+  });
+
+  it('creates no poll timer after destroy', async () => {
+    service.uploadAll([photo('bon.jpg')]);
+    accept((await uploadRequests(1))[0], 'img-1');
+    vi.advanceTimersByTime(3_000);
+    const inFlight = http.expectOne(isPending);
+
+    TestBed.resetTestingModule(); // zerstört den Root-Injector samt Dienst
+    expect(vi.getTimerCount()).toBe(0);
+
+    // die noch laufende Abfrage endet nach dem Zerstören: kein neuer Timer
+    inFlight.flush([pendingRaw('img-1')]);
+    http.match(isToday).forEach(request => request.flush([]));
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('compresses with long edge 1600 and quality 0.8 before uploading', async () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 2400;
+    canvas.height = 1200;
+    const context = canvas.getContext('2d')!;
+    const pixels = context.createImageData(canvas.width, canvas.height);
+    for (let i = 0; i < pixels.data.length; i++) {
+      pixels.data[i] = (i * 7919) % 256; // Muster: JPEG-Größe hängt deutlich von der Qualität ab
+    }
+    context.putImageData(pixels, 0, 0);
+    const blob = await new Promise<Blob>(resolve => canvas.toBlob(b => resolve(b!), 'image/png'));
+    const source = new File([blob], 'gross.png', { type: 'image/png' });
+
+    service.uploadAll([source]);
+    const [request] = await uploadRequests(1);
+    const sent = (request.request.body as FormData).get('file') as File;
+    const expected = await compressImage(source, 1600, 0.8);
+
+    expect(sent.type).toBe('image/jpeg');
+    const bitmap = await createImageBitmap(sent);
+    expect([bitmap.width, bitmap.height]).toEqual([1600, 800]);
+    bitmap.close();
+    expect(new Uint8Array(await sent.arrayBuffer())).toEqual(new Uint8Array(await expected.arrayBuffer()));
+
+    accept(request, 'img-1');
+  });
+});
+
+describe('AnalysisUploadService polling with the real analyzed list and error interceptor', () => {
+  let http: HttpTestingController;
+  let openFromComponent: Mock;
+
+  const isAnalyzedList = (r: HttpRequest<unknown>) => r.method === 'GET' && new URL(r.url).pathname === '/api/bill/analyzed';
+
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'] });
+    vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible');
+    openFromComponent = vi.fn(() => ({ onAction: () => new Subject<void>() }));
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(withInterceptors([errorInterceptor])),
+        provideHttpClientTesting(),
+        { provide: OnlineStatusService, useValue: { online: signal(true) } },
+        { provide: MatSnackBar, useValue: { openFromComponent } },
+        { provide: Router, useValue: { navigateByUrl: vi.fn() } },
+        { provide: ContextService, useValue: { backendUnreachable: () => false, backendReady: () => new BehaviorSubject(false) } }
+      ]
+    });
+    http = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    try {
+      http.verify();
+    } finally {
+      vi.useRealTimers();
+      vi.restoreAllMocks();
+    }
+  });
+
+  it('an analyzed-list request failing with status 0 during a poll shows no global snackbar and no loading state', async () => {
+    const analyzedBills = TestBed.inject(AnalyzedBillContextService);
+    // der normale (erste) Ladevorgang behält die globale Fehlermeldung
+    http.expectOne(isAnalyzedList).error(new ProgressEvent('error'), { status: 0 });
+    expect(openFromComponent).toHaveBeenCalledTimes(1);
+
+    const loading: boolean[] = [];
+    analyzedBills.loading().subscribe(value => loading.push(value));
+
+    const service = TestBed.inject(AnalysisUploadService);
+    service.uploadAll([photo('bon.jpg')]);
+    expect(openFromComponent).toHaveBeenCalledTimes(2); // Start-Meldung
+
+    const upload = await waitForUploadRequests(http, 1);
+    upload[0].flush({ id: 'img-1' }, { status: 202, statusText: 'Accepted' });
+
+    vi.advanceTimersByTime(3_000);
+    http.expectOne(isPending).flush([pendingRaw('img-1')]);
+    const listRequest = http.expectOne(isAnalyzedList);
+    expect(listRequest.request.context.get(SKIP_GLOBAL_ERROR)).toBe(true);
+    listRequest.error(new ProgressEvent('error'), { status: 0 });
+    http.expectOne(isToday).flush([]);
+
+    expect(openFromComponent).toHaveBeenCalledTimes(2);
+    expect(loading).toEqual([false]);
   });
 });

@@ -1,5 +1,5 @@
 import { HttpEvent, HttpEventType } from '@angular/common/http';
-import { DestroyRef, Injectable, Signal, computed, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, Signal, computed, effect, inject, signal, untracked } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Observable, Subject, Subscription, catchError, filter, finalize, from, map, of, switchMap, take } from 'rxjs';
@@ -98,18 +98,31 @@ export class AnalysisUploadService {
   private pollTimer: ReturnType<typeof setTimeout> | undefined;
   private lastChangeAt = Date.now();
   private lastPollSignature = '';
+  private destroyed = false;
 
   constructor() {
-    const onVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
+    // zurück im Vordergrund bzw. wieder online: sofort abfragen; verdeckt bzw. offline: pausieren
+    const resumeOrPause = () => {
+      if (!this.canPoll()) {
         this.clearPollTimer();
       } else if (this.hasRunningWork()) {
         this.poll();
       }
     };
-    document.addEventListener('visibilitychange', onVisibilityChange);
+    document.addEventListener('visibilitychange', resumeOrPause);
+
+    let wasOnline = this.onlineStatus.online();
+    effect(() => {
+      const online = this.onlineStatus.online();
+      if (online !== wasOnline) {
+        wasOnline = online;
+        untracked(resumeOrPause);
+      }
+    });
+
     inject(DestroyRef).onDestroy(() => {
-      document.removeEventListener('visibilitychange', onVisibilityChange);
+      this.destroyed = true;
+      document.removeEventListener('visibilitychange', resumeOrPause);
       this.clearPollTimer();
     });
 
@@ -181,7 +194,7 @@ export class AnalysisUploadService {
   }
 
   private startQueuedUploads(): void {
-    while (this.running.size < MAX_PARALLEL_UPLOADS && this.queue.length > 0) {
+    while (!this.destroyed && this.running.size < MAX_PARALLEL_UPLOADS && this.queue.length > 0) {
       this.startUpload(this.queue.shift()!);
     }
   }
@@ -232,7 +245,8 @@ export class AnalysisUploadService {
       catchError(() => of(null)),
       switchMap(pending => {
         if (reloadAnalyzedBills) {
-          this.analyzedBills.refresh();
+          // still: kein Ladezustand, keine globale Snackbar im 3-Sekunden-Takt (Review Focus 1)
+          this.analyzedBills.refresh({ silent: true });
         }
         return this.billApi.getTodayAutoCreated().pipe(
           catchError(() => of(null)),
@@ -285,9 +299,10 @@ export class AnalysisUploadService {
   }
 
   private schedulePoll(): void {
-    if (this.pollTimer !== undefined
+    if (this.destroyed
+      || this.pollTimer !== undefined
       || this.pollsInFlight > 0
-      || document.visibilityState === 'hidden'
+      || !this.canPoll()
       || !this.hasRunningWork()) {
       return;
     }
@@ -295,8 +310,15 @@ export class AnalysisUploadService {
     const interval = Date.now() - this.lastChangeAt >= SLOW_DOWN_AFTER_MS ? SLOW_POLL_MS : FAST_POLL_MS;
     this.pollTimer = setTimeout(() => {
       this.pollTimer = undefined;
-      this.poll();
+      if (this.canPoll()) {
+        this.poll();
+      }
     }, interval);
+  }
+
+  /** Kein Abfragen im Hintergrund (App verdeckt) und ohne Verbindung */
+  private canPoll(): boolean {
+    return document.visibilityState !== 'hidden' && this.onlineStatus.online();
   }
 
   private clearPollTimer(): void {
