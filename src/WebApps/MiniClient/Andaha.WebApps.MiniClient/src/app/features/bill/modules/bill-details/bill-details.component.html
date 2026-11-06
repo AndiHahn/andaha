@@ -38,6 +38,7 @@
             <span class="notes-text">{{ bill.notes }}</span>
           </div>
         }
+        <app-line-items-view [items]="lineItems" [price]="bill.price" [initialQuery]="initialQuery" />
       }
       <!--
       BEARBEITEN: FORMULAR

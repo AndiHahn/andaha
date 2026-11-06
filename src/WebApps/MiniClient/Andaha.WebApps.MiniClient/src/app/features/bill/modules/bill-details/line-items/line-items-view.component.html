@@ -1,0 +1,28 @@
+@if (items().length) {
+  <p class="sec">Positionen</p>
+  @if (showFilter()) {
+    <label class="field filter">
+      <span class="field-box">
+        <input type="search" autocomplete="off" aria-label="Positionen durchsuchen" placeholder="Positionen durchsuchen"
+          [value]="query()" (input)="query.set($any($event.target).value)">
+      </span>
+    </label>
+  }
+  <ul class="items">
+    @for (row of rows(); track row.item.id) {
+      <li class="line-item" [class.match]="row.match">
+        <span class="desc">
+          {{ row.item.description || '–' }}
+          @if (row.item.quantity != null && row.item.unitPrice != null) {
+            <span class="qty">{{ row.item.quantity | number:'1.0-3':'de' }} × {{ row.item.unitPrice | number:'1.2-2':'de' }} €</span>
+          }
+        </span>
+        <span class="amt" [class.neg]="(row.item.totalPrice ?? 0) < 0">{{ row.item.totalPrice != null ? (row.item.totalPrice | number:'1.2-2':'de') : '–' }}<small>€</small></span>
+      </li>
+    }
+  </ul>
+  <p class="sum">Summe der Positionen: {{ sum() | number:'1.2-2':'de' }} €</p>
+  @if (deviates()) {
+    <p class="deviation">Weicht vom Rechnungsbetrag ab ({{ price() | number:'1.2-2':'de' }} €)</p>
+  }
+}

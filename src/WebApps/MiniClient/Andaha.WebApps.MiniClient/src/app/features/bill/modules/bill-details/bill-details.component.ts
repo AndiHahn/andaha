@@ -5,7 +5,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { vibrate } from 'src/app/shared/utils/haptics';
 import { duplicatePrefill } from '../../functions/duplicate-prefill';
-import { Subject, takeUntil } from 'rxjs';
+import { EMPTY, Subject, catchError, takeUntil } from 'rxjs';
+import { BillApiService } from 'src/app/api/shopping/bill-api.service';
+import { BillLineItemDto } from 'src/app/api/shopping/dtos/BillLineItemDto';
+import { LineItemsViewComponent } from './line-items/line-items-view.component';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { BillUpdateDto } from 'src/app/api/shopping/dtos/BillUpdateDto';
@@ -35,7 +38,7 @@ import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
     styleUrls: ['./bill-details.component.scss'],
     providers: GERMAN_DATE_PROVIDERS,
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [PanelBackDirective, BillImageComponent, FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, MatOption, MatIcon, MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker, MatProgressBar, MatProgressSpinner, DecimalPipe, DatePipe, ShowErrorPipe]
+    imports: [PanelBackDirective, BillImageComponent, FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, MatOption, MatIcon, MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker, MatProgressBar, MatProgressSpinner, DecimalPipe, DatePipe, ShowErrorPipe, LineItemsViewComponent]
 })
 export class BillDetailsComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
@@ -45,6 +48,7 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
   private confirmationDialog = inject(ConfirmationDialogService);
   private billContextService = inject(BillContextService);
   private billCategoryContextService = inject(BillCategoryContextService);
+  private billApiService = inject(BillApiService);
 
 
   form!: FormGroup<BillForm>;
@@ -52,6 +56,10 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
   allCategories?: CategoryDto[];
 
   bill?: BillDto;
+  /** Positionen kommen nur aus GET bill/{id}, die Liste liefert sie leer */
+  lineItems: BillLineItemDto[] = [];
+  /** Suchtext aus `?q=` (Treffer aus der Rechnungssuche) */
+  initialQuery = '';
   billCategories?: BillCategoryDto[];
   billSubCategories?: BillSubCategoryDto[];
   /** Neu gewähltes Foto, wird mit dem nächsten Speichern hochgeladen */
@@ -85,8 +93,17 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
         this.form = getBillForm(bill);
         this.form.disable();
         this.initSubscriptions();
+        this.loadLineItems(billId);
       }
     });
+  }
+
+  private loadLineItems(billId: string): void {
+    this.initialQuery = this.route.snapshot.queryParamMap.get('q') ?? '';
+    this.billApiService.getBill(billId).pipe(
+      catchError(() => EMPTY),
+      takeUntil(this.destroy$)
+    ).subscribe(full => this.lineItems = full.lineItems ?? []);
   }
 
   ngOnDestroy(): void {
