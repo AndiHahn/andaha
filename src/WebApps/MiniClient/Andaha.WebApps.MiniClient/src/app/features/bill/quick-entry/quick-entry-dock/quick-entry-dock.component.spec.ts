@@ -17,16 +17,21 @@ describe('QuickEntryDockComponent', () => {
     return host.querySelector<HTMLInputElement>('input[type="file"]')!;
   }
 
-  it('mobil: Kamera-Knopf öffnet die Foto-Auswahl, mehrere Fotos, ohne capture', () => {
+  it('mobil: Kamera-Knopf öffnet die Foto-Auswahl', () => {
     setup('mobile');
     const click = vi.spyOn(fileInput(), 'click').mockImplementation(() => undefined);
 
     host.querySelector<HTMLButtonElement>('button.cam')!.click();
 
     expect(click).toHaveBeenCalled();
+  });
+
+  it('file input opens the camera (capture=environment, no multiple)', () => {
+    setup('mobile');
+
     expect(fileInput().accept).toBe('image/*');
-    expect(fileInput().multiple).toBe(true);
-    expect(fileInput().hasAttribute('capture')).toBe(false);
+    expect(fileInput().getAttribute('capture')).toBe('environment');
+    expect(fileInput().multiple).toBe(false);
   });
 
   it('Desktop: „Scannen“ neben der Eingabezeile öffnet die Foto-Auswahl', () => {
@@ -40,18 +45,18 @@ describe('QuickEntryDockComponent', () => {
     expect(click).toHaveBeenCalled();
   });
 
-  it('Desktop: der Eingabe-Input erlaubt ebenfalls mehrere Fotos', () => {
+  it('Desktop: derselbe Input (capture wird dort ignoriert, Dateidialog mit einer Datei)', () => {
     setup('desktop');
 
-    expect(fileInput().multiple).toBe(true);
-    expect(fileInput().hasAttribute('capture')).toBe(false);
+    expect(fileInput().getAttribute('capture')).toBe('environment');
+    expect(fileInput().multiple).toBe(false);
   });
 
-  it('gewählte Fotos werden gemeinsam gemeldet', () => {
+  it('das gewählte Foto wird gemeldet', () => {
     setup('mobile');
     const emitted: File[][] = [];
     fixture.componentInstance.scan.subscribe(files => emitted.push(files));
-    const photos = ['a', 'b', 'c'].map(name => new File([name], `${name}.jpg`, { type: 'image/jpeg' }));
+    const photos = [new File(['a'], 'a.jpg', { type: 'image/jpeg' })];
     const transfer = new DataTransfer();
     photos.forEach(photo => transfer.items.add(photo));
     fileInput().files = transfer.files;

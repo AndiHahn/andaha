@@ -54,7 +54,7 @@ describe('AreaTabsComponent', () => {
 
     const list: HTMLElement = fixture.nativeElement.querySelector('[role="tablist"]');
     expect(list.getAttribute('aria-label')).toBe('Rechnungen');
-    expect(tabs().map(t => t.textContent?.trim())).toEqual(['Liste', 'Analyse', 'Statistik']);
+    expect(tabs().map(t => t.textContent?.trim())).toEqual(['Liste', 'Scans', 'Statistik']);
     expect(tabs().map(t => t.getAttribute('href'))).toEqual(['/bill/list', '/bill/analysis', '/bill/expenses']);
   });
 

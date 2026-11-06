@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, NgZone, computed, effect, inject, signal, untracked } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollableElement, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { MatIcon } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { BillAnalyzedDto } from 'src/app/api/shopping/dtos/BillAnalyzedDto';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { LoadState, LoadStateComponent } from 'src/app/shared/load-state/load-state.component';
+import { takeChosenFiles } from 'src/app/shared/utils/file-utils';
 import { AcknowledgedStore } from '../../services/acknowledged-store';
 import { AnalysisUploadService } from '../../services/analysis-upload.service';
 import { AnalyzedBillContextService } from '../../services/analyzed-bill-context.service';
@@ -20,7 +22,8 @@ const HIGHLIGHT_WAIT_MS = 60_000;
 const CLOCK_TICK_MS = 10_000;
 
 /**
- * Tab Analyse (US-0009 design.md §4): „In Arbeit“, „Zu prüfen“ (offene Analysen aus US-0007, Virtual Scroll)
+ * Tab Scans (US-0009 design.md §4, Change Request 2026-11-06): oben „Foto aufnehmen“ (Kamera) und „Aus Galerie“
+ * (mehrere Fotos), immer sichtbar; darunter „In Arbeit“, „Zu prüfen“ (offene Analysen aus US-0007, Virtual Scroll)
  * und „Angelegt“; jeder Abschnitt nur, wenn er Einträge hat. Fertige Uploads werden über `sourceUploadId`
  * in „Zu prüfen“ bzw. „Angelegt“ kurz hervorgehoben.
  */
@@ -31,7 +34,7 @@ const CLOCK_TICK_MS = 10_000;
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
       CdkVirtualScrollableElement, CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf, RouterLink,
-      LoadStateComponent, AnalyzedBillListItemComponent, InProgressRowComponent, CreatedRowComponent
+      MatIcon, LoadStateComponent, AnalyzedBillListItemComponent, InProgressRowComponent, CreatedRowComponent
     ]
 })
 export class AnalyzedBillListComponent {
@@ -40,7 +43,7 @@ export class AnalyzedBillListComponent {
   private readonly acknowledged = inject(AcknowledgedStore);
   private readonly zone = inject(NgZone);
 
-  readonly emptyText = 'Keine Analysen – fotografiere Rechnungen mit dem Kamera-Knopf.';
+  readonly emptyText = 'Keine Scans – fotografiere Rechnungen mit dem Kamera-Knopf oder wähle sie aus der Galerie.';
   readonly pixelHeightPerItem = 64;
 
   readonly categories = toSignal(inject(BillCategoryContextService).categories(), { initialValue: [] });
@@ -130,6 +133,14 @@ export class AnalyzedBillListComponent {
 
   trackById(_: number, bill: BillAnalyzedDto): string {
     return bill.id;
+  }
+
+/** „Foto aufnehmen“ bzw. „Aus Galerie“: gleicher Upload-Weg wie der Kamera-Knopf im Dock (inkl. Offline-Hinweis) */
+  onPhotosChosen(fileInput: HTMLInputElement): void {
+    const files = takeChosenFiles(fileInput);
+    if (files.length > 0) {
+      this.uploads.uploadAll(files);
+    }
   }
 
   retryUpload(item: InProgressItem): void {

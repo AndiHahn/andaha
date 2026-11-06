@@ -13,7 +13,8 @@
       <mat-icon aria-hidden="true">photo_camera</mat-icon><span>Scannen</span>
     </button>
   }
-  <!-- Mehrere Fotos aus Kamera-App bzw. Galerie (mobil) oder Dateiauswahl (Desktop); ohne capture, sonst nur ein Foto -->
-  <input #photoInput class="file" type="file" accept="image/*" multiple tabindex="-1" aria-hidden="true"
+  <!-- Mobil öffnet capture direkt die Kamera (ohne multiple: ein Foto je Tipp, erneut tippen für das nächste);
+       der Desktop ignoriert capture und zeigt den Dateidialog. Galerie (mehrere Fotos) im Tab „Scans“ -->
+  <input #photoInput class="file" type="file" accept="image/*" capture="environment" tabindex="-1" aria-hidden="true"
     (change)="onPhotoChosen(photoInput)">
 </div>

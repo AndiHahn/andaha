@@ -1,3 +1,18 @@
+<!-- Foto aufnehmen / Aus Galerie: außerhalb von app-load-state, also auch leer, beim Laden und bei Fehler sichtbar.
+     Kamera: capture öffnet mobil direkt die Kamera (ein Foto je Tipp); Galerie: mehrere Fotos, ohne capture -->
+<div class="scan-actions">
+  <button type="button" class="btn sec2" (click)="cameraInput.click()">
+    <mat-icon aria-hidden="true">photo_camera</mat-icon><span>Foto aufnehmen</span>
+  </button>
+  <button type="button" class="btn sec2" (click)="galleryInput.click()">
+    <mat-icon aria-hidden="true">photo_library</mat-icon><span>Aus Galerie</span>
+  </button>
+  <input #cameraInput class="file camera" type="file" accept="image/*" capture="environment" tabindex="-1" aria-hidden="true"
+    (change)="onPhotosChosen(cameraInput)">
+  <input #galleryInput class="file gallery" type="file" accept="image/*" multiple tabindex="-1" aria-hidden="true"
+    (change)="onPhotosChosen(galleryInput)">
+</div>
+
 <!-- eine Scrollfläche für alle Abschnitte; „Zu prüfen“ bleibt darin virtuell gescrollt -->
 <div class="page" cdkVirtualScrollingElement>
   <app-load-state [state]="loadState()" [emptyText]="emptyText" (retry)="retryLoad()">

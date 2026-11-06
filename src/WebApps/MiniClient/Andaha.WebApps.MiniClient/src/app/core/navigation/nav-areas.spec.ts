@@ -11,6 +11,8 @@ describe('nav-areas', () => {
     expect(area('work').tabs.map(t => t.path)).toEqual(['/work/person', '/work/statistics']);
     expect(area('more').tabs).toEqual([]);
     expect(area('bill').tabs[1].badge).toBe('analysis');
+    // Tab „Scans“ (Change Request 2026-11-06); die Route /bill/analysis bleibt (Share-Target, Deep Links)
+    expect(area('bill').tabs.map(t => t.label)).toEqual(['Liste', 'Scans', 'Statistik']);
   });
 
   describe('findArea', () => {

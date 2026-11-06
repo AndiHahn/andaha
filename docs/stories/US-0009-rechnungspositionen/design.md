@@ -48,6 +48,12 @@ Markierungen:
   - Das Manifest (`share_target.params.files`) erlaubt mehrere Bilder (`accept: image/*`).
   - Die bisherigen Robustheitsregeln aus US-0007 bleiben: Dateiname mit Nicht-Latin-1-Zeichen, Dateien ohne Typ, Fehlermeldung.
 
+> **Change Request 2026-11-06 [Nutzer]:** „In den meisten Fällen möchte ich direkt ein Foto machen. Galerie nur im Ausnahmefall.“
+> Der Kamera-Knopf im Dock bekommt `accept="image/*" capture="environment"` ohne `multiple`: mobil öffnet er direkt die
+> Kamera, ein Foto je Tipp (erneut tippen für das nächste). Der Desktop ignoriert `capture` und zeigt den Dateidialog
+> (eine Datei). Upload-Weg, Snackbar und Offline-Verhalten bleiben. Die Galerie mit Mehrfachauswahl wandert in den Tab
+> „Scans“ (§4). Der Text oben zum Kamera-Knopf beschreibt den Stand vor dem Change Request.
+
 ## 3. Sofortige Analyse (Backend, Shopping) — AC4, AC5 [Technik]
 
 - **Upload-Antwort:** `UploadBillForAnalysis` liefert künftig `202` mit `{ id: <imageName> }`. Das Frontend verknüpft damit seinen lokalen Eintrag.
@@ -111,6 +117,14 @@ Drei Abschnitte, jeder nur sichtbar, wenn er Einträge hat. Sind alle leer, ersc
 - Wie in US-0007: Formular mit Foto und Werten, `analyzedBillId`.
 - Neu sind die Positionen (§5).
 - Nach dem Speichern geht es zurück zum Tab Analyse (US-0007 §9).
+
+> **Change Request 2026-11-06 [Nutzer]:** Der Tab heißt jetzt „Scans“; die Route `/bill/analysis` bleibt (Share-Target,
+> Deep Links, Verlauf). Über den Abschnitten stehen zwei Buttons, außerhalb von `app-load-state` und damit auch leer, beim
+> Laden und bei Fehler sichtbar: „Foto aufnehmen“ (`photo_camera`, `capture="environment"`, ohne `multiple`) und „Aus
+> Galerie“ (`photo_library`, `multiple`, ohne `capture`). Beide laden über `AnalysisUploadService.uploadAll` hoch, wie
+> der Dock-Knopf. Mobil stehen sie nebeneinander, am Desktop linksbündig. Der Leertext lautet jetzt „Keine Scans –
+> fotografiere Rechnungen mit dem Kamera-Knopf oder wähle sie aus der Galerie.“ Der Prozess heißt weiter „Analyse“
+> („Analyse läuft“, „Analyse-Konfidenz“).
 
 ## 5. Positionen — AC10–AC16
 

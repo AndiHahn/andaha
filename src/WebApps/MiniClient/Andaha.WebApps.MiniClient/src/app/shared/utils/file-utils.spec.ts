@@ -1,4 +1,28 @@
-import { canShareFiles, shareOrDownload } from './file-utils';
+import { canShareFiles, shareOrDownload, takeChosenFiles } from './file-utils';
+
+describe('takeChosenFiles', () => {
+  function fileInput(files: File[]): HTMLInputElement {
+    const input = document.createElement('input');
+    input.type = 'file';
+    const transfer = new DataTransfer();
+    files.forEach(file => transfer.items.add(file));
+    input.files = transfer.files;
+    return input;
+  }
+
+  it('returns the chosen files and resets the input, so the same file can be chosen again', () => {
+    const photos = ['a', 'b'].map(name => new File([name], `${name}.jpg`, { type: 'image/jpeg' }));
+    const input = fileInput(photos);
+
+    expect(takeChosenFiles(input)).toEqual(photos);
+    expect(input.value).toBe('');
+    expect(input.files?.length ?? 0).toBe(0);
+  });
+
+  it('returns an empty list when nothing was chosen', () => {
+    expect(takeChosenFiles(fileInput([]))).toEqual([]);
+  });
+});
 
 describe('shareOrDownload', () => {
   const blob = new Blob(['a;b'], { type: 'text/csv' });

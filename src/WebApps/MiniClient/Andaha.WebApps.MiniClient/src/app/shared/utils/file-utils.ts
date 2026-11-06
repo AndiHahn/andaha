@@ -110,3 +110,13 @@ export function getFileName(headers: HttpHeaders): string {
     .replace("filename=", "")
     .trim();
 }
+
+/**
+ * Liest die in einem `<input type="file">` gewählten Dateien und setzt den Input zurück, damit dieselbe Datei
+ * (bzw. ein weiteres Foto mit gleichem Namen) erneut gewählt werden kann.
+ */
+export function takeChosenFiles(input: HTMLInputElement): File[] {
+  const files = Array.from(input.files ?? []);
+  input.value = '';
+  return files;
+}

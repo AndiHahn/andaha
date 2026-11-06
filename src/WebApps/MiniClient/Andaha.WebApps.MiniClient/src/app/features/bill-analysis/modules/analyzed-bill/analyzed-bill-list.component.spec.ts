@@ -43,6 +43,7 @@ describe('AnalyzedBillListComponent', () => {
   let retry: Mock;
   let remove: Mock;
   let refreshUploads: Mock;
+  let uploadAll: Mock;
 
   beforeEach(() => {
     localStorage.clear();
@@ -56,6 +57,7 @@ describe('AnalyzedBillListComponent', () => {
     retry = vi.fn();
     remove = vi.fn();
     refreshUploads = vi.fn();
+    uploadAll = vi.fn();
 
     TestBed.configureTestingModule({
       imports: [AnalyzedBillListComponent],
@@ -65,7 +67,7 @@ describe('AnalyzedBillListComponent', () => {
           provide: AnalysisUploadService,
           useValue: {
             uploads, pending, todayCreated: today, completed$: completed$.asObservable(),
-            retry, remove, refresh: refreshUploads
+            retry, remove, refresh: refreshUploads, uploadAll
           }
         },
         {
@@ -264,7 +266,87 @@ describe('AnalyzedBillListComponent', () => {
 
     expect(sections()).toEqual([]);
     expect(host.querySelector('app-load-state')!.textContent!.trim())
-      .toBe('Keine Analysen – fotografiere Rechnungen mit dem Kamera-Knopf.');
+      .toBe('Keine Scans – fotografiere Rechnungen mit dem Kamera-Knopf oder wähle sie aus der Galerie.');
+  });
+
+  describe('Foto aufnehmen / Aus Galerie', () => {
+    function actionButton(text: string): HTMLButtonElement | undefined {
+      return Array.from(host.querySelectorAll<HTMLButtonElement>('.scan-actions button')).find(b => b.textContent?.includes(text));
+    }
+
+    function cameraInput(): HTMLInputElement {
+      return host.querySelector<HTMLInputElement>('input[type="file"].camera')!;
+    }
+
+    function galleryInput(): HTMLInputElement {
+      return host.querySelector<HTMLInputElement>('input[type="file"].gallery')!;
+    }
+
+    it('shows Foto aufnehmen and Aus Galerie also when empty', async () => {
+      await render();
+
+      expect(host.querySelector('app-load-state')!.textContent).toContain('Keine Scans');
+      expect(actionButton('Foto aufnehmen')).toBeTruthy();
+      expect(actionButton('Aus Galerie')).toBeTruthy();
+      // außerhalb von app-load-state: auch beim Laden und bei Fehler sichtbar
+      expect(host.querySelector('app-load-state .scan-actions')).toBeNull();
+
+      loading$.next(true);
+      await settle();
+      expect(actionButton('Foto aufnehmen')).toBeTruthy();
+
+      loading$.next(false);
+      failed$.next(true);
+      await settle();
+      expect(actionButton('Aus Galerie')).toBeTruthy();
+    });
+
+    it('camera input has capture and no multiple', async () => {
+      await render();
+      const click = vi.spyOn(cameraInput(), 'click').mockImplementation(() => undefined);
+
+      actionButton('Foto aufnehmen')!.click();
+
+      expect(click).toHaveBeenCalled();
+      expect(cameraInput().accept).toBe('image/*');
+      expect(cameraInput().getAttribute('capture')).toBe('environment');
+      expect(cameraInput().multiple).toBe(false);
+    });
+
+    it('gallery input allows multiple without capture', async () => {
+      await render();
+      const click = vi.spyOn(galleryInput(), 'click').mockImplementation(() => undefined);
+
+      actionButton('Aus Galerie')!.click();
+
+      expect(click).toHaveBeenCalled();
+      expect(galleryInput().accept).toBe('image/*');
+      expect(galleryInput().multiple).toBe(true);
+      expect(galleryInput().hasAttribute('capture')).toBe(false);
+    });
+
+    it('chosen files are uploaded via uploadAll and the input is reset', async () => {
+      await render();
+      const photos = ['a', 'b'].map(name => new File([name], `${name}.jpg`, { type: 'image/jpeg' }));
+      const transfer = new DataTransfer();
+      photos.forEach(photo => transfer.items.add(photo));
+      galleryInput().files = transfer.files;
+
+      galleryInput().dispatchEvent(new Event('change'));
+
+      expect(uploadAll).toHaveBeenCalledWith(photos);
+      expect(galleryInput().value).toBe('');
+
+      const shot = new File(['c'], 'c.jpg', { type: 'image/jpeg' });
+      const single = new DataTransfer();
+      single.items.add(shot);
+      cameraInput().files = single.files;
+
+      cameraInput().dispatchEvent(new Event('change'));
+
+      expect(uploadAll).toHaveBeenLastCalledWith([shot]);
+      expect(cameraInput().value).toBe('');
+    });
   });
 
   it('shows loading and error through app-load-state', async () => {

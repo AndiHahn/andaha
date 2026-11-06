@@ -149,18 +149,19 @@ describe('BillListComponent', () => {
       await settle();
     }
 
-    it('camera input allows multiple and has no capture; choosing 3 files starts one upload of 3', () => {
+    it('camera input opens the camera (capture, no multiple); the photo taken starts one upload', () => {
+      // Change Request 2026-11-06: Dock-Kamera öffnet direkt die Kamera, Galerie im Tab „Scans“
       const input = host.querySelector<HTMLInputElement>('input[type="file"]')!;
-      expect(input.multiple).toBe(true);
-      expect(input.hasAttribute('capture')).toBe(false);
+      expect(input.multiple).toBe(false);
+      expect(input.getAttribute('capture')).toBe('environment');
 
       const transfer = new DataTransfer();
-      ['a', 'b', 'c'].forEach(name => transfer.items.add(new File([name], `${name}.jpg`, { type: 'image/jpeg' })));
+      transfer.items.add(new File(['a'], 'a.jpg', { type: 'image/jpeg' }));
       input.files = transfer.files;
       input.dispatchEvent(new Event('change'));
 
       expect(uploadAll).toHaveBeenCalledTimes(1);
-      expect((uploadAll.mock.calls[0][0] as File[]).map(f => f.name)).toEqual(['a.jpg', 'b.jpg', 'c.jpg']);
+      expect((uploadAll.mock.calls[0][0] as File[]).map(f => f.name)).toEqual(['a.jpg']);
     });
 
     it('no scan overlay or synchronous analyze call remains', async () => {

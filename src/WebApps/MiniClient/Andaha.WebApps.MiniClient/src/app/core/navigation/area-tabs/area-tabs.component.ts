@@ -29,7 +29,7 @@ export class AreaTabsComponent {
     inject(AnalyzedBillContextService).bills().pipe(map(bills => bills.length)), { initialValue: 0 });
   private readonly inProgressCount = inject(AnalysisUploadService).inProgressCount;
 
-  /** Badge am Tab Analyse (US-0009 AC9): „In Arbeit“ plus „Zu prüfen“ */
+  /** Badge am Tab Scans (US-0009 AC9): „In Arbeit“ plus „Zu prüfen“ */
   readonly analysisCount = computed(() => this.inProgressCount() + this.toReviewCount());
 
   readonly isTabPage = isTabPage;

@@ -37,7 +37,8 @@ export const NAV_AREAS: readonly NavArea[] = [
     matchPrefixes: ['/bill'],
     tabs: [
       { label: 'Liste', path: '/bill/list' },
-      { label: 'Analyse', path: '/bill/analysis', badge: 'analysis' },
+      // Tab „Scans“ (Change Request 2026-11-06); die Route bleibt /bill/analysis (Share-Target, Deep Links, Verlauf)
+      { label: 'Scans', path: '/bill/analysis', badge: 'analysis' },
       { label: 'Statistik', path: '/bill/expenses' }
     ]
   },

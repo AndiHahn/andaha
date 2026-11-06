@@ -10,6 +10,30 @@
   overflow: auto;
 }
 
+// „Foto aufnehmen“ / „Aus Galerie“ (globale .btn.sec2) über den Abschnitten, scrollt nicht mit.
+// Mobil nebeneinander, je die halbe Breite; 44 px wie „Scannen“ im Desktop-Dock
+.scan-actions {
+  flex: none;
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px 0;
+
+  .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 44px;
+    padding: 0 10px;
+    gap: 6px;
+
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.file { display: none; }
+
 // Abschnittskoepfe ohne eigenen Abstand oben am Seitenanfang
 section:first-child .sec {
   padding-top: 14px;
@@ -33,6 +57,19 @@ section:first-child .sec {
 }
 
 @media (min-width: 1024px) {
+  // Desktop: linksbündig, natürliche Breite, bündig mit dem Inhalt darunter
+  .scan-actions {
+    padding: 0;
+    margin: 16px 40px 0;
+    max-width: 1040px;
+
+    .btn {
+      flex: none;
+      padding: 0 20px;
+      gap: 8px;
+    }
+  }
+
   app-load-state {
     display: block;
     margin: 8px 40px 24px;

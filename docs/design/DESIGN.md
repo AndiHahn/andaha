@@ -238,7 +238,7 @@ Navigation nach Design v2 (`v2/README.md`, Mockups `v2/mockups/01-navigation.htm
 
 | Bereich | Tabs | Weitere Seiten |
 |---|---|---|
-| Rechnungen | Liste · Analyse · Statistik | Rechnung, Rechnung hinzufügen, analysierte Rechnung |
+| Rechnungen | Liste · Scans · Statistik | Rechnung, Rechnung hinzufügen, analysierte Rechnung |
 | Haushalt | Übersicht · Fixkosten · Einkommen | Anlege- und Detailseiten |
 | Stunden | Personen · Statistik | Anlege- und Detailseiten |
 | Mehr | keine (eigene Seite) | Kategorien, Vorlagen, Verbindungen, Export, AGB, Datenschutzerklärung, Benutzerdaten |
@@ -311,9 +311,9 @@ Scrim hinter Sheets und Dialogen: `rgba(40,30,18,.38)`.
 
 **Hauptleiste (Mobile):** 64 px, `bg`, Linie `line` oben, 4 gleich breite Einträge: Icon 22 px über Label 12/500, inaktiv `faint`. Aktiv: Text `fg`, Icon `primary`, 28×2-px-Strich in `primary` an der Oberkante, `aria-current="page"`. Icons: Rechnungen `receipt_long`, Haushalt `account_balance_wallet`, Stunden `group`, Mehr `more_horiz`. Aktiv ist der Bereich, zu dem die URL gehört (`/settings`, `/export` und Rechtliches gehören zu Mehr).
 
-**Tabs:** 46 px hoch, gleich breit verteilt (8 px Rand links/rechts), Text 15/500 `muted`, aktiv 15/600 `fg` mit 2-px-Unterstrich `primary` (16 px eingerückt), Linie `line` unten. `role="tablist"`, aktiver Tab `aria-selected="true"`. Jeder Tab hat eine eigene URL; Wechsel per Tipp oder Wischen. Zähler-Badge 20 px (Pill), `secondary-soft` / `secondary-text`, 12/600, nur wenn > 0 (Analyse: Anzahl offener Analysen). Desktop: linksbündig unter dem Titel, 48 px, Innenabstand 0 14 px, Unterstrich 10 px eingerückt.
+**Tabs:** 46 px hoch, gleich breit verteilt (8 px Rand links/rechts), Text 15/500 `muted`, aktiv 15/600 `fg` mit 2-px-Unterstrich `primary` (16 px eingerückt), Linie `line` unten. `role="tablist"`, aktiver Tab `aria-selected="true"`. Jeder Tab hat eine eigene URL; Wechsel per Tipp oder Wischen. Zähler-Badge 20 px (Pill), `secondary-soft` / `secondary-text`, 12/600, nur wenn > 0 (Scans: Anzahl offener Analysen). Desktop: linksbündig unter dem Titel, 48 px, Innenabstand 0 14 px, Unterstrich 10 px eingerückt.
 
-**Eingabezeile (Dock):** Leiste über der Hauptleiste, nur auf Rechnungen → Liste: `bg`, Linie oben, Innenabstand 10/16/12. Feld 52 px (Radius 12, Plus-Icon `primary`, Platzhalter „Neue Rechnung: Betrag“, Suffix €), daneben Kamera-Knopf 52×52 (`raised`, Innenrand `line-field`, Icon `primary`). Desktop: über der Tabelle neben „Scannen“ und der Suche.
+**Eingabezeile (Dock):** Leiste über der Hauptleiste, nur auf Rechnungen → Liste: `bg`, Linie oben, Innenabstand 10/16/12. Feld 52 px (Radius 12, Plus-Icon `primary`, Platzhalter „Neue Rechnung: Betrag“, Suffix €), daneben Kamera-Knopf 52×52 (`raised`, Innenrand `line-field`, Icon `primary`); er öffnet mobil direkt die Kamera (`capture="environment"`, ein Foto je Tipp), die Galerie gibt es im Tab „Scans“ [Nutzer, 2026-11-06]. Desktop: über der Tabelle neben „Scannen“ (Dateidialog) und der Suche.
 
 **Schnell-Sheet:** Bottom Sheet (siehe unten) mit Titel „Neue Rechnung“: Betrag im Stil `amount` mit eigener Zifferntastatur, Kacheln (Vorlagen und Vorschläge) im 2-Spalten-Raster, Datum, Speichern. Desktop: zentrierter Dialog 480 px, normale Tastatur. Details in `v2/README.md`.
 
@@ -335,7 +335,7 @@ Scrim hinter Sheets und Dialogen: `rgba(40,30,18,.38)`.
 
 **Farbraster (Kategorien, US-0008):** 18 Farbpunkte zum Antippen statt eines Farbwählers; der gewählte Punkt hat einen Ring. Eine bisherige Farbe außerhalb des Rasters (CSS-Name) erscheint vorne als gestrichelt umrandeter Punkt mit dem Hinweis „Gestrichelt: bisherige Farbe „…““ und bleibt gültig.
 
-**Analyse-Tab (US-0009):** drei Abschnitte untereinander auf einer Scrollfläche, jeder mit Abschnittskopf und nur sichtbar, wenn er Einträge hat: „In Arbeit“ (Uploads und laufende Analysen), „Zu prüfen“ (fertige Analysen, virtuell gescrollt, Tipp öffnet die Analyse-Details) und „Angelegt“ (automatisch angelegte Rechnungen, werden mit „Erledigt“ bestätigt). Laden, Fehler und Leer über `app-load-state`. Die Zeile eines neu eingegangenen Fotos wird kurz hervorgehoben.
+**Scans-Tab (US-0009, bis 2026-11-06 „Analyse“; Route bleibt `/bill/analysis`):** oben zwei Buttons (`btn sec2`, 44 px) „Foto aufnehmen“ (`photo_camera`, öffnet mobil direkt die Kamera) und „Aus Galerie“ (`photo_library`, mehrere Fotos), immer sichtbar, auch leer, beim Laden und bei Fehler; mobil nebeneinander je halbe Breite, Desktop linksbündig in natürlicher Breite [Nutzer, 2026-11-06]. Darunter drei Abschnitte untereinander auf einer Scrollfläche, jeder mit Abschnittskopf und nur sichtbar, wenn er Einträge hat: „In Arbeit“ (Uploads und laufende Analysen), „Zu prüfen“ (fertige Analysen, virtuell gescrollt, Tipp öffnet die Analyse-Details) und „Angelegt“ (automatisch angelegte Rechnungen, werden mit „Erledigt“ bestätigt). Laden, Fehler und Leer über `app-load-state` (Leertext „Keine Scans – fotografiere Rechnungen mit dem Kamera-Knopf oder wähle sie aus der Galerie.“). Die Zeile eines neu eingegangenen Fotos wird kurz hervorgehoben.
 
 **Upload-Fortschrittszeile (In Arbeit, US-0009):** Zeile mit 48-px-Vorschaubild (Foto, sonst Icon `receipt_long`) und rechts Statuszeile mit 4-px-Fortschrittsbalken: „Wird hochgeladen · 42 %“ (Balken bestimmt), „Wird analysiert …“ (Balken unbestimmt, nach längerer Zeit Zusatz „dauert länger als üblich“). Scheitert ein Upload, steht „Upload fehlgeschlagen“ in `negative` mit den Knöpfen „Erneut versuchen“ und „Entfernen“; die anderen Uploads laufen weiter, es gibt keine Snackbar.
 
