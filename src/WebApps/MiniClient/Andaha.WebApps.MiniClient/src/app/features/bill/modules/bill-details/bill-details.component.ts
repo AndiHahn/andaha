@@ -162,8 +162,9 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
     }
 
     const dto = this.createModelFromForm();
-    // Ersetzen (design.md §5.1); ohne das Feld bleiben die Positionen beim Server unverändert
-    const lineItems = editLineItems ? sanitizeDrafts(this.lineItemsControl.value) : undefined;
+    // Ersetzen (design.md §5.1); ohne das Feld bleiben die Positionen beim Server unverändert. Nur
+    // bearbeitete Positionen gehen mit, sonst überschriebe der Stand beim Öffnen neuere eines anderen Geräts.
+    const lineItems = editLineItems && this.lineItemsControl.dirty ? sanitizeDrafts(this.lineItemsControl.value) : undefined;
     dto.lineItems = lineItems;
 
     this.form.disable();

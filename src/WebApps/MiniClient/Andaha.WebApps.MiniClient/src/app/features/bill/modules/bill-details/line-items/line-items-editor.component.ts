@@ -6,7 +6,7 @@ import {
 } from '@angular/forms';
 import { MatIcon } from '@angular/material/icon';
 import { ShowErrorPipe } from 'src/app/shared/form-field/show-error.pipe';
-import { LineItemDraft, MAX_LINE_ITEM_DESCRIPTION, parseLineItemPrice, parseLineItemQuantity } from '../../../functions/line-items';
+import { LineItemDraft, MAX_LINE_ITEMS, MAX_LINE_ITEM_DESCRIPTION, parseLineItemPrice, parseLineItemQuantity } from '../../../functions/line-items';
 import { formatAmount } from '../../../quick-entry/logic/amount-input';
 
 interface LineItemRowForm {
@@ -102,7 +102,15 @@ export class LineItemsEditorComponent implements ControlValueAccessor, Validator
     this.changeDetector.markForCheck();
   }
 
+  /** Höchstens 200 Positionen (Backend-Validator) */
+  protected get canAdd(): boolean {
+    return this.rows.enabled && this.rows.length < MAX_LINE_ITEMS;
+  }
+
   protected add(): void {
+    if (!this.canAdd) {
+      return;
+    }
     this.origins.push(null);
     this.rows.push(this.createRow('', '', ''));
     afterNextRender(() => this.descriptionInputs().at(-1)?.nativeElement.focus(), { injector: this.injector });

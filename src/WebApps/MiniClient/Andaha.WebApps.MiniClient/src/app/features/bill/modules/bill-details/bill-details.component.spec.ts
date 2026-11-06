@@ -247,6 +247,65 @@ describe('BillDetailsComponent', () => {
     expect(host.querySelector('app-line-items-view')!.textContent).toContain('Vollmilch');
   });
 
+  // Ersetzen beim Server: unberührte Positionen nicht mitschicken, sonst überschreibt der Stand beim
+  // Öffnen neuere Positionen eines anderen Geräts
+  it('save without touching items omits lineItems', async () => {
+    button('Bearbeiten').click();
+    await settle();
+
+    const shop = host.querySelector<HTMLInputElement>('input[formControlName="shopName"]')!;
+    await type(shop, 'Ströck');
+    button('Speichern').click();
+    await settle();
+
+    expect(updateBill).toHaveBeenCalledTimes(1);
+    const dto = updateBill.mock.calls[0][1] as BillUpdateDto;
+    expect(dto.shopName).toBe('Ströck');
+    expect(dto.lineItems).toBeUndefined();
+    expect(host.querySelectorAll('app-line-items-view .line-item').length).toBe(2);
+  });
+
+  it('removing a row alone counts as an edit', async () => {
+    button('Bearbeiten').click();
+    await settle();
+
+    editRows()[0].querySelector<HTMLButtonElement>('button[aria-label="Position entfernen"]')!.click();
+    await settle();
+    button('Speichern').click();
+    await settle();
+
+    expect((updateBill.mock.calls[0][1] as BillUpdateDto).lineItems).toEqual([
+      { description: 'Brot', quantity: null, unitPrice: null, totalPrice: 3.42 }
+    ]);
+  });
+
+  it('an edit is forgotten after cancel and after saving', async () => {
+    button('Bearbeiten').click();
+    await settle();
+    await type(description(editRows()[0]), 'Semmel');
+    button('Abbrechen').click();
+    await settle();
+
+    button('Bearbeiten').click();
+    await settle();
+    button('Speichern').click();
+    await settle();
+    expect((updateBill.mock.calls[0][1] as BillUpdateDto).lineItems).toBeUndefined();
+
+    button('Bearbeiten').click();
+    await settle();
+    await type(description(editRows()[0]), 'Semmel');
+    button('Speichern').click();
+    await settle();
+    expect((updateBill.mock.calls[1][1] as BillUpdateDto).lineItems).toHaveLength(2);
+
+    button('Bearbeiten').click();
+    await settle();
+    button('Speichern').click();
+    await settle();
+    expect((updateBill.mock.calls[2][1] as BillUpdateDto).lineItems).toBeUndefined();
+  });
+
   it('save is blocked while a line item is invalid', async () => {
     button('Bearbeiten').click();
     await settle();

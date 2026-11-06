@@ -86,6 +86,28 @@ describe('LineItemsEditorComponent', () => {
     expect(control.value[2]).toEqual({ description: 'Brot', quantity: null, unitPrice: null, totalPrice: 3.4 });
   });
 
+  // Backend: höchstens 200 Positionen (LineItemDataValidator)
+  it('add button disabled at 200 rows', async () => {
+    const many = (count: number): LineItemDraft[] =>
+      Array.from({ length: count }, (_, i) => ({ description: `P${i}`, quantity: null, unitPrice: null, totalPrice: null }));
+    control.setValue(many(199));
+    await settle();
+    expect(button('Position hinzufügen').disabled).toBe(false);
+
+    button('Position hinzufügen').click();
+    await settle();
+    expect(rows().length).toBe(200);
+    expect(button('Position hinzufügen').disabled).toBe(true);
+
+    rows()[0].querySelector<HTMLButtonElement>('button[aria-label="Position entfernen"]')!.click();
+    await settle();
+    expect(button('Position hinzufügen').disabled).toBe(false);
+
+    control.setValue(many(200));
+    await settle();
+    expect(button('Position hinzufügen').disabled).toBe(true);
+  });
+
   it('quantity 0 invalid', async () => {
     await type(field(rows()[0], 'Menge'), '0');
 

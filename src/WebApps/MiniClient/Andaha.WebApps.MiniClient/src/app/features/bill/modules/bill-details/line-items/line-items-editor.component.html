@@ -36,6 +36,6 @@
     </div>
   }
 </div>
-<button type="button" class="btn sec2 add" [disabled]="rows.disabled" (click)="add()">
+<button type="button" class="btn sec2 add" [disabled]="!canAdd" (click)="add()">
   <mat-icon>add</mat-icon><span>Position hinzufügen</span>
 </button>

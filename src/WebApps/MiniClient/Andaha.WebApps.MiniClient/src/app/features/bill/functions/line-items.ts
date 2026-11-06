@@ -37,12 +37,16 @@ export interface LineItemDraft {
 /** Wie `LineItemData.MaxDescriptionLength` im Backend */
 export const MAX_LINE_ITEM_DESCRIPTION = 200;
 
+/** Wie `LineItemDataValidator` im Backend: höchstens 200 Positionen je Rechnung */
+export const MAX_LINE_ITEMS = 200;
+
 const MAX_QUANTITY = 2147483647;
 
 /**
  * Dieselben Regeln wie `LineItemSanitizer` im Backend (design.md §5.1): Beschreibung getrimmt, ohne
  * Beschreibung fällt die Position weg, über 200 Zeichen wird gekürzt, Menge 0 oder negativ wird `null`.
- * Preise bleiben unverändert, auch negative (Rabatt, Pfand). Die Reihenfolge bleibt.
+ * Preise bleiben unverändert, auch negative (Rabatt, Pfand). Die Reihenfolge bleibt. Mehr als 200 nimmt
+ * der Server nicht an: es bleiben die ersten 200.
  */
 export function sanitizeDrafts(drafts: readonly {
   description?: string | null;
@@ -52,6 +56,9 @@ export function sanitizeDrafts(drafts: readonly {
 }[]): LineItemDraft[] {
   const result: LineItemDraft[] = [];
   for (const draft of drafts) {
+    if (result.length === MAX_LINE_ITEMS) {
+      break;
+    }
     const description = (draft.description ?? '').trim().slice(0, MAX_LINE_ITEM_DESCRIPTION);
     if (description.length === 0) {
       continue;

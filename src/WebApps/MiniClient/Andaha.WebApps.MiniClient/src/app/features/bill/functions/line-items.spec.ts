@@ -46,6 +46,17 @@ describe('line-items', () => {
     ]);
   });
 
+  // Backend nimmt höchstens 200 Positionen an; eine längere Analyse wird auf die ersten 200 gekürzt
+  it('sanitizeDrafts keeps at most the first 200 items', () => {
+    const drafts = Array.from({ length: 205 }, (_, i) => ({ description: i === 0 ? '  ' : `P${i}`, totalPrice: i }));
+
+    const result = sanitizeDrafts(drafts);
+
+    expect(result.length).toBe(200);
+    expect(result[0].description).toBe('P1');
+    expect(result[199].description).toBe('P200');
+  });
+
   it('parseLineItemPrice: comma or dot, negative and zero allowed, empty is null, garbage invalid', () => {
     expect(parseLineItemPrice('3,4')).toBe(3.4);
     expect(parseLineItemPrice(' -1,50 ')).toBe(-1.5);
