@@ -30,8 +30,16 @@
     {
       "name": "backend",
       "urls": [
-        "/shopping-api/bill",
-        "/api/bill",
+        "/shopping-api/bill?",
+        "/api/bill?",
+        "/shopping-api/bill/*-*-*-*-*?",
+        "/api/bill/*-*-*-*-*?",
+        "/shopping-api/bill/*-*-*-*-*/image?",
+        "/api/bill/*-*-*-*-*/image?",
+        "/shopping-api/bill/shop-stats?",
+        "/api/bill/shop-stats?",
+        "/shopping-api/bill-template",
+        "/api/bill-template",
         "/shopping-api/billcategory",
         "/api/billcategory",
         "/shopping-api/expense",

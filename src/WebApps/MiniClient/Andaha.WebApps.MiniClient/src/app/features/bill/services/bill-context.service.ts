@@ -47,6 +47,11 @@ export class BillContextService implements OnDestroy {
   private replaceListOnNextResult: boolean = false;
   private backendIsReady: boolean = false;
   private readonly errorState = signal(false);
+  /**
+   * In dieser Sitzung gelöschte (bzw. serverseitig nicht mehr vorhandene) Rechnungen. Eine Listenantwort, die noch den
+   * Stand davor zeigt (Abfrage parallel zum DELETE, veraltete SW-Cache-Antwort), darf sie nicht zurückbringen.
+   */
+  private readonly deletedIds = new Set<string>();
 
   private readonly backendReadyState = signal(false);
 
@@ -261,6 +266,7 @@ export class BillContextService implements OnDestroy {
     if (deleted) {
       this.adjustSums(deleted.date, -deleted.price);
     }
+    this.deletedIds.add(id);
 
     this.billApiService.deleteBill(id).subscribe(
       {
@@ -268,6 +274,8 @@ export class BillContextService implements OnDestroy {
           returnSubject.next();
         },
         error: error => {
+          // nicht gelöscht (z. B. offline): die nächste Listenantwort darf sie wieder zeigen
+          this.deletedIds.delete(id);
           this.fetchBills();
           returnSubject.error(error);
         } 
@@ -276,6 +284,24 @@ export class BillContextService implements OnDestroy {
 
     return returnSubject.asObservable();
   }
+
+  /**
+   * Rechnung, die es am Server nicht mehr gibt (Detail-GET 404): aus der Liste nehmen, und auch eine spätere,
+   * veraltete Listenantwort bringt sie nicht zurück.
+   */
+  forgetBill(id: string): void {
+    this.deletedIds.add(id);
+
+    const removed = this.bills$.value.find(bill => bill.id == id);
+    if (!removed) {
+      return;
+    }
+
+    this.bills$.next(this.bills$.value.filter(bill => bill.id != id));
+    this.totalResults$.next(Math.max(0, this.totalResults$.value - 1));
+    this.adjustSums(removed.date, -removed.price);
+  }
+
 
   getBillById(id: string): BillDto | undefined {
     return this.bills$.value.find(bill => bill.id == id);
@@ -369,12 +395,14 @@ export class BillContextService implements OnDestroy {
               return;
             }
 
+            // gelöschte Rechnungen bleiben draußen, auch wenn die Antwort den Stand vor dem DELETE zeigt
+            const values = result.values.filter(bill => !this.deletedIds.has(bill.id));
             if (replaceList) {
-              this.bills$.next([...result.values].sort(this.billCompareDateDescending));
+              this.bills$.next([...values].sort(this.billCompareDateDescending));
             } else {
-              this.updateBillList(result.values);
+              this.updateBillList(values);
             }
-            this.totalResults$.next(result.totalCount);
+            this.totalResults$.next(Math.max(0, result.totalCount - (result.values.length - values.length)));
             this.monthSumsSubject.next(new Map((result.monthSums ?? []).map(monthSum => [monthSum.month, monthSum.sum])));
           },
           error: _ => {

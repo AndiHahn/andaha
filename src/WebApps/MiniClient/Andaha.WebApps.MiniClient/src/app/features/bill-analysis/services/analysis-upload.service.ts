@@ -8,6 +8,7 @@ import { AutoCreatedBillDto } from 'src/app/api/shopping/dtos/AutoCreatedBillDto
 import { PendingAnalysisDto } from 'src/app/api/shopping/dtos/PendingAnalysisDto';
 import { ContextService } from 'src/app/core/context.service';
 import { OnlineStatusService } from 'src/app/core/online-status.service';
+import { BillContextService } from 'src/app/features/bill/services/bill-context.service';
 import { openErrorSnackbar, openInformationSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { compressImage } from 'src/app/shared/utils/image-utils';
 import { AnalyzedBillContextService } from './analyzed-bill-context.service';
@@ -54,6 +55,7 @@ interface PollResult {
 export class AnalysisUploadService {
   private readonly billApi = inject(BillApiService);
   private readonly analyzedBills = inject(AnalyzedBillContextService);
+  private readonly bills = inject(BillContextService);
   private readonly onlineStatus = inject(OnlineStatusService);
   private readonly snackbar = inject(MatSnackBar);
   private readonly router = inject(Router);
@@ -273,7 +275,15 @@ export class AnalysisUploadService {
     this.appliedPollSequence = sequence;
 
     if (today) {
+      // neu angelegte Rechnung: die Rechnungsliste einmal neu laden, sonst fehlt sie dort bis zum Pull-to-Refresh.
+      // Ausgangsstand ist eine leere Menge: bringt schon die erste Abfrage nach dem Start Rechnungen (anderes Gerät,
+      // Upload vor dem Neuladen), wird einmal geladen; ohne neue Rechnungen nicht
+      const known = new Set(this.todayState().map(t => t.billId));
+      const hasNewBill = today.some(t => !known.has(t.billId));
       this.todayState.set(today);
+      if (hasNewBill) {
+        this.bills.refreshBills();
+      }
     }
     if (pending) {
       this.pendingState.set(pending);

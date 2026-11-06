@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -150,6 +151,32 @@ describe('BillDetailsComponent', () => {
 
     expect(host.textContent).toContain('Bäckerei Ströck');
     expect(host.querySelector('app-line-items-view')?.textContent?.trim()).toBe('');
+  });
+
+  it('bill known from the list whose detail returns 404 leaves as not found and drops it from the list', () => {
+    TestBed.resetTestingModule();
+    getBill = vi.fn(() => throwError(() => new HttpErrorResponse({ status: 404, statusText: 'Not Found' })));
+    const forgetBill = vi.fn();
+    TestBed.configureTestingModule({
+      imports: [BillDetailsComponent],
+      providers: [
+        { provide: ActivatedRoute, useValue: route() },
+        { provide: BillApiService, useValue: { getBill } },
+        { provide: HistoryTrailService, useValue: { leaveTo } },
+        { provide: ConfirmationDialogService, useValue: { openDialog: openConfirmation } },
+        { provide: BillContextService, useValue: { loadBillById: () => of({ ...bill }), loading: () => of(false), deleteBill, forgetBill } },
+        { provide: BillCategoryContextService, useValue: { categories: () => of([]) } }
+      ]
+    });
+    const openSnackbar = vi.spyOn(TestBed.inject(MatSnackBar), 'openFromComponent').mockReturnValue(undefined as never);
+    fixture = TestBed.createComponent(BillDetailsComponent);
+    host = fixture.nativeElement;
+    fixture.detectChanges();
+
+    expect(forgetBill).toHaveBeenCalledWith('b1');
+    expect(leaveTo).toHaveBeenCalledWith('/bill/list');
+    expect(openSnackbar.mock.calls.map(call => (call[1] as { data: unknown }).data))
+      .toContainEqual(expect.objectContaining({ message: 'Eintrag wurde nicht gefunden.' }));
   });
 
   it('partner bill shows items read-only', () => {

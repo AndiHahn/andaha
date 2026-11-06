@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject, viewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-providers';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { vibrate } from 'src/app/shared/utils/haptics';
@@ -108,7 +109,15 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
   private loadLineItems(billId: string): void {
     this.initialQuery = this.route.snapshot.queryParamMap.get('q') ?? '';
     this.billApiService.getBill(billId).pipe(
-      catchError(() => EMPTY),
+      catchError(error => {
+        // Die Rechnung kam aus der Liste, gibt es am Server aber nicht mehr: wie „unbekannte Rechnung“ behandeln.
+        // Andere Fehler: Detail bleibt nutzbar, nur ohne Positionen (kein Editor, lineItems werden nicht gesendet)
+        if (error instanceof HttpErrorResponse && error.status === 404) {
+          this.billContextService.forgetBill(billId);
+          leaveDetailNotFound(this.historyTrail, this.snackbar, '/bill/list');
+        }
+        return EMPTY;
+      }),
       takeUntil(this.destroy$)
     ).subscribe(full => {
       this.lineItems = full.lineItems ?? [];

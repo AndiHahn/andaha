@@ -44,6 +44,7 @@ describe('BillContextService search', () => {
     let loadingValues: boolean[];
     let backendReady: Subject<boolean>;
     let retryWakeUp: ReturnType<typeof vi.fn>;
+    let deleteFails: boolean;
 
     beforeEach(() => {
         requests = [];
@@ -53,9 +54,12 @@ describe('BillContextService search', () => {
         backendReady = new Subject<boolean>();
         retryWakeUp = vi.fn();
 
+        deleteFails = false;
         const billApi = {
-            searchBills: vi.fn().mockName("BillApiService.searchBills")
+            searchBills: vi.fn().mockName("BillApiService.searchBills"),
+            deleteBill: vi.fn().mockName("BillApiService.deleteBill")
         };
+        billApi.deleteBill.mockImplementation(() => deleteFails ? throwError(() => new Error('offline')) : of(void 0));
         billApi.searchBills.mockImplementation((p: SearchBillsParameters) => {
             const subject = new Subject<PagedResultDto<BillDto>>();
             requests.push(subject);
@@ -249,6 +253,34 @@ describe('BillContextService search', () => {
         expect(initialRequest.observers.length).toBe(0);
         expect(requests.length).toBe(2);
         expect(parameters[1].pageSize).toBe(100);
+    });
+
+    it('a list response that still contains a bill deleted meanwhile does not bring it back', () => {
+        requests[0].next({ values: [createBill('b1', 2), createBill('b2', 1)], totalCount: 2 });
+        service.deleteBill('b1').subscribe();
+        expect(currentBills.map(b => b.id)).toEqual(['b2']);
+
+        // merge: der Ladevorgang nach backendReady liefert noch den Stand vor dem DELETE (Race / SW-Cache)
+        backendReady.next(true);
+        requests[requests.length - 1].next({ values: [createBill('b1', 2), createBill('b2', 1)], totalCount: 2 });
+        expect(currentBills.map(b => b.id)).toEqual(['b2']);
+
+        // replace: Pull-to-Refresh mit veralteter Antwort
+        service.refreshBills();
+        requests[requests.length - 1].next({ values: [createBill('b1', 2), createBill('b2', 1)], totalCount: 2 });
+        expect(currentBills.map(b => b.id)).toEqual(['b2']);
+        let total = -1;
+        service.totalResults().subscribe(t => total = t);
+        expect(total).toBe(1);
+    });
+
+    it('a bill whose delete failed may come back with the next list response', () => {
+        requests[0].next({ values: [createBill('b1', 2), createBill('b2', 1)], totalCount: 2 });
+        deleteFails = true;
+        service.deleteBill('b1').subscribe({ error: () => undefined });
+
+        requests[requests.length - 1].next({ values: [createBill('b1', 2), createBill('b2', 1)], totalCount: 2 });
+        expect(currentBills.map(b => b.id)).toEqual(['b1', 'b2']);
     });
 });
 
