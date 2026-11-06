@@ -102,6 +102,26 @@ Entstanden aus der Rückmeldung zu US-0008 auf DEV (2026-11-05).
 
 Screenshots: [ui-testing/phase4/](./ui-testing/phase4/), with per-task checks in `ui-testing/task-6`, `task-8` and `task-9`.
 
+## Change Request 2026-11-06 (after testing on DEV)
+
+**Request from the user:**
+
+- „Wenn ich auf Rechnung hinzufügen mit Foto klicke, komme ich zur Galerie … In den meisten Fällen möchte ich direkt ein Foto machen. Galerie nur im Ausnahmefall.“
+- The tab should be renamed. The user's decisions: camera in the input bar and in the tab, gallery in the tab, tab name „Scans“.
+- Bug: after an auto-create, opening the bill from the Rechnungen tab did not show the line items until the list was reloaded.
+
+**Changes:**
+
+- **Camera:** the camera button in the input bar opens the camera directly (`capture="environment"`), one photo per tap.
+- **Tab „Scans“:** the tab „Analyse“ is renamed to „Scans“; the route `/bill/analysis` stays. The tab now has „Foto aufnehmen“ and „Aus Galerie“ buttons, the gallery allowing several images. Both buttons are also visible in the empty state.
+- **Bug fix:**
+  - The bill list now learns about automatically created bills: their page 0 is merged in, without a scroll jump.
+  - Deleted bills no longer come back from older or cached list responses.
+  - A 404 on the detail page leaves the page with „nicht gefunden“. Bills that are not yet synced (US-0005) are excluded from this.
+  - The service worker no longer caches the Scans endpoints (`/api/bill/analyzed…`).
+
+**Verification:** review plus 2 fix rounds, `npm test` with 903 tests green, and browser checks at 390 and 1440 px. Screenshots: [ui-testing/cr-kamera-scans/](./ui-testing/cr-kamera-scans/).
+
 ## AI Usage
 
-See [ai-usage.md](./ai-usage.md). The session also covered US-0007/US-0008, so its first row "Before Planning" is not part of US-0009. US-0009 starts with Planning (2026-11-05 21:18 UTC, story creation and brainstorming).
+See [ai-usage.md](./ai-usage.md). The session also covered US-0007/US-0008, so its first row "Before Planning" is not part of US-0009. US-0009 starts with Planning (2026-11-05 21:18 UTC, story creation and brainstorming). The "Change Request 2026-11-06" row covers the change request after the DEV test. Durations are wall-clock time, including waiting time.
