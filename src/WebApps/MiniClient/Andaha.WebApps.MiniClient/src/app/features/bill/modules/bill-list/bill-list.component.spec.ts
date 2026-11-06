@@ -1,6 +1,6 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, Router, UrlTree } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, of, throwError } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
@@ -224,6 +224,24 @@ describe('BillListComponent', () => {
       rows()[0].click();
 
       expect(String(navigateByUrl.mock.calls[0][0])).toBe('/bill/b1?q=Drucker');
+    });
+
+    it('carries special characters raw in the q param', async () => {
+      const navigateByUrl = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+      await showWithMatch('a&b ü');
+
+      rows()[0].click();
+
+      const tree = navigateByUrl.mock.calls[0][0] as UrlTree;
+      expect(tree.queryParams).toEqual({ q: 'a&b ü' });
+    });
+
+    it('shows only the description when the match has no price', async () => {
+      searchText = 'Pfand';
+      bills$.next([{ ...bill('b1', new Date(2026, 10, 5), 48.2), matchedLineItem: { description: 'Pfand', totalPrice: null } }]);
+      await settle();
+
+      expect(rows()[0].querySelector('.match-text')!.textContent!.trim()).toBe('Pfand');
     });
 
     it('no extra row without search', async () => {

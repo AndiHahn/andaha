@@ -2,7 +2,7 @@
   display: block;
 }
 
-// Mobile: zweizeilige Listenzeile, feste Hoehe 64 px inkl. Linie (pixelHeightPerItem)
+// Mobile: zweizeilige Listenzeile, feste Hoehe 64 px inkl. Linie (pixelHeightPerItem); Zeilen mit Positions-Treffer haben auto-Hoehe
 .bill-row {
   height: 64px;
   min-height: 0;
@@ -92,14 +92,17 @@
     padding: 0 16px;
   }
 
+  // erste Rasterzeile bleibt die normale Zeilenhoehe (51 px + 1 px Linie), Inhalt zentriert; darunter die Treffer-Zeile
   .bill-row.has-match {
     height: auto;
+    grid-template-rows: 51px auto;
     padding-bottom: 8px;
   }
 
+  // buendig mit der Shop-Spalte (130 px Datum + 16 px Innenabstand)
   .bill-row > .match-row {
     grid-column: 1 / -1;
-    padding: 4px 16px 0 130px;
+    padding: 0 16px 0 146px;
   }
 
   .date {
