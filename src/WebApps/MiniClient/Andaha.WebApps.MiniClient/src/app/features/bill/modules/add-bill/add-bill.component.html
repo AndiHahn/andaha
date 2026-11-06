@@ -89,12 +89,21 @@
       }
     </label>
 
+    <section class="line-items">
+      <button type="button" class="line-items-toggle" aria-controls="bill-line-items"
+        [attr.aria-expanded]="showLineItems" (click)="toggleLineItems()">
+        <span class="field-label">Positionen ({{ lineItemsControl.value.length }})</span>
+        <mat-icon aria-hidden="true">{{ showLineItems ? 'expand_less' : 'expand_more' }}</mat-icon>
+      </button>
+      <app-line-items-editor id="bill-line-items" [formControl]="lineItemsControl" [hidden]="!showLineItems" />
+    </section>
+
     <app-photo-picker [photo]="photo" [disabled]="isSaving"
       (photoSelected)="onPhotoSelected($event)" (photoRemoved)="onPhotoRemoved()" />
   </div>
 
   <div class="actions">
-    <button type="submit" class="btn pri" [disabled]="!form.valid || isSaving">
+    <button type="submit" class="btn pri" [disabled]="!form.valid || lineItemsControl.invalid || isSaving">
       <mat-icon>check</mat-icon><span>Speichern</span>
     </button>
   </div>

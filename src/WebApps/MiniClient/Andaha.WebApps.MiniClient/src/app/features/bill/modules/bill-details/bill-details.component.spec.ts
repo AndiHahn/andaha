@@ -3,6 +3,7 @@ import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { of, throwError } from 'rxjs';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
+import { BillUpdateDto } from 'src/app/api/shopping/dtos/BillUpdateDto';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { HistoryTrailService } from 'src/app/core/navigation/history-trail.service';
 import { BillContextService } from 'src/app/features/bill/services/bill-context.service';
@@ -18,6 +19,7 @@ describe('BillDetailsComponent', () => {
   let leaveTo: ReturnType<typeof vi.fn>;
   let openConfirmation: ReturnType<typeof vi.fn>;
   let getBill: ReturnType<typeof vi.fn>;
+  let updateBill: ReturnType<typeof vi.fn>;
 
   const route = (q?: string) => ({
     snapshot: { params: { id: 'b1' }, children: [], parent: null, queryParamMap: convertToParamMap(q ? { q } : {}) }
@@ -46,6 +48,7 @@ describe('BillDetailsComponent', () => {
 
     deleteBill = vi.fn(() => of(undefined));
     getBill = vi.fn(() => of({ ...bill, lineItems: items }));
+    updateBill = vi.fn(() => of(undefined));
     leaveTo = vi.fn();
     openConfirmation = vi.fn(() => Promise.resolve({ afterClosed: () => of(true) }));
 
@@ -58,7 +61,7 @@ describe('BillDetailsComponent', () => {
         { provide: ConfirmationDialogService, useValue: { openDialog: openConfirmation } },
         {
           provide: BillContextService,
-          useValue: { loadBillById: () => of({ ...bill }), loading: () => of(false), deleteBill }
+          useValue: { loadBillById: () => of({ ...bill }), loading: () => of(false), deleteBill, updateBill }
         },
         { provide: BillCategoryContextService, useValue: { categories: () => of([]) } }
       ]
@@ -170,6 +173,125 @@ describe('BillDetailsComponent', () => {
     expect(host.querySelectorAll('.line-item.match').length).toBe(1);
     expect(host.querySelector('app-line-items-view input')).toBeNull();
     expect(button('Löschen').disabled).toBe(true);
+  });
+
+  function recreate(shown: BillDto): void {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [BillDetailsComponent],
+      providers: [
+        { provide: ActivatedRoute, useValue: route() },
+        { provide: BillApiService, useValue: { getBill } },
+        { provide: HistoryTrailService, useValue: { leaveTo } },
+        { provide: ConfirmationDialogService, useValue: { openDialog: openConfirmation } },
+        { provide: BillContextService, useValue: { loadBillById: () => of({ ...shown }), loading: () => of(false), deleteBill, updateBill } },
+        { provide: BillCategoryContextService, useValue: { categories: () => of([]) } }
+      ]
+    });
+    fixture = TestBed.createComponent(BillDetailsComponent);
+    host = fixture.nativeElement;
+    fixture.detectChanges();
+  }
+
+  async function settle(): Promise<void> {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+  }
+
+  const editRows = () => Array.from(host.querySelectorAll<HTMLElement>('app-line-items-editor .edit-row'));
+  const description = (row: HTMLElement) => row.querySelector<HTMLInputElement>('input[aria-label="Beschreibung"]')!;
+
+  async function type(input: HTMLInputElement, value: string): Promise<void> {
+    input.value = value;
+    input.dispatchEvent(new Event('input'));
+    input.dispatchEvent(new Event('blur'));
+    await settle();
+  }
+
+  it('edit mode shows editor for own bill only', async () => {
+    button('Bearbeiten').click();
+    await settle();
+
+    expect(editRows().length).toBe(2);
+    expect(description(editRows()[0]).value).toBe('Milch');
+    expect(host.querySelector('app-line-items-view')).toBeNull();
+
+    recreate({ ...bill, isExternal: true });
+    button('Bearbeiten').click();
+    await settle();
+
+    expect(host.querySelector('app-line-items-editor')).toBeNull();
+    // Partner-Rechnung: Positionen bleiben nur lesend sichtbar (design.md §5.3)
+    expect(host.querySelectorAll('app-line-items-view .line-item').length).toBe(2);
+    expect(host.querySelector('app-line-items-view input')).toBeNull();
+  });
+
+  it('save sends lineItems JSON', async () => {
+    button('Bearbeiten').click();
+    await settle();
+
+    await type(description(editRows()[0]), 'Vollmilch');
+    editRows()[1].querySelector<HTMLButtonElement>('button[aria-label="Position entfernen"]')!.click();
+    await settle();
+    button('Speichern').click();
+    await settle();
+
+    expect(updateBill).toHaveBeenCalledTimes(1);
+    const dto = updateBill.mock.calls[0][1] as BillUpdateDto;
+    expect(JSON.parse(JSON.stringify(dto.lineItems))).toEqual([
+      { description: 'Vollmilch', quantity: 2, unitPrice: 1.49, totalPrice: 2.98 }
+    ]);
+    // nach dem Speichern zeigt die Ansicht den neuen Stand
+    expect(host.querySelectorAll('app-line-items-view .line-item').length).toBe(1);
+    expect(host.querySelector('app-line-items-view')!.textContent).toContain('Vollmilch');
+  });
+
+  it('save is blocked while a line item is invalid', async () => {
+    button('Bearbeiten').click();
+    await settle();
+
+    await type(description(editRows()[0]), '  ');
+    button('Speichern').click();
+    await settle();
+
+    expect(updateBill).not.toHaveBeenCalled();
+    expect(editRows()[0].querySelector('.field-error')?.textContent?.trim()).toBe('Pflichtfeld');
+  });
+
+  it('cancel restores items', async () => {
+    button('Bearbeiten').click();
+    await settle();
+
+    editRows()[0].querySelector<HTMLButtonElement>('button[aria-label="Position entfernen"]')!.click();
+    await type(description(editRows()[0]), 'Semmel');
+    button('Abbrechen').click();
+    await settle();
+
+    expect(updateBill).not.toHaveBeenCalled();
+    const text = host.querySelector('app-line-items-view')!.textContent!;
+    expect(text).toContain('Milch');
+    expect(text).toContain('Brot');
+
+    button('Bearbeiten').click();
+    await settle();
+    expect(editRows().map(row => description(row).value)).toEqual(['Milch', 'Brot']);
+  });
+
+  // Positionen nicht geladen (z. B. offline): Speichern darf sie nicht mit [] löschen
+  it('does not send lineItems when the items could not be loaded', async () => {
+    getBill = vi.fn(() => throwError(() => new Error('x')));
+    recreate(bill);
+
+    button('Bearbeiten').click();
+    await settle();
+    expect(host.querySelector('app-line-items-editor')).toBeNull();
+
+    button('Speichern').click();
+    await settle();
+
+    expect(updateBill).toHaveBeenCalledTimes(1);
+    expect((updateBill.mock.calls[0][1] as BillUpdateDto).lineItems).toBeUndefined();
   });
 
   it('delete asks confirmation, deletes and vibrates', async () => {

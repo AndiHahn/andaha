@@ -1,0 +1,54 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.edit-rows {
+  display: flex;
+  flex-direction: column;
+}
+
+// Mobil: Beschreibung über die ganze Breite, darunter Menge, Gesamtpreis und Entfernen
+.edit-row {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr) 44px;
+  grid-template-areas:
+    "desc desc desc"
+    "qty total remove";
+  align-items: start;
+  gap: 8px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line2);
+
+  &:first-child {
+    padding-top: 0;
+  }
+}
+
+.desc { grid-area: desc; }
+.qty { grid-area: qty; }
+.total { grid-area: total; }
+
+.total input {
+  text-align: right;
+}
+
+.remove {
+  grid-area: remove;
+  margin-top: 2px;
+  color: var(--mut);
+
+  &:disabled { opacity: .55; cursor: default; }
+}
+
+.add {
+  align-self: flex-start;
+}
+
+@media (min-width: 1024px) {
+  .edit-row {
+    grid-template-columns: minmax(0, 1fr) 88px 128px 44px;
+    grid-template-areas: "desc qty total remove";
+  }
+}

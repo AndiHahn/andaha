@@ -1,4 +1,5 @@
 import { BillLineItemDto } from 'src/app/api/shopping/dtos/BillLineItemDto';
+import { parseAmount } from '../quick-entry/logic/amount-input';
 
 const toCents = (value: number): number => Math.round(value * 100);
 
@@ -23,4 +24,75 @@ export function filterLineItems(items: BillLineItemDto[], query: string): { item
     item,
     match: needle !== '' && item.description.toLowerCase().includes(needle)
   }));
+}
+
+/** Position beim Bearbeiten und bei der Übernahme (design.md §5.2, §5.4) */
+export interface LineItemDraft {
+  description: string;
+  quantity: number | null;
+  unitPrice: number | null;
+  totalPrice: number | null;
+}
+
+/** Wie `LineItemData.MaxDescriptionLength` im Backend */
+export const MAX_LINE_ITEM_DESCRIPTION = 200;
+
+const MAX_QUANTITY = 2147483647;
+
+/**
+ * Dieselben Regeln wie `LineItemSanitizer` im Backend (design.md §5.1): Beschreibung getrimmt, ohne
+ * Beschreibung fällt die Position weg, über 200 Zeichen wird gekürzt, Menge 0 oder negativ wird `null`.
+ * Preise bleiben unverändert, auch negative (Rabatt, Pfand). Die Reihenfolge bleibt.
+ */
+export function sanitizeDrafts(drafts: readonly {
+  description?: string | null;
+  quantity?: number | null;
+  unitPrice?: number | null;
+  totalPrice?: number | null;
+}[]): LineItemDraft[] {
+  const result: LineItemDraft[] = [];
+  for (const draft of drafts) {
+    const description = (draft.description ?? '').trim().slice(0, MAX_LINE_ITEM_DESCRIPTION);
+    if (description.length === 0) {
+      continue;
+    }
+    result.push({
+      description,
+      quantity: draft.quantity != null && draft.quantity > 0 ? draft.quantity : null,
+      unitPrice: draft.unitPrice ?? null,
+      totalPrice: draft.totalPrice ?? null
+    });
+  }
+  return result;
+}
+
+/**
+ * Gesamtpreis aus der Eingabe: Komma oder Punkt, höchstens zwei Nachkommastellen, auch 0 und negativ.
+ * Leer → `null`, ungültig → `undefined`.
+ */
+export function parseLineItemPrice(text: string): number | null | undefined {
+  const value = text.trim();
+  if (value === '') {
+    return null;
+  }
+  const negative = /^[-−]/.test(value);
+  const rest = negative ? value.slice(1).trim() : value;
+  const amount = parseAmount(rest);
+  if (amount !== null) {
+    return negative ? -amount : amount;
+  }
+  return /^0+(?:[.,]0{0,2})?$/.test(rest) ? 0 : undefined;
+}
+
+/** Menge aus der Eingabe: ganze Zahl ≥ 1. Leer → `null`, ungültig → `undefined`. */
+export function parseLineItemQuantity(text: string): number | null | undefined {
+  const value = text.trim();
+  if (value === '') {
+    return null;
+  }
+  if (!/^\d+$/.test(value)) {
+    return undefined;
+  }
+  const quantity = Number(value);
+  return quantity >= 1 && quantity <= MAX_QUANTITY ? quantity : undefined;
 }

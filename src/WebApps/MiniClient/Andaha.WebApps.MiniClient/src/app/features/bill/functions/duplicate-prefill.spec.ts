@@ -29,6 +29,15 @@ describe('duplicatePrefill', () => {
     expect(prefill.imageKey).toBeUndefined();
   });
 
+  // design.md §5.2 [Entscheidung]: „Duplizieren“ übernimmt keine Positionen
+  it('duplicate does not copy line items', () => {
+    const prefill = duplicatePrefill(
+      { ...bill, lineItems: [{ id: 'l1', description: 'Milch', quantity: 2, unitPrice: 1.49, totalPrice: 2.98 }] },
+      new Date(2026, 10, 5));
+
+    expect(prefill.lineItems).toBeUndefined();
+  });
+
   it('sets no sub category when the bill has none', () => {
     const prefill = duplicatePrefill({ ...bill, subCategory: undefined, notes: undefined }, new Date(2026, 10, 5));
 

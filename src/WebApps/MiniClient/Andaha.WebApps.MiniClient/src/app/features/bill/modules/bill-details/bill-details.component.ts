@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject, viewChild } from '@angular/core';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GERMAN_DATE_PROVIDERS } from 'src/app/shared/date-picker/german-date-providers';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -9,6 +9,8 @@ import { EMPTY, Subject, catchError, takeUntil } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillLineItemDto } from 'src/app/api/shopping/dtos/BillLineItemDto';
 import { LineItemsViewComponent } from './line-items/line-items-view.component';
+import { LineItemsEditorComponent } from './line-items/line-items-editor.component';
+import { LineItemDraft, sanitizeDrafts } from '../../functions/line-items';
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { BillDto } from 'src/app/api/shopping/dtos/BillDto';
 import { BillUpdateDto } from 'src/app/api/shopping/dtos/BillUpdateDto';
@@ -38,7 +40,7 @@ import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
     styleUrls: ['./bill-details.component.scss'],
     providers: GERMAN_DATE_PROVIDERS,
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [PanelBackDirective, BillImageComponent, FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, MatOption, MatIcon, MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker, MatProgressBar, MatProgressSpinner, DecimalPipe, DatePipe, ShowErrorPipe, LineItemsViewComponent]
+    imports: [PanelBackDirective, BillImageComponent, FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, MatOption, MatIcon, MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker, MatProgressBar, MatProgressSpinner, DecimalPipe, DatePipe, ShowErrorPipe, LineItemsViewComponent, LineItemsEditorComponent]
 })
 export class BillDetailsComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
@@ -58,6 +60,11 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
   bill?: BillDto;
   /** Positionen kommen nur aus GET bill/{id}, die Liste liefert sie leer */
   lineItems: BillLineItemDto[] = [];
+  /** Erst nach dem Laden bearbeitbar: sonst würde Speichern die Positionen mit [] löschen */
+  lineItemsLoaded = false;
+  /** Positionen im Bearbeiten-Modus (design.md §5.4); getrennt vom Formular, wirksam beim Speichern */
+  readonly lineItemsControl = new FormControl<LineItemDraft[]>([], { nonNullable: true });
+  private readonly lineItemsEditor = viewChild(LineItemsEditorComponent);
   /** Suchtext aus `?q=` (Treffer aus der Rechnungssuche) */
   initialQuery = '';
   billCategories?: BillCategoryDto[];
@@ -103,7 +110,22 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
     this.billApiService.getBill(billId).pipe(
       catchError(() => EMPTY),
       takeUntil(this.destroy$)
-    ).subscribe(full => this.lineItems = full.lineItems ?? []);
+    ).subscribe(full => {
+      this.lineItems = full.lineItems ?? [];
+      this.lineItemsLoaded = true;
+      if (!this.lineItemsControl.dirty) {
+        this.resetLineItems();
+      }
+    });
+  }
+
+  /** Eigene Rechnung mit geladenen Positionen: Positionen sind bearbeitbar, Partner-Rechnungen nur lesend */
+  get canEditLineItems(): boolean {
+    return this.lineItemsLoaded && !this.isExternal;
+  }
+
+  private resetLineItems(): void {
+    this.lineItemsControl.reset(sanitizeDrafts(this.lineItems));
   }
 
   ngOnDestroy(): void {
@@ -120,26 +142,34 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
   onEditClick(): void {
     this.isEditing = true;
     this.form.enable();
+    this.resetLineItems();
   }
 
   onCancelClick(): void {
     this.isEditing = false;
     this.image = null;
+    this.resetLineItems();
     this.form = getBillForm(this.bill!);
     this.updateCategory();
     this.form.disable();
   }
 
   onSaveClick(): void {
-    if (!this.form.valid) {
+    const editLineItems = this.canEditLineItems;
+    if (!this.form.valid || (editLineItems && this.lineItemsControl.invalid)) {
+      this.lineItemsEditor()?.markAllAsTouched();
       return;
     }
+
+    const dto = this.createModelFromForm();
+    // Ersetzen (design.md §5.1); ohne das Feld bleiben die Positionen beim Server unverändert
+    const lineItems = editLineItems ? sanitizeDrafts(this.lineItemsControl.value) : undefined;
+    dto.lineItems = lineItems;
 
     this.form.disable();
     this.isEditing = false;
     this.isSaving = true;
 
-    const dto = this.createModelFromForm();
     const category = this.getCategoryFromForm();
     const subCategory = this.getSubCategoryFromForm();
 
@@ -158,6 +188,11 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
             subCategory,
             imageAvailable: dto.image != undefined || this.bill!.imageAvailable
           });
+          if (lineItems) {
+            // gespeicherter Stand für die Ansicht; die IDs vergibt der Server, hier reichen lokale
+            this.lineItems = lineItems.map((item, index) => ({ id: `local-${index}`, ...item }));
+            this.resetLineItems();
+          }
         },
         error: _ => {
           this.isSaving = false;

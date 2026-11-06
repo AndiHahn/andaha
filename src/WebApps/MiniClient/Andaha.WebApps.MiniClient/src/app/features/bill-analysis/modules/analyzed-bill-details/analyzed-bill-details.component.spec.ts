@@ -184,7 +184,11 @@ describe('AnalyzedBillDetailsComponent', () => {
     expect(commands).toEqual(['/bill/create']);
     const { imageKey, ...fields } = extras.state.prefill;
     expect(fields).toEqual({
-      analyzedBillId: 'a1', shopName: 'Billa', price: 12.5, date: '2026-11-03', categoryId: 'c1', subCategoryId: 's1'
+      analyzedBillId: 'a1', shopName: 'Billa', price: 12.5, date: '2026-11-03', categoryId: 'c1', subCategoryId: 's1',
+      lineItems: [
+        { description: 'Semmel', quantity: 4, unitPrice: 0.5, totalPrice: 2 },
+        { description: 'Milch', quantity: 1, unitPrice: 1.5, totalPrice: 1.5 }
+      ]
     });
     // das Foto geht im Speicher an das Formular, nicht über den History-State (Chromium verliert dort
     // nach einer Traversierung den ganzen Zustand des Eintrags, Phase 4 F2)
@@ -206,6 +210,40 @@ describe('AnalyzedBillDetailsComponent', () => {
     expect(extras.state.prefill.imageKey).toBeUndefined();
     expect(extras.state.prefill.categoryId).toBeUndefined();
     expect(extras.state.prefill.analyzedBillId).toBe('a1');
+  });
+
+  // design.md §5.2: die Übernahme gibt die Positionen bereinigt wie im Backend mit (§5.1)
+  it('take-over prefill carries sanitized line items', async () => {
+    await setup({
+      bill: {
+        ...bill,
+        imageAvailable: false,
+        lineItems: [
+          { description: '  Semmel ', quantity: 0, unitPrice: 0.5, totalPrice: 2 },
+          { description: '   ', totalPrice: 1 },
+          { description: 'Rabatt', totalPrice: -0.5 }
+        ]
+      }
+    });
+
+    button('Als Rechnung übernehmen').click();
+    await settle();
+
+    const extras = navigate.mock.calls[0][1] as { state: { prefill: BillCreatePrefill } };
+    expect(extras.state.prefill.lineItems).toEqual([
+      { description: 'Semmel', quantity: null, unitPrice: 0.5, totalPrice: 2 },
+      { description: 'Rabatt', quantity: null, unitPrice: null, totalPrice: -0.5 }
+    ]);
+  });
+
+  it('take-over without line items carries none', async () => {
+    await setup({ bill: { ...bill, imageAvailable: false, lineItems: [] } });
+
+    button('Als Rechnung übernehmen').click();
+    await settle();
+
+    const extras = navigate.mock.calls[0][1] as { state: { prefill: BillCreatePrefill } };
+    expect(extras.state.prefill.lineItems).toBeUndefined();
   });
 
   it('„Als Rechnung übernehmen“: Foto nicht ladbar → Fehlermeldung, keine Navigation', async () => {

@@ -111,7 +111,17 @@
             </span>
             <span class="field-hint" id="bill-details-date-hint">DD.MM.YYYY</span>
           </label>
+          @if (canEditLineItems) {
+            <div class="field line-items-field" role="group" aria-labelledby="bill-details-line-items-label">
+              <span class="field-label" id="bill-details-line-items-label">Positionen</span>
+              <app-line-items-editor [formControl]="lineItemsControl" />
+            </div>
+          }
         </form>
+        <!-- Partner-Rechnung: Positionen nur lesend (design.md §5.3) -->
+        @if (isExternal) {
+          <app-line-items-view [items]="lineItems" [price]="bill.price" [initialQuery]="initialQuery" />
+        }
       }
     </div>
   }

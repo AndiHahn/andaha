@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, DestroyRef, ElementRef, afterNextRender, inject, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatAutocomplete, MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatSelect, MatSelectTrigger } from '@angular/material/select';
@@ -31,6 +31,8 @@ import { QuickDateRowComponent } from '../../quick-entry/quick-date-row/quick-da
 import { QuickEntryDraftService } from '../../quick-entry/quick-entry-draft.service';
 import { ShopStatsContextService } from '../../services/shop-stats-context.service';
 import { PhotoPickerComponent } from '../photo-picker/photo-picker.component';
+import { LineItemsEditorComponent } from '../bill-details/line-items/line-items-editor.component';
+import { LineItemDraft, sanitizeDrafts } from '../../functions/line-items';
 import { PrefillImageStore } from '../../services/prefill-image-store.service';
 import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 
@@ -70,7 +72,7 @@ function readPrefill(images: PrefillImageStore): { prefill: BillCreatePrefill; i
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [PanelBackDirective, 
       ReactiveFormsModule, MatAutocomplete, MatAutocompleteTrigger, MatSelect, MatSelectTrigger, MatOption, MatIcon,
-      ShowErrorPipe, QuickDateRowComponent, PhotoPickerComponent
+      ShowErrorPipe, QuickDateRowComponent, PhotoPickerComponent, LineItemsEditorComponent
     ]
 })
 export class AddBillComponent implements OnInit {
@@ -101,6 +103,11 @@ export class AddBillComponent implements OnInit {
   shopOptions: string[] = [];
   photo: File | null = null;
   isSaving = false;
+
+  /** Positionen (design.md §5.2), z. B. aus der Übernahme einer Analyse; beim Speichern als `lineItems` */
+  readonly lineItemsControl = new FormControl<LineItemDraft[]>([], { nonNullable: true });
+  /** Abschnitt „Positionen (n)“, anfangs eingeklappt */
+  lineItemsExpanded = false;
 
   /** Kategorie von Hand gewählt oder vorbelegt: die Shop-Auswahl überschreibt sie dann nicht (AC25) */
   private categoryChosen = false;
@@ -169,11 +176,20 @@ export class AddBillComponent implements OnInit {
     this.photo = null;
   }
 
+  /** Aufgeklappt, solange eine Position ungültig ist: sonst sperrt ein unsichtbarer Fehler das Speichern */
+  get showLineItems(): boolean {
+    return this.lineItemsExpanded || this.lineItemsControl.invalid;
+  }
+
+  toggleLineItems(): void {
+    this.lineItemsExpanded = !this.showLineItems;
+  }
+
   async onSubmit(): Promise<void> {
     const controls = this.form.controls;
     const price = parseAmount(controls.price.value);
     const category = controls.category.value;
-    if (!this.form.valid || this.isSaving || price === null || !category) {
+    if (!this.form.valid || this.lineItemsControl.invalid || this.isSaving || price === null || !category) {
       return;
     }
 
@@ -188,6 +204,10 @@ export class AddBillComponent implements OnInit {
       date: this.billDate(),
       notes: controls.notes.value.trim()
     };
+    const lineItems = sanitizeDrafts(this.lineItemsControl.value);
+    if (lineItems.length > 0) {
+      dto.lineItems = lineItems;
+    }
 
     this.isSaving = true;
     try {
@@ -300,6 +320,10 @@ export class AddBillComponent implements OnInit {
     }
     if (this.initial.image) {
       this.photo = this.initial.image;
+    }
+    if (Array.isArray(prefill.lineItems)) {
+      // Router-State überlebt ein Neuladen: nochmals bereinigen statt ihm blind zu trauen
+      this.lineItemsControl.setValue(sanitizeDrafts(prefill.lineItems));
     }
     if (prefill.categoryId) {
       this.categoryChosen = true;

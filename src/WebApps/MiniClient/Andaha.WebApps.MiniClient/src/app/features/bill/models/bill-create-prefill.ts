@@ -1,3 +1,5 @@
+import { LineItemDraft } from '../functions/line-items';
+
 /**
  * Vorbelegung des großen Formulars (`/bill/create`), übergeben als Router-State
  * (`router.navigate(['/bill/create'], { state: { prefill } })`): aus „Alle Felder“ der
@@ -20,6 +22,8 @@ export interface BillCreatePrefill {
   analyzedBillId?: string;
   /** Aus „Alle Felder“ der Schnellerfassung: nach dem Speichern wird deren Entwurf verworfen */
   fromQuickEntry?: boolean;
+  /** Positionen der Analyse, bereinigt wie im Backend (design.md §5.2); „Duplizieren“ setzt sie nie */
+  lineItems?: LineItemDraft[];
 }
 
 /** „Als Rechnung übernehmen“ ohne Netz (design.md §5.2), im Formular und in der Analyse-Detailansicht */

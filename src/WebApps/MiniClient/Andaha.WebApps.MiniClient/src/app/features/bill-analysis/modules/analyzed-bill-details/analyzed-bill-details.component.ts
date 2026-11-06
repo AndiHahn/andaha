@@ -11,6 +11,7 @@ import { AnalyzedBillContextService } from '../../services/analyzed-bill-context
 import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { SubCategoryDto } from 'src/app/api/shopping/dtos/SubCategoryDto';
 import { BillCreatePrefill, TAKE_OVER_OFFLINE } from 'src/app/features/bill/models/bill-create-prefill';
+import { sanitizeDrafts } from 'src/app/features/bill/functions/line-items';
 import { PrefillImageStore } from 'src/app/features/bill/services/prefill-image-store.service';
 import { toDayKey } from 'src/app/features/bill/quick-entry/logic/quick-entry-state';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
@@ -168,6 +169,11 @@ export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
       if (bill.subCategoryId) {
         prefill.subCategoryId = bill.subCategoryId;
       }
+    }
+    // design.md §5.2: Positionen bereinigt wie im Backend (§5.1), in der erkannten Reihenfolge
+    const lineItems = sanitizeDrafts(bill.lineItems ?? []);
+    if (lineItems.length > 0) {
+      prefill.lineItems = lineItems;
     }
     return prefill;
   }

@@ -1,0 +1,41 @@
+<div class="edit-rows" (focusout)="touched()">
+  @for (row of rows.controls; track row; let i = $index) {
+    <div class="edit-row" [formGroup]="row">
+      <div class="field desc" [class.invalid]="row.controls.description | showError">
+        <span class="field-box">
+          <input #descriptionInput formControlName="description" type="text" autocomplete="off" enterkeyhint="next"
+            placeholder="Beschreibung" aria-label="Beschreibung" [attr.maxlength]="maxDescription"
+            [attr.aria-invalid]="row.controls.description | showError">
+        </span>
+        @if (row.controls.description | showError) {
+          <span class="field-error" role="alert">Pflichtfeld</span>
+        }
+      </div>
+      <div class="field qty" [class.invalid]="row.controls.quantity | showError">
+        <span class="field-box">
+          <input formControlName="quantity" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="next"
+            placeholder="Menge" aria-label="Menge" [attr.aria-invalid]="row.controls.quantity | showError">
+        </span>
+        @if (row.controls.quantity | showError) {
+          <span class="field-error" role="alert">Ungültiger Wert</span>
+        }
+      </div>
+      <div class="field total" [class.invalid]="row.controls.totalPrice | showError">
+        <span class="field-box">
+          <input formControlName="totalPrice" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="next"
+            placeholder="0,00" aria-label="Gesamtpreis" [attr.aria-invalid]="row.controls.totalPrice | showError">
+          <span class="suffix" aria-hidden="true">€</span>
+        </span>
+        @if (row.controls.totalPrice | showError) {
+          <span class="field-error" role="alert">Ungültiger Wert</span>
+        }
+      </div>
+      <button type="button" class="icon-btn remove" aria-label="Position entfernen" [disabled]="rows.disabled" (click)="remove(i)">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  }
+</div>
+<button type="button" class="btn sec2 add" [disabled]="rows.disabled" (click)="add()">
+  <mat-icon>add</mat-icon><span>Position hinzufügen</span>
+</button>

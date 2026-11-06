@@ -383,8 +383,91 @@ describe('AddBillComponent', () => {
     expect((addBill.mock.calls[1][0] as BillCreateDto).id).toBe((addBill.mock.calls[0][0] as BillCreateDto).id);
   });
 
+  describe('line items', () => {
+    const lineItems = [
+      { description: 'Semmel', quantity: 4, unitPrice: 0.5, totalPrice: 2 },
+      { description: 'Pfand', quantity: null, unitPrice: null, totalPrice: -0.25 }
+    ];
+    const toggle = () => host.querySelector<HTMLButtonElement>('button.line-items-toggle')!;
+    const editRows = () => Array.from(host.querySelectorAll<HTMLElement>('app-line-items-editor .edit-row'))
+      .filter(row => row.offsetParent !== null);
+
+    it('section collapsed with count', async () => {
+      await setup({ prefill: { price: 1.75, lineItems } });
+
+      expect(toggle().textContent).toContain('Positionen (2)');
+      expect(toggle().getAttribute('aria-expanded')).toBe('false');
+      expect(editRows().length).toBe(0);
+
+      toggle().click();
+      await settle();
+
+      expect(toggle().getAttribute('aria-expanded')).toBe('true');
+      expect(editRows().length).toBe(2);
+
+      Array.from(host.querySelectorAll<HTMLButtonElement>('app-line-items-editor button'))
+        .find(b => b.textContent?.includes('Position hinzufügen'))!.click();
+      await settle();
+      expect(toggle().textContent).toContain('Positionen (3)');
+      // die neue, leere Position sperrt das Speichern
+      await pickShop('Bi', 'Billa');
+      expect(saveButton().disabled).toBe(true);
+    });
+
+    it('a new bill without items shows "Positionen (0)" and sends none', async () => {
+      await setup();
+
+      expect(toggle().textContent).toContain('Positionen (0)');
+
+      await fillValid();
+      await save();
+
+      expect(savedDto().lineItems).toBeUndefined();
+    });
+
+    it('save sends them', async () => {
+      await setup({ prefill: { price: 1.75, lineItems } });
+
+      toggle().click();
+      await settle();
+      const total = editRows()[0].querySelector<HTMLInputElement>('input[aria-label="Gesamtpreis"]')!;
+      total.value = '2,10';
+      total.dispatchEvent(new Event('input'));
+      await settle();
+
+      await pickShop('Bi', 'Billa');
+      await save();
+
+      expect(savedDto().lineItems).toEqual([
+        { description: 'Semmel', quantity: 4, unitPrice: null, totalPrice: 2.1 },
+        { description: 'Pfand', quantity: null, unitPrice: null, totalPrice: -0.25 }
+      ]);
+    });
+  });
+
   describe('taking over an analyzed bill', () => {
     const prefill: BillCreatePrefill = { analyzedBillId: 'a1', price: 9.9, shopName: 'Billa', categoryId: 'c1', date: '2026-10-30' };
+
+    it('take-over prefill carries sanitized line items', async () => {
+      await setup({
+        prefill: {
+          ...prefill,
+          lineItems: [
+            { description: ' Semmel ', quantity: 0, unitPrice: 0.5, totalPrice: 2 },
+            { description: '  ', quantity: 1, unitPrice: null, totalPrice: 1 }
+          ]
+        }
+      });
+
+      expect(host.querySelector('button.line-items-toggle')!.textContent).toContain('Positionen (1)');
+
+      await save();
+
+      expect(apiAddBill).toHaveBeenCalledWith(expect.objectContaining({
+        lineItems: [{ description: 'Semmel', quantity: null, unitPrice: 0.5, totalPrice: 2 }]
+      }));
+      expect(deleteAnalyzedBill).toHaveBeenCalledWith('a1');
+    });
 
     it('saves online first, then deletes the analyzed entry', async () => {
       await setup({ prefill });
