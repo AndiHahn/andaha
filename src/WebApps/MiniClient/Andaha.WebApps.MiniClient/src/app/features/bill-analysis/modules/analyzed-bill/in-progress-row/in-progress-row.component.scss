@@ -1,0 +1,52 @@
+:host {
+  display: block;
+}
+
+.progress-row {
+  min-height: 72px;
+}
+
+// Vorschau 48 px, rund 8; ohne lokales Bild ein Belegsymbol
+.thumb {
+  width: 48px;
+  height: 48px;
+  flex: none;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--well);
+  box-shadow: inset 0 0 0 1px var(--line2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mut);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.main {
+  gap: 6px;
+}
+
+.t {
+  font-size: 15px;
+}
+
+.t.failed {
+  color: var(--neg-text);
+}
+
+mat-progress-bar {
+  border-radius: 2px;
+}
+
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}

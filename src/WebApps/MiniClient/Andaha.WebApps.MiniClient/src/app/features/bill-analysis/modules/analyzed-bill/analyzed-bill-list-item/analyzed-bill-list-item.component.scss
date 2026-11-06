@@ -8,6 +8,23 @@
   min-height: 0;
 }
 
+// Gerade fertig analysiert (US-0009, wie die neue Zeile in der Rechnungsliste): blendet nach ca. 2 s aus
+.analyzed-row.is-new {
+  animation: new-row 2.4s ease-out both;
+}
+
+@keyframes new-row {
+  0%, 75% { background-color: var(--pri-soft); }
+  100% { background-color: transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .analyzed-row.is-new {
+    animation: none;
+    background-color: var(--pri-soft);
+  }
+}
+
 .main {
   flex: 1;
   min-width: 0;

@@ -1,18 +1,33 @@
-<div class="progress-slot">
-  @if (loading) {
-    <mat-progress-bar mode="indeterminate" color="accent" />
-  }
+<!-- eine Scrollfläche für alle Abschnitte; „Zu prüfen“ bleibt darin virtuell gescrollt -->
+<div class="page" cdkVirtualScrollingElement>
+  <app-load-state [state]="loadState()" [emptyText]="emptyText" (retry)="retryLoad()">
+    @if (inProgress().length > 0) {
+      <section>
+        <p class="sec" role="heading" aria-level="2">In Arbeit</p>
+        @for (item of inProgress(); track item.key) {
+          <app-in-progress-row [item]="item" [now]="now()" (retry)="retryUpload(item)" (remove)="removeUpload(item)" />
+        }
+      </section>
+    }
+
+    @if (toReview().length > 0) {
+      <section>
+        <p class="sec" role="heading" aria-level="2">Zu prüfen</p>
+        <cdk-virtual-scroll-viewport class="list" [itemSize]="pixelHeightPerItem">
+          <a *cdkVirtualFor="let bill of toReview(); trackBy: trackById" class="bill-link" [routerLink]="['/bill/analysis', bill.id]">
+            <app-analyzed-bill-list-item [bill]="bill" [categories]="categories()" [isNew]="isHighlighted(bill.sourceUploadId)" />
+          </a>
+        </cdk-virtual-scroll-viewport>
+      </section>
+    }
+
+    @if (created().length > 0) {
+      <section>
+        <p class="sec" role="heading" aria-level="2">Angelegt</p>
+        @for (bill of created(); track bill.billId) {
+          <app-created-row [bill]="bill" [isNew]="isHighlighted(bill.sourceUploadId)" (done)="acknowledge(bill.billId)" />
+        }
+      </section>
+    }
+  </app-load-state>
 </div>
-
-@if (!loading && totalCount === 0) {
-  <div class="empty">
-    Keine Rechnungen verfügbar.
-  </div>
-}
-
-<cdk-virtual-scroll-viewport class="list" [itemSize]="pixelHeightPerItem">
-  <a *cdkVirtualFor="let bill of billDataSource" class="bill-link" [routerLink]="['/bill/analysis', bill.id]">
-    <app-analyzed-bill-list-item [bill]="bill" [categories]="categories" />
-  </a>
-</cdk-virtual-scroll-viewport>
-

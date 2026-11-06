@@ -1,15 +1,15 @@
 @let url = (url$ | async) ?? '';
 @if (isTabPage(area, url)) {
   @let active = findTabIndex(area, url);
-  @let analysisCount = (analysisCount$ | async) ?? 0;
+  @let badgeCount = analysisCount();
   <nav class="tabs" role="tablist" [attr.aria-label]="area.label">
     @for (tab of area.tabs; track tab.path; let i = $index) {
       <!-- info: Richtung der Slide-Animation (core/navigation/tab-transition.ts) -->
       <a role="tab" [routerLink]="tab.path" [class.on]="i === active" [attr.aria-selected]="i === active"
         [info]="i === active ? undefined : { tabDirection: i > active ? 'next' : 'prev' }">
         {{ tab.label }}
-        @if (tab.badge === 'analysis' && analysisCount > 0) {
-          <span class="cnt">{{ analysisCount }}</span>
+        @if (tab.badge === 'analysis' && badgeCount > 0) {
+          <span class="cnt">{{ badgeCount }}</span>
         }
       </a>
     }

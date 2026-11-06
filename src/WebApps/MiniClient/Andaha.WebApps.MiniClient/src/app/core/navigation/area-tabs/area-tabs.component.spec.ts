@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, WritableSignal, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { BillAnalyzedDto } from 'src/app/api/shopping/dtos/BillAnalyzedDto';
+import { AnalysisUploadService } from 'src/app/features/bill-analysis/services/analysis-upload.service';
 import { AnalyzedBillContextService } from 'src/app/features/bill-analysis/services/analyzed-bill-context.service';
 import { NAV_AREAS, NavArea } from '../nav-areas';
 import { AreaTabsComponent } from './area-tabs.component';
@@ -17,15 +18,18 @@ describe('AreaTabsComponent', () => {
   let fixture: ComponentFixture<AreaTabsComponent>;
   let router: Router;
   let bills$: BehaviorSubject<BillAnalyzedDto[]>;
+  let inProgressCount: WritableSignal<number>;
 
   beforeEach(async () => {
     bills$ = new BehaviorSubject<BillAnalyzedDto[]>([]);
+    inProgressCount = signal(0);
 
     await TestBed.configureTestingModule({
       imports: [AreaTabsComponent],
       providers: [
         provideRouter([{ path: '**', component: DummyComponent }]),
-        { provide: AnalyzedBillContextService, useValue: { bills: () => bills$.asObservable() } }
+        { provide: AnalyzedBillContextService, useValue: { bills: () => bills$.asObservable() } },
+        { provide: AnalysisUploadService, useValue: { inProgressCount } }
       ]
     }).compileComponents();
 
@@ -73,6 +77,22 @@ describe('AreaTabsComponent', () => {
 
     const badge: HTMLElement = tabs()[1].querySelector('.cnt')!;
     expect(badge.textContent?.trim()).toBe('2');
+  });
+
+  it('badge counts in progress plus to review', async () => {
+    inProgressCount.set(2);
+    bills$.next([{ id: 'a' } as BillAnalyzedDto]);
+    await navigate('/bill/list');
+
+    expect(tabs()[1].querySelector('.cnt')!.textContent?.trim()).toBe('3');
+
+    bills$.next([]);
+    fixture.detectChanges();
+    expect(tabs()[1].querySelector('.cnt')!.textContent?.trim()).toBe('2');
+
+    inProgressCount.set(0);
+    fixture.detectChanges();
+    expect(tabs()[1].querySelector('.cnt')).toBeNull();
   });
 
   it('passes the slide direction from the tab order when a tab is tapped', async () => {

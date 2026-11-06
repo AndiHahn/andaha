@@ -1,0 +1,71 @@
+:host {
+  display: block;
+}
+
+// Zeile: Link (Datum, Shop, Betrag) und rechts „Erledigt“; der Link fuellt die Zeile bis zum Button
+.created-row {
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-right: 12px;
+  gap: 10px;
+}
+
+.open {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  align-self: stretch;
+  padding: 12px 0;
+  color: inherit;
+  text-decoration: none;
+
+  &:focus-visible { outline-offset: -2px; }
+}
+
+.s .origin {
+  color: var(--pri-text);
+}
+
+// Gerade fertig analysiert (wie die neue Zeile in der Rechnungsliste): primary-soft, blendet nach ca. 2 s aus
+.created-row.is-new {
+  animation: new-row 2.4s ease-out both;
+}
+
+@keyframes new-row {
+  0%, 75% { background-color: var(--pri-soft); }
+  100% { background-color: transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .created-row.is-new {
+    animation: none;
+    background-color: var(--pri-soft);
+  }
+}
+
+.date-full {
+  display: none;
+}
+
+// Desktop: Datum ausgeschrieben statt Tag/Monat-Block
+@media (min-width: 1024px) {
+  .created-row { padding-left: 0; padding-right: 0; }
+
+  .date {
+    display: none;
+  }
+
+  .date-full {
+    display: block;
+    width: 110px;
+    flex: none;
+    color: var(--mut);
+    white-space: nowrap;
+  }
+
+  .open:hover {
+    background: var(--hover-row);
+  }
+}

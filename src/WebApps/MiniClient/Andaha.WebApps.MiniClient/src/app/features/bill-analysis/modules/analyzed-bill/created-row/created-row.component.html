@@ -1,0 +1,19 @@
+@let entry = bill();
+<div class="row created-row" [class.is-new]="isNew()">
+  <a class="open" [routerLink]="['/bill', entry.billId]">
+    <div class="date">
+      <b>{{ entry.date | date:'dd':undefined:'de' }}</b>
+      <span>{{ entry.date | date:'LLL':undefined:'de' }}</span>
+    </div>
+    <div class="date-full">{{ entry.date | date:'dd.MM.yyyy':undefined:'de' }}</div>
+    <div class="main">
+      <div class="t">{{ entry.shopName }}</div>
+      <div class="s">
+        <mat-icon class="origin" aria-hidden="true">auto_awesome</mat-icon>
+        <span>automatisch angelegt</span>
+      </div>
+    </div>
+    <div class="amt">{{ entry.price | number:'1.2-2':'de' }}<small>€</small></div>
+  </a>
+  <button type="button" class="mbtn g" (click)="done.emit()">Erledigt</button>
+</div>

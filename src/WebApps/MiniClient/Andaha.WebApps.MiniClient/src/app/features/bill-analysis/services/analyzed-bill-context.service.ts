@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, map } from 'rxjs';
 import { afterFirstLoad } from 'src/app/shared/utils/load-state';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillAnalyzedDto } from 'src/app/api/shopping/dtos/BillAnalyzedDto';
@@ -27,6 +27,8 @@ export class AnalyzedBillContextService {
 
   bills(): Observable<BillAnalyzedDto[]> { return this.bills$.asObservable(); }
   loading(): Observable<boolean> { return this.loading$.asObservable(); }
+  /** Letztes Laden ist fehlgeschlagen (Fehlerzustand im Tab Analyse); ein späteres Laden setzt es zurück */
+  failed(): Observable<boolean> { return this.loadState$.pipe(map(state => state === 'failed')); }
 
   /**
    * Neu laden. `silent` (Abfragen im Takt, US-0009): kein Ladezustand (kein Flackern), Fehler ohne globale

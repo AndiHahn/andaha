@@ -1,0 +1,32 @@
+@let entry = item();
+<div class="row progress-row">
+  <div class="thumb">
+    @if (entry.previewUrl) {
+      <img [src]="entry.previewUrl" alt="" />
+    } @else {
+      <mat-icon aria-hidden="true">receipt_long</mat-icon>
+    }
+  </div>
+  <div class="main">
+    @switch (entry.state) {
+      @case ('uploading') {
+        <div class="t">Wird hochgeladen · {{ entry.progress }} %</div>
+        <mat-progress-bar mode="determinate" [value]="entry.progress" aria-label="Upload-Fortschritt" />
+      }
+      @case ('analyzing') {
+        <div class="t">Wird analysiert …</div>
+        @if (takesLonger()) {
+          <div class="s">dauert länger als üblich</div>
+        }
+        <mat-progress-bar mode="indeterminate" aria-label="Analyse läuft" />
+      }
+      @case ('failed') {
+        <div class="t failed">Upload fehlgeschlagen</div>
+        <div class="row-actions">
+          <button type="button" class="mbtn g" (click)="retry.emit()">Erneut versuchen</button>
+          <button type="button" class="mbtn r" (click)="remove.emit()">Entfernen</button>
+        </div>
+      }
+    }
+  </div>
+</div>

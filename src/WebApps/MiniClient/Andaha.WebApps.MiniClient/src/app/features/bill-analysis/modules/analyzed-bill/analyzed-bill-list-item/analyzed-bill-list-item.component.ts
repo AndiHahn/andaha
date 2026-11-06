@@ -20,6 +20,10 @@ export class AnalyzedBillListItemComponent implements OnInit {
   @Input()
   categories: CategoryDto[] = [];
 
+  /** gerade fertig analysiert (US-0009): kurz hervorheben wie die neue Zeile in der Rechnungsliste */
+  @Input()
+  isNew = false;
+
   constructor() { }
 
   ngOnInit(): void {

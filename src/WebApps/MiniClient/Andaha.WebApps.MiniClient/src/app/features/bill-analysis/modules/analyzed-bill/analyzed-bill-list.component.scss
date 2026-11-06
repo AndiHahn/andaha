@@ -1,23 +1,23 @@
-// Seite im Flex-Fluss der .area: Ladebalken fest, die Liste fuellt den Rest und scrollt
+// Seite im Flex-Fluss der .area: .page ist die eine Scrollflaeche aller Abschnitte (cdkVirtualScrollingElement)
 :host {
   display: flex;
   flex-direction: column;
 }
 
-// Fester Platz fuer den 3-px-Ladebalken, damit die Liste beim Laden nicht springt
-.progress-slot {
-  flex: none;
-  height: 3px;
-}
-
-.empty {
-  flex: none;
-}
-
-.list {
+.page {
   flex: 1 1 auto;
   min-height: 0;
-  border-top: 1px solid var(--line);
+  overflow: auto;
+}
+
+// Abschnittskoepfe ohne eigenen Abstand oben am Seitenanfang
+section:first-child .sec {
+  padding-top: 14px;
+}
+
+// „Zu prüfen“: virtueller Scroll ueber .page; der Viewport ist so hoch wie seine Zeilen (Spacer)
+.list {
+  display: block;
 }
 
 // contain: inline-size, damit lange Shopnamen den (absolut positionierten) Inhalts-Wrapper des Viewports
@@ -33,16 +33,13 @@
 }
 
 @media (min-width: 1024px) {
-  .progress-slot,
-  .empty,
-  .list {
-    margin: 0 40px;
+  app-load-state {
+    display: block;
+    margin: 8px 40px 24px;
     max-width: 1040px;
   }
 
-  .list {
-    margin-top: 8px;
-    margin-bottom: 24px;
+  .page {
     scrollbar-gutter: stable;
   }
 

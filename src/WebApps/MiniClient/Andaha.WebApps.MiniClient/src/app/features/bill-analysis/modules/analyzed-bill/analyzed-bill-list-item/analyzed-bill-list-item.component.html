@@ -1,4 +1,4 @@
-<div class="row analyzed-row">
+<div class="row analyzed-row" [class.is-new]="isNew">
   <div class="date">
     @if (bill.date) {
       <b>{{ bill.date | date:'dd':undefined:'de' }}</b>

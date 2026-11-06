@@ -1,8 +1,10 @@
-import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, computed, inject } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { AnalysisUploadService } from 'src/app/features/bill-analysis/services/analysis-upload.service';
 import { AnalyzedBillContextService } from 'src/app/features/bill-analysis/services/analyzed-bill-context.service';
 import { currentUrl$ } from '../current-url';
 import { findTabIndex, isTabPage, NavArea } from '../nav-areas';
@@ -23,9 +25,12 @@ export class AreaTabsComponent {
 
   readonly url$: Observable<string> = currentUrl$(inject(Router));
 
-  /** Anzahl offener Analysen (= Einträge im Analyse-Tab) */
-  readonly analysisCount$: Observable<number> = inject(AnalyzedBillContextService).bills().pipe(
-    map(bills => bills.length));
+  private readonly toReviewCount = toSignal(
+    inject(AnalyzedBillContextService).bills().pipe(map(bills => bills.length)), { initialValue: 0 });
+  private readonly inProgressCount = inject(AnalysisUploadService).inProgressCount;
+
+  /** Badge am Tab Analyse (US-0009 AC9): „In Arbeit“ plus „Zu prüfen“ */
+  readonly analysisCount = computed(() => this.inProgressCount() + this.toReviewCount());
 
   readonly isTabPage = isTabPage;
   readonly findTabIndex = findTabIndex;
