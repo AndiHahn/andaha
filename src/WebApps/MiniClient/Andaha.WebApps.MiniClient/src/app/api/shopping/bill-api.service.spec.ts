@@ -113,9 +113,10 @@ describe('BillApiService addBill', () => {
     http.verify();
   });
 
-  it('uploadForAnalysis posts the file with upload progress events and without global error snackbar', () => {
+  it('uploadForAnalysis posts the file and the upload id with upload progress events and without global error snackbar', () => {
     const events: HttpEvent<{ id: string }>[] = [];
-    TestBed.inject(BillApiService).uploadForAnalysis(new Blob(['x'], { type: 'image/jpeg' }), 'kassenbon-ä.jpg')
+    const uploadId = '3f2b8c1e-5d4a-4b6f-9a7e-1c2d3e4f5a6b';
+    TestBed.inject(BillApiService).uploadForAnalysis(new Blob(['x'], { type: 'image/jpeg' }), 'kassenbon-ä.jpg', uploadId)
       .subscribe(event => events.push(event));
 
     const req = http.expectOne(r => r.method === 'POST');
@@ -123,6 +124,7 @@ describe('BillApiService addBill', () => {
     expect(req.request.reportUploadProgress).toBe(true);
     expect(req.request.context.get(SKIP_GLOBAL_ERROR)).toBe(true);
     expect(((req.request.body as FormData).get('file') as File).name).toBe('kassenbon-ä.jpg');
+    expect((req.request.body as FormData).get('id')).toBe(uploadId);
 
     req.event({ type: HttpEventType.UploadProgress, loaded: 50, total: 100 });
     req.flush({ id: 'img-1' }, { status: 202, statusText: 'Accepted' });

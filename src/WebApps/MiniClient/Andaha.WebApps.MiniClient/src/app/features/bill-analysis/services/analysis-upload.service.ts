@@ -86,6 +86,8 @@ export class AnalysisUploadService {
     this.uploadsState().some(upload => upload.state !== 'failed') || this.serverOnlyPending() > 0);
 
   private readonly files = new Map<string, File>();
+  /** GUID je lokalem Upload, über „Erneut versuchen“ hinweg gleich: der Server legt das Bild nur einmal an */
+  private readonly uploadIds = new Map<string, string>();
   private readonly queue: string[] = [];
   private readonly running = new Map<string, Subscription>();
   /** Abfrage-Nummer beim Wechsel nach `analyzing`: nur spätere Abfragen dürfen den Upload als fertig melden */
@@ -101,11 +103,13 @@ export class AnalysisUploadService {
   private destroyed = false;
 
   constructor() {
-    // zurück im Vordergrund bzw. wieder online: sofort abfragen; verdeckt bzw. offline: pausieren
+    // zurück im Vordergrund bzw. wieder online: einmal sofort abfragen, auch ohne laufende Arbeit (nach Mitternacht
+    // verschwindet Gestriges aus „Angelegt“, Einträge vom NAS bzw. anderen Gerät erscheinen); im Takt weiter nur,
+    // solange etwas läuft (schedulePoll). Verdeckt bzw. offline: pausieren
     const resumeOrPause = () => {
       if (!this.canPoll()) {
         this.clearPollTimer();
-      } else if (this.hasRunningWork()) {
+      } else {
         this.poll();
       }
     };
@@ -145,6 +149,7 @@ export class AnalysisUploadService {
     const added = files.map(file => {
       const localId = `upload-${++this.nextLocalId}`;
       this.files.set(localId, file);
+      this.uploadIds.set(localId, crypto.randomUUID());
       const upload: LocalUpload = {
         localId,
         previewUrl: URL.createObjectURL(file),
@@ -201,12 +206,13 @@ export class AnalysisUploadService {
 
   private startUpload(localId: string): void {
     const file = this.files.get(localId)!;
+    const uploadId = this.uploadIds.get(localId)!;
     const subscription = new Subscription();
     this.running.set(localId, subscription);
 
     subscription.add(
       from(compressImage(file, IMAGE_MAX_EDGE, IMAGE_QUALITY)).pipe(
-        switchMap(image => this.billApi.uploadForAnalysis(image, image.name || file.name)),
+        switchMap(image => this.billApi.uploadForAnalysis(image, image.name || file.name, uploadId)),
         finalize(() => {
           this.running.delete(localId);
           this.startQueuedUploads();
@@ -343,6 +349,7 @@ export class AnalysisUploadService {
       URL.revokeObjectURL(upload.previewUrl);
     }
     this.files.delete(localId);
+    this.uploadIds.delete(localId);
     this.analyzingSincePoll.delete(localId);
     this.uploadsState.update(uploads => uploads.filter(u => u.localId !== localId));
   }

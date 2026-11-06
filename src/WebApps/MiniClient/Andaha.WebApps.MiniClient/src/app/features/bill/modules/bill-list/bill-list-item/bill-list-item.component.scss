@@ -96,6 +96,7 @@
   .bill-row.has-match {
     height: auto;
     grid-template-rows: 51px auto;
+    row-gap: 0; // die mobile Regel (2px) gilt sonst auch im Raster
     padding-bottom: 8px;
   }
 

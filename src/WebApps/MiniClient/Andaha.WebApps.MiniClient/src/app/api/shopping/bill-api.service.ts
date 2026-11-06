@@ -121,11 +121,16 @@ export class BillApiService {
    * Lädt ein Foto zur Analyse hoch; liefert Fortschritts-Events und zuletzt die Antwort (202, Bild-ID).
    * Fehler zeigt der Upload-Eintrag selbst („Upload fehlgeschlagen“), keine globale Snackbar.
    */
-  uploadForAnalysis(file: Blob, fileName: string): Observable<HttpEvent<{ id: string }>> {
+  /**
+   * @param uploadId GUID des lokalen Uploads, bei „Erneut versuchen“ derselbe: ging die Antwort (202) verloren,
+   * legt der Server kein zweites Bild an (US-0009)
+   */
+  uploadForAnalysis(file: Blob, fileName: string, uploadId: string): Observable<HttpEvent<{ id: string }>> {
     const url = constructVersionedPath(this.apiVersion, this.endpointUrl, 'upload-for-analysis');
 
     const formData = new FormData();
     formData.set('file', file, fileName);
+    formData.set('id', uploadId);
 
     // reportUploadProgress statt des in Angular 22 veralteten reportProgress; braucht withXhr() (app.config)
     return this.httpClient.post<{ id: string }>(url, formData, {

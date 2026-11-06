@@ -179,6 +179,27 @@ describe('AnalysisUploadService', () => {
     expect(service.uploads()).toEqual([expect.objectContaining({ localId, state: 'analyzing', serverId: 'img-1' })]);
   });
 
+  it('retry re-sends the same id', async () => {
+    const uploadId = (request: TestRequest) => (request.request.body as FormData).get('id');
+
+    service.uploadAll([photo('1.jpg'), photo('2.jpg')]);
+    const requests = await uploadRequests(2);
+    const byName = (name: string) => requests.find(r => ((r.request.body as FormData).get('file') as File).name === name)!;
+    const firstId = uploadId(byName('1.jpg'));
+    expect(firstId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+    expect(uploadId(byName('2.jpg'))).not.toBe(firstId);
+
+    // die Antwort (202) geht verloren: der Server hat das Bild, der Client hält den Upload für gescheitert
+    byName('1.jpg').error(new ProgressEvent('error'));
+    accept(byName('2.jpg'), 'img-2');
+    service.retry(service.uploads()[0].localId);
+    const [again] = await uploadRequests(1);
+
+    expect(uploadId(again)).toBe(firstId);
+    accept(again, firstId as string);
+    expect(service.uploads()[0]).toEqual(expect.objectContaining({ state: 'analyzing', serverId: firstId }));
+  });
+
   it('remove drops a failed upload', async () => {
     service.uploadAll([photo('bon.jpg')]);
     const [failed] = await uploadRequests(1);
@@ -235,6 +256,21 @@ describe('AnalysisUploadService', () => {
 
     vi.advanceTimersByTime(3_000);
     answerPoll([pendingRaw('img-1')]);
+  });
+
+  it('becoming visible without running work polls once and does not keep polling', () => {
+    setVisibility('hidden');
+    vi.advanceTimersByTime(10 * 60_000);
+    http.expectNone(isPending);
+
+    // z. B. nach Mitternacht oder mit Einträgen vom NAS bzw. einem zweiten Gerät: „Angelegt“ und „In Arbeit“ stimmen wieder
+    setVisibility('visible');
+    answerPoll([], []);
+    expect(refreshAnalyzed).toHaveBeenCalledTimes(1);
+    expect(refreshAnalyzed).toHaveBeenCalledWith({ silent: true });
+
+    vi.advanceTimersByTime(60_000);
+    http.expectNone(isPending);
   });
 
   it('completion detected when serverId leaves pending', async () => {

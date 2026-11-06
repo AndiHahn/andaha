@@ -101,6 +101,9 @@ export class AnalyzedBillListComponent {
   private readonly highlightTimers = new Set<ReturnType<typeof setTimeout>>();
 
   constructor() {
+    // Tab geöffnet: „In Arbeit“, „Angelegt“ (heute) und still „Zu prüfen“ neu laden, auch ohne lokale Uploads
+    this.uploads.refresh();
+
     this.uploads.completed$
       .pipe(takeUntilDestroyed())
       .subscribe(({ serverId }) => this.awaitResult(serverId));

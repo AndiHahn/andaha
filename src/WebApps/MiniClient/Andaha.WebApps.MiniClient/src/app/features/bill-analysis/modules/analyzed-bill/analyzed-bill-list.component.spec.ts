@@ -42,6 +42,7 @@ describe('AnalyzedBillListComponent', () => {
   let failed$: BehaviorSubject<boolean>;
   let retry: Mock;
   let remove: Mock;
+  let refreshUploads: Mock;
 
   beforeEach(() => {
     localStorage.clear();
@@ -54,6 +55,7 @@ describe('AnalyzedBillListComponent', () => {
     failed$ = new BehaviorSubject(false);
     retry = vi.fn();
     remove = vi.fn();
+    refreshUploads = vi.fn();
 
     TestBed.configureTestingModule({
       imports: [AnalyzedBillListComponent],
@@ -63,7 +65,7 @@ describe('AnalyzedBillListComponent', () => {
           provide: AnalysisUploadService,
           useValue: {
             uploads, pending, todayCreated: today, completed$: completed$.asObservable(),
-            retry, remove, refresh: vi.fn()
+            retry, remove, refresh: refreshUploads
           }
         },
         {
@@ -102,6 +104,13 @@ describe('AnalyzedBillListComponent', () => {
     expect(found, `Button „${text}“`).toBeTruthy();
     return found!;
   }
+
+  it('tab opened with no uploads loads pending and today', async () => {
+    await render();
+
+    // eine Abfrage: `pending`, `today` und still die Analyse-Liste (Gestriges unter „Angelegt“ verschwindet)
+    expect(refreshUploads).toHaveBeenCalledTimes(1);
+  });
 
   it('shows three sections only when non-empty', async () => {
     uploads.set([upload('l1')]);
