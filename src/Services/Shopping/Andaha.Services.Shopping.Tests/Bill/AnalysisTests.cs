@@ -9,6 +9,7 @@ using Andaha.Services.Shopping.Requests.Bill.GetAnalyzedBills.V1;
 using Andaha.Services.Shopping.Requests.Bill.UploadForAnalysis.V1;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
 namespace Andaha.Services.Shopping.Tests.Bill;
@@ -63,6 +64,37 @@ public class AnalysisTests
         Assert.IsType<BadRequest<Microsoft.AspNetCore.Mvc.ProblemDetails>>(result);
         await repository.DidNotReceiveWithAnyArgs().UploadImageAsync(default!, default!, default, default!, default);
         Assert.False(queue.TryDequeue(out _));
+    }
+
+    [Theory]
+    [InlineData("3f2b8c1e-5d4a-4b6f-9a7e-1c2d3e4f5a6b")]
+    [InlineData(null)]
+    public async Task Upload_command_binds_file_and_optional_id_from_multipart_form(string? id)
+    {
+        UploadBillForAnalysisCommand? bound = null;
+        using var services = new ServiceCollection().AddLogging().BuildServiceProvider();
+        var endpoint = RequestDelegateFactory.Create(
+            ([AsParameters] UploadBillForAnalysisCommand command) => { bound = command; return Results.Ok(); },
+            new RequestDelegateFactoryOptions { ServiceProvider = services });
+
+        var fields = new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>();
+        if (id is not null)
+        {
+            fields["id"] = id;
+        }
+
+        var file = new FormFile(new MemoryStream([1, 2, 3]), 0, 3, "file", "bon.jpg");
+        var httpContext = new DefaultHttpContext { RequestServices = services };
+        httpContext.Request.Method = HttpMethods.Post;
+        httpContext.Request.ContentType = "multipart/form-data; boundary=x";
+        httpContext.Features.Set<Microsoft.AspNetCore.Http.Features.IFormFeature>(
+            new Microsoft.AspNetCore.Http.Features.FormFeature(new FormCollection(fields, new FormFileCollection { file })));
+
+        await endpoint.RequestDelegate(httpContext);
+
+        Assert.NotNull(bound);
+        Assert.Same(file, bound.File);
+        Assert.Equal(id, bound.Id);
     }
 
     [Fact]

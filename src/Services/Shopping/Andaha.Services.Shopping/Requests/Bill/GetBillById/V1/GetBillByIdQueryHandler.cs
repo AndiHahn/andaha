@@ -40,8 +40,11 @@ internal class GetBillByIdQueryHandler : IRequestHandler<GetBillByIdQuery, IResu
             return Results.NotFound($"Bill with id {request.Id} not found.");
         }
 
+        // deleted between the check and this read: still a missing bill, not a server error
         var bill = await dbContext.FindBillDtoByIdAsync(request.Id, userId, cancellationToken);
 
-        return Results.Ok(bill);
+        return bill is null
+            ? Results.NotFound($"Bill with id {request.Id} not found.")
+            : Results.Ok(bill);
     }
 }

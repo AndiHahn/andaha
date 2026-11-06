@@ -3,6 +3,7 @@ using Andaha.Services.Shopping.Infrastructure;
 using Andaha.Services.Shopping.Infrastructure.ImageRepositories;
 using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Analysis;
 using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Image;
+using Andaha.Services.Shopping.Requests.Bill;
 
 namespace Andaha.Services.Shopping.BackgroundJobs;
 
@@ -16,6 +17,16 @@ internal class FailedAnalysisImageHandler(
 
     public async Task HandleAsync(string imageName, CancellationToken ct)
     {
+        // An earlier run (or the analysis itself) already created the entry but did not delete the image.
+        if (await dbContext.IsAnalysisUploadProcessedAsync(imageName, ct))
+        {
+            logger.LogWarning("Image '{ImageName}' was already turned into a bill or analyzed bill. Deleting the leftover image.", imageName);
+
+            await analysisImageRepository.DeleteImageAsync(imageName, ct);
+
+            return;
+        }
+
         var file = await analysisImageRepository.GetImageAsync(imageName, ct);
         using var imageStream = file.Image;
 

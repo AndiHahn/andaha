@@ -34,11 +34,14 @@ internal class SearchBillsQueryHandler : IRequestHandler<SearchBillsQuery, IResu
             .Where(bill => bill.UserId == userId ||
                            connectedUsers.Contains(bill.UserId));
 
-        if (request.Search is not null)
+        // "milch " finds "Vollmilch"; a blank term is no search at all
+        var search = request.Search?.Trim();
+
+        if (!string.IsNullOrEmpty(search))
         {
-            query = query.Where(b => b.ShopName.Contains(request.Search) ||
-                                     b.Notes != null && b.Notes.Contains(request.Search) ||
-                                     b.LineItems.Any(l => l.Description != null && l.Description.Contains(request.Search)));
+            query = query.Where(b => b.ShopName.Contains(search) ||
+                                     b.Notes != null && b.Notes.Contains(search) ||
+                                     b.LineItems.Any(l => l.Description != null && l.Description.Contains(search)));
         }
 
         if (request.CategoryFilter?.Length > 0)
@@ -73,8 +76,7 @@ internal class SearchBillsQueryHandler : IRequestHandler<SearchBillsQuery, IResu
             .ThenByDescending(b => b.CreatedAt)
             .AsExpandable();
 
-        var search = request.Search;
-        var dtoQuery = search is null
+        var dtoQuery = string.IsNullOrEmpty(search)
             ? orderedQuery.Select(bill => BillDtoMapping.EntityToListDto.Invoke(bill, userId))
             : orderedQuery.Select(bill => BillDtoMapping.EntityToSearchListDto.Invoke(bill, userId, search));
 

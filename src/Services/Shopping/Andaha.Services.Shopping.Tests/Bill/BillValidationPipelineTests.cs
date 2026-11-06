@@ -4,6 +4,7 @@ using Andaha.Services.Shopping.Infrastructure.Proxies;
 using Andaha.Services.Shopping.Requests.Bill.CreateBill.V1;
 using Andaha.Services.Shopping.Requests.Bill.Dtos.V1;
 using Andaha.Services.Shopping.Requests.Bill.UpdateBill.V1;
+using Andaha.Services.Shopping.Requests.Bill.UploadForAnalysis.V1;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -242,5 +243,17 @@ public sealed class BillValidationPipelineTests : IDisposable
         Assert.Equal("ZZ Fremd", bill.ShopName);
         Assert.Equal(12.5, bill.Price);
         Assert.Null(bill.Notes);
+    }
+
+    [Fact]
+    public async Task Upload_for_analysis_with_invalid_id_returns_400()
+    {
+        var file = Substitute.For<IFormFile>();
+        file.Length.Returns(3);
+        file.OpenReadStream().Returns(_ => new MemoryStream(new byte[] { 1, 2, 3 }));
+
+        var result = await this.SendAsync(new UploadBillForAnalysisCommand(file, "not-a-guid"));
+
+        AssertSingleValidationError(result);
     }
 }

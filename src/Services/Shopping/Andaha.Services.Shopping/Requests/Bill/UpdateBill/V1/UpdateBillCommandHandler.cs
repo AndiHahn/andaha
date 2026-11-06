@@ -65,6 +65,8 @@ internal class UpdateBillCommandHandler : IRequestHandler<UpdateBillCommand, IRe
 
         var updatedBill = await dbContext.FindBillDtoByIdAsync(bill.Id, userId, cancellationToken);
 
-        return Results.Ok(updatedBill);
+        return updatedBill is null
+            ? Results.NotFound($"Bill with id {bill.Id} not found.")
+            : Results.Ok(updatedBill);
     }
 }

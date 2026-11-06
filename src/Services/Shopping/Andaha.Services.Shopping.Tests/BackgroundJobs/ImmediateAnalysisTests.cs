@@ -28,6 +28,7 @@ public sealed class ImmediateAnalysisTests : IDisposable
 {
     private static readonly DateTimeOffset Now = new(2026, 11, 5, 12, 0, 0, TimeSpan.Zero);
     private static readonly Guid UserA = Guid.NewGuid();
+    private static readonly Guid UserB = Guid.NewGuid();
 
     private readonly string folder = Path.Combine(Path.GetTempPath(), "andaha-immediate-" + Guid.NewGuid().ToString("N"));
     private readonly FileSystemAnalysisImageRepository analysisImages;
@@ -89,6 +90,69 @@ public sealed class ImmediateAnalysisTests : IDisposable
         Assert.True(queue.TryDequeue(out var queued));
         Assert.Equal(id, queued);
         Assert.False(queue.TryDequeue(out _));
+    }
+
+    [Fact]
+    public async Task Upload_with_same_id_twice_stores_one_image_and_enqueues_once()
+    {
+        string clientId = Guid.NewGuid().ToString();
+
+        string first = await UploadAsync(clientId);
+        time.Now = Now.AddSeconds(10);
+        // The 202 got lost: the client retries with the same id (any casing names the same image).
+        string second = await UploadAsync(clientId.ToUpperInvariant());
+
+        Assert.Equal(clientId, first);
+        Assert.Equal(clientId, second);
+        var image = Assert.Single(await analysisImages.ListImagesAsync());
+        Assert.Equal(clientId, image.ImageName);
+        // Neither re-uploaded nor re-claimed: upload time, claim and attempt stay those of the first upload.
+        Assert.Equal(Now, image.UploadedAtUtc);
+        Assert.Equal(Now.AddMinutes(2), image.ClaimedUntilUtc);
+        Assert.Equal(1, image.Attempts);
+
+        Assert.True(queue.TryDequeue(out var queued));
+        Assert.Equal(clientId, queued);
+        Assert.False(queue.TryDequeue(out _));
+    }
+
+    [Fact]
+    public async Task Upload_with_id_of_another_users_image_returns_conflict_and_writes_nothing()
+    {
+        string clientId = Guid.NewGuid().ToString();
+        await UploadAsync(clientId);
+        Assert.True(queue.TryDequeue(out _));
+        time.Now = Now.AddSeconds(10);
+
+        var result = await CreateUploadHandler(UserB).Handle(new UploadBillForAnalysisCommand(File(), clientId), CancellationToken.None);
+
+        Assert.IsType<Conflict>(result);
+        var image = Assert.Single(await analysisImages.ListImagesAsync());
+        Assert.Equal(UserA, image.UserId);
+        Assert.Equal(Now, image.UploadedAtUtc);
+        Assert.Equal(1, image.Attempts);
+        Assert.False(queue.TryDequeue(out _));
+    }
+
+    [Fact]
+    public async Task Upload_with_same_id_after_processing_creates_no_second_bill()
+    {
+        invoiceAnalysis.AnalyzeAsync(Arg.Any<Stream>(), Arg.Any<CancellationToken>()).Returns(Plausible());
+        using var services = BuildServices();
+        string clientId = Guid.NewGuid().ToString();
+        await UploadAsync(clientId);
+        await CreateService(services).ProcessAsync(clientId, CancellationToken.None);
+        Assert.Empty(await analysisImages.ListImagesAsync());
+
+        // The 202 got lost and the image is already turned into a bill: the retry goes through, the processor skips it.
+        Assert.Equal(clientId, await UploadAsync(clientId));
+        await CreateService(services).ProcessAsync(clientId, CancellationToken.None);
+
+        await invoiceAnalysis.ReceivedWithAnyArgs(1).AnalyzeAsync(default!, default);
+        Assert.Empty(await analysisImages.ListImagesAsync());
+        await using var context = TestDb.Open(connection);
+        Assert.Equal(clientId, Assert.Single(await context.Bill.ToListAsync()).SourceUploadId);
+        Assert.Empty(await context.AnalyzedBill.ToListAsync());
     }
 
     [Fact]
@@ -342,17 +406,17 @@ public sealed class ImmediateAnalysisTests : IDisposable
         Assert.False(queue.TryDequeue(out _));
     }
 
-    private UploadBillForAnalysisCommandHandler CreateUploadHandler()
+    private UploadBillForAnalysisCommandHandler CreateUploadHandler(Guid? user = null)
     {
         var identity = Substitute.For<IIdentityService>();
-        identity.GetUserId().Returns(UserA);
+        identity.GetUserId().Returns(user ?? UserA);
 
         return new UploadBillForAnalysisCommandHandler(analysisImages, identity, queue, time);
     }
 
-    private async Task<string> UploadAsync()
+    private async Task<string> UploadAsync(string? clientId = null)
     {
-        var result = await CreateUploadHandler().Handle(new UploadBillForAnalysisCommand(File()), CancellationToken.None);
+        var result = await CreateUploadHandler().Handle(new UploadBillForAnalysisCommand(File(), clientId), CancellationToken.None);
 
         return Assert.IsType<Accepted<UploadBillForAnalysisResponse>>(result).Value!.Id;
     }

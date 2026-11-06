@@ -47,7 +47,9 @@ internal class CreateBillCommandHandler : IRequestHandler<CreateBillCommand, IRe
 
                 var existingDto = await dbContext.FindBillDtoByIdAsync(existing.Id, userId, cancellationToken);
 
-                return Results.Ok(existingDto);
+                return existingDto is null
+                    ? Results.NotFound($"Bill with id {existing.Id} not found.")
+                    : Results.Ok(existingDto);
             }
         }
 
@@ -79,6 +81,8 @@ internal class CreateBillCommandHandler : IRequestHandler<CreateBillCommand, IRe
 
         var bill = await dbContext.FindBillDtoByIdAsync(newBill.Id, userId, cancellationToken);
 
-        return Results.Ok(bill);
+        return bill is null
+            ? Results.NotFound($"Bill with id {newBill.Id} not found.")
+            : Results.Ok(bill);
     }
 }

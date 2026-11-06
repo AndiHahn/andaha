@@ -244,7 +244,8 @@ internal static class BillEndpointExtensions
             .Produces<UploadForAnalysis.V1.UploadBillForAnalysisResponse>(StatusCodes.Status202Accepted)
             .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
             .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
-            .WithDescription("Upload an invoice image for asynchronous analysis.");
+            .Produces(StatusCodes.Status409Conflict)
+            .WithDescription("Upload an invoice image for asynchronous analysis. An optional form field 'id' (GUID) makes retries idempotent.");
 
         return app;
     }

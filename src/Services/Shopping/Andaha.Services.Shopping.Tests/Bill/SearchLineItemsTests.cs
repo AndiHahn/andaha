@@ -112,4 +112,32 @@ public class SearchLineItemsTests
             Assert.Equal(new[] { new MonthSumDto("2026-11", 20.0), new MonthSumDto("2026-10", 50.0) }, dto.MonthSums);
         }
     }
+
+    [Fact]
+    public async Task Search_trims_the_term_and_treats_blank_as_no_search()
+    {
+        var (context, connection) = TestDb.CreateShopping();
+        using (connection)
+        using (context)
+        {
+            Seed(context);
+            var category = context.BillCategory.First();
+            var dairy = new Core.Bill(null, UserA, category.Id, null, "Billa", 1.4, new DateTime(2026, 11, 3, 12, 0, 0, DateTimeKind.Utc));
+            dairy.LineItems.Add(new BillLineItem(dairy.Id, "Vollmilch", 1.4, 1.4, 1, 0));
+            context.Bill.Add(dairy);
+            context.SaveChanges();
+            context.ChangeTracker.Clear();
+
+            var trimmed = await Search(context, "milch ");
+
+            var bill = Assert.Single(trimmed.Values);
+            Assert.Equal("Billa", bill.ShopName);
+            Assert.Equal(new MatchedLineItemDto("Vollmilch", 1.4), bill.MatchedLineItem);
+
+            var blank = await Search(context, "   ");
+
+            Assert.Equal(4, blank.TotalCount);
+            Assert.All(blank.Values, entry => Assert.Null(entry.MatchedLineItem));
+        }
+    }
 }
