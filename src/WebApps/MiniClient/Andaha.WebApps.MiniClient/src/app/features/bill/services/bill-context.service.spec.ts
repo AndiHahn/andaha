@@ -274,6 +274,68 @@ describe('BillContextService search', () => {
         expect(total).toBe(1);
     });
 
+    it('forgetBill removes the bill, adjusts total and month sum, and keeps it out of later list responses', () => {
+        let total = -1;
+        let monthSums = new Map<string, number>();
+        service.totalResults().subscribe(t => total = t);
+        service.monthSums$.subscribe(m => monthSums = m);
+        (requests[0] as Subject<unknown>).next({
+            values: [createBill('b1', 2), createBill('b2', 1)], totalCount: 2, monthSums: [{ month: '2024-01', sum: 2 }]
+        });
+
+        service.forgetBill('b1');
+
+        expect(currentBills.map(b => b.id)).toEqual(['b2']);
+        expect(total).toBe(1);
+        expect(monthSums.get('2024-01')).toBe(1);
+
+        backendReady.next(true);
+        requests[requests.length - 1].next({ values: [createBill('b1', 2), createBill('b2', 1)], totalCount: 2 });
+        expect(currentBills.map(b => b.id)).toEqual(['b2']);
+    });
+
+    it('forgetBill of a bill that is not listed changes neither list nor total', () => {
+        let total = -1;
+        service.totalResults().subscribe(t => total = t);
+        requests[0].next({ values: [createBill('b2', 1)], totalCount: 1 });
+
+        service.forgetBill('unknown');
+
+        expect(currentBills.map(b => b.id)).toEqual(['b2']);
+        expect(total).toBe(1);
+    });
+
+    it('deleteBill and forgetBill never let the total drop below 0', () => {
+        let total = -1;
+        service.totalResults().subscribe(t => total = t);
+        requests[0].next({ values: [], totalCount: 0 });
+
+        service.deleteBill('gone').subscribe();
+        expect(total).toBe(0);
+    });
+
+    it('mergeLatestBills loads page 0 of the current search and merges, without truncating or resetting the page', () => {
+        answerInitialRequest(120);
+        service.setSearchText('milch');
+        service.searchBills();
+        requests[requests.length - 1].next({ values: [createBill('p0', 3)], totalCount: 120 });
+        service.fetchNextBills();
+        requests[requests.length - 1].next({ values: [createBill('p1', 2)], totalCount: 120 });
+        const count = requests.length;
+
+        service.mergeLatestBills();
+
+        expect(requests.length).toBe(count + 1);
+        expect(parameters[parameters.length - 1].pageIndex).toBe(0);
+        expect(parameters[parameters.length - 1].search).toBe('milch');
+        requests[requests.length - 1].next({ values: [createBill('fresh', 4), createBill('p0', 3)], totalCount: 121 });
+        expect(currentBills.map(b => b.id)).toEqual(['fresh', 'p0', 'p1']);
+
+        // weiterblättern geht nach Seite 1 mit Seite 2 weiter, nicht wieder ab Seite 1
+        service.fetchNextBills();
+        expect(parameters[parameters.length - 1].pageIndex).toBe(2);
+    });
+
     it('a bill whose delete failed may come back with the next list response', () => {
         requests[0].next({ values: [createBill('b1', 2), createBill('b2', 1)], totalCount: 2 });
         deleteFails = true;
@@ -396,6 +458,46 @@ describe('BillContextService local save and sync', () => {
 
         await expect(service.addBill(createDto('n1'), category)).rejects.toThrow();
         expect(values).toEqual([null]);
+    });
+
+    it('addBill marks the bill as pending sync until the sync succeeds', async () => {
+        pending = [createDto('n1')];
+        billApi.addBill.mockReturnValue(throwError(() => new Error('offline')));
+
+        await service.addBill(createDto('n1'), category);
+        expect(service.isPendingSync('n1')).toBe(true);
+
+        billAdded.next();
+        await flush();
+        expect(service.isPendingSync('n1')).toBe(true);
+
+        billApi.addBill.mockReturnValue(of(createBill('n1', 2)));
+        billAdded.next();
+        await flush();
+        expect(service.isPendingSync('n1')).toBe(false);
+    });
+
+    it('a bill still waiting in the local store after a reload counts as pending sync', async () => {
+        billApi.addBill.mockReturnValue(throwError(() => new Error('offline')));
+
+        billAdded.next();
+        await flush();
+
+        expect(service.isPendingSync('p1')).toBe(true);
+    });
+
+    it('a synced bill is not hidden by an earlier tombstone', async () => {
+        pending = [createDto('n1')];
+        await service.addBill(createDto('n1'), category);
+        service.forgetBill('n1');
+        expect(currentBills.map(b => b.id)).toEqual([]);
+
+        billApi.addBill.mockReturnValue(of(createBill('n1', 2)));
+        billApi.searchBills.mockReturnValue(of({ values: [createBill('n1', 2)], totalCount: 1, totalSum: 1, monthSums: [] }));
+        billAdded.next();
+        await flush();
+
+        expect(currentBills.map(b => b.id)).toEqual(['n1']);
     });
 
     it('sync failure resets syncing', async () => {

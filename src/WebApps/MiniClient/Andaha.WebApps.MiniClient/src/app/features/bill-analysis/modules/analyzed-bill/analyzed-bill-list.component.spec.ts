@@ -334,7 +334,8 @@ describe('AnalyzedBillListComponent', () => {
 
       galleryInput().dispatchEvent(new Event('change'));
 
-      expect(uploadAll).toHaveBeenCalledWith(photos);
+      // im Tab selbst: Snackbar ohne „Anzeigen“ (führte auf die aktuelle Seite)
+      expect(uploadAll).toHaveBeenCalledWith(photos, { openAction: false });
       expect(galleryInput().value).toBe('');
 
       const shot = new File(['c'], 'c.jpg', { type: 'image/jpeg' });
@@ -344,7 +345,7 @@ describe('AnalyzedBillListComponent', () => {
 
       cameraInput().dispatchEvent(new Event('change'));
 
-      expect(uploadAll).toHaveBeenLastCalledWith([shot]);
+      expect(uploadAll).toHaveBeenLastCalledWith([shot], { openAction: false });
       expect(cameraInput().value).toBe('');
     });
   });

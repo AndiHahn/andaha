@@ -138,7 +138,11 @@ export class AnalysisUploadService {
       .subscribe(() => this.poll(false));
   }
 
-  uploadAll(files: File[]): void {
+  /**
+   * `openAction: false` beim Hochladen aus dem Tab „Scans“ selbst: die Snackbar ohne „Anzeigen“, das führte auf
+   * die aktuelle Seite. Dock und Teilen behalten die Aktion.
+   */
+  uploadAll(files: File[], { openAction = true }: { openAction?: boolean } = {}): void {
     if (files.length === 0) {
       return;
     }
@@ -167,6 +171,11 @@ export class AnalysisUploadService {
     this.startQueuedUploads();
     this.markChanged();
     this.schedulePoll();
+
+    if (!openAction) {
+      openInformationSnackbar(analysisStartedMessage(files.length), this.snackbar);
+      return;
+    }
 
     openInformationSnackbar(analysisStartedMessage(files.length), this.snackbar, { action: 'Anzeigen' })
       .onAction()
@@ -275,14 +284,15 @@ export class AnalysisUploadService {
     this.appliedPollSequence = sequence;
 
     if (today) {
-      // neu angelegte Rechnung: die Rechnungsliste einmal neu laden, sonst fehlt sie dort bis zum Pull-to-Refresh.
+      // neu angelegte Rechnung: die Rechnungsliste einmal ergänzen, sonst fehlt sie dort bis zum Pull-to-Refresh.
       // Ausgangsstand ist eine leere Menge: bringt schon die erste Abfrage nach dem Start Rechnungen (anderes Gerät,
-      // Upload vor dem Neuladen), wird einmal geladen; ohne neue Rechnungen nicht
+      // Upload vor dem Neuladen), wird einmal ergänzt; ohne neue Rechnungen nicht
       const known = new Set(this.todayState().map(t => t.billId));
       const hasNewBill = today.some(t => !known.has(t.billId));
       this.todayState.set(today);
       if (hasNewBill) {
-        this.bills.refreshBills();
+        // nur ergänzen (Seite 0 mergen): eine weiter gescrollte Liste schrumpft nicht, lokale Rechnungen bleiben
+        this.bills.mergeLatestBills();
       }
     }
     if (pending) {

@@ -26,7 +26,7 @@ interface BillAnalyzedDtoBase {
   totalAmountConfidence?: number | null;
   imageAvailable: boolean;
   lineItems: AnalyzedBillLineItemDto[];
-  /** Bild-ID des Uploads, aus dem die Analyse entstand (Zuordnung im Tab Analyse) */
+  /** Bild-ID des Uploads, aus dem die Analyse entstand (Zuordnung im Tab Scans) */
   sourceUploadId?: string | null;
 }
 

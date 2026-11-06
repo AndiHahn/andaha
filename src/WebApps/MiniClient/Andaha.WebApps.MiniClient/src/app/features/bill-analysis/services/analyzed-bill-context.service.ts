@@ -6,7 +6,7 @@ import { BillAnalyzedDto } from 'src/app/api/shopping/dtos/BillAnalyzedDto';
 import { ContextService } from 'src/app/core/context.service';
 
 /**
- * Offene Analysen (Analyse-Tab und Badge). Kein Paginator und keine Suche (AC36, design.md §5.2):
+ * Offene Analysen (Tab Scans und Badge). Kein Paginator und keine Suche (AC36, design.md §5.2):
  * übernommene und verworfene Einträge verschwinden, die Liste enthält nur offene Analysen.
  */
 @Injectable({ providedIn: 'root' })
@@ -27,7 +27,7 @@ export class AnalyzedBillContextService {
 
   bills(): Observable<BillAnalyzedDto[]> { return this.bills$.asObservable(); }
   loading(): Observable<boolean> { return this.loading$.asObservable(); }
-  /** Letztes Laden ist fehlgeschlagen (Fehlerzustand im Tab Analyse); ein späteres Laden setzt es zurück */
+  /** Letztes Laden ist fehlgeschlagen (Fehlerzustand im Tab Scans); ein späteres Laden setzt es zurück */
   failed(): Observable<boolean> { return this.loadState$.pipe(map(state => state === 'failed')); }
 
   /**

@@ -111,8 +111,9 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
     this.billApiService.getBill(billId).pipe(
       catchError(error => {
         // Die Rechnung kam aus der Liste, gibt es am Server aber nicht mehr: wie „unbekannte Rechnung“ behandeln.
+        // Ausnahme: lokal gespeichert und noch nicht übertragen (US-0005), dann kennt der Server sie nur noch nicht.
         // Andere Fehler: Detail bleibt nutzbar, nur ohne Positionen (kein Editor, lineItems werden nicht gesendet)
-        if (error instanceof HttpErrorResponse && error.status === 404) {
+        if (error instanceof HttpErrorResponse && error.status === 404 && !this.billContextService.isPendingSync(billId)) {
           this.billContextService.forgetBill(billId);
           leaveDetailNotFound(this.historyTrail, this.snackbar, '/bill/list');
         }

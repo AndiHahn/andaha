@@ -27,7 +27,7 @@ export const routes: Routes = [
         loadComponent: () => import('./modules/expenses/expenses.component').then(m => m.ExpensesComponent)
       },
       {
-        // Analyse-Tab, vor bill/:id registriert
+        // Tab Scans (Route bleibt /bill/analysis), vor bill/:id registriert
         path: 'bill/analysis',
         loadChildren: () => import('../bill-analysis/bill-analysis.routes').then(m => m.routes)
       },

@@ -52,6 +52,11 @@ export class BillContextService implements OnDestroy {
    * Stand davor zeigt (Abfrage parallel zum DELETE, veraltete SW-Cache-Antwort), darf sie nicht zurückbringen.
    */
   private readonly deletedIds = new Set<string>();
+  /**
+   * Lokal gespeicherte, noch nicht übertragene Rechnungen (US-0005). Der Server kennt sie bis zum Sync nicht:
+   * ein 404 auf ihr Detail heißt dann „noch nicht da“, nicht „gelöscht“.
+   */
+  private readonly pendingSyncIds = new Set<string>();
 
   private readonly backendReadyState = signal(false);
 
@@ -187,10 +192,12 @@ export class BillContextService implements OnDestroy {
   async addBill(dto: BillCreateDto, category: BillCategoryDto, subCategory?: BillSubCategoryDto): Promise<void> {
     const billDto = billCreateDtoToBillDto(dto, category, subCategory);
     this.addNewBillToList(billDto);
+    this.pendingSyncIds.add(dto.id);
 
     try {
       await this.billCacheService.saveNewBillLocal(dto);
     } catch (error) {
+      this.pendingSyncIds.delete(dto.id);
       this.bills$.next(this.bills$.value.filter(bill => bill.id != dto.id));
       this.totalResults$.next(this.totalResults$.value - 1);
       this.adjustSums(billDto.date, -billDto.price);
@@ -262,7 +269,7 @@ export class BillContextService implements OnDestroy {
     const deleted = this.bills$.value.find(bill => bill.id == id);
     const billsWithoutDeleted = this.bills$.value.filter(bill => bill.id != id);
     this.bills$.next(billsWithoutDeleted);
-    this.totalResults$.next(this.totalResults$.value - 1);
+    this.totalResults$.next(Math.max(0, this.totalResults$.value - 1));
     if (deleted) {
       this.adjustSums(deleted.date, -deleted.price);
     }
@@ -289,6 +296,20 @@ export class BillContextService implements OnDestroy {
    * Rechnung, die es am Server nicht mehr gibt (Detail-GET 404): aus der Liste nehmen, und auch eine spätere,
    * veraltete Listenantwort bringt sie nicht zurück.
    */
+/**
+   * Lädt Seite 0 der aktuellen Suche (Suchtext und Filter bleiben) und ergänzt die Liste nur: nichts wird
+   * abgeschnitten, die Seitenposition bleibt, lokale noch nicht übertragene Rechnungen bleiben stehen.
+   * Für neu angelegte Rechnungen von außen (automatisch aus der Analyse).
+   */
+  mergeLatestBills(): void {
+    this.fetchBills({ pageIndex: 0, mergeOnly: true });
+  }
+
+  /** true, solange die Rechnung nur lokal gespeichert ist und auf den Sync wartet (US-0005) */
+  isPendingSync(id: string): boolean {
+    return this.pendingSyncIds.has(id);
+  }
+
   forgetBill(id: string): void {
     this.deletedIds.add(id);
 
@@ -301,7 +322,6 @@ export class BillContextService implements OnDestroy {
     this.totalResults$.next(Math.max(0, this.totalResults$.value - 1));
     this.adjustSums(removed.date, -removed.price);
   }
-
 
   getBillById(id: string): BillDto | undefined {
     return this.bills$.value.find(bill => bill.id == id);
@@ -356,10 +376,13 @@ export class BillContextService implements OnDestroy {
     superseded.forEach(subscription => subscription.unsubscribe());
   }
 
-  private fetchBills() {
+  /** `mergeOnly`: ergänzt nur (mergeLatestBills), übernimmt kein ausstehendes „Liste ersetzen“ von refreshBills */
+  private fetchBills(options: { pageIndex?: number; mergeOnly?: boolean } = {}) {
     const generation = this.queryGeneration;
-    const replaceList = this.replaceListOnNextResult;
-    this.replaceListOnNextResult = false;
+    const replaceList = !options.mergeOnly && this.replaceListOnNextResult;
+    if (!options.mergeOnly) {
+      this.replaceListOnNextResult = false;
+    }
     this.loading$.next(true);
     this.errorState.set(false);
 
@@ -369,7 +392,7 @@ export class BillContextService implements OnDestroy {
     request.add(this.billApiService
       .searchBills(
         {
-          pageIndex: this.pageIndex$.value,
+          pageIndex: options.pageIndex ?? this.pageIndex$.value,
           pageSize: this.pageSize$.value,
           search: this.searchText,
           categoryFilter: this.categoryFilter,
@@ -476,6 +499,8 @@ export class BillContextService implements OnDestroy {
     let anySynced = false;
     try {
       const newBillsLocal = await this.billCacheService.getBillsToSync();
+      // auch nach einem Neuladen: was im lokalen Speicher wartet, kennt der Server noch nicht
+      newBillsLocal.forEach(bill => this.pendingSyncIds.add(bill.id));
       if (newBillsLocal.length > 0) {
         this.syncing$.next(true);
         const results = await Promise.all(newBillsLocal.map(bill => this.syncBill(bill)));
@@ -505,6 +530,11 @@ export class BillContextService implements OnDestroy {
       console.error('Syncing bill failed, keeping it locally', error);
       return false;
     }
+
+    // jetzt beim Server: ein 404 bedeutet ab hier wirklich „nicht vorhanden“; ein früherer Tombstone
+    // (z. B. ein 404 vor dem Commit) darf die übertragene Rechnung nicht verstecken
+    this.pendingSyncIds.delete(dto.id);
+    this.deletedIds.delete(dto.id);
 
     try {
       await this.billCacheService.removeBillLocal(dto.id);

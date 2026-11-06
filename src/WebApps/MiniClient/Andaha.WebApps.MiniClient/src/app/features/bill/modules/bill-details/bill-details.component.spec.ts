@@ -164,7 +164,7 @@ describe('BillDetailsComponent', () => {
         { provide: BillApiService, useValue: { getBill } },
         { provide: HistoryTrailService, useValue: { leaveTo } },
         { provide: ConfirmationDialogService, useValue: { openDialog: openConfirmation } },
-        { provide: BillContextService, useValue: { loadBillById: () => of({ ...bill }), loading: () => of(false), deleteBill, forgetBill } },
+        { provide: BillContextService, useValue: { loadBillById: () => of({ ...bill }), loading: () => of(false), deleteBill, forgetBill, isPendingSync: () => false } },
         { provide: BillCategoryContextService, useValue: { categories: () => of([]) } }
       ]
     });
@@ -177,6 +177,39 @@ describe('BillDetailsComponent', () => {
     expect(leaveTo).toHaveBeenCalledWith('/bill/list');
     expect(openSnackbar.mock.calls.map(call => (call[1] as { data: unknown }).data))
       .toContainEqual(expect.objectContaining({ message: 'Eintrag wurde nicht gefunden.' }));
+  });
+
+  it('a pending local bill whose detail returns 404 stays and keeps the detail usable', () => {
+    TestBed.resetTestingModule();
+    getBill = vi.fn(() => throwError(() => new HttpErrorResponse({ status: 404, statusText: 'Not Found' })));
+    const forgetBill = vi.fn();
+    const isPendingSync = vi.fn((id: string) => id === 'b1');
+    TestBed.configureTestingModule({
+      imports: [BillDetailsComponent],
+      providers: [
+        { provide: ActivatedRoute, useValue: route() },
+        { provide: BillApiService, useValue: { getBill } },
+        { provide: HistoryTrailService, useValue: { leaveTo } },
+        { provide: ConfirmationDialogService, useValue: { openDialog: openConfirmation } },
+        {
+          provide: BillContextService,
+          useValue: { loadBillById: () => of({ ...bill }), loading: () => of(false), deleteBill, forgetBill, isPendingSync }
+        },
+        { provide: BillCategoryContextService, useValue: { categories: () => of([]) } }
+      ]
+    });
+    const openSnackbar = vi.spyOn(TestBed.inject(MatSnackBar), 'openFromComponent').mockReturnValue(undefined as never);
+    fixture = TestBed.createComponent(BillDetailsComponent);
+    host = fixture.nativeElement;
+    fixture.detectChanges();
+
+    // US-0005: noch nicht übertragen, der Server kennt sie (noch) nicht – kein „nicht gefunden“
+    expect(isPendingSync).toHaveBeenCalledWith('b1');
+    expect(forgetBill).not.toHaveBeenCalled();
+    expect(leaveTo).not.toHaveBeenCalled();
+    expect(openSnackbar).not.toHaveBeenCalled();
+    expect(host.textContent).toContain('Bäckerei Ströck');
+    expect(button('Löschen').disabled).toBe(false);
   });
 
   it('partner bill shows items read-only', () => {

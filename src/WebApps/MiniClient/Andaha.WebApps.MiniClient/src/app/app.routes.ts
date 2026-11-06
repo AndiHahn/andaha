@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  // Analyse ist ein Tab unter Rechnungen (v2); alte URLs (Lesezeichen, installierte PWA) leiten um
+  // Scans (Route /bill/analysis) ist ein Tab unter Rechnungen (v2); alte Analyse-URLs (Lesezeichen, installierte PWA) leiten um
   { path: 'analyzed', pathMatch: 'full', redirectTo: '/bill/analysis' },
   { path: 'analyzed/list', redirectTo: '/bill/analysis' },
   { path: 'analyzed/create', redirectTo: '/bill/list' },

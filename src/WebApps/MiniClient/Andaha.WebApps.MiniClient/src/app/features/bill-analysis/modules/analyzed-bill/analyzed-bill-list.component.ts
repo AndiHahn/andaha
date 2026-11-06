@@ -135,11 +135,12 @@ export class AnalyzedBillListComponent {
     return bill.id;
   }
 
-/** „Foto aufnehmen“ bzw. „Aus Galerie“: gleicher Upload-Weg wie der Kamera-Knopf im Dock (inkl. Offline-Hinweis) */
+  /** „Foto aufnehmen“ bzw. „Aus Galerie“: gleicher Upload-Weg wie der Kamera-Knopf im Dock (inkl. Offline-Hinweis) */
   onPhotosChosen(fileInput: HTMLInputElement): void {
     const files = takeChosenFiles(fileInput);
     if (files.length > 0) {
-      this.uploads.uploadAll(files);
+      // ohne „Anzeigen“: man ist schon im Tab
+      this.uploads.uploadAll(files, { openAction: false });
     }
   }
 

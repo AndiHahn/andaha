@@ -58,6 +58,7 @@ describe('AnalysisUploadService', () => {
   let navigateByUrl: Mock;
   let refreshAnalyzed: Mock;
   let refreshBills: Mock;
+  let mergeLatestBills: Mock;
   let backendReady: BehaviorSubject<boolean>;
   let visibility: DocumentVisibilityState;
 
@@ -95,6 +96,7 @@ describe('AnalysisUploadService', () => {
     navigateByUrl = vi.fn();
     refreshAnalyzed = vi.fn();
     refreshBills = vi.fn();
+    mergeLatestBills = vi.fn();
     backendReady = new BehaviorSubject(false);
 
     TestBed.configureTestingModule({
@@ -105,7 +107,7 @@ describe('AnalysisUploadService', () => {
         { provide: MatSnackBar, useValue: { openFromComponent } },
         { provide: Router, useValue: { navigateByUrl } },
         { provide: AnalyzedBillContextService, useValue: { refresh: refreshAnalyzed } },
-        { provide: BillContextService, useValue: { refreshBills } },
+        { provide: BillContextService, useValue: { refreshBills, mergeLatestBills } },
         { provide: ContextService, useValue: { backendReady: () => backendReady } }
       ]
     });
@@ -301,7 +303,7 @@ describe('AnalysisUploadService', () => {
     expect(service.inProgressCount()).toBe(0);
   });
 
-  it('refreshes the bill list once when a new auto-created bill appears', () => {
+  it('refreshes the bill list once when a new auto-created bill appears (merge fetch, no replace)', () => {
     const autoCreated = (billId: string) => ({
       billId, sourceUploadId: `img-${billId}`, shopName: 'Billa', price: 12.5,
       date: '2026-11-06T00:00:00Z', createdAt: '2026-11-06T08:16:00Z'
@@ -310,21 +312,24 @@ describe('AnalysisUploadService', () => {
     // erste Abfrage nach dem Start ohne neue Rechnungen: die Liste lädt sich selbst, kein zusätzliches Laden
     backendReady.next(true);
     answerPoll([pendingRaw('img-n1')], []);
-    expect(refreshBills).not.toHaveBeenCalled();
+    expect(mergeLatestBills).not.toHaveBeenCalled();
 
     vi.advanceTimersByTime(3_000);
     answerPoll([], [autoCreated('n1')]);
-    expect(refreshBills).toHaveBeenCalledTimes(1);
+    expect(mergeLatestBills).toHaveBeenCalledTimes(1);
 
     // dieselben Rechnungen bei der nächsten Abfrage: kein weiteres Laden
     service.refresh();
     answerPoll([], [autoCreated('n1')]);
-    expect(refreshBills).toHaveBeenCalledTimes(1);
+    expect(mergeLatestBills).toHaveBeenCalledTimes(1);
 
     // eine weitere neue Rechnung: genau ein weiteres Laden
     service.refresh();
     answerPoll([], [autoCreated('n2'), autoCreated('n1')]);
-    expect(refreshBills).toHaveBeenCalledTimes(2);
+    expect(mergeLatestBills).toHaveBeenCalledTimes(2);
+
+    // ergänzt nur (Seite 0 mergen): kein Ersetzen der Liste, die weiter gescrollte Liste bleibt stehen
+    expect(refreshBills).not.toHaveBeenCalled();
   });
 
   it('the first poll after start refreshes the bill list once when it already brings auto-created bills', () => {
@@ -334,7 +339,8 @@ describe('AnalysisUploadService', () => {
       billId: 'other-device', sourceUploadId: 'img-x', shopName: 'Spar', price: 3,
       date: '2026-11-06T00:00:00Z', createdAt: '2026-11-06T07:00:00Z'
     }]);
-    expect(refreshBills).toHaveBeenCalledTimes(1);
+    expect(mergeLatestBills).toHaveBeenCalledTimes(1);
+    expect(refreshBills).not.toHaveBeenCalled();
   });
 
   it('does not treat an upload as finished by a poll that started before its upload response', async () => {
@@ -399,6 +405,15 @@ describe('AnalysisUploadService', () => {
     expect(snackbarMessages()).toEqual([{ message: '1 Rechnung wird analysiert', action: 'Anzeigen' }]);
     snackbarAction.next();
     expect(navigateByUrl).toHaveBeenCalledWith('/bill/analysis');
+
+    accept((await uploadRequests(1))[0], 'img-1');
+  });
+
+  it('an upload started in the Scans tab shows the snackbar without "Anzeigen"', async () => {
+    service.uploadAll([photo('bon.jpg')], { openAction: false });
+
+    // „Anzeigen“ führte auf die Seite, auf der man schon ist
+    expect(snackbarMessages()).toEqual([{ message: '1 Rechnung wird analysiert', action: undefined }]);
 
     accept((await uploadRequests(1))[0], 'img-1');
   });
@@ -494,7 +509,7 @@ describe('AnalysisUploadService polling with the real analyzed list and error in
         { provide: OnlineStatusService, useValue: { online: signal(true) } },
         { provide: MatSnackBar, useValue: { openFromComponent } },
         { provide: Router, useValue: { navigateByUrl: vi.fn() } },
-        { provide: BillContextService, useValue: { refreshBills: vi.fn() } },
+        { provide: BillContextService, useValue: { refreshBills: vi.fn(), mergeLatestBills: vi.fn() } },
         { provide: ContextService, useValue: { backendUnreachable: () => false, backendReady: () => new BehaviorSubject(false) } }
       ]
     });
