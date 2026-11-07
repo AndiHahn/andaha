@@ -7,6 +7,7 @@ import {
   effect,
   ElementRef,
   inject,
+  NgZone,
   signal,
   untracked,
   viewChild,
@@ -28,6 +29,10 @@ const HEAD_ANGLE = 0.45;
 /** Platzierungs-ID der Knopfzeile (Zurück/Weiter), wird wie ein freier Hinweis platziert */
 const CONTROLS = '__controls';
 const STEP_COUNT = 3;
+/** Eckenradius der Aussparungen und ihrer Umrandung */
+const HOLE_RADIUS = 12;
+/** Äußeres Rechteck des Schleiers, größer als jeder Bildschirm (das SVG schneidet ab) */
+const VEIL_OUTER = 'M0 0H100000V100000H0Z';
 
 interface Hole {
   id: string;
@@ -73,6 +78,8 @@ export class TourOverlayComponent {
   private readonly document = inject(DOCUMENT);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  /** Die Mess-Frames laufen außerhalb der Zone; `measure` aktualisiert die Ansicht selbst */
+  private readonly zone = inject(NgZone);
 
   private readonly primaryButton = viewChild.required<ElementRef<HTMLButtonElement>>('primary');
   private readonly controlsBox = viewChild.required<ElementRef<HTMLElement>>('controls');
@@ -80,7 +87,6 @@ export class TourOverlayComponent {
 
   private readonly instance = nextId++;
   readonly titleId = `tour-title-${this.instance}`;
-  readonly maskId = `tour-mask-${this.instance}`;
   readonly stepCount = STEP_COUNT;
 
   readonly stepIndex = this.tour.stepIndex;
@@ -89,6 +95,8 @@ export class TourOverlayComponent {
   readonly title = computed(() => tourSteps({ desktop: this.tour.desktop(), hasTiles: false })[this.stepIndex()].title);
 
   readonly holes = signal<Hole[]>([]);
+  /** Schleier als ein Pfad mit Löchern (evenodd), ohne `mask="url(#…)"`, das WebKit mit `<base href>` falsch auflöst */
+  readonly shadePath = computed(() => [VEIL_OUTER, ...this.holes().map(hole => roundedRect(hole.rect, HOLE_RADIUS))].join(' '));
   readonly notes = signal<ShownNote[]>([]);
   readonly controlsAt = signal<Rect | null>(null);
 
@@ -135,7 +143,7 @@ export class TourOverlayComponent {
 
   remeasureNextFrame(): void {
     if (this.frame === null) {
-      this.frame = requestAnimationFrame(() => {
+      this.frame = this.nextFrame(() => {
         this.frame = null;
         this.measure();
       });
@@ -152,7 +160,7 @@ export class TourOverlayComponent {
         this.focusPrimary();
       }
       if (time - start < SETTLE_MS) {
-        this.frame = requestAnimationFrame(tick);
+        this.frame = this.nextFrame(tick);
         return;
       }
       this.frame = null;
@@ -161,7 +169,11 @@ export class TourOverlayComponent {
         this.focusPrimary();
       }
     };
-    this.frame = requestAnimationFrame(tick);
+    this.frame = this.nextFrame(tick);
+  }
+
+  private nextFrame(callback: FrameRequestCallback): number {
+    return this.zone.runOutsideAngular(() => requestAnimationFrame(callback));
   }
 
   private cancelFrame(): void {
@@ -226,6 +238,18 @@ export class TourOverlayComponent {
 
 function pad(r: Rect): Rect {
   return { x: r.x - HOLE_PADDING, y: r.y - HOLE_PADDING, width: r.width + 2 * HOLE_PADDING, height: r.height + 2 * HOLE_PADDING };
+}
+
+/** Abgerundetes Rechteck als geschlossener Teilpfad */
+function roundedRect(r: Rect, radius: number): string {
+  const n = (v: number) => Math.round(v * 10) / 10;
+  const k = Math.max(0, Math.min(radius, r.width / 2, r.height / 2));
+  const right = r.x + r.width;
+  const bottom = r.y + r.height;
+  return `M${n(r.x + k)} ${n(r.y)}H${n(right - k)}A${n(k)} ${n(k)} 0 0 1 ${n(right)} ${n(r.y + k)}`
+    + `V${n(bottom - k)}A${n(k)} ${n(k)} 0 0 1 ${n(right - k)} ${n(bottom)}`
+    + `H${n(r.x + k)}A${n(k)} ${n(k)} 0 0 1 ${n(r.x)} ${n(bottom - k)}`
+    + `V${n(r.y + k)}A${n(k)} ${n(k)} 0 0 1 ${n(r.x + k)} ${n(r.y)}Z`;
 }
 
 function sizeOf(element: HTMLElement): { width: number; height: number } {

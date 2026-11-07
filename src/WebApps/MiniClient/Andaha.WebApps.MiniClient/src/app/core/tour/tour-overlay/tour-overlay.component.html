@@ -3,16 +3,7 @@
 
   <!-- Schleier mit Aussparungen; ein Tipp darauf macht nichts -->
   <svg class="veil" aria-hidden="true">
-    <defs>
-      <mask [id]="maskId">
-        <rect width="100%" height="100%" fill="white" />
-        @for (hole of holes(); track hole.id) {
-          <rect [attr.x]="hole.rect.x" [attr.y]="hole.rect.y" [attr.width]="hole.rect.width" [attr.height]="hole.rect.height"
-            rx="12" fill="black" />
-        }
-      </mask>
-    </defs>
-    <rect class="shade" width="100%" height="100%" [attr.mask]="'url(#' + maskId + ')'" />
+    <path class="shade" fill-rule="evenodd" [attr.d]="shadePath()" />
     @for (hole of holes(); track hole.id) {
       <rect [class]="'outline tone-' + hole.tone" [attr.x]="hole.rect.x" [attr.y]="hole.rect.y"
         [attr.width]="hole.rect.width" [attr.height]="hole.rect.height" rx="12" />

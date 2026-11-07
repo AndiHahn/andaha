@@ -125,6 +125,12 @@ describe('TourOverlayComponent', () => {
     ]);
     expect(host().querySelectorAll('.outline').length).toBe(2);
     expect(host().querySelectorAll('.arrow').length).toBe(2);
+    // Schleier: ein evenodd-Pfad, äußeres Rechteck plus ein Loch je Ziel, ohne Maskenreferenz
+    const shade = host().querySelector('path.shade')!;
+    expect(shade.getAttribute('fill-rule')).toBe('evenodd');
+    expect(shade.getAttribute('d')!.match(/Z/g)!.length).toBe(3);
+    expect(shade.getAttribute('d')).toContain('M20 692'); // Loch um „entry“: 8 px Abstand, 12 px Radius
+    expect(host().querySelector('[mask]')).toBeNull();
   });
 
   it('mobile menus step shows the swipe hint, desktop does not', async () => {
