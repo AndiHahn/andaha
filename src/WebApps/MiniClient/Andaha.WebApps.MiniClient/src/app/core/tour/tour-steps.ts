@@ -35,7 +35,7 @@ export function tourSteps(options: { desktop: boolean; hasTiles: boolean }): Tou
       target: 'tabs',
       tone: 'sub',
       label: 'Untermenü',
-      text: desktop ? 'Die Tabs eines Bereichs, zum Wechseln klicken.' : 'Die Tabs eines Bereichs.',
+      text: desktop ? 'Die Funktionen je Bereichs, zum Wechseln klicken.' : 'Die Funktionen je Bereich.',
     },
     ...(desktop
       ? []
@@ -56,7 +56,7 @@ export function tourSteps(options: { desktop: boolean; hasTiles: boolean }): Tou
       label: 'Hauptmenü',
       text: desktop
         ? 'Rechnungen, Haushalt, Stunden. Kategorien, Vorlagen und Export liegen unter Mehr.'
-        : 'Ersetzt das ☰-Menü. Kategorien, Vorlagen und Export liegen unter Mehr.',
+        : 'Dieses Menü ersetzt das alte ☰-Menü. Unter Mehr ... gibt es die weiteren Menüpunkte.'
     },
   ];
 
@@ -65,26 +65,26 @@ export function tourSteps(options: { desktop: boolean; hasTiles: boolean }): Tou
       id: 'entry',
       target: 'entry',
       tone: 'neutral',
-      label: 'Rechnung eintragen',
-      text: 'Betrag tippen, Vorlage wählen, fertig.',
+      label: 'Rechnung hinzufügen',
+      text: 'Zuerst Betrag eintippen, dann entweder die weiteren Daten eingeben, oder direkt eine Vorlage wählen (Diese können im Menüpunkt Vorlagen verwaltet werden).',
     },
     {
       id: 'camera',
       target: 'camera',
       tone: 'neutral',
       label: 'Foto',
-      text: 'Wird automatisch angelegt. Unklares landet unter Scans.',
+      text: 'Foto von der Rechnung machen. Dieses wird automatisch analysiert und dann im Tab Scans angezeigt.',
     },
     {
       id: 'bill-row',
       target: 'bill-row',
       tone: 'neutral',
-      label: desktop ? 'Rechtsklick' : 'Lang drücken',
-      text: 'Duplizieren oder Löschen.',
+      label: desktop ? 'Rechtsklick' : 'Langer Klick auf eine Rechnung',
+      text: 'Dann kann eine Rechnung direkt dupliziert oder gelöscht werden.',
     },
   ];
 
-  const pin = desktop ? 'Rechtsklick' : 'Lang drücken';
+  const pin = desktop ? 'Rechtsklick' : 'Lange drücken';
   const templates: TourNote[] = [
     {
       id: 'tiles',
@@ -107,7 +107,7 @@ export function tourSteps(options: { desktop: boolean; hasTiles: boolean }): Tou
       target: null,
       freeAnchor: 'top',
       tone: 'neutral',
-      text: 'Verwalten unter Mehr → Vorlagen.',
+      text: 'Verwalten der Vorlagen unter Mehr → Vorlagen.',
     },
   ];
 

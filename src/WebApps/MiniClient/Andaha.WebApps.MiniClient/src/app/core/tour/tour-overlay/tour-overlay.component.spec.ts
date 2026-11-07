@@ -120,8 +120,8 @@ describe('TourOverlayComponent', () => {
     render();
     await goToStep(1);
     expect(noteText()).toEqual([
-      'Rechnung eintragen Betrag tippen, Vorlage wählen, fertig.',
-      'Foto Wird automatisch angelegt. Unklares landet unter Scans.',
+      'Rechnung hinzufügen Zuerst Betrag eintippen, dann entweder die weiteren Daten eingeben, oder direkt eine Vorlage wählen (Diese können im Menüpunkt Vorlagen verwaltet werden).',
+      'Foto Foto von der Rechnung machen. Dieses wird automatisch analysiert und dann im Tab Scans angezeigt.',
     ]);
     expect(host().querySelectorAll('.outline').length).toBe(2);
     expect(host().querySelectorAll('.arrow').length).toBe(2);
@@ -278,6 +278,6 @@ describe('TourOverlayComponent', () => {
 
     fixtures[0].innerHTML = '<button role="radio">Billa</button>';
     frame();
-    expect(noteText()[0]).toContain('Lang drücken auf einen Vorschlag heftet ihn an.');
+    expect(noteText()[0]).toContain('Lange drücken auf einen Vorschlag heftet ihn an.');
   });
 });

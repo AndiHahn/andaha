@@ -25,8 +25,8 @@ describe('tourSteps', () => {
     expect(notes(mobile, 'menus').find((n) => n.target === 'tabs')!.text).not.toContain('klicken');
   });
 
-  it('bill-row label is "Lang drücken" on mobile and "Rechtsklick" on desktop', () => {
-    expect(notes(mobile, 'entry').find((n) => n.target === 'bill-row')!.label).toBe('Lang drücken');
+  it('bill-row label is "Langer Klick auf eine Rechnung" on mobile and "Rechtsklick" on desktop', () => {
+    expect(notes(mobile, 'entry').find((n) => n.target === 'bill-row')!.label).toBe('Langer Klick auf eine Rechnung');
     expect(notes(desktop, 'entry').find((n) => n.target === 'bill-row')!.label).toBe('Rechtsklick');
   });
 
@@ -42,7 +42,7 @@ describe('tourSteps', () => {
     const without = notes({ desktop: false, hasTiles: false }, 'templates').find((n) => n.target === 'tiles')!;
     expect(without.text).toContain('Hier erscheinen');
     const withTiles = notes(mobile, 'templates').find((n) => n.target === 'tiles')!;
-    expect(withTiles.text).toContain('Lang drücken');
+    expect(withTiles.text).toContain('Lange drücken');
     expect(notes(desktop, 'templates').find((n) => n.target === 'tiles')!.text).toContain('Rechtsklick');
   });
 
