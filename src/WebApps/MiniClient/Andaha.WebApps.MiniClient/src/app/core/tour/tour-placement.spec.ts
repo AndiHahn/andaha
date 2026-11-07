@@ -1,4 +1,4 @@
-import { NoteInput, placeNotes } from './tour-placement';
+import { MAX_NOTE_DISTANCE, NoteInput, placeNotes } from './tour-placement';
 import { Rect } from './tour-targets';
 
 const VP = { width: 390, height: 844 };
@@ -70,5 +70,53 @@ describe('placeNotes', () => {
   it('free notes have no arrow', () => {
     const [p] = placeNotes([{ id: 'f', target: null, freeAnchor: 'center', size }], [], VP);
     expect(p.arrow).toBeNull();
+  });
+
+  it('places a note right of / left of a target when above and below are blocked', () => {
+    const small = { width: 100, height: 60 };
+    const leftT: Rect = { x: 150, y: 16, width: 90, height: 812 };
+    const [right] = placeNotes([{ id: 'a', target: leftT, size: small }], [leftT], VP);
+    expect(right.box.x).toBeGreaterThanOrEqual(leftT.x + leftT.width);
+    expect(overlaps(right.box, leftT)).toBe(false);
+    const rightT: Rect = { x: 200, y: 16, width: 174, height: 812 };
+    const [left] = placeNotes([{ id: 'b', target: rightT, size: small }], [rightT], VP);
+    expect(left.box.x + left.box.width).toBeLessThanOrEqual(rightT.x);
+    expect(overlaps(left.box, rightT)).toBe(false);
+  });
+
+  it('falls back to the least-overlapping clamped box when nothing fits', () => {
+    const vp = { width: 300, height: 200 };
+    const t: Rect = { x: 0, y: 0, width: 200, height: 200 };
+    const [p] = placeNotes([{ id: 'a', target: t, size: { width: 100, height: 60 } }], [t], vp);
+    expect(p.box.x).toBeGreaterThanOrEqual(16);
+    expect(p.box.y).toBeGreaterThanOrEqual(16);
+    expect(p.box.x + p.box.width).toBeLessThanOrEqual(vp.width - 16);
+    expect(p.box.y + p.box.height).toBeLessThanOrEqual(vp.height - 16);
+    // right side overlaps only 16px x 60px; every other side overlaps the whole box
+    expect(p.box.x).toBe(184);
+    expect(p.arrow).not.toBeNull();
+  });
+
+  it('never places a note farther than MAX_NOTE_DISTANCE from its target', () => {
+    const tabs: Rect = { x: 0, y: 44, width: 390, height: 48 };
+    const bar: Rect = { x: 0, y: 780, width: 390, height: 64 };
+    const dock: Rect = { x: 10, y: 712, width: 330, height: 44 };
+    const camera: Rect = { x: 346, y: 712, width: 44, height: 44 };
+    const ts = [tabs, bar, dock, camera];
+    const placed = placeNotes(ts.map((t, i) => ({ id: `n${i}`, target: t, size })), ts, VP);
+    placed.forEach((p, i) => {
+      const t = ts[i];
+      const dx = Math.max(0, t.x - (p.box.x + p.box.width), p.box.x - (t.x + t.width));
+      const dy = Math.max(0, t.y - (p.box.y + p.box.height), p.box.y - (t.y + t.height));
+      expect(Math.max(dx, dy)).toBeLessThanOrEqual(MAX_NOTE_DISTANCE);
+    });
+  });
+
+  it('keeps free notes inside the viewport margin', () => {
+    const big = { width: 500, height: 60 };
+    const [c] = placeNotes([{ id: 'c', target: null, freeAnchor: 'center', size: big }], [], VP);
+    const [t] = placeNotes([{ id: 't', target: null, freeAnchor: 'top', size: big }], [], VP);
+    expect(c.box.x).toBeGreaterThanOrEqual(16);
+    expect(t.box.x).toBeGreaterThanOrEqual(16);
   });
 });

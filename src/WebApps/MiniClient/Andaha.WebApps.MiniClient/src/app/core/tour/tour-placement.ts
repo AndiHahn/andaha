@@ -32,12 +32,25 @@ const FREE_TOP = 56;
 const ARROW_END_OFFSET = 4;
 const CURVE = 0.3;
 const STEP = 8;
+export const MAX_NOTE_DISTANCE = 160;
 const SIDES: Side[] = ['below', 'above', 'right', 'left'];
 
 const overlaps = (a: Rect, b: Rect) =>
   a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
 
 const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(v, max));
+
+const overlapArea = (a: Rect, b: Rect) =>
+  Math.max(0, Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x)) *
+  Math.max(0, Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y));
+
+function clampInto(r: Rect, vp: { width: number; height: number }): Rect {
+  return {
+    ...r,
+    x: clamp(r.x, MARGIN, Math.max(MARGIN, vp.width - MARGIN - r.width)),
+    y: clamp(r.y, MARGIN, Math.max(MARGIN, vp.height - MARGIN - r.height)),
+  };
+}
 
 export function placeNotes(
   notes: NoteInput[],
@@ -68,20 +81,25 @@ export function placeNotes(
     const boxAt = (side: Side, distance: number): Rect => candidate(side, distance, target, note.size, viewport);
 
     let chosen: { box: Rect; side: Side } | null = null;
-    const maxDistance = Math.max(viewport.width, viewport.height);
-    search: for (let distance = gap; distance <= maxDistance; distance += STEP) {
+    const tried: { box: Rect; side: Side; distance: number; order: number }[] = [];
+    search: for (let distance = gap; distance <= Math.max(gap, MAX_NOTE_DISTANCE); distance += STEP) {
       for (const side of sides) {
         const box = boxAt(side, distance);
         if (isFree(box)) {
           chosen = { box, side };
           break search;
         }
+        tried.push({ box: clampInto(box, viewport), side, distance, order: sides.indexOf(side) });
       }
     }
     if (!chosen) {
-      const side = sides[0];
-      const raw = boxAt(side, gap);
-      chosen = { side, box: { ...raw, x: clamp(raw.x, MARGIN, Math.max(MARGIN, viewport.width - MARGIN - raw.width)), y: clamp(raw.y, MARGIN, Math.max(MARGIN, viewport.height - MARGIN - raw.height)) } };
+      // Nothing fits: least total overlap wins; ties go to the nearer, then to the side order.
+      const blockers = obstacles();
+      const overlap = (r: Rect) => blockers.reduce((sum, o) => sum + overlapArea(r, o), 0);
+      const best = tried
+        .map((c) => ({ ...c, area: overlap(c.box) }))
+        .sort((x, y) => x.area - y.area || x.distance - y.distance || x.order - y.order)[0];
+      chosen = { box: best.box, side: best.side };
     }
     placed.push({ id: note.id, box: chosen.box, arrow: arrowFor(chosen.box, chosen.side, target) });
   }
@@ -107,16 +125,16 @@ function candidate(side: Side, distance: number, t: Rect, size: { width: number;
 function placeFree(note: NoteInput, isFree: (r: Rect) => boolean, vp: { width: number; height: number }): Rect {
   const { width, height } = note.size;
   const x = (vp.width - width) / 2;
-  if (note.freeAnchor === 'top') return { x, y: FREE_TOP, width, height };
+  if (note.freeAnchor === 'top') return clampInto({ x, y: FREE_TOP, width, height }, vp);
   const y0 = (vp.height - height) / 2;
   // Shift vertically (alternating down/up) until the note overlaps nothing.
   for (let offset = 0; offset <= vp.height; offset += STEP) {
     for (const y of offset === 0 ? [y0] : [y0 + offset, y0 - offset]) {
-      const box = { x, y, width, height };
+      const box = clampInto({ x, y, width, height }, vp);
       if (isFree(box)) return box;
     }
   }
-  return { x, y: y0, width, height };
+  return clampInto({ x, y: y0, width, height }, vp);
 }
 
 function arrowFor(box: Rect, side: Side, t: Rect): Arrow {
