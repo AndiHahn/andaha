@@ -15,7 +15,7 @@ export const TOUR_OVERLAY_COMPONENT = new InjectionToken<ComponentType<unknown>>
 const DESKTOP = '(min-width: 1024px)';
 /** Wartezeit, bis die Tour nach erfüllten Bedingungen automatisch startet */
 const START_DELAY = 400;
-/** Über Sheets und Dialogen (CDK-Overlay-Container: 1000) */
+/** Über Sheets und Dialogen (CDK-Overlay-Container: 1000); die App schaltet Popover ab (usePopover: false) */
 const TOUR_Z_INDEX = '1001';
 const LAST_STEP = 2;
 
@@ -36,6 +36,8 @@ export class TourService {
   private readonly step = signal(0);
   private readonly listReady = signal(false);
   private readonly requested = signal(false);
+  /** In dieser App-Sitzung schon automatisch gezeigt (falls das Speichern des Flags scheitert) */
+  private autoShown = false;
 
   readonly active = this.activeState.asReadonly();
   readonly stepIndex = this.step.asReadonly();
@@ -69,7 +71,9 @@ export class TourService {
 
   /** Manueller Start: ignoriert das Gesehen-Flag, wartet aber auf dieselbe Bereitschaft */
   request(): void {
-    this.requested.set(true);
+    if (!this.activeState()) {
+      this.requested.set(true);
+    }
   }
 
   next(): void {
@@ -104,25 +108,30 @@ export class TourService {
 
   private shouldStart(): boolean {
     return this.listReady() && this.overlayBack.openCount() === 0 && !this.activeState()
-      && (this.requested() || !this.seenStore.isSeenOrUnavailable());
+      && (this.requested() || (!this.autoShown && !this.seenStore.isSeenOrUnavailable()));
   }
 
   private start(): void {
     this.seenStore.markSeen();
+    this.autoShown = true;
     this.requested.set(false);
     this.step.set(0);
     this.activeState.set(true);
-    this.releaseBack = this.overlayBack.register(() => this.end());
-
-    this.overlayRef = this.overlay.create({
-      positionStrategy: this.overlay.position().global().top('0').left('0'),
-      width: '100%',
-      height: '100%',
-      hasBackdrop: false,
-      disposeOnNavigation: false
-    });
-    this.overlayRef.hostElement.style.zIndex = TOUR_Z_INDEX;
-    this.overlayRef.attach(new ComponentPortal(this.overlayComponent));
+    try {
+      this.releaseBack = this.overlayBack.register(() => this.end());
+      this.overlayRef = this.overlay.create({
+        positionStrategy: this.overlay.position().global().top('0').left('0'),
+        width: '100%',
+        height: '100%',
+        hasBackdrop: false,
+        disposeOnNavigation: false
+      });
+      this.overlayRef.hostElement.style.zIndex = TOUR_Z_INDEX;
+      this.overlayRef.attach(new ComponentPortal(this.overlayComponent));
+    } catch (error) {
+      this.end();
+      throw error;
+    }
   }
 
   private goTo(index: number): void {
@@ -146,7 +155,6 @@ export class TourService {
         this.end();
       }
     });
-    this.bringToFront();
   }
 
   /** Schließt die Vorschau, ohne dass deren `closed$` die Tour beendet */
@@ -154,20 +162,5 @@ export class TourService {
     const handle = this.preview;
     this.preview = null;
     handle?.close();
-  }
-
-  /** Die frisch geöffnete Vorschau liegt sonst über der Tour (gleiche Ebene, später im DOM) */
-  private bringToFront(): void {
-    const host = this.overlayRef?.hostElement;
-    host?.parentElement?.appendChild(host);
-    // Die App schaltet Popover ab (usePopover: false); für den Fall, dass doch eins aktiv ist
-    if (host?.hasAttribute('popover')) {
-      try {
-        host.hidePopover();
-        host.showPopover();
-      } catch {
-        // Popover nicht verfügbar
-      }
-    }
   }
 }

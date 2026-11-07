@@ -1,3 +1,4 @@
+import { Overlay } from '@angular/cdk/overlay';
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
@@ -183,18 +184,10 @@ describe('TourService', () => {
     expect(release).toHaveBeenCalledTimes(1);
   });
 
-  it('keeps the tour host above the preview that opened after it', () => {
+  it('keeps the tour host z-index above the CDK overlay layer', () => {
     startManually();
-    service.next();
-    quickEntryOpen.mockImplementationOnce(() => {
-      const late = document.createElement('div');
-      document.querySelector('.cdk-overlay-container')!.appendChild(late);
-      return handle;
-    });
-    service.next();
     const host = document.querySelector('.dummy-tour')!.closest('.cdk-global-overlay-wrapper') as HTMLElement;
     expect(host.style.zIndex).toBe('1001');
-    expect(host.parentElement!.lastElementChild).toBe(host);
   });
 
   it('end() closes the preview, releases the back registration and is idempotent', () => {
@@ -224,6 +217,56 @@ describe('TourService', () => {
     expect(service.active()).toBe(true);
     expect(service.stepIndex()).toBe(2);
     service.end();
+    expect(service.active()).toBe(false);
+  });
+
+  it('does not restart after end() when saving the seen flag fails', () => {
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('quota');
+    });
+    service.setListReady(true);
+    settle(400);
+    expect(service.active()).toBe(true);
+    service.end();
+    settle(5000);
+    expect(service.active()).toBe(false);
+    vi.restoreAllMocks();
+  });
+
+  it('ignores request() while the tour is active', () => {
+    startManually();
+    service.request();
+    service.end();
+    settle(5000);
+    expect(service.active()).toBe(false);
+  });
+
+  it('cleans up when creating the overlay fails', () => {
+    const overlay = TestBed.inject(Overlay);
+    vi.spyOn(overlay, 'create').mockImplementation(() => {
+      throw new Error('boom');
+    });
+    service.setListReady(true);
+    expect(() => settle(400)).toThrow();
+    expect(service.active()).toBe(false);
+    expect(release).toHaveBeenCalledTimes(1);
+  });
+
+  it('Back (registered close) on templates closes the preview and ends the tour', () => {
+    startManually();
+    service.next();
+    service.next();
+    registered!();
+    expect(handle.close).toHaveBeenCalledTimes(1);
+    expect(service.active()).toBe(false);
+    expect(release).toHaveBeenCalledTimes(1);
+  });
+
+  it('aborts the pending start if the list is no longer ready during the delay', () => {
+    service.setListReady(true);
+    settle(200);
+    service.setListReady(false);
+    settle(1000);
     expect(service.active()).toBe(false);
   });
 });
