@@ -18,6 +18,9 @@
         <span class="sub"> · {{ confidence }} %</span>
       }</span>
     </div>
+    @if (reasons) {
+      <div class="reasons"><mat-icon aria-hidden="true">info</mat-icon>{{ reasons }}</div>
+    }
   </div>
   <div class="amt">{{ bill.price | number:'1.2-2':'de' }}<small>€</small></div>
 </div>

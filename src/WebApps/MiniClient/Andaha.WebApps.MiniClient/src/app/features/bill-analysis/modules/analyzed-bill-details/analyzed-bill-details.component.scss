@@ -64,6 +64,24 @@
   gap: 8px;
 }
 
+// Hinweis, warum die Analyse nicht automatisch angelegt wurde (US-0011)
+.why {
+  margin: 12px 16px 4px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--pri-soft);
+  font-size: 14px;
+
+  ul {
+    margin: 6px 0 0;
+    padding-left: 18px;
+  }
+}
+
+.why-title {
+  font-weight: 600;
+}
+
 // Konfidenz: kleiner Balken in positive
 .bar {
   width: 72px;
@@ -140,6 +158,8 @@
     min-width: 0;
     max-width: 560px;
   }
+
+  .why { margin-left: 0; margin-right: 0; }
 
   .head,
   .kv,

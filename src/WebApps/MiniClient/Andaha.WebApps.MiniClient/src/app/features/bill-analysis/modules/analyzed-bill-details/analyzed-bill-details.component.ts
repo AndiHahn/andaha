@@ -23,6 +23,7 @@ import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/sh
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { AnalyzedBillImageComponent } from '../analyzed-bill-image/analyzed-bill-image.component';
 import { DecimalPipe, DatePipe } from '@angular/common';
+import { NotCreatedReasonText, notCreatedReasonTexts } from '../../functions/not-created-reasons';
 
 const DISCARD_QUESTION = 'Soll die analysierte Rechnung samt Foto wirklich verworfen werden?';
 const DISCARD_FAILED = 'Analyse konnte nicht verworfen werden.';
@@ -55,6 +56,8 @@ export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
   category?: CategoryDto;
   subCategory?: SubCategoryDto;
   confidence: number | null = null;
+  /** Sätze, warum die Analyse nicht automatisch angelegt wurde (US-0011) */
+  reasons: NotCreatedReasonText[] = [];
   /** Foto wird für die Übernahme geladen bzw. die Analyse wird verworfen */
   busy: boolean = false;
 
@@ -75,6 +78,7 @@ export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
 
       this.bill = bill;
       this.confidence = confidencePercent(bill.confidence);
+      this.reasons = notCreatedReasonTexts(bill.notCreatedReasons);
 
       this.categoryContext.categories().pipe(takeUntil(this.destroy$)).subscribe(categories => {
         const resolved = resolveAnalyzedCategory(categories, bill.categoryId, bill.subCategoryId);

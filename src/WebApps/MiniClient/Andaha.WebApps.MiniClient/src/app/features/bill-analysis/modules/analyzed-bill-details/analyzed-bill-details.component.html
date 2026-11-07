@@ -13,6 +13,16 @@
             <div class="big">{{ bill.price | number:'1.2-2':'de' }}<small>€</small></div>
             <div class="when">{{ bill.date ? (bill.date | date:'dd.MM.yyyy') : '–' }}</div>
           </div>
+          @if (reasons.length) {
+            <div class="why">
+              <div class="why-title" role="heading" aria-level="2">Nicht automatisch angelegt</div>
+              <ul>
+                @for (reason of reasons; track $index) {
+                  <li>{{ reason.sentence }}</li>
+                }
+              </ul>
+            </div>
+          }
           <div class="kv">
             <span class="k">Kategorie</span>
             <span class="v cat">

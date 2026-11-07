@@ -44,7 +44,7 @@ export class AnalyzedBillListComponent {
   private readonly zone = inject(NgZone);
 
   readonly emptyText = 'Keine Scans – fotografiere Rechnungen mit dem Kamera-Knopf oder wähle sie aus der Galerie.';
-  readonly pixelHeightPerItem = 64;
+  readonly pixelHeightPerItem = 80;
 
   readonly categories = toSignal(inject(BillCategoryContextService).categories(), { initialValue: [] });
   readonly toReview = toSignal(this.analyzedBills.bills(), { initialValue: [] });

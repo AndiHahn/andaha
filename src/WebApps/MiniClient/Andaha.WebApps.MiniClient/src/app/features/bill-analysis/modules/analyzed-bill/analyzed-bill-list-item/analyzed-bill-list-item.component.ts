@@ -4,13 +4,15 @@ import { CategoryDto } from 'src/app/api/shopping/dtos/CategoryDto';
 import { SubCategoryDto } from 'src/app/api/shopping/dtos/SubCategoryDto';
 import { confidencePercent, resolveAnalyzedCategory } from '../../../functions/analyzed-bill-functions';
 import { DecimalPipe, DatePipe } from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
+import { notCreatedReasonTexts } from '../../../functions/not-created-reasons';
 
 @Component({
     selector: 'app-analyzed-bill-list-item',
     templateUrl: './analyzed-bill-list-item.component.html',
     styleUrls: ['./analyzed-bill-list-item.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [DecimalPipe, DatePipe]
+    imports: [DecimalPipe, DatePipe, MatIcon]
 })
 export class AnalyzedBillListItemComponent implements OnInit {
 
@@ -42,5 +44,10 @@ export class AnalyzedBillListItemComponent implements OnInit {
 
   get confidence(): number | null {
     return confidencePercent(this.bill.confidence);
+  }
+
+  /** Kurztexte, warum die Analyse nicht automatisch angelegt wurde (US-0011), mit " · " verbunden */
+  get reasons(): string {
+    return notCreatedReasonTexts(this.bill.notCreatedReasons).map(r => r.short).join(' · ');
   }
 }

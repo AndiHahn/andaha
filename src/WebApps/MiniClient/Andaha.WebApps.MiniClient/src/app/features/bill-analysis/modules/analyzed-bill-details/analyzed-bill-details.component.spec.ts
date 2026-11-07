@@ -99,6 +99,28 @@ describe('AnalyzedBillDetailsComponent', () => {
     return found!;
   }
 
+  it('mit Gründen: Hinweisblock vor den Werten, ein li je Satz in API-Reihenfolge', async () => {
+    await setup({ bill: { ...bill, notCreatedReasons: ['CategoryUnclear', 'DateMissing'] } });
+
+    const why = host.querySelector('.why')!;
+    expect(why).not.toBeNull();
+    expect(why.querySelector('[role="heading"]')!.textContent).toContain('Nicht automatisch angelegt');
+    const items = Array.from(why.querySelectorAll('li')).map(li => li.textContent!.trim());
+    expect(items).toEqual(['Es wurde keine passende Kategorie gefunden.', 'Das Datum wurde nicht erkannt.']);
+    const kv = host.querySelector('.kv')!;
+    expect(why.compareDocumentPosition(kv) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('ohne Gründe oder nur mit unbekannten Codes: kein Hinweisblock', async () => {
+    await setup();
+    expect(host.querySelector('.why')).toBeNull();
+
+    fixture.destroy();
+    TestBed.resetTestingModule();
+    await setup({ bill: { ...bill, notCreatedReasons: ['Foo'] } });
+    expect(host.querySelector('.why')).toBeNull();
+  });
+
   it('zeigt die Positionen (AC32)', async () => {
     await setup();
 
