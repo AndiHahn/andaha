@@ -1,3 +1,5 @@
+using Andaha.Services.Shopping.Core;
+
 ﻿namespace Andaha.Services.Shopping.Infrastructure.InvoiceAnalysis.Models;
 
 public class InvoiceAnalysisResult
@@ -15,25 +17,10 @@ public class InvoiceAnalysisResult
 
     public bool IsReasonableResult()
     {
-        return !string.IsNullOrWhiteSpace(VendorName)
-            && InvoiceDate.HasValue
-            && TotalAmount.HasValue
-            && TotalAmount.Value > 0
-            && Confidence > 0.75
-            && (LineItemSumEqualsTotalAmount() || TotalAmountConfidence > 0.6);
-    }
-
-    public bool LineItemSumEqualsTotalAmount()
-    {
-        if (!TotalAmount.HasValue)
-        {
-            return false;
-        }
-
         double lineItemsSum = LineItems?.Sum(lineItem => lineItem.TotalPrice) ?? 0.0;
 
-        const double maxTolerance = 5.0;
-
-        return Math.Abs(TotalAmount.Value - lineItemsSum) <= maxTolerance;
+        return AutoCreationRules.Evaluate(
+            VendorName, InvoiceDate?.DateTime, TotalAmount, Confidence, TotalAmountConfidence,
+            lineItemsSum, categoryValid: true).Count == 0;
     }
 }
