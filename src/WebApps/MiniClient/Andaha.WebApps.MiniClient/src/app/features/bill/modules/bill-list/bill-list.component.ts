@@ -1,6 +1,6 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { CdkScrollable } from '@angular/cdk/scrolling';
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ChangeDetectionStrategy, NgZone, ViewChild, inject, signal, viewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ChangeDetectionStrategy, DestroyRef, NgZone, ViewChild, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { takeUntil } from 'rxjs/operators';
 import { PageEvent, MatPaginator } from '@angular/material/paginator';
@@ -29,6 +29,7 @@ import { PullToRefreshDirective } from './pull-to-refresh.directive';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MenuBackDirective } from 'src/app/core/overlay/menu-back.directive';
 import { LongPressDirective } from 'src/app/shared/directives/long-press.directive';
+import { TourService } from 'src/app/core/tour/tour.service';
 
 /** Monatskopf mit der Monatssumme des Backends über alle Treffer (design.md §3.1, AC1) */
 interface BillMonthGroup {
@@ -55,6 +56,7 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   private snackbar = inject(MatSnackBar);
   private confirmationDialog = inject(ConfirmationDialogService);
   private zone = inject(NgZone);
+  private tour = inject(TourService);
   private host: HTMLElement = inject(ElementRef).nativeElement;
 
   @ViewChild(CdkScrollable) private scrollable?: CdkScrollable;
@@ -86,7 +88,22 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   
   private destroy$: Subject<void> = new Subject();
 
+  /** Einmal-Riegel für die Tour: erstes Laden fertig und Start-Absicht verarbeitet (danach nie zurück) */
+  private loadLeft = false;
+  private intentHandled = false;
+  private listReadyReported = false;
+
   constructor() {
+      // Fehler- und Wecken-Signale ändern den Ladezustand ohne Abonnement-Aufruf
+      effect(() => {
+        const left = this.loadState !== 'loading';
+        untracked(() => {
+          this.loadLeft ||= left;
+          this.reportListReady();
+        });
+      });
+      inject(DestroyRef).onDestroy(() => this.tour.setListReady(false));
+
       const searchText = this.billContextService.getSearchText();
       if (searchText.length > 0) {
         this.initialSearchValue = searchText;
@@ -268,6 +285,19 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
   // des Sheets (OverlayBackService). Geteilte Bilder werden auch ohne
   // Parameter abgeholt (z. B. wenn der Login-Redirect ?shared=1 verloren hat); der Cache-Eintrag
   // überlebt den Redirect und wird beim ersten Öffnen der Liste genau einmal verarbeitet.
+  /** Meldet der Tour genau einmal, dass die Liste bereit ist (Laden verlassen und Start-Absicht erledigt) */
+  private reportListReady(): void {
+    if (!this.listReadyReported && this.loadLeft && this.intentHandled) {
+      this.listReadyReported = true;
+      this.tour.setListReady(true);
+    }
+  }
+
+  private checkLoadLeft(): void {
+    this.loadLeft ||= this.loadState !== 'loading';
+    this.reportListReady();
+  }
+
   private handleLaunchIntent(): void {
     const { quick, shared } = readLaunchIntent(this.route.snapshot.queryParamMap);
     const clear = quick || shared
@@ -282,6 +312,8 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
       if (shared === 'failed') {
         openErrorSnackbar(SHARED_IMAGE_FAILED, this.snackbar);
       }
+      this.intentHandled = true;
+      this.reportListReady();
       const images = await takeSharedImages();
       if (images.length > 0) {
         this.analysisUpload.uploadAll(images);
@@ -306,6 +338,7 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
           sum: monthSums.get(group.month) ?? 0,
           bills: group.items
         }));
+        this.checkLoadLeft();
       });
 
     this.billContextService.totalResults().pipe(takeUntil(this.destroy$)).subscribe(
@@ -322,7 +355,10 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.billContextService.loading().pipe(takeUntil(this.destroy$)).subscribe(
       {
-        next: loading => this.loading = loading 
+        next: loading => {
+          this.loading = loading;
+          this.checkLoadLeft();
+        }
       }
     );
   }

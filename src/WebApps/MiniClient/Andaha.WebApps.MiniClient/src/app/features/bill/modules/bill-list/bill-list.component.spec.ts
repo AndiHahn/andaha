@@ -9,6 +9,7 @@ import { OverlayBackService } from 'src/app/core/overlay/overlay-back.service';
 import { BillContextService } from 'src/app/features/bill/services/bill-context.service';
 import { BillCategoryContextService } from 'src/app/services/bill-category-context.service';
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
+import { TourService } from 'src/app/core/tour/tour.service';
 import { QuickEntryService } from '../../quick-entry/quick-entry.service';
 import { AnalysisUploadService } from 'src/app/features/bill-analysis/services/analysis-upload.service';
 import { SHARED_IMAGE_CACHE, SHARED_IMAGE_FAILED, sharedImageKey } from '../../scan/shared-image';
@@ -44,12 +45,14 @@ describe('BillListComponent', () => {
   let uploadAll: ReturnType<typeof vi.fn>;
   let searchText: string;
   let queryParams: Record<string, string>;
+  let setListReady: ReturnType<typeof vi.fn>;
   let openFromComponent: ReturnType<typeof vi.spyOn>;
 
   beforeEach(async () => {
     backClose = null;
     searchText = '';
     uploadAll = vi.fn();
+    setListReady = vi.fn();
     queryParams = {};
     bills$ = new BehaviorSubject<BillDto[]>([
       bill('b1', new Date(2026, 10, 5), 48.2),
@@ -90,6 +93,7 @@ describe('BillListComponent', () => {
         { provide: BillCategoryContextService, useValue: { categories: () => of([]) } },
         { provide: ConfirmationDialogService, useValue: { openDialog: openConfirmation } },
         { provide: QuickEntryService, useValue: { open: vi.fn() } },
+        { provide: TourService, useValue: { setListReady } },
         { provide: AnalysisUploadService, useValue: { uploadAll } },
         { provide: OverlayBackService, useValue: { register: (close: () => void) => { backClose = close; return () => undefined; } } },
         { provide: ActivatedRoute, useValue: { snapshot: { get queryParamMap() { return convertToParamMap(queryParams); } } } }
@@ -400,5 +404,62 @@ describe('BillListComponent', () => {
     expect(retry).toBeDefined();
     retry!.click();
     expect(context.retry).toHaveBeenCalled();
+  });
+
+  describe('tour readiness', () => {
+    it('reports list ready after the first load', () => {
+      expect(setListReady).toHaveBeenCalledTimes(1);
+      expect(setListReady).toHaveBeenCalledWith(true);
+    });
+
+    it('does not report ready while the first load is pending', async () => {
+      setListReady.mockClear();
+      const context = TestBed.inject(BillContextService) as unknown as { waitingForBackend: ReturnType<typeof signal<boolean>> };
+      context.waitingForBackend.set(true);
+      bills$.next([]);
+      fixture = TestBed.createComponent(BillListComponent);
+      await settle();
+
+      expect(setListReady).not.toHaveBeenCalledWith(true);
+      context.waitingForBackend.set(false);
+      await settle();
+      expect(setListReady).toHaveBeenCalledWith(true);
+    });
+
+    it('does not report ready before the launch intent is handled', async () => {
+      setListReady.mockClear();
+      const open = TestBed.inject(QuickEntryService).open as ReturnType<typeof vi.fn>;
+      open.mockClear();
+      let finishNavigation!: (ok: boolean) => void;
+      vi.mocked(TestBed.inject(Router).navigate).mockReturnValue(new Promise<boolean>(resolve => finishNavigation = resolve));
+      queryParams = { quick: '1' };
+      fixture = TestBed.createComponent(BillListComponent);
+      await settle();
+
+      expect(open).not.toHaveBeenCalled();
+      expect(setListReady).not.toHaveBeenCalled();
+
+      setListReady.mockImplementation(() => expect(open).toHaveBeenCalled());
+      finishNavigation(true);
+      await vi.waitFor(() => expect(setListReady).toHaveBeenCalledWith(true));
+      expect(open).toHaveBeenCalledTimes(1);
+    });
+
+    it('stays ready when the list reloads', async () => {
+      loading$.next(true);
+      bills$.next([]);
+      await settle();
+      loading$.next(false);
+      await settle();
+
+      expect(setListReady).toHaveBeenCalledTimes(1);
+    });
+
+    it('reports not ready on destroy', () => {
+      setListReady.mockClear();
+      fixture.destroy();
+
+      expect(setListReady).toHaveBeenCalledWith(false);
+    });
   });
 });

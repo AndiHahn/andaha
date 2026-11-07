@@ -26,6 +26,8 @@ export interface NavLink {
   path: string;
   /** Zähler rechts neben dem Eintrag (Mehr-Seite), z. B. Anzahl der Vorlagen */
   counter?: 'templates';
+  /** Startet die Schnell-Hilfe-Tour (zusätzlich zur Navigation) */
+  startsTour?: boolean;
 }
 
 export const NAV_AREAS: readonly NavArea[] = [
@@ -84,7 +86,8 @@ export const MORE_SETTINGS: readonly NavLink[] = [
 
 /** Einträge unter „Mehr“: Abschnitt „Daten“ */
 export const MORE_DATA: readonly NavLink[] = [
-  { label: 'Export', icon: 'download', path: '/export' }
+  { label: 'Export', icon: 'download', path: '/export' },
+  { label: 'Schnell-Hilfe', icon: 'help', path: '/bill/list', startsTour: true }
 ];
 
 export const LEGAL_LINKS: readonly Omit<NavLink, 'icon'>[] = [

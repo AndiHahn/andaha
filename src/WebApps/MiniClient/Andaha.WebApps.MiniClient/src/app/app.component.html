@@ -15,9 +15,16 @@
 
     <div class="grp">Mehr</div>
     @for (link of moreLinks; track link.path) {
-      <a class="dl" [routerLink]="link.path" routerLinkActive="on" ariaCurrentWhenActive="page">
-        <mat-icon aria-hidden="true">{{ link.icon }}</mat-icon>{{ link.label }}
-      </a>
+      @if (link.startsTour) {
+        <!-- gleicher Pfad wie „Rechnungen“: kein eigener Aktiv-Zustand -->
+        <a class="dl" [routerLink]="link.path" (click)="tour.request()">
+          <mat-icon aria-hidden="true">{{ link.icon }}</mat-icon>{{ link.label }}
+        </a>
+      } @else {
+        <a class="dl" [routerLink]="link.path" routerLinkActive="on" ariaCurrentWhenActive="page">
+          <mat-icon aria-hidden="true">{{ link.icon }}</mat-icon>{{ link.label }}
+        </a>
+      }
     }
 
     <div class="grow"></div>

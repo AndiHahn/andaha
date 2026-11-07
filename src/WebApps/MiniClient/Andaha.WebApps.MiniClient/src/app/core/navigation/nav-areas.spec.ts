@@ -1,8 +1,12 @@
-import { findArea, findTabIndex, isTabPage, NAV_AREAS, navArea as area } from './nav-areas';
+import { findArea, findTabIndex, isTabPage, MORE_DATA, NAV_AREAS, navArea as area } from './nav-areas';
 
 describe('nav-areas', () => {
   it('has the four areas in bar order', () => {
     expect(NAV_AREAS.map(a => a.label)).toEqual(['Rechnungen', 'Haushalt', 'Stunden', 'Mehr']);
+  });
+
+  it('MORE_DATA ends with Schnell-Hilfe (help, startsTour)', () => {
+    expect(MORE_DATA[MORE_DATA.length - 1]).toEqual({ label: 'Schnell-Hilfe', icon: 'help', path: '/bill/list', startsTour: true });
   });
 
   it('describes the tabs per area', () => {
