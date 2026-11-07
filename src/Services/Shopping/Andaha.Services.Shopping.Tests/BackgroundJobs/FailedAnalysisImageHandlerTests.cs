@@ -61,6 +61,7 @@ public class FailedAnalysisImageHandlerTests
             Assert.Null(bill.Confidence);
             Assert.Null(bill.TotalAmountConfidence);
             Assert.Empty(bill.LineItems);
+            Assert.Equal([Core.NotCreatedReason.AnalysisFailed], bill.NotCreatedReasons);
 
             var image = Assert.Single(bill.Images);
             Assert.Equal($"{bill.Id}-1", image.Name);

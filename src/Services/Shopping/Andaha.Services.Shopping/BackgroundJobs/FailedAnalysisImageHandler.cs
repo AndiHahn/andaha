@@ -38,7 +38,8 @@ internal class FailedAnalysisImageHandler(
             price: null,
             confidence: null,
             totalAmountConfidence: null,
-            sourceUploadId: imageName);
+            sourceUploadId: imageName,
+            notCreatedReasons: [NotCreatedReason.AnalysisFailed]);
 
         string billImageName = $"{analyzedBill.Id}-1";
 

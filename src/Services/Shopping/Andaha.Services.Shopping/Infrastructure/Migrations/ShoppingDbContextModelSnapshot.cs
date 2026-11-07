@@ -55,6 +55,9 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
                     b.Property<DateTime?>("Date")
                         .HasColumnType("date");
 
+                    b.PrimitiveCollection<string>("NotCreatedReasons")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<double?>("Price")
                         .HasColumnType("float");
 

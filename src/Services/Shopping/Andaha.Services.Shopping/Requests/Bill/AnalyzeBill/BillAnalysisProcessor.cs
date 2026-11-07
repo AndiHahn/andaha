@@ -53,7 +53,16 @@ internal sealed class BillAnalysisProcessor(
         var lineItems = LineItemSanitizer.Sanitize(analysisResult.LineItems
             .Select(lineItem => (lineItem.Description, lineItem.Quantity, lineItem.UnitPrice, lineItem.TotalPrice)));
 
-        if (analysisResult.IsReasonableResult() && classificationResult is not null)
+        var notCreatedReasons = AutoCreationRules.Evaluate(
+            analysisResult.VendorName,
+            analysisResult.InvoiceDate?.Date,
+            totalAmount,
+            analysisResult.Confidence,
+            analysisResult.TotalAmountConfidence,
+            lineItemsAmount ?? 0,
+            categoryValid: classificationResult is not null);
+
+        if (notCreatedReasons.Count == 0 && classificationResult is not null)
         {
             logger.LogInformation("Analysis Result is reasonable. Create bill.");
             await CreateBillAsync(imageName, file, analysisResult, classificationResult, lineItems, ct);
@@ -62,7 +71,7 @@ internal sealed class BillAnalysisProcessor(
         }
 
         logger.LogInformation("Analysis Result is not reasonable. Create analyzed bill for manual review.");
-        await CreateAnalyzedBillAsync(imageName, file, analysisResult, classificationResult, lineItems, ct);
+        await CreateAnalyzedBillAsync(imageName, file, analysisResult, classificationResult, lineItems, notCreatedReasons, ct);
     }
 
     private async Task CreateAnalyzedBillAsync(
@@ -71,6 +80,7 @@ internal sealed class BillAnalysisProcessor(
         InvoiceAnalysisResult analysisResult,
         CategoryClassificationResult? classificationResult,
         IReadOnlyList<LineItemData> lineItems,
+        IReadOnlyList<NotCreatedReason> notCreatedReasons,
         CancellationToken ct)
     {
         var analyzedBill = new AnalyzedBill(
@@ -82,7 +92,8 @@ internal sealed class BillAnalysisProcessor(
             date: analysisResult.InvoiceDate?.Date,
             confidence: analysisResult.Confidence,
             totalAmountConfidence: analysisResult.TotalAmountConfidence,
-            sourceUploadId: sourceImageName);
+            sourceUploadId: sourceImageName,
+            notCreatedReasons: notCreatedReasons);
 
         foreach (var lineItem in lineItems)
         {

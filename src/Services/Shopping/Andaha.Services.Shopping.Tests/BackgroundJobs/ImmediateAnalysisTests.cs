@@ -192,12 +192,48 @@ public sealed class ImmediateAnalysisTests : IDisposable
         var analyzedBill = await context.AnalyzedBill.Include(b => b.LineItems).SingleAsync();
         Assert.Equal(id, analyzedBill.SourceUploadId);
         Assert.Equal(UserA, analyzedBill.UserId);
+        Assert.Equal([Core.NotCreatedReason.LowConfidence], analyzedBill.NotCreatedReasons);
         Assert.Equal(
             ["Brot", "Pfand", "Milch"],
             analyzedBill.LineItems.OrderBy(item => item.Position).Select(item => item.Description));
         Assert.Equal([0, 1, 2], analyzedBill.LineItems.Select(item => item.Position).Order());
         Assert.Empty(await context.Bill.ToListAsync());
         Assert.Empty(await analysisImages.ListImagesAsync());
+    }
+
+    [Fact]
+    public async Task Analyzed_bill_stores_category_unclear_when_classification_invalid()
+    {
+        invoiceAnalysis.AnalyzeAsync(Arg.Any<Stream>(), Arg.Any<CancellationToken>()).Returns(Plausible());
+        classification
+            .ClassifyAsync(Arg.Any<string?>(), Arg.Any<string[]>(), Arg.Any<Core.BillCategory[]>(), Arg.Any<CancellationToken>())
+            .Returns(_ => new CategoryClassificationResult { CategoryId = Guid.NewGuid() });
+        using var services = BuildServices();
+        string id = await UploadAsync();
+
+        await CreateService(services).ProcessAsync(id, CancellationToken.None);
+
+        await using var context = TestDb.Open(connection);
+        var analyzedBill = await context.AnalyzedBill.SingleAsync();
+        Assert.Equal([Core.NotCreatedReason.CategoryUnclear], analyzedBill.NotCreatedReasons);
+        Assert.Empty(await context.Bill.ToListAsync());
+    }
+
+    [Fact]
+    public async Task Legacy_row_without_reasons_loads_as_null()
+    {
+        Guid id;
+        await using (var context = TestDb.Open(connection))
+        {
+            var legacy = new Core.AnalyzedBill(UserA, null, null, "ZZ Markt", 4.15, 0.5, 0.5);
+            id = legacy.Id;
+            context.AnalyzedBill.Add(legacy);
+            await context.SaveChangesAsync();
+        }
+
+        await using var fresh = TestDb.Open(connection);
+        var loaded = await fresh.AnalyzedBill.SingleAsync(b => b.Id == id);
+        Assert.Null(loaded.NotCreatedReasons);
     }
 
     [Fact]

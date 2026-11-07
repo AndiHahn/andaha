@@ -17,7 +17,8 @@ public class AnalyzedBill : Entity<Guid>
         double? confidence,
         double? totalAmountConfidence,
         DateTime? date = null,
-        string? sourceUploadId = null)
+        string? sourceUploadId = null,
+        IEnumerable<NotCreatedReason>? notCreatedReasons = null)
         : base(Guid.NewGuid())
     {
         if (createdByUserId == Guid.Empty)
@@ -34,7 +35,10 @@ public class AnalyzedBill : Entity<Guid>
         this.TotalAmountConfidence = totalAmountConfidence;
         this.Date = date ?? DateTime.UtcNow;
         this.SourceUploadId = sourceUploadId;
+        this.notCreatedReasons = notCreatedReasons?.ToList();
     }
+
+    private List<NotCreatedReason>? notCreatedReasons;
 
     public Guid UserId { get; private set; }
 
@@ -58,6 +62,11 @@ public class AnalyzedBill : Entity<Guid>
     /// Name of the analysis image this entry was created from, so the client can match it to its upload (US-0009).
     /// </summary>
     public string? SourceUploadId { get; private set; }
+
+    /// <summary>
+    /// Why this entry was not turned into a bill automatically (US-0011). <c>null</c> for entries created before the reasons were stored.
+    /// </summary>
+    public IReadOnlyList<NotCreatedReason>? NotCreatedReasons => this.notCreatedReasons;
 
     public virtual ICollection<BillImage> Images { get; private set; } = [];
 
