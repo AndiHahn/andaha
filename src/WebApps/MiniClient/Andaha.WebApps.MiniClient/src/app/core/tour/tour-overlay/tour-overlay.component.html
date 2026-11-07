@@ -1,0 +1,64 @@
+<div class="tour" cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
+  <h2 class="visually-hidden" [id]="titleId">{{ title() }}</h2>
+
+  <!-- Schleier mit Aussparungen; ein Tipp darauf macht nichts -->
+  <svg class="veil" aria-hidden="true">
+    <defs>
+      <mask [id]="maskId">
+        <rect width="100%" height="100%" fill="white" />
+        @for (hole of holes(); track hole.id) {
+          <rect [attr.x]="hole.rect.x" [attr.y]="hole.rect.y" [attr.width]="hole.rect.width" [attr.height]="hole.rect.height"
+            rx="12" fill="black" />
+        }
+      </mask>
+    </defs>
+    <rect class="shade" width="100%" height="100%" [attr.mask]="'url(#' + maskId + ')'" />
+    @for (hole of holes(); track hole.id) {
+      <rect [class]="'outline tone-' + hole.tone" [attr.x]="hole.rect.x" [attr.y]="hole.rect.y"
+        [attr.width]="hole.rect.width" [attr.height]="hole.rect.height" rx="12" />
+    }
+    @for (shown of notes(); track shown.note.id) {
+      @if (shown.arrow; as arrow) {
+        <g [class]="'arrow tone-' + shown.note.tone">
+          <path [attr.d]="arrow.line" />
+          <path [attr.d]="arrow.head" />
+        </g>
+      }
+    }
+  </svg>
+
+  <div class="top" #topBar>
+    <button type="button" class="skip" (click)="end()">Überspringen</button>
+    <p class="count">
+      <span aria-hidden="true">{{ stepIndex() + 1 }} / {{ stepCount }}</span>
+      <span class="visually-hidden">Schritt {{ stepIndex() + 1 }} von {{ stepCount }}</span>
+    </p>
+  </div>
+
+  <!-- Hinweise in Lesereihenfolge -->
+  @for (shown of notes(); track shown.note.id) {
+    <div [class]="'note tone-' + shown.note.tone" [class.free]="!shown.hole" [class.placed]="shown.box"
+      [style.left.px]="shown.box?.x ?? 0" [style.top.px]="shown.box?.y ?? 0">
+      @if (shown.note.swipeArrows) {
+        <svg class="swipe" viewBox="0 0 104 16" aria-hidden="true">
+          <path d="M14 8 H90" stroke-dasharray="4 4" />
+          <path d="M8 2 L2 8 L8 14 M96 2 L102 8 L96 14" />
+        </svg>
+      }
+      @if (shown.note.label) {
+        <strong class="label">{{ shown.note.label }}</strong>
+      }
+      <span class="text">{{ shown.note.text }}</span>
+    </div>
+  }
+
+  <div class="controls" #controls [class.placed]="controlsAt()"
+    [style.left.px]="controlsAt()?.x ?? 0" [style.top.px]="controlsAt()?.y ?? 0">
+    @if (stepIndex() > 0) {
+      <button type="button" class="back" (click)="back()">Zurück</button>
+    }
+    <button type="button" class="primary" #primary cdkFocusInitial (click)="onPrimary()">
+      {{ isLast() ? 'Los geht’s' : 'Weiter' }}
+    </button>
+  </div>
+</div>

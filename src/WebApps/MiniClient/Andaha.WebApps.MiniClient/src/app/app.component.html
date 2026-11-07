@@ -1,6 +1,6 @@
 <mat-sidenav-container class="shell">
   <!-- Sidebar nur Desktop (04-shortcut-desktop); Mobile hat die Hauptleiste unten -->
-  <mat-sidenav class="side" mode="side" [opened]="isDesktop$ | async" disableClose
+  <mat-sidenav class="side" data-tour="main-nav" mode="side" [opened]="isDesktop$ | async" disableClose
     role="navigation" aria-label="Hauptnavigation">
     @let activeAreaId = activeAreaId$ | async;
     <div class="side-head">

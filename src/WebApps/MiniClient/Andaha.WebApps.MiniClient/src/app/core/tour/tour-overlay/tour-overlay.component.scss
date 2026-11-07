@@ -1,0 +1,206 @@
+@use 'andaha-tokens' as *;
+
+// Schnellhilfe-Tour, Variante C (US-0010 design.md §2): Schleier rgba(30,25,19,.62), Hauptmenü kupfer,
+// Untermenü blau, sonst hell; Hinweise #FFFDF8 13/14 px, höchstens 280 px breit; Pille weiß mit blauer Schrift
+$veil: rgba(30, 25, 19, .62);
+$label-main: #F6C9A0;
+$label-sub: #B9C8EE;
+$chip: rgba(30, 25, 19, .72); // Grund für Überspringen und n / 3, damit sie auch über einem hellen Ziel lesbar bleiben
+$fade: 180ms ease-out;
+
+// Vollbild über der App: das Overlay-Wrapper-Element lässt Zeiger durch, die Tour fängt sie selbst ab
+:host {
+  position: fixed;
+  inset: 0;
+  display: block;
+  pointer-events: auto;
+  touch-action: none; // kein Wischen/Scrollen der App unter der Tour
+  font-family: $andaha-font;
+  color: $andaha-surface;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tour {
+  position: absolute;
+  inset: 0;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.veil {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.shade {
+  fill: $veil;
+}
+
+.outline {
+  fill: none;
+  stroke-width: 2.5;
+
+  &.tone-main { stroke: $andaha-secondary; }
+  &.tone-sub { stroke: $andaha-primary; }
+  &.tone-neutral { stroke: $andaha-surface; }
+}
+
+// gezeichneter Pfeil in der Farbe der Beschriftung
+.arrow {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation: tour-fade $fade;
+
+  &.tone-main { stroke: $label-main; }
+  &.tone-sub { stroke: $label-sub; }
+  &.tone-neutral { stroke: $andaha-surface; }
+}
+
+// Überspringen links, n / 3 rechts
+.top {
+  position: absolute;
+  top: max(8px, env(safe-area-inset-top));
+  left: max(8px, env(safe-area-inset-left));
+  right: max(8px, env(safe-area-inset-right));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+  }
+}
+
+.skip,
+.count {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 22px;
+  background: $chip;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.skip {
+  border: 0;
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.count {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+// Breite unabhängig von der Position, damit die gemessene Größe beim Platzieren gleich bleibt
+.note {
+  position: absolute;
+  width: max-content;
+  max-width: min(280px, calc(100vw - 32px));
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+  text-shadow: 0 1px 2px rgba(30, 25, 19, .5);
+  opacity: 0;
+  transition: opacity $fade;
+
+  &.placed { opacity: 1; }
+  &.free { text-align: center; }
+}
+
+.label {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 14px;
+  font-weight: 700;
+
+  .tone-main > & { color: $label-main; }
+  .tone-sub > & { color: $label-sub; }
+}
+
+.swipe {
+  display: block;
+  width: 104px;
+  height: 16px;
+  margin: 0 auto 6px;
+  fill: none;
+  stroke: $andaha-surface;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.controls {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: max-content;
+  opacity: 0;
+  transition: opacity $fade;
+
+  &.placed { opacity: 1; }
+}
+
+.primary,
+.back {
+  min-height: 44px;
+  border: 0;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary {
+  padding: 0 24px;
+  border-radius: 22px;
+  background: $andaha-surface;
+  color: $andaha-primary;
+}
+
+.back {
+  padding: 0 12px;
+  background: none;
+  color: $andaha-surface;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+button:focus-visible {
+  outline: 2px solid $andaha-surface;
+  outline-offset: 3px;
+}
+
+@keyframes tour-fade {
+  from { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .note,
+  .controls {
+    transition: none;
+  }
+
+  .arrow {
+    animation: none;
+  }
+}

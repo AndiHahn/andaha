@@ -2,7 +2,7 @@
 @if (isTabPage(area, url)) {
   @let active = findTabIndex(area, url);
   @let badgeCount = analysisCount();
-  <nav class="tabs" role="tablist" [attr.aria-label]="area.label">
+  <nav class="tabs" data-tour="tabs" role="tablist" [attr.aria-label]="area.label">
     @for (tab of area.tabs; track tab.path; let i = $index) {
       <!-- info: Richtung der Slide-Animation (core/navigation/tab-transition.ts) -->
       <a role="tab" [routerLink]="tab.path" [class.on]="i === active" [attr.aria-selected]="i === active"

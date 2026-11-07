@@ -1,15 +1,15 @@
 <div class="dock">
-  <button type="button" class="in" aria-label="Neue Rechnung, Betrag eingeben" (click)="openEntry.emit()">
+  <button type="button" class="in" data-tour="entry" aria-label="Neue Rechnung, Betrag eingeben" (click)="openEntry.emit()">
     <mat-icon aria-hidden="true">add</mat-icon>
     <span class="ph">Neue Rechnung: Betrag</span>
     <span class="sfx">€</span>
   </button>
   @if (layout === 'mobile') {
-    <button type="button" class="cam" aria-label="Rechnung scannen" (click)="photoInput.click()">
+    <button type="button" class="cam" data-tour="camera" aria-label="Rechnung scannen" (click)="photoInput.click()">
       <mat-icon aria-hidden="true">photo_camera</mat-icon>
     </button>
   } @else {
-    <button type="button" class="btn sec2 scan" (click)="photoInput.click()">
+    <button type="button" class="btn sec2 scan" data-tour="camera" (click)="photoInput.click()">
       <mat-icon aria-hidden="true">photo_camera</mat-icon><span>Scannen</span>
     </button>
   }

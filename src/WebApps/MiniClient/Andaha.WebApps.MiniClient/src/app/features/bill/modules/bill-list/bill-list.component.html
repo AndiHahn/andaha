@@ -42,7 +42,7 @@
 
           @for (bill of group.bills; track bill.id) {
             <!-- Langer Druck bzw. Rechtsklick (AC3): Menü „Duplizieren“/„Löschen“; ein Tipp öffnet die Detailseite -->
-            <a #rowEl class="bill-link" routerLink="/bill/{{bill.id}}" [queryParams]="matchParams(bill)" appLongPress (longPress)="onRowPress(bill, rowEl)">
+            <a #rowEl class="bill-link" data-tour="bill-row" routerLink="/bill/{{bill.id}}" [queryParams]="matchParams(bill)" appLongPress (longPress)="onRowPress(bill, rowEl)">
               <app-bill-list-item [bill]="bill" [isNew]="bill.id === lastAddedId" [searchTerm]="searchTerm" />
             </a>
           }

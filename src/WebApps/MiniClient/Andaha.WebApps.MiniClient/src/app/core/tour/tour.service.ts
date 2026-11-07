@@ -6,11 +6,18 @@ import { ComponentPortal, ComponentType } from '@angular/cdk/portal';
 import { map } from 'rxjs';
 import { OverlayBackService } from 'src/app/core/overlay/overlay-back.service';
 import { QuickEntryHandle, QuickEntryService } from 'src/app/features/bill/quick-entry/quick-entry.service';
+import { TourOverlayComponent } from './tour-overlay/tour-overlay.component';
 import { TourSeenStore } from './tour-seen-store';
 import { tourSteps } from './tour-steps';
 
-/** Komponente der Tour-Ansicht; die echte liefert die Tour-Overlay-Komponente */
-export const TOUR_OVERLAY_COMPONENT = new InjectionToken<ComponentType<unknown>>('TOUR_OVERLAY_COMPONENT');
+/**
+ * Komponente der Tour-Ansicht, in Tests austauschbar. Der Import der Komponente ist zirkulär
+ * (sie injiziert diesen Service), beide Seiten greifen aber erst zur Laufzeit darauf zu.
+ */
+export const TOUR_OVERLAY_COMPONENT = new InjectionToken<ComponentType<unknown>>('TOUR_OVERLAY_COMPONENT', {
+  providedIn: 'root',
+  factory: () => TourOverlayComponent
+});
 
 const DESKTOP = '(min-width: 1024px)';
 /** Wartezeit, bis die Tour nach erfüllten Bedingungen automatisch startet */
