@@ -11,4 +11,5 @@ public record AnalyzedBillDto(
     double? Confidence,
     double? TotalAmountConfidence,
     bool ImageAvailable,
-    string? SourceUploadId);
+    string? SourceUploadId,
+    IReadOnlyCollection<string> NotCreatedReasons);

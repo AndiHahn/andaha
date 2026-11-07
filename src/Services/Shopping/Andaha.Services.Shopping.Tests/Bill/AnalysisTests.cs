@@ -124,6 +124,52 @@ public class AnalysisTests
     }
 
     [Fact]
+    public async Task AnalyzedBills_list_contains_stored_not_created_reasons()
+    {
+        var (context, connection) = TestDb.CreateShopping();
+        using (connection)
+        using (context)
+        {
+            var bill = new AnalyzedBill(
+                UserA, null, null, "Shop", 10, 0.9, 0.9, DateTime.UtcNow, null,
+                [NotCreatedReason.DateMissing, NotCreatedReason.CategoryUnclear]);
+            context.AnalyzedBill.Add(bill);
+            context.SaveChanges();
+            context.ChangeTracker.Clear();
+
+            var handler = new GetAnalyzedBillsQueryHandler(context, Identity(UserA));
+            var result = await handler.Handle(new GetAnalyzedBillsQuery(), CancellationToken.None);
+
+            var dto = Assert.Single(Assert.IsType<Ok<List<AnalyzedBillDto>>>(result).Value!);
+            Assert.Equal(["DateMissing", "CategoryUnclear"], dto.NotCreatedReasons);
+        }
+    }
+
+    [Fact]
+    public async Task AnalyzedBills_list_derives_reasons_for_legacy_rows()
+    {
+        var (context, connection) = TestDb.CreateShopping();
+        using (connection)
+        using (context)
+        {
+            var legacy = new AnalyzedBill(UserA, null, null, "Billa", 10, 0.5, 0.5, DateTime.UtcNow);
+            var failed = new AnalyzedBill(UserA, null, null, null, null, null, null, DateTime.UtcNow.AddDays(-1));
+            context.AnalyzedBill.AddRange(legacy, failed);
+            context.SaveChanges();
+            context.ChangeTracker.Clear();
+
+            var handler = new GetAnalyzedBillsQueryHandler(context, Identity(UserA));
+            var result = await handler.Handle(new GetAnalyzedBillsQuery(), CancellationToken.None);
+
+            var list = Assert.IsType<Ok<List<AnalyzedBillDto>>>(result).Value!;
+            Assert.Equal(
+                ["LowConfidence", "AmountUncertain", "CategoryUnclear"],
+                Assert.Single(list, d => d.Id == legacy.Id).NotCreatedReasons);
+            Assert.Equal(["AnalysisFailed"], Assert.Single(list, d => d.Id == failed.Id).NotCreatedReasons);
+        }
+    }
+
+    [Fact]
     public async Task AnalyzedBills_list_returns_line_items_by_position()
     {
         var (context, connection) = TestDb.CreateShopping();

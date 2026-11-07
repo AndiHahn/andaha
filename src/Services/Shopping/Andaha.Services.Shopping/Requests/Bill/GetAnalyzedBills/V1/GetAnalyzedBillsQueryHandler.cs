@@ -1,4 +1,5 @@
 using Andaha.CrossCutting.Application.Identity;
+using Andaha.Services.Shopping.Core;
 using Andaha.Services.Shopping.Infrastructure;
 using Andaha.Services.Shopping.Requests.Bill.Dtos.V1;
 using LinqKit;
@@ -22,16 +23,39 @@ internal class GetAnalyzedBillsQueryHandler : IRequestHandler<GetAnalyzedBillsQu
     {
         var userId = identityService.GetUserId();
 
-        var bills = await dbContext.AnalyzedBill
+        var rows = await dbContext.AnalyzedBill
             .AsNoTracking()
             .Include(b => b.LineItems)
             .Where(b => b.UserId == userId)
             .OrderByDescending(b => b.Date)
             .ThenByDescending(b => b.CreatedAt)
             .AsExpandable()
-            .Select(bill => AnalyzedBillDtoMapping.EntityToDto.Invoke(bill))
+            .Select(bill => new
+            {
+                Dto = AnalyzedBillDtoMapping.EntityToDto.Invoke(bill),
+                Stored = bill.NotCreatedReasons,
+            })
             .ToListAsync(cancellationToken);
 
+        var bills = rows
+            .Select(row => row.Dto with { NotCreatedReasons = ResolveReasons(row.Dto, row.Stored) })
+            .ToList();
+
         return Results.Ok(bills);
+    }
+
+    private static IReadOnlyCollection<string> ResolveReasons(
+        AnalyzedBillDto dto,
+        IReadOnlyList<NotCreatedReason>? stored)
+    {
+        var reasons = stored ?? AutoCreationRules.DeriveForLegacy(
+            dto.ShopName,
+            dto.Price,
+            dto.Confidence,
+            dto.TotalAmountConfidence,
+            dto.LineItems.Sum(item => item.TotalPrice ?? 0),
+            dto.CategoryId != null);
+
+        return reasons.Select(reason => reason.ToString()).ToList();
     }
 }
