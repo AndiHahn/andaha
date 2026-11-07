@@ -55,6 +55,13 @@ public class AutoCreationRulesTests
     public void No_amount_uncertain_without_amount()
         => Assert.Equal([NotCreatedReason.AmountMissing], Eval(amount: null, sum: 20, tac: 0));
 
+    [Theory]
+    [InlineData(0.0)]
+    [InlineData(-5.0)]
+    [InlineData(double.NaN)]
+    public void No_amount_uncertain_unless_amount_positive(double amount)
+        => Assert.Equal([NotCreatedReason.AmountMissing], Eval(amount: amount, sum: 20, tac: 0.1));
+
     [Fact]
     public void Order_follows_enum()
         => Assert.Equal(

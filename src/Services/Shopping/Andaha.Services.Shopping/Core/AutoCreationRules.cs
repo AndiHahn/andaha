@@ -22,7 +22,7 @@ public static class AutoCreationRules
             reasons.Add(NotCreatedReason.AmountMissing);
         if (!(confidence > MinConfidence))
             reasons.Add(NotCreatedReason.LowConfidence);
-        if (totalAmount.HasValue
+        if (totalAmount > 0
             && !(Math.Abs(totalAmount.Value - lineItemsSum) <= MaxSumTolerance)
             && !(totalAmountConfidence > MinTotalAmountConfidence))
             reasons.Add(NotCreatedReason.AmountUncertain);
