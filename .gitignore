@@ -367,3 +367,6 @@ src/Services/Monolith/Andaha.Services.Monolith/analyze/
 
 # Playwright MCP scratch output (snapshots, ad-hoc capture scripts)
 .playwright-mcp/
+
+# Superpowers scratch (SDD ledgers, brainstorming mockups)
+.superpowers/
