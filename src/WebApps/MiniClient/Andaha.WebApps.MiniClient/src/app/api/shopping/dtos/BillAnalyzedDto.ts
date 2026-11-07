@@ -28,6 +28,8 @@ interface BillAnalyzedDtoBase {
   lineItems: AnalyzedBillLineItemDto[];
   /** Bild-ID des Uploads, aus dem die Analyse entstand (Zuordnung im Tab Scans) */
   sourceUploadId?: string | null;
+  /** Gründe (Enum-Namen), warum die Analyse nicht automatisch zur Rechnung wurde */
+  notCreatedReasons?: string[];
 }
 
 export function mapBillAnalyzedDtoRaw(raw: BillAnalyzedDtoRaw): BillAnalyzedDto {
