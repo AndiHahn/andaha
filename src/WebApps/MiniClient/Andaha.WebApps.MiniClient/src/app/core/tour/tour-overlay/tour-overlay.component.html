@@ -12,7 +12,7 @@
     }
     @for (shown of notes(); track shown.note.id) {
       @if (shown.arrow; as arrow) {
-        <g [class]="'arrow tone-' + shown.note.tone">
+        <g [class]="'arrow tone-' + shown.note.tone" stroke="currentColor">
           <path [attr.d]="arrow.line" />
           <path [attr.d]="arrow.head" />
         </g>

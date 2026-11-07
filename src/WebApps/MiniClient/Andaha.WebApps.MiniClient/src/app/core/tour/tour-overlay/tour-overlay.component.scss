@@ -40,10 +40,12 @@ $chip: rgba(30, 25, 19, .72); // Grund für Überspringen und n / 3, damit sie a
 
 .arrow {
   animation: tour-fade .18s ease-out;
-
-  &.tone-main { stroke: $label-main; }
-  &.tone-sub { stroke: $label-sub; }
 }
+
+// Farbe der Beschriftung, Pfeil (stroke=currentColor) und Überschrift erben sie; der Text bleibt hell
+.tone-main { color: $label-main; }
+.tone-sub { color: $label-sub; }
+.text { color: var(--surface); }
 
 // Überspringen links, n / 3 rechts
 .top {
@@ -91,7 +93,11 @@ $chip: rgba(30, 25, 19, .72); // Grund für Überspringen und n / 3, damit sie a
   font-size: 13px;
   font-weight: 500;
   line-height: 1.35;
-  text-shadow: 0 1px 2px rgba(30, 25, 19, .5);
+  // weicher dunkler Grund ohne harte Kante: über echter Liste bleibt der Text lesbar
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: $chip;
+  box-shadow: 0 0 10px 4px $chip;
 
   &.free { text-align: center; }
 }
@@ -101,9 +107,6 @@ $chip: rgba(30, 25, 19, .72); // Grund für Überspringen und n / 3, damit sie a
   margin-bottom: 2px;
   font-size: 14px;
   font-weight: 700;
-
-  .tone-main > & { color: $label-main; }
-  .tone-sub > & { color: $label-sub; }
 }
 
 .swipe {

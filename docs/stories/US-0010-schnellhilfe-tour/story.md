@@ -72,6 +72,29 @@ Die Tour zeigt mit Pfeilen und kurzen Texten direkt auf die echte App (Variante 
 - Ein Changelog bzw. „Was ist neu“ für künftige Updates
 - Mehrsprachigkeit
 
+## UI Verification
+
+2026-11-07: **PASSED** (Playwright MCP, 390 × 844 and 1440 × 900, local Monolith with LocalDB and the Angular dev server, Chromium). Screenshots are in [`ui-testing/`](./ui-testing/).
+
+- **Auto-start:** With the „gesehen“ flag removed, the tour starts once the list has loaded. It is a dialog (`role="dialog"`, `aria-modal`, titled per screen), with focus on „Weiter“. All buttons are 44 px high.
+- **Screen 1 „Menüs“:** Hauptmenü is copper (#B8692F), Untermenü is blue (#2E4FA8).
+  - Mobile shows the swipe hint (`m-1-menus.png`).
+  - Desktop shows the sidebar and the copy „zum Wechseln klicken“, without the swipe hint (`d-1-menus.png`).
+- **Screen 2 „Eintragen“:** The entry line, camera and bill-row notes are shown. Mobile says „Lang drücken“, desktop says „Rechtsklick“ (`m-2-eintragen.png`, `d-2-eintragen.png`).
+- **Screen 3 „Vorlagen“:** The quick entry opens behind the tour (sheet on mobile, dialog on desktop), with notes on the tiles, „Andere …“ and „Verwalten unter Mehr → Vorlagen“ (`m-3-vorlagen.png`, `d-3-vorlagen.png`).
+  - Tab keeps focus inside the tour.
+  - A quick Zurück → Weiter reopens the quick entry.
+- **Ending the tour:** „Los geht’s“, Überspringen, Escape and Back on screen 3 (one step back closes the tour and the quick entry; the app stays on `/bill/list`) each end the tour. Afterwards no overlay is left and no draft key exists (`m-4-done.png`, `d-4-done.png`).
+- **Reload:** A reload after finishing, and a reload in the middle of screen 2, show no tour again.
+- **Restart:** Restarting via „Mehr → Schnell-Hilfe“ on mobile navigates to the list and starts the tour (`m-5-entry.png`, `m-5-restart.png`). The desktop sidebar entry starts it on the open list without navigation.
+- **`?quick=1`:** There is no tour while the quick entry is open. It starts after the quick entry closes (AC2).
+- **Resize:** Resizing 1440 → 1000 → 1440 px during screen 1 puts the holes exactly on the sidebar and tabs again (`d-6-resized.png`).
+- **Console:** 0 errors, 0 warnings.
+- **Fixed during verification:** Over a real, full list, white note text on the veil alone was hard to read, because the list text showed through. Notes now get a soft dark backing with no hard edge, in the colour of the top chips.
+- **Not covered:**
+  - The empty-list case was not reachable with the test data; unit tests cover it.
+  - iOS/WebKit rendering of the veil needs a real device, because Playwright ran in Chromium only.
+
 ## AI Usage
 
 See [ai-usage.md](./ai-usage.md).
