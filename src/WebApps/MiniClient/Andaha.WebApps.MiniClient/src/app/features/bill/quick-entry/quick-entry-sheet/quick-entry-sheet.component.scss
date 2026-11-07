@@ -8,6 +8,11 @@
   position: relative;
 }
 
+// Vorschau der Tour: nichts darin ist bedienbar
+:host(.preview) {
+  pointer-events: none;
+}
+
 .grab {
   width: 36px;
   height: 4px;

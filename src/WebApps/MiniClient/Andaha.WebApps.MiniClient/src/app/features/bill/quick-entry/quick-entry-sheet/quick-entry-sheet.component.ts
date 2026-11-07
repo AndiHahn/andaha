@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, InjectionTo
 import { formatDate } from '@angular/common';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
@@ -57,7 +57,7 @@ export const QUICK_ENTRY_RESTORE_TIMEOUT_MS = new InjectionToken<number>('QUICK_
   templateUrl: './quick-entry-sheet.component.html',
   styleUrls: ['./quick-entry-sheet.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  host: { '[class.dialog]': 'dialogMode' },
+  host: { '[class.dialog]': 'dialogMode', '[class.preview]': 'preview' },
   imports: [
     MatIcon, MatMenu, MatMenuItem, MatMenuTrigger, MenuBackDirective, MatOption, MatAutocomplete, SheetDragDirective,
     AmountKeypadComponent, QuickAmountComponent, QuickTilesComponent, QuickShopChoiceComponent, QuickOtherFieldsComponent,
@@ -69,6 +69,10 @@ export class QuickEntrySheetComponent {
   private readonly dialogRef = inject(MatDialogRef, { optional: true });
   /** Desktop (ab 1024 px): Dialog mit Eingabefeld statt Zifferntastatur */
   readonly dialogMode = !this.sheetRef && !!this.dialogRef;
+
+  /** Vorschau der Schnellhilfe-Tour: kein Entwurf lesen/schreiben/löschen, nicht bedienbar */
+  readonly preview = !!(inject<{ preview?: boolean } | null>(MAT_BOTTOM_SHEET_DATA, { optional: true })?.preview
+    ?? inject<{ preview?: boolean } | null>(MAT_DIALOG_DATA, { optional: true })?.preview);
 
   private readonly billContext = inject(BillContextService);
   private readonly billApi = inject(BillApiService);
@@ -150,7 +154,7 @@ export class QuickEntrySheetComponent {
   private readonly amountField = viewChild.required(QuickAmountComponent);
 
   constructor() {
-    const draft = this.draftService.load();
+    const draft = this.preview ? null : this.draftService.load();
     if (draft) {
       this.state.amountText.set(draft.amountText);
       this.state.date.set(fromDayKey(draft.date) ?? new Date());
@@ -189,13 +193,13 @@ export class QuickEntrySheetComponent {
     // Entwurf bei jeder Änderung schreiben; leer = keiner
     effect(() => {
       const draft = this.draftSnapshot();
-      if (!this.saved) {
+      if (!this.saved && !this.preview) {
         untracked(() => this.persist(draft));
       }
     });
 
     inject(DestroyRef).onDestroy(() => {
-      if (!this.saved) {
+      if (!this.saved && !this.preview) {
         this.persist(untracked(() => this.draftSnapshot()));
       }
     });

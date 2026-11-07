@@ -1,8 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
+import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { provideRouter, Router } from '@angular/router';
+import { OAuthService } from 'angular-oauth2-oidc';
 import { BehaviorSubject, Observable, Subject, of, throwError } from 'rxjs';
 import { BillApiService } from 'src/app/api/shopping/bill-api.service';
 import { BillDto, mapBillDtoRaw } from 'src/app/api/shopping/dtos/BillDto';
@@ -66,6 +67,9 @@ interface SetupOptions {
   suggestions$?: Observable<BillSuggestionDto[]>;
   loaded$?: Observable<boolean>;
   restoreTimeoutMs?: number;
+  /** Preview data token; with realDraftStore the real draft service runs against localStorage */
+  preview?: boolean;
+  realDraftStore?: boolean;
 }
 
 describe('QuickEntrySheetComponent', () => {
@@ -115,7 +119,10 @@ describe('QuickEntrySheetComponent', () => {
           useValue: { shopNames: () => ['Café Central', 'Billa'], frequentShops, recordLocal }
         },
         { provide: BillApiService, useValue: { searchBills } },
-        { provide: QuickEntryDraftService, useValue: draftService },
+        options.realDraftStore
+          ? { provide: OAuthService, useValue: { getIdentityClaims: () => ({ sub: 'u1' }) } }
+          : { provide: QuickEntryDraftService, useValue: draftService },
+        ...(options.preview ? [{ provide: MAT_BOTTOM_SHEET_DATA, useValue: { preview: true } }] : []),
         // Menüs melden sich sonst mit echten History-Einträgen an
         { provide: OverlayBackService, useValue: { register: () => () => undefined } },
         options.mode === 'dialog'
@@ -634,5 +641,53 @@ describe('QuickEntrySheetComponent', () => {
     expect(dialogRef.close).toHaveBeenCalled();
     fixture.destroy();
     expect(draftService.save.mock.calls.at(-1)![0].amountText).toBe('3,5');
+  });
+
+  describe('preview mode', () => {
+    const KEY = 'andaha.quickEntryDraft.u1';
+
+    afterEach(() => localStorage.removeItem(KEY));
+
+    it('preview does not load a draft', async () => {
+      await setup({
+        preview: true,
+        draft: { amountText: '6,80', tileKey: null, shopName: null, categoryId: null, subCategoryId: null, date: toDayKey(new Date()), savedAt: Date.now() }
+      });
+      expect(draftService.load).not.toHaveBeenCalled();
+      expect(host.textContent).not.toContain('Verwerfen');
+    });
+
+    it('preview leaves an existing draft untouched on destroy', async () => {
+      const seeded = JSON.stringify({ amountText: '6,80', tileKey: null, shopName: null, categoryId: null, subCategoryId: null, date: toDayKey(new Date()), savedAt: Date.now() });
+      localStorage.setItem(KEY, seeded);
+      await setup({ preview: true, realDraftStore: true });
+      fixture.destroy();
+      expect(localStorage.getItem(KEY)).toBe(seeded);
+    });
+
+    it('preview does not write a draft when none existed', async () => {
+      localStorage.removeItem(KEY);
+      await setup({ preview: true, realDraftStore: true });
+      fixture.destroy();
+      expect(localStorage.getItem(KEY)).toBeNull();
+      expect(draftService.save).not.toHaveBeenCalled();
+    });
+
+    it('preview does not call the draft service at all', async () => {
+      await setup({ preview: true });
+      fixture.destroy();
+      expect(draftService.save).not.toHaveBeenCalled();
+      expect(draftService.clear).not.toHaveBeenCalled();
+    });
+
+    it('preview sets the preview host class', async () => {
+      await setup({ preview: true });
+      expect(host.classList).toContain('preview');
+    });
+
+    it('a normal sheet has no preview host class', async () => {
+      await setup();
+      expect(host.classList).not.toContain('preview');
+    });
   });
 });

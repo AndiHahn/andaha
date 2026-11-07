@@ -1,4 +1,4 @@
-<div class="tiles">
+<div class="tiles" data-tour="tiles">
   <div class="group" role="radiogroup" aria-label="Vorlage">
     @for (tile of tiles; track tile.key) {
       <button #tileEl type="button" class="tile" role="radio"
@@ -14,7 +14,7 @@
       </button>
     }
   </div>
-  <button type="button" class="tile other" (click)="selectOther.emit()">
+  <button type="button" class="tile other" data-tour="tiles-other" (click)="selectOther.emit()">
     <mat-icon aria-hidden="true">add</mat-icon>Andere …
   </button>
 </div>

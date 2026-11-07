@@ -12,13 +12,17 @@ describe('QuickEntryService', () => {
   let dialogClosed: Subject<void>;
   let sheet: { open: ReturnType<typeof vi.fn> };
   let dialog: { open: ReturnType<typeof vi.fn> };
+  let sheetRef: { afterDismissed: () => Subject<void>; dismiss: ReturnType<typeof vi.fn> };
+  let dialogRef: { afterClosed: () => Subject<void>; close: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     desktop = false;
     sheetClosed = new Subject<void>();
     dialogClosed = new Subject<void>();
-    sheet = { open: vi.fn(() => ({ afterDismissed: () => sheetClosed })) };
-    dialog = { open: vi.fn(() => ({ afterClosed: () => dialogClosed })) };
+    sheetRef = { afterDismissed: () => sheetClosed, dismiss: vi.fn(() => sheetClosed.next()) };
+    dialogRef = { afterClosed: () => dialogClosed, close: vi.fn(() => dialogClosed.next()) };
+    sheet = { open: vi.fn(() => sheetRef) };
+    dialog = { open: vi.fn(() => dialogRef) };
     TestBed.configureTestingModule({
       providers: [
         { provide: SheetService, useValue: sheet },
@@ -49,5 +53,52 @@ describe('QuickEntryService', () => {
     sheetClosed.next();
     service.open();
     expect(sheet.open).toHaveBeenCalledTimes(2);
+  });
+
+  it('open returns a handle whose close() dismisses the sheet', () => {
+    const handle = TestBed.inject(QuickEntryService).open();
+    handle!.close();
+    expect(sheetRef.dismiss).toHaveBeenCalled();
+  });
+
+  it('close() dismisses the desktop dialog', () => {
+    desktop = true;
+    TestBed.inject(QuickEntryService).open()!.close();
+    expect(dialogRef.close).toHaveBeenCalled();
+  });
+
+  it('open returns null while one is open', () => {
+    const service = TestBed.inject(QuickEntryService);
+    expect(service.open()).not.toBeNull();
+    expect(service.open()).toBeNull();
+  });
+
+  it('closed$ emits once when the sheet is dismissed externally', () => {
+    const handle = TestBed.inject(QuickEntryService).open()!;
+    const emitted = vi.fn();
+    const completed = vi.fn();
+    handle.closed$.subscribe({ next: emitted, complete: completed });
+    sheetClosed.next();
+    sheetClosed.next();
+    expect(emitted).toHaveBeenCalledTimes(1);
+    expect(completed).toHaveBeenCalled();
+  });
+
+  it('preview passes { preview: true } as data and disables autoFocus on desktop', () => {
+    TestBed.inject(QuickEntryService).open({ preview: true });
+    expect(sheet.open).toHaveBeenCalledWith(QuickEntrySheetComponent, expect.objectContaining({ data: { preview: true } }));
+    sheetClosed.next();
+
+    desktop = true;
+    TestBed.inject(QuickEntryService).open({ preview: true });
+    expect(dialog.open).toHaveBeenCalledWith(QuickEntrySheetComponent,
+      expect.objectContaining({ data: { preview: true }, autoFocus: false }));
+  });
+
+  it('a normal open keeps the amount autofocus on desktop', () => {
+    desktop = true;
+    TestBed.inject(QuickEntryService).open();
+    expect(dialog.open).toHaveBeenCalledWith(QuickEntrySheetComponent,
+      expect.objectContaining({ autoFocus: 'input[name="amount"]' }));
   });
 });
