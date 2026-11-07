@@ -26,16 +26,16 @@ const START_DELAY = 400;
 const TOUR_Z_INDEX = '1001';
 const LAST_STEP = 2;
 
-/**
- * Schnellhilfe-Tour: startet einmal pro Gerät automatisch, sobald die Rechnungsliste bereit ist und
- * kein Overlay offen ist, und auf Wunsch jederzeit (`request`). Die Darstellung übernimmt die
- * Tour-Overlay-Komponente, die den Zustand aus diesem Service liest.
- */
 /** Normaler Linksklick ohne Zusatztaste; Strg-/Mittelklick öffnet den Link woanders, dort soll keine Tour starten */
 export function isPlainClick(event: MouseEvent): boolean {
   return event.button === 0 && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey;
 }
 
+/**
+ * Schnellhilfe-Tour: startet einmal pro Gerät automatisch, sobald die Rechnungsliste bereit ist und
+ * kein Overlay offen ist, und auf Wunsch jederzeit (`request`). Die Darstellung übernimmt die
+ * Tour-Overlay-Komponente, die den Zustand aus diesem Service liest.
+ */
 @Injectable({ providedIn: 'root' })
 export class TourService {
   private readonly overlay = inject(Overlay);
