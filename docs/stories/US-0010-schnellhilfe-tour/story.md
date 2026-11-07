@@ -6,6 +6,7 @@
 | Status | In Progress <!-- Open / In Progress / In Review / Done --> |
 | Created | 2026-11-07 |
 | Design Doc | [design.md](./design.md) |
+| Plan | [plan.md](./plan.md) |
 
 ## Description
 
