@@ -220,6 +220,61 @@ describe('TourService', () => {
     expect(service.active()).toBe(false);
   });
 
+  /** Like the real sheet: close() starts the close animation, closed$ fires later */
+  function slowHandle(): FakeHandle {
+    const slow = new FakeHandle();
+    slow.close = vi.fn();
+    return slow;
+  }
+
+  it('fast Zurück→Weiter on templates opens the preview once the previous one has closed', () => {
+    const first = slowHandle();
+    const second = new FakeHandle();
+    quickEntryOpen.mockReturnValueOnce(first).mockReturnValueOnce(null).mockReturnValueOnce(second);
+    startManually();
+    service.next();
+    service.next();
+    service.back();
+    service.next();
+    expect(quickEntryOpen).toHaveBeenCalledTimes(2);
+
+    first.closed.next();
+    expect(quickEntryOpen).toHaveBeenCalledTimes(3);
+    expect(service.active()).toBe(true);
+    expect(service.stepIndex()).toBe(2);
+
+    // the retried preview is the tracked one: leaving the step closes it exactly once
+    service.back();
+    expect(second.close).toHaveBeenCalledTimes(1);
+    expect(quickEntryOpen).toHaveBeenCalledTimes(3);
+  });
+
+  it('does not retry the preview when templates was left before the previous one closed', () => {
+    const first = slowHandle();
+    quickEntryOpen.mockReturnValueOnce(first).mockReturnValueOnce(null);
+    startManually();
+    service.next();
+    service.next();
+    service.back();
+    service.next();
+    service.back();
+
+    first.closed.next();
+    expect(quickEntryOpen).toHaveBeenCalledTimes(2);
+    expect(service.active()).toBe(true);
+    expect(service.stepIndex()).toBe(1);
+  });
+
+  it('ends a running tour when the list is no longer ready', () => {
+    startManually();
+    service.next();
+    service.next();
+    service.setListReady(false);
+    expect(service.active()).toBe(false);
+    expect(handle.close).toHaveBeenCalledTimes(1);
+    expect(release).toHaveBeenCalledTimes(1);
+  });
+
   it('does not restart after end() when saving the seen flag fails', () => {
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw new Error('quota');

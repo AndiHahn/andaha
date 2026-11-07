@@ -280,11 +280,6 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  // App-Shortcut „Rechnung eintragen“ (/bill/list?quick=1) und Share Target (/bill/list?shared=1 bzw. =0):
-  // Parameter erst entfernen (replaceUrl), dann handeln, sonst ersetzt die Navigation den History-Eintrag
-  // des Sheets (OverlayBackService). Geteilte Bilder werden auch ohne
-  // Parameter abgeholt (z. B. wenn der Login-Redirect ?shared=1 verloren hat); der Cache-Eintrag
-  // überlebt den Redirect und wird beim ersten Öffnen der Liste genau einmal verarbeitet.
   /** Meldet der Tour genau einmal, dass die Liste bereit ist (Laden verlassen und Start-Absicht erledigt) */
   private reportListReady(): void {
     if (!this.listReadyReported && this.loadLeft && this.intentHandled) {
@@ -298,6 +293,11 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
     this.reportListReady();
   }
 
+  // App-Shortcut „Rechnung eintragen“ (/bill/list?quick=1) und Share Target (/bill/list?shared=1 bzw. =0):
+  // Parameter erst entfernen (replaceUrl), dann handeln, sonst ersetzt die Navigation den History-Eintrag
+  // des Sheets (OverlayBackService). Geteilte Bilder werden auch ohne
+  // Parameter abgeholt (z. B. wenn der Login-Redirect ?shared=1 verloren hat); der Cache-Eintrag
+  // überlebt den Redirect und wird beim ersten Öffnen der Liste genau einmal verarbeitet.
   private handleLaunchIntent(): void {
     const { quick, shared } = readLaunchIntent(this.route.snapshot.queryParamMap);
     const clear = quick || shared
@@ -305,15 +305,19 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
       : Promise.resolve(true);
 
     void clear.finally(async () => {
-      if (quick) {
-        this.quickEntry.open();
+      try {
+        if (quick) {
+          this.quickEntry.open();
+        }
+        // geteilt, aber ohne brauchbares Bild (custom-sw.js): melden statt still verwerfen (AC38)
+        if (shared === 'failed') {
+          openErrorSnackbar(SHARED_IMAGE_FAILED, this.snackbar);
+        }
+      } finally {
+        // auch bei einem Fehler oben: sonst wartet die Tour für immer auf die Liste
+        this.intentHandled = true;
+        this.reportListReady();
       }
-      // geteilt, aber ohne brauchbares Bild (custom-sw.js): melden statt still verwerfen (AC38)
-      if (shared === 'failed') {
-        openErrorSnackbar(SHARED_IMAGE_FAILED, this.snackbar);
-      }
-      this.intentHandled = true;
-      this.reportListReady();
       const images = await takeSharedImages();
       if (images.length > 0) {
         this.analysisUpload.uploadAll(images);

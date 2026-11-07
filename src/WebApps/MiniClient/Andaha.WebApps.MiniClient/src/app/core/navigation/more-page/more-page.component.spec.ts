@@ -53,6 +53,16 @@ describe('MorePageComponent', () => {
     expect(TestBed.inject(Router).url).toBe('/bill/list');
   });
 
+  it('ctrl-click or middle click on Schnell-Hilfe does not request the tour', () => {
+    const link = Array.from<HTMLAnchorElement>(fixture.nativeElement.querySelectorAll('a.mrow')).find(a => a.textContent!.includes('Schnell-Hilfe'))!;
+    // keep the browser from opening a new tab
+    link.addEventListener('click', e => e.preventDefault());
+    link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, ctrlKey: true }));
+    link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, button: 1 }));
+
+    expect(request).not.toHaveBeenCalled();
+  });
+
   it('other entries do not request the tour', () => {
     const link = Array.from<HTMLAnchorElement>(fixture.nativeElement.querySelectorAll('a.mrow')).find(a => a.textContent!.includes('Export'))!;
     link.addEventListener('click', e => e.preventDefault());

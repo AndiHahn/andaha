@@ -69,8 +69,8 @@ let nextId = 0;
     '[attr.aria-labelledby]': 'titleId',
     '(document:keydown.escape)': 'onEscape($event)',
     '(document:focusin)': 'onFocusIn($event)',
-    '(window:resize)': 'remeasureNextFrame()',
-    '(window:orientationchange)': 'remeasureNextFrame()',
+    '(window:resize)': 'onViewportChange()',
+    '(window:orientationchange)': 'onViewportChange()',
   },
 })
 export class TourOverlayComponent {
@@ -101,12 +101,16 @@ export class TourOverlayComponent {
   readonly controlsAt = signal<Rect | null>(null);
 
   private frame: number | null = null;
+  /** Fokus auf den Hauptknopf steht nach einem Schrittwechsel noch aus */
+  private focusDue = false;
+  /** Am Ende der Mess-Frames prüfen, ob der Fokus noch in der Tour liegt */
+  private checkFocus = false;
 
   constructor() {
     // Schrittwechsel: Fokus auf den Hauptknopf und ein paar Frames lang neu messen, bis Sheet/Dialog stehen
     effect(() => {
       this.stepIndex();
-      untracked(() => this.settle());
+      untracked(() => this.settle(true));
     });
     inject(DestroyRef).onDestroy(() => this.cancelFrame());
   }
@@ -141,22 +145,24 @@ export class TourOverlayComponent {
     }
   }
 
-  remeasureNextFrame(): void {
-    if (this.frame === null) {
-      this.frame = this.nextFrame(() => {
-        this.frame = null;
-        this.measure();
-      });
-    }
+  /** Resize/Drehung: Seitenleiste animiert ~400 ms, also wie beim Schrittwechsel mehrere Frames messen, ohne Fokus zu bewegen */
+  onViewportChange(): void {
+    this.settle(false);
   }
 
-  private settle(): void {
+  /** Misst pro Frame neu, bis `SETTLE_MS` um sind; `focus` nur bei Schrittwechsel. Ein Resize übernimmt offene Fokus-Pflichten. */
+  private settle(focus: boolean): void {
     this.cancelFrame();
+    if (focus) {
+      this.focusDue = true;
+      this.checkFocus = true;
+    }
     let start: number | null = null;
     const tick = (time: number) => {
       this.measure();
-      if (start === null) {
-        start = time;
+      start ??= time;
+      if (this.focusDue) {
+        this.focusDue = false;
         this.focusPrimary();
       }
       if (time - start < SETTLE_MS) {
@@ -165,8 +171,11 @@ export class TourOverlayComponent {
       }
       this.frame = null;
       // Fokus beim Öffnen von Sheet/Dialog verloren (z. B. auf body): zurück auf den Hauptknopf
-      if (!this.host.nativeElement.contains(this.document.activeElement)) {
-        this.focusPrimary();
+      if (this.checkFocus) {
+        this.checkFocus = false;
+        if (!this.host.nativeElement.contains(this.document.activeElement)) {
+          this.focusPrimary();
+        }
       }
     };
     this.frame = this.nextFrame(tick);

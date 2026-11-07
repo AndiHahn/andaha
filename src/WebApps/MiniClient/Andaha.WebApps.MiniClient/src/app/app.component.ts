@@ -16,7 +16,7 @@ import { BottomBarComponent } from './core/navigation/bottom-bar/bottom-bar.comp
 import { OfflineBannerComponent } from './core/offline-banner/offline-banner.component';
 import { currentUrl$ } from './core/navigation/current-url';
 import { MenuBackDirective } from './core/overlay/menu-back.directive';
-import { TourService } from './core/tour/tour.service';
+import { isPlainClick, TourService } from './core/tour/tour.service';
 import { findArea, LEGAL_LINKS, MORE_DATA, MORE_SETTINGS, NAV_AREAS, NavArea } from './core/navigation/nav-areas';
 
 @Component({
@@ -33,6 +33,7 @@ export class AppComponent implements OnInit {
   private breakpointObserver = inject(BreakpointObserver);
   private router = inject(Router);
   readonly tour = inject(TourService);
+  readonly isPlainClick = isPlainClick;
 
   title = 'Andaha.WebApps.MiniClient';
 

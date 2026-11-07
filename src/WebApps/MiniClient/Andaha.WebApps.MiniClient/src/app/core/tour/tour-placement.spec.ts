@@ -56,6 +56,15 @@ describe('placeNotes', () => {
     expect(p.box.x).toBe((VP.width - size.width) / 2);
   });
 
+  it('free top note moves below an obstacle at the top', () => {
+    const topBar: Rect = { x: 0, y: 40, width: 390, height: 60 };
+    const [p] = placeNotes([{ id: 'f', target: null, freeAnchor: 'top', size }], [topBar], VP);
+    expect(p.box.y).toBeGreaterThanOrEqual(100);
+    expect(p.box.y).toBeLessThan(100 + 8 + 1);
+    expect(overlaps(p.box, topBar)).toBe(false);
+    expect(inside(p.box)).toBe(true);
+  });
+
   it('arrow ends on the target edge', () => {
     const t: Rect = { x: 0, y: 44, width: 390, height: 48 };
     const [p] = placeNotes([{ id: 'a', target: t, size }], [t], VP);

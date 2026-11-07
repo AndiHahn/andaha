@@ -17,7 +17,7 @@
     @for (link of moreLinks; track link.path) {
       @if (link.startsTour) {
         <!-- gleicher Pfad wie „Rechnungen“: kein eigener Aktiv-Zustand -->
-        <a class="dl" [routerLink]="link.path" (click)="tour.request()">
+        <a class="dl" [routerLink]="link.path" (click)="isPlainClick($event) && tour.request()">
           <mat-icon aria-hidden="true">{{ link.icon }}</mat-icon>{{ link.label }}
         </a>
       } @else {

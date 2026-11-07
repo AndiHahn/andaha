@@ -3,7 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 import { map } from 'rxjs';
-import { TourService } from 'src/app/core/tour/tour.service';
+import { isPlainClick, TourService } from 'src/app/core/tour/tour.service';
 import { BillTemplateContextService } from 'src/app/features/bill/services/bill-template-context.service';
 import { LEGAL_LINKS, MORE_DATA, MORE_SETTINGS } from '../nav-areas';
 
@@ -24,6 +24,7 @@ export class MorePageComponent {
   readonly legalLinks = LEGAL_LINKS;
 
   readonly tour = inject(TourService);
+  readonly isPlainClick = isPlainClick;
 
   readonly templateCount = toSignal(inject(BillTemplateContextService).templates().pipe(map(t => t.length)), { initialValue: 0 });
 }

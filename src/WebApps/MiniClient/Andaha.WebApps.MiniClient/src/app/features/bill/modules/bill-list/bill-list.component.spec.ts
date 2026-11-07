@@ -445,6 +445,31 @@ describe('BillListComponent', () => {
       expect(open).toHaveBeenCalledTimes(1);
     });
 
+    it('reports ready even when handling the launch intent throws', async () => {
+      // the error still surfaces as uncaught; own listeners keep it from failing the run
+      const surfaced: string[] = [];
+      const onError = (event: ErrorEvent) => surfaced.push(event.error?.message);
+      const onRejection = (event: PromiseRejectionEvent) => surfaced.push(event.reason?.message);
+      window.addEventListener('error', onError);
+      window.addEventListener('unhandledrejection', onRejection);
+      try {
+        setListReady.mockClear();
+        const open = TestBed.inject(QuickEntryService).open as ReturnType<typeof vi.fn>;
+        open.mockImplementation(() => {
+          throw new Error('quick entry failed');
+        });
+        queryParams = { quick: '1' };
+        fixture = TestBed.createComponent(BillListComponent);
+        await settle();
+
+        await vi.waitFor(() => expect(surfaced).toContain('quick entry failed'));
+        expect(setListReady).toHaveBeenCalledWith(true);
+      } finally {
+        window.removeEventListener('error', onError);
+        window.removeEventListener('unhandledrejection', onRejection);
+      }
+    });
+
     it('stays ready when the list reloads', async () => {
       loading$.next(true);
       bills$.next([]);

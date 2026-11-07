@@ -31,6 +31,11 @@ const LAST_STEP = 2;
  * kein Overlay offen ist, und auf Wunsch jederzeit (`request`). Die Darstellung übernimmt die
  * Tour-Overlay-Komponente, die den Zustand aus diesem Service liest.
  */
+/** Normaler Linksklick ohne Zusatztaste; Strg-/Mittelklick öffnet den Link woanders, dort soll keine Tour starten */
+export function isPlainClick(event: MouseEvent): boolean {
+  return event.button === 0 && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey;
+}
+
 @Injectable({ providedIn: 'root' })
 export class TourService {
   private readonly overlay = inject(Overlay);
@@ -56,6 +61,8 @@ export class TourService {
   private overlayRef: OverlayRef | null = null;
   private releaseBack: (() => void) | null = null;
   private preview: QuickEntryHandle | null = null;
+  /** Vorschau wollte öffnen, die Schnellerfassung war aber noch belegt */
+  private previewPending = false;
 
   constructor() {
     effect(onCleanup => {
@@ -74,6 +81,10 @@ export class TourService {
   /** Bill-Liste: erstes Laden fertig und Start-Absicht verarbeitet; `false` beim Zerstören */
   setListReady(ready: boolean): void {
     this.listReady.set(ready);
+    // Liste weg (z. B. Seitenwechsel): eine laufende Tour hätte keine Ziele mehr
+    if (!ready) {
+      this.end();
+    }
   }
 
   /** Manueller Start: ignoriert das Gesehen-Flag, wartet aber auf dieselbe Bereitschaft */
@@ -106,6 +117,7 @@ export class TourService {
       return;
     }
     this.closePreview();
+    this.previewPending = false;
     this.overlayRef?.dispose();
     this.overlayRef = null;
     this.releaseBack?.();
@@ -143,23 +155,36 @@ export class TourService {
 
   private goTo(index: number): void {
     this.closePreview();
+    this.previewPending = false;
     this.step.set(index);
-    if (tourSteps({ desktop: this.desktop(), hasTiles: false })[index].opensQuickEntry) {
+    if (this.opensPreview(index)) {
       this.openPreview();
     }
+  }
+
+  private opensPreview(index: number): boolean {
+    return tourSteps({ desktop: this.desktop(), hasTiles: false })[index].opensQuickEntry;
   }
 
   private openPreview(): void {
     const handle = this.quickEntry.open({ preview: true });
     if (!handle) {
+      // die vorige Vorschau schließt noch (schnell Zurück→Weiter): nach ihrem Schließen erneut versuchen
+      this.previewPending = true;
       return;
     }
+    this.previewPending = false;
     this.preview = handle;
     // zuerst abonnieren: ein später Abonnent einer schon geschlossenen Vorschau bekäme nichts mehr
     handle.closed$.subscribe(() => {
       if (this.preview === handle) {
         this.preview = null;
         this.end();
+        return;
+      }
+      // von der Tour geschlossen; die Schnellerfassung ist jetzt wieder frei
+      if (this.previewPending && this.activeState() && this.opensPreview(this.step())) {
+        this.openPreview();
       }
     });
   }

@@ -245,6 +245,30 @@ describe('TourOverlayComponent', () => {
     expect(notes()[0].getBoundingClientRect().top).not.toBe(before.top);
   });
 
+  it('keeps re-measuring for a while after a resize without moving focus', () => {
+    const tabs = target('tabs', { x: 0, y: 56, width: 390, height: 48 });
+    render();
+    vi.advanceTimersByTime(1000);
+    fixture!.detectChanges();
+    const skip = button('Überspringen')!;
+    skip.focus();
+
+    // sidenav opens/closes with an animation: the target keeps moving after the first frame
+    place(tabs, { x: 0, y: 300, width: 390, height: 48 });
+    window.dispatchEvent(new Event('resize'));
+    frame();
+    const noteAfterFirstFrame = notes()[0].getBoundingClientRect().top;
+    place(tabs, { x: 0, y: 600, width: 390, height: 48 });
+    frame();
+    frame();
+    frame();
+
+    const outline = host().querySelector('rect.outline')!;
+    expect(Number(outline.getAttribute('y'))).toBe(600 - 8);
+    expect(notes()[0].getBoundingClientRect().top).not.toBe(noteAfterFirstFrame);
+    expect(document.activeElement).toBe(skip);
+  });
+
   it('templates without tiles shows the no-tiles copy', async () => {
     target('tiles', { x: 16, y: 400, width: 358, height: 200 });
     target('tiles-other', { x: 16, y: 610, width: 358, height: 48 });

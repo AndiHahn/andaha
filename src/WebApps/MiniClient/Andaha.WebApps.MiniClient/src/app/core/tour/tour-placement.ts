@@ -125,7 +125,14 @@ function candidate(side: Side, distance: number, t: Rect, size: { width: number;
 function placeFree(note: NoteInput, isFree: (r: Rect) => boolean, vp: { width: number; height: number }): Rect {
   const { width, height } = note.size;
   const x = (vp.width - width) / 2;
-  if (note.freeAnchor === 'top') return clampInto({ x, y: FREE_TOP, width, height }, vp);
+  if (note.freeAnchor === 'top') {
+    // From the top downwards until the note overlaps nothing (e.g. the top bar).
+    for (let y = FREE_TOP; y <= vp.height; y += STEP) {
+      const box = clampInto({ x, y, width, height }, vp);
+      if (isFree(box)) return box;
+    }
+    return clampInto({ x, y: FREE_TOP, width, height }, vp);
+  }
   const y0 = (vp.height - height) / 2;
   // Shift vertically (alternating down/up) until the note overlaps nothing.
   for (let offset = 0; offset <= vp.height; offset += STEP) {

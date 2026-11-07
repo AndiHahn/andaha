@@ -2,7 +2,7 @@
   <section>
     <h2 class="sect">{{ section.title }}</h2>
     @for (link of section.links; track link.path) {
-      <a class="mrow" [routerLink]="link.path" (click)="link.startsTour && tour.request()">
+      <a class="mrow" [routerLink]="link.path" (click)="link.startsTour && isPlainClick($event) && tour.request()">
         <mat-icon aria-hidden="true">{{ link.icon }}</mat-icon>
         <span class="label">{{ link.label }}</span>
         @if (link.counter === 'templates') {
