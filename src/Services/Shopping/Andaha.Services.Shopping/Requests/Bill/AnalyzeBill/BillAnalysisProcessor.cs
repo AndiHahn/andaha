@@ -44,10 +44,8 @@ internal sealed class BillAnalysisProcessor(
 
         var totalAmount = analysisResult.TotalAmount;
         var lineItemsAmount = analysisResult.LineItems.Sum(lineItem => lineItem.TotalPrice);
-        var isTotalAmountReasonable = totalAmount is not null && lineItemsAmount == totalAmount;
-
-        logger.LogInformation("Total amount: {TotalAmount}, line items total amount: {LineItemsAmount}, is total amount reasonable: {IsTotalAmountReasonable}, confidence: {C}, totalAmountConfidence: {tAC}",
-            totalAmount, lineItemsAmount, isTotalAmountReasonable, analysisResult.Confidence, analysisResult.TotalAmountConfidence);
+        logger.LogInformation("Total amount: {TotalAmount}, line items total amount: {LineItemsAmount}, confidence: {C}, totalAmountConfidence: {tAC}",
+            totalAmount, lineItemsAmount, analysisResult.Confidence, analysisResult.TotalAmountConfidence);
 
         // Empty descriptions are dropped, quantity 0 becomes null, negative prices stay; the order is kept.
         var lineItems = LineItemSanitizer.Sanitize(analysisResult.LineItems
@@ -61,6 +59,8 @@ internal sealed class BillAnalysisProcessor(
             analysisResult.TotalAmountConfidence,
             lineItemsAmount ?? 0,
             categoryValid: classificationResult is not null);
+
+        logger.LogInformation("Not-created reasons: {Reasons}", string.Join(", ", notCreatedReasons));
 
         if (notCreatedReasons.Count == 0 && classificationResult is not null)
         {

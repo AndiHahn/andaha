@@ -170,6 +170,33 @@ public class AnalysisTests
     }
 
     [Fact]
+    public async Task AnalyzedBills_list_legacy_rows_with_line_items_use_their_sum()
+    {
+        var (context, connection) = TestDb.CreateShopping();
+        using (connection)
+        using (context)
+        {
+            // Sum 8 + 0 (TotalPrice null counts as 0) differs from 10 by 2 <= 5.0: no AmountUncertain.
+            var matching = new AnalyzedBill(UserA, Guid.NewGuid(), null, "Billa", 10, 0.9, 0.1, DateTime.UtcNow);
+            matching.LineItems.Add(new AnalyzedBillLineItem(matching.Id, "A", 8, 8, 1, 0));
+            matching.LineItems.Add(new AnalyzedBillLineItem(matching.Id, "B", null, null, 1, 1));
+            // Sum 2 differs from 10 by 8 > 5.0 and TAC 0.1 is low: AmountUncertain.
+            var mismatching = new AnalyzedBill(UserA, Guid.NewGuid(), null, "Spar", 10, 0.9, 0.1, DateTime.UtcNow.AddDays(-1));
+            mismatching.LineItems.Add(new AnalyzedBillLineItem(mismatching.Id, "C", 2, 2, 1, 0));
+            context.AnalyzedBill.AddRange(matching, mismatching);
+            context.SaveChanges();
+            context.ChangeTracker.Clear();
+
+            var handler = new GetAnalyzedBillsQueryHandler(context, Identity(UserA));
+            var result = await handler.Handle(new GetAnalyzedBillsQuery(), CancellationToken.None);
+
+            var list = Assert.IsType<Ok<List<AnalyzedBillDto>>>(result).Value!;
+            Assert.Empty(Assert.Single(list, d => d.Id == matching.Id).NotCreatedReasons!);
+            Assert.Equal(["AmountUncertain"], Assert.Single(list, d => d.Id == mismatching.Id).NotCreatedReasons);
+        }
+    }
+
+    [Fact]
     public async Task AnalyzedBills_list_returns_line_items_by_position()
     {
         var (context, connection) = TestDb.CreateShopping();

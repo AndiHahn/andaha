@@ -73,4 +73,26 @@ describe('AnalyzedBillListItemComponent', () => {
     expect(el.getBoundingClientRect().height).toBeLessThan(20);
     expect(row().getBoundingClientRect().height).toBe(80);
   });
+
+  it('drei Zeilen laufen auch mit mat-typography (line-height 20 px) nicht über den Inhaltsbereich', async () => {
+    document.body.classList.add('mat-typography');
+    document.body.style.lineHeight = '20px';
+    try {
+      await render({ notCreatedReasons: ['DateMissing'] });
+
+      const rowEl = row();
+      const style = getComputedStyle(rowEl);
+      const content =
+        rowEl.getBoundingClientRect().height -
+        parseFloat(style.paddingTop) - parseFloat(style.paddingBottom) -
+        parseFloat(style.borderTopWidth) - parseFloat(style.borderBottomWidth);
+      const main = host.querySelector<HTMLElement>('.main')!;
+
+      expect(main.getBoundingClientRect().height).toBeLessThanOrEqual(content);
+      expect(rowEl.getBoundingClientRect().height).toBe(80);
+    } finally {
+      document.body.classList.remove('mat-typography');
+      document.body.style.lineHeight = '';
+    }
+  });
 });

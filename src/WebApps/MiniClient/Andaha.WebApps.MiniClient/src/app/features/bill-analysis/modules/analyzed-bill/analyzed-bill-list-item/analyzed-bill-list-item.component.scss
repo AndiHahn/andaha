@@ -30,6 +30,16 @@
   min-width: 0;
 }
 
+// Feste Zeilenhoehen, damit drei Zeilen + 2 x 3 px Abstand in die 55 px Inhaltshoehe passen (18 + 15 + 16 + 6 = 55),
+// unabhaengig vom line-height der mat-typography (20 px)
+.t {
+  line-height: 18px;
+}
+
+.s {
+  line-height: 15px;
+}
+
 .s .cat {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -38,6 +48,7 @@
 
 .reasons {
   font-size: 12px;
+  line-height: 16px;
   color: var(--mut);
   white-space: nowrap;
   overflow: hidden;

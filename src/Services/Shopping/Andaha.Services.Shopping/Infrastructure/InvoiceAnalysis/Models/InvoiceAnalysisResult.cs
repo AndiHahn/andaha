@@ -1,6 +1,6 @@
 using Andaha.Services.Shopping.Core;
 
-﻿namespace Andaha.Services.Shopping.Infrastructure.InvoiceAnalysis.Models;
+namespace Andaha.Services.Shopping.Infrastructure.InvoiceAnalysis.Models;
 
 public class InvoiceAnalysisResult
 {
