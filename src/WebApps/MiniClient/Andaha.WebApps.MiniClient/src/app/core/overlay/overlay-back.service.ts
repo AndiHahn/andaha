@@ -1,4 +1,4 @@
-import { DestroyRef, DOCUMENT, Injectable, inject } from '@angular/core';
+import { DestroyRef, DOCUMENT, Injectable, inject, signal } from '@angular/core';
 import { NavigationCancel, NavigationEnd, NavigationError, NavigationSkipped, Router, Event as RouterEvent } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
@@ -78,6 +78,9 @@ export class OverlayBackService {
   private readonly pending: (() => void)[] = [];
   /** bis zu diesem Zeitpunkt läuft eine Navigation weg vom Dokument */
   private leavingUntil = 0;
+  private readonly openOverlays = signal(0);
+  /** Anzahl der angemeldeten, noch nicht freigegebenen Overlays (sofort ab `register`) */
+  readonly openCount = this.openOverlays.asReadonly();
 
   constructor() {
     const listener = (event: PopStateEvent) => this.onPopState(event);
@@ -103,6 +106,7 @@ export class OverlayBackService {
    */
   register(close: () => void): () => void {
     const entry: OverlayEntry = { id: this.nextId++, base: 0, close, released: false };
+    this.openOverlays.update(n => n + 1);
     this.whenIdle(() => this.push(entry));
 
     return () => {
@@ -110,6 +114,7 @@ export class OverlayBackService {
         return;
       }
       entry.released = true;
+      this.openOverlays.update(n => n - 1);
       // erst nach den übrigen Abonnenten von afterClosed: startet einer davon eine Navigation oder ein
       // neues Overlay, liegt der Eintrag nicht mehr oben und bleibt stehen, statt mit ihm um die
       // Wette zu laufen (er wird beim nächsten Zurück übersprungen)

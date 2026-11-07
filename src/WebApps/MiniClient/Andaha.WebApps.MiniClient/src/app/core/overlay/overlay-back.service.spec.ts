@@ -212,6 +212,31 @@ describe('OverlayBackService', () => {
     expect(backSpy).toHaveBeenCalledTimes(1);
   });
 
+  it('openCount increments synchronously on register', () => {
+    service.register(() => undefined);
+
+    expect(service.openCount()).toBe(1);
+  });
+
+  it('openCount decrements once per release, even if release is called twice', () => {
+    const first = service.register(() => undefined);
+    service.register(() => undefined);
+
+    first();
+    first();
+
+    expect(service.openCount()).toBe(1);
+  });
+
+  it('openCount drops when Back closes an overlay', async () => {
+    const release: () => void = service.register(() => release());
+
+    expect(service.openCount()).toBe(1);
+    await fake.userBack();
+
+    expect(service.openCount()).toBe(0);
+  });
+
   it('closes stacked overlays one at a time, topmost first', async () => {
     const closeSheet = vi.fn();
     const closeDialog = vi.fn();
