@@ -4,10 +4,14 @@ describe('notCreatedReasonTexts', () => {
   const expected: Record<string, [string, string]> = {
     AnalysisFailed: ['Analyse fehlgeschlagen', 'Das Foto konnte nicht ausgewertet werden. Bitte die Daten selbst eintragen.'],
     ShopMissing: ['Shop fehlt', 'Der Shop wurde nicht erkannt.'],
+    ShopUncertain: ['Shop unsicher', 'Der Shop wurde nicht sicher erkannt.'],
     DateMissing: ['Datum fehlt', 'Das Datum wurde nicht erkannt.'],
+    DateUncertain: ['Datum unsicher', 'Das Datum wurde nicht sicher erkannt.'],
+    DateInFuture: ['Datum in der Zukunft', 'Das erkannte Datum liegt in der Zukunft.'],
     AmountMissing: ['Betrag fehlt', 'Der Betrag wurde nicht erkannt.'],
+    AmountIncomplete: ['Betrag unvollständig', 'Beim Betrag fehlen die Cent-Stellen oder sind nicht lesbar.'],
     LowConfidence: ['Analyse unsicher', 'Die Analyse ist sich insgesamt zu unsicher.'],
-    AmountUncertain: ['Betrag unsicher', 'Der Betrag ist unsicher erkannt, und die Positionen ergeben nicht diesen Betrag.'],
+    AmountUncertain: ['Betrag unsicher', 'Der Betrag ist unsicher erkannt, und die Positionen ergeben nicht diesen Betrag (Toleranz 0,10 €).'],
     CategoryUnclear: ['Kategorie unklar', 'Es wurde keine passende Kategorie gefunden.']
   };
 

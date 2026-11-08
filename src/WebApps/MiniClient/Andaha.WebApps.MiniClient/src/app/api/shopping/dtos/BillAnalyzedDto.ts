@@ -24,6 +24,10 @@ interface BillAnalyzedDtoBase {
   price?: number;
   confidence?: number | null;
   totalAmountConfidence?: number | null;
+  shopNameConfidence?: number | null;
+  dateConfidence?: number | null;
+  /** Rohtext des erkannten Betrags (z. B. „7,“ bei fehlenden Cent-Stellen) */
+  totalAmountText?: string | null;
   imageAvailable: boolean;
   lineItems: AnalyzedBillLineItemDto[];
   /** Bild-ID des Uploads, aus dem die Analyse entstand (Zuordnung im Tab Scans) */

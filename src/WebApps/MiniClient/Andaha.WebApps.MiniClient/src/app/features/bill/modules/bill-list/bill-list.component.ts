@@ -167,7 +167,14 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Kamera-Knopf (mobil) bzw. „Scannen“ (Desktop): alle gewählten Fotos asynchron analysieren lassen
   onScan(photos: File[]): void {
-    this.analysisUpload.uploadAll(photos);
+    this.startScanAndOpenScans(photos);
+  }
+
+  /** Nach dem Foto direkt zum Tab „Scans“ (ohne Snackbar); offline bleibt es bei der Fehlermeldung auf der Liste */
+  private startScanAndOpenScans(files: File[]): void {
+    if (this.analysisUpload.uploadAll(files, { notify: false })) {
+      void this.router.navigateByUrl('/bill/analysis');
+    }
   }
 
   ngOnDestroy(): void {
@@ -320,7 +327,7 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       const images = await takeSharedImages();
       if (images.length > 0) {
-        this.analysisUpload.uploadAll(images);
+        this.startScanAndOpenScans(images);
       }
     });
   }

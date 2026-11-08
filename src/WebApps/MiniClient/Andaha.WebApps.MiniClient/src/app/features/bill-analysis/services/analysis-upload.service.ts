@@ -140,16 +140,17 @@ export class AnalysisUploadService {
 
   /**
    * `openAction: false` beim Hochladen aus dem Tab „Scans“ selbst: die Snackbar ohne „Anzeigen“, das führte auf
-   * die aktuelle Seite. Dock und Teilen behalten die Aktion.
+   * die aktuelle Seite. `notify: false`: gar keine Snackbar (der Aufrufer wechselt selbst zum Tab „Scans“).
+   * Liefert `true`, wenn der Upload gestartet wurde; ohne Dateien oder offline `false`.
    */
-  uploadAll(files: File[], { openAction = true }: { openAction?: boolean } = {}): void {
+  uploadAll(files: File[], { openAction = true, notify = true }: { openAction?: boolean; notify?: boolean } = {}): boolean {
     if (files.length === 0) {
-      return;
+      return false;
     }
 
     if (!this.onlineStatus.online()) {
       openErrorSnackbar(UPLOAD_OFFLINE, this.snackbar);
-      return;
+      return false;
     }
 
     const added = files.map(file => {
@@ -172,14 +173,19 @@ export class AnalysisUploadService {
     this.markChanged();
     this.schedulePoll();
 
+    if (!notify) {
+      return true;
+    }
+
     if (!openAction) {
       openInformationSnackbar(analysisStartedMessage(files.length), this.snackbar);
-      return;
+      return true;
     }
 
     openInformationSnackbar(analysisStartedMessage(files.length), this.snackbar, { action: 'Anzeigen' })
       .onAction()
       .subscribe(() => this.router.navigateByUrl('/bill/analysis'));
+    return true;
   }
 
   retry(localId: string): void {

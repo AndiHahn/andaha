@@ -391,9 +391,10 @@ describe('AnalysisUploadService', () => {
   it('shows the offline snackbar and uploads nothing without connection', async () => {
     online.set(false);
 
-    service.uploadAll([photo('bon.jpg')]);
+    const started = service.uploadAll([photo('bon.jpg')]);
     await nextMacrotask();
 
+    expect(started).toBe(false);
     expect(snackbarMessages()).toEqual(['Ohne Verbindung können keine Rechnungen hochgeladen werden.']);
     expect(service.uploads()).toEqual([]);
     http.expectNone(isUpload);
@@ -415,6 +416,19 @@ describe('AnalysisUploadService', () => {
     // „Anzeigen“ führte auf die Seite, auf der man schon ist
     expect(snackbarMessages()).toEqual([{ message: '1 Rechnung wird analysiert', action: undefined }]);
 
+    accept((await uploadRequests(1))[0], 'img-1');
+  });
+
+  it('returns true when the upload started', async () => {
+    expect(service.uploadAll([photo('bon.jpg')])).toBe(true);
+
+    accept((await uploadRequests(1))[0], 'img-1');
+  });
+
+  it('notify: false shows no snackbar but still uploads', async () => {
+    expect(service.uploadAll([photo('bon.jpg')], { notify: false })).toBe(true);
+
+    expect(snackbarMessages()).toEqual([]);
     accept((await uploadRequests(1))[0], 'img-1');
   });
 

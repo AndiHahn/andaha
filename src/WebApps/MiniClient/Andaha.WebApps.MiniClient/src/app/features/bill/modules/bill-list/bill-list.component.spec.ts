@@ -51,7 +51,7 @@ describe('BillListComponent', () => {
   beforeEach(async () => {
     backClose = null;
     searchText = '';
-    uploadAll = vi.fn();
+    uploadAll = vi.fn().mockReturnValue(true);
     setListReady = vi.fn();
     queryParams = {};
     bills$ = new BehaviorSubject<BillDto[]>([
@@ -101,6 +101,7 @@ describe('BillListComponent', () => {
     });
     openFromComponent = vi.spyOn(TestBed.inject(MatSnackBar), 'openFromComponent').mockReturnValue(undefined as never);
     vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
 
     fixture = TestBed.createComponent(BillListComponent);
     host = fixture.nativeElement;
@@ -166,6 +167,32 @@ describe('BillListComponent', () => {
 
       expect(uploadAll).toHaveBeenCalledTimes(1);
       expect((uploadAll.mock.calls[0][0] as File[]).map(f => f.name)).toEqual(['a.jpg']);
+      expect(uploadAll.mock.calls[0][1]).toEqual({ notify: false });
+    });
+
+    function takePhoto(): void {
+      const input = host.querySelector<HTMLInputElement>('input[type="file"]')!;
+      const transfer = new DataTransfer();
+      transfer.items.add(new File(['a'], 'a.jpg', { type: 'image/jpeg' }));
+      input.files = transfer.files;
+      input.dispatchEvent(new Event('change'));
+    }
+
+    it('a photo with a started upload jumps to the Scans tab', () => {
+      const navigateByUrl = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+
+      takePhoto();
+
+      expect(navigateByUrl).toHaveBeenCalledWith('/bill/analysis');
+    });
+
+    it('a photo taken offline stays on the list', () => {
+      uploadAll.mockReturnValue(false);
+      const navigateByUrl = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+
+      takePhoto();
+
+      expect(navigateByUrl).not.toHaveBeenCalled();
     });
 
     it('no scan overlay or synchronous analyze call remains', async () => {
@@ -186,10 +213,13 @@ describe('BillListComponent', () => {
       await cache.put(sharedImageKey(0), new Response(new Blob(['1'], { type: 'image/jpeg' }), { headers: { 'Content-Type': 'image/jpeg', 'X-File-Name': 'a.jpg' } }));
       await cache.put(sharedImageKey(1), new Response(new Blob(['2'], { type: 'image/jpeg' }), { headers: { 'Content-Type': 'image/jpeg', 'X-File-Name': 'b.jpg' } }));
 
+      const navigateByUrl = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
       await openListWith({ shared: '1' });
       await vi.waitFor(() => expect(uploadAll).toHaveBeenCalled());
 
       expect((uploadAll.mock.calls[0][0] as File[]).map(f => f.name)).toEqual(['a.jpg', 'b.jpg']);
+      expect(uploadAll.mock.calls[0][1]).toEqual({ notify: false });
+      expect(navigateByUrl).toHaveBeenCalledWith('/bill/analysis');
       expect(await cache.match(sharedImageKey(0))).toBeUndefined();
       expect(await cache.match(sharedImageKey(1))).toBeUndefined();
     });

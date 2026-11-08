@@ -23,6 +23,12 @@ interface BillDtoBase {
   price: number;
   notes?: string;
   isExternal: boolean;
+  /** Konfidenzen und Rohtext der automatischen Erkennung (nur bei aus einer Analyse angelegten Rechnungen) */
+  confidence?: number | null;
+  totalAmountConfidence?: number | null;
+  shopNameConfidence?: number | null;
+  dateConfidence?: number | null;
+  totalAmountText?: string | null;
   fromAnalysis: boolean;
   imageAvailable: boolean;
   /** Positionen; nur die Detailabfrage liefert sie, die Liste sendet [] */
