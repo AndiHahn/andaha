@@ -18,7 +18,10 @@ public class AnalyzedBill : Entity<Guid>
         double? totalAmountConfidence,
         DateTime? date = null,
         string? sourceUploadId = null,
-        IEnumerable<NotCreatedReason>? notCreatedReasons = null)
+        IEnumerable<NotCreatedReason>? notCreatedReasons = null,
+        double? shopNameConfidence = null,
+        double? dateConfidence = null,
+        string? totalAmountText = null)
         : base(Guid.NewGuid())
     {
         if (createdByUserId == Guid.Empty)
@@ -36,6 +39,9 @@ public class AnalyzedBill : Entity<Guid>
         this.Date = date ?? DateTime.UtcNow;
         this.SourceUploadId = sourceUploadId;
         this.notCreatedReasons = notCreatedReasons?.ToList();
+        this.ShopNameConfidence = shopNameConfidence;
+        this.DateConfidence = dateConfidence;
+        this.TotalAmountText = totalAmountText?.Length > 50 ? totalAmountText[..50] : totalAmountText;
     }
 
     private List<NotCreatedReason>? notCreatedReasons;
@@ -57,6 +63,15 @@ public class AnalyzedBill : Entity<Guid>
     public double? Confidence { get; private set; }
 
     public double? TotalAmountConfidence { get; private set; }
+
+    /// <summary>Confidence of the recognized shop name (US-0013).</summary>
+    public double? ShopNameConfidence { get; private set; }
+
+    /// <summary>Confidence of the recognized date (US-0013).</summary>
+    public double? DateConfidence { get; private set; }
+
+    /// <summary>Raw text of the total as read from the document, at most 50 characters (US-0013).</summary>
+    public string? TotalAmountText { get; private set; }
 
     /// <summary>
     /// Name of the analysis image this entry was created from, so the client can match it to its upload (US-0009).

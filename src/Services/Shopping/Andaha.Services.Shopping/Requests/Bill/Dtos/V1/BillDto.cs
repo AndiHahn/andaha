@@ -13,4 +13,9 @@ public record BillDto(
     bool FromAnalysis,
     IReadOnlyCollection<BillLineItemDto> LineItems,
     DateTime CreatedAt,
-    MatchedLineItemDto? MatchedLineItem);
+    MatchedLineItemDto? MatchedLineItem,
+    double? Confidence,
+    double? TotalAmountConfidence,
+    double? ShopNameConfidence,
+    double? DateConfidence,
+    string? TotalAmountText);

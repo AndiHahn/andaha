@@ -30,6 +30,11 @@ public class AnalyzedBillModelBuilder : IEntityTypeConfiguration<AnalyzedBill>
 
         builder.HasIndex(b => b.SourceUploadId);
 
+        builder
+            .Property(b => b.TotalAmountText)
+            .IsRequired(false)
+            .HasMaxLength(50);
+
         // null = scan created before the reasons were stored; the enum names are stored as strings in a JSON column.
         builder
             .PrimitiveCollection(b => b.NotCreatedReasons)

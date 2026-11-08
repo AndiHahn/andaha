@@ -17,7 +17,7 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.1")
+                .HasAnnotation("ProductVersion", "10.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -55,6 +55,9 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
                     b.Property<DateTime?>("Date")
                         .HasColumnType("date");
 
+                    b.Property<double?>("DateConfidence")
+                        .HasColumnType("float");
+
                     b.PrimitiveCollection<string>("NotCreatedReasons")
                         .HasColumnType("nvarchar(max)");
 
@@ -66,6 +69,9 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(200)");
 
+                    b.Property<double?>("ShopNameConfidence")
+                        .HasColumnType("float");
+
                     b.Property<string>("SourceUploadId")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -75,6 +81,10 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
 
                     b.Property<double?>("TotalAmountConfidence")
                         .HasColumnType("float");
+
+                    b.Property<string>("TotalAmountText")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -139,6 +149,9 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("date");
 
+                    b.Property<double?>("DateConfidence")
+                        .HasColumnType("float");
+
                     b.Property<bool>("FromAutoAnalysis")
                         .HasColumnType("bit");
 
@@ -155,6 +168,9 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(200)");
 
+                    b.Property<double?>("ShopNameConfidence")
+                        .HasColumnType("float");
+
                     b.Property<string>("SourceUploadId")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -164,6 +180,10 @@ namespace Andaha.Services.Shopping.Infrastructure.Migrations
 
                     b.Property<double?>("TotalAmountConfidence")
                         .HasColumnType("float");
+
+                    b.Property<string>("TotalAmountText")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");

@@ -200,6 +200,43 @@ public sealed class ImmediateAnalysisTests : IDisposable
     }
 
     [Fact]
+    public async Task Auto_created_bill_stores_field_confidences_and_amount_text()
+    {
+        invoiceAnalysis.AnalyzeAsync(Arg.Any<Stream>(), Arg.Any<CancellationToken>()).Returns(Plausible());
+        using var services = BuildServices();
+        string id = await UploadAsync();
+
+        await CreateService(services).ProcessAsync(id, CancellationToken.None);
+
+        await using var context = TestDb.Open(connection);
+        var bill = await context.Bill.SingleAsync();
+        Assert.Equal(0.9, bill.ShopNameConfidence);
+        Assert.Equal(0.9, bill.DateConfidence);
+        Assert.Equal("4,15", bill.TotalAmountText);
+    }
+
+    [Fact]
+    public async Task Analyzed_bill_stores_field_confidences_and_truncates_long_amount_text()
+    {
+        var result = Plausible();
+        result.Confidence = 0.2;
+        result.VendorNameConfidence = 0.31;
+        result.InvoiceDateConfidence = 0.42;
+        result.TotalAmountText = new string('9', 80);
+        invoiceAnalysis.AnalyzeAsync(Arg.Any<Stream>(), Arg.Any<CancellationToken>()).Returns(result);
+        using var services = BuildServices();
+        string id = await UploadAsync();
+
+        await CreateService(services).ProcessAsync(id, CancellationToken.None);
+
+        await using var context = TestDb.Open(connection);
+        var analyzedBill = await context.AnalyzedBill.SingleAsync();
+        Assert.Equal(0.31, analyzedBill.ShopNameConfidence);
+        Assert.Equal(0.42, analyzedBill.DateConfidence);
+        Assert.Equal(new string('9', 50), analyzedBill.TotalAmountText);
+    }
+
+    [Fact]
     public async Task Incomplete_amount_text_lands_in_review_with_amount_incomplete()
     {
         var result = Plausible();

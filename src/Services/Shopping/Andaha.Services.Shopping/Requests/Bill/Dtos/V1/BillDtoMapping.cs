@@ -60,5 +60,10 @@ internal static class BillDtoMapping
             bill.FromAutoAnalysis,
             lineItems,
             bill.CreatedAt,
-            matchedLineItem);
+            matchedLineItem,
+            bill.Confidence,
+            bill.TotalAmountConfidence,
+            bill.ShopNameConfidence,
+            bill.DateConfidence,
+            bill.TotalAmountText);
 }

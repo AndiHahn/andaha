@@ -47,6 +47,11 @@ public class BillModelBuilder : IEntityTypeConfiguration<Bill>
         builder.HasIndex(b => b.SourceUploadId);
 
         builder
+            .Property(b => b.TotalAmountText)
+            .IsRequired(false)
+            .HasMaxLength(50);
+
+        builder
             .Property(b => b.CreatedAt)
             .IsRequired(true)
             .HasDefaultValueSql("GETDATE()");

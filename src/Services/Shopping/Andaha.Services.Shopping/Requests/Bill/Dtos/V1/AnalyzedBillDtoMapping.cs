@@ -21,5 +21,8 @@ internal static class AnalyzedBillDtoMapping
             bill.TotalAmountConfidence,
             bill.Images.Any(),
             bill.SourceUploadId,
-            Array.Empty<string>());
+            Array.Empty<string>(),
+            bill.ShopNameConfidence,
+            bill.DateConfidence,
+            bill.TotalAmountText);
 }

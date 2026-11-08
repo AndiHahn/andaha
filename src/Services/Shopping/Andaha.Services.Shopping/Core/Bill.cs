@@ -21,7 +21,10 @@ public class Bill : Entity<Guid>
         bool? fromAutoAnalysis = false,
         double? confidence = null,
         double? totalAmountConfidence = null,
-        string? sourceUploadId = null)
+        string? sourceUploadId = null,
+        double? shopNameConfidence = null,
+        double? dateConfidence = null,
+        string? totalAmountText = null)
         : base(id ?? Guid.NewGuid())
     {
         if (createdByUserId == Guid.Empty)
@@ -65,6 +68,9 @@ public class Bill : Entity<Guid>
         this.Confidence = confidence;
         this.TotalAmountConfidence = totalAmountConfidence;
         this.SourceUploadId = sourceUploadId;
+        this.ShopNameConfidence = shopNameConfidence;
+        this.DateConfidence = dateConfidence;
+        this.TotalAmountText = totalAmountText?.Length > 50 ? totalAmountText[..50] : totalAmountText;
     }
 
     public Guid UserId { get; private set; }
@@ -86,6 +92,15 @@ public class Bill : Entity<Guid>
     public double? Confidence { get; private set; }
 
     public double? TotalAmountConfidence { get; private set; }
+
+    /// <summary>Confidence of the recognized shop name (US-0013).</summary>
+    public double? ShopNameConfidence { get; private set; }
+
+    /// <summary>Confidence of the recognized date (US-0013).</summary>
+    public double? DateConfidence { get; private set; }
+
+    /// <summary>Raw text of the total as read from the document, at most 50 characters (US-0013).</summary>
+    public string? TotalAmountText { get; private set; }
 
     /// <summary>
     /// Name of the analysis image this bill was created from automatically, so the client can match it

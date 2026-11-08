@@ -12,4 +12,7 @@ public record AnalyzedBillDto(
     double? TotalAmountConfidence,
     bool ImageAvailable,
     string? SourceUploadId,
-    IReadOnlyCollection<string> NotCreatedReasons);
+    IReadOnlyCollection<string> NotCreatedReasons,
+    double? ShopNameConfidence,
+    double? DateConfidence,
+    string? TotalAmountText);

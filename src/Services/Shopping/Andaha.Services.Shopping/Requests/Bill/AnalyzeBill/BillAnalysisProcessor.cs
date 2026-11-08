@@ -98,7 +98,10 @@ internal sealed class BillAnalysisProcessor(
             confidence: analysisResult.Confidence,
             totalAmountConfidence: analysisResult.TotalAmountConfidence,
             sourceUploadId: sourceImageName,
-            notCreatedReasons: notCreatedReasons);
+            notCreatedReasons: notCreatedReasons,
+            shopNameConfidence: analysisResult.VendorNameConfidence,
+            dateConfidence: analysisResult.InvoiceDateConfidence,
+            totalAmountText: analysisResult.TotalAmountText);
 
         foreach (var lineItem in lineItems)
         {
@@ -141,7 +144,10 @@ internal sealed class BillAnalysisProcessor(
             fromAutoAnalysis: true,
             confidence: analysisResult.Confidence,
             totalAmountConfidence: analysisResult.TotalAmountConfidence,
-            sourceUploadId: sourceImageName);
+            sourceUploadId: sourceImageName,
+            shopNameConfidence: analysisResult.VendorNameConfidence,
+            dateConfidence: analysisResult.InvoiceDateConfidence,
+            totalAmountText: analysisResult.TotalAmountText);
 
         bill.ReplaceLineItems(lineItems);
 

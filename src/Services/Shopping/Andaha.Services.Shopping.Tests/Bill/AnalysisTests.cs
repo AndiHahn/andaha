@@ -124,6 +124,28 @@ public class AnalysisTests
     }
 
     [Fact]
+    public async Task AnalyzedBills_list_contains_field_confidences_and_amount_text()
+    {
+        var (context, connection) = TestDb.CreateShopping();
+        using (connection)
+        using (context)
+        {
+            var bill = new AnalyzedBill(UserA, null, null, "Shop", 10, 0.87, 0.5, DateTime.UtcNow,
+                shopNameConfidence: 0.6, dateConfidence: 0.7, totalAmountText: "10,00");
+            context.AnalyzedBill.Add(bill);
+            context.SaveChanges();
+
+            var handler = new GetAnalyzedBillsQueryHandler(context, Identity(UserA));
+            var result = await handler.Handle(new GetAnalyzedBillsQuery(), CancellationToken.None);
+
+            var dto = Assert.Single(Assert.IsType<Ok<List<AnalyzedBillDto>>>(result).Value!);
+            Assert.Equal(0.6, dto.ShopNameConfidence);
+            Assert.Equal(0.7, dto.DateConfidence);
+            Assert.Equal("10,00", dto.TotalAmountText);
+        }
+    }
+
+    [Fact]
     public async Task AnalyzedBills_list_contains_stored_not_created_reasons()
     {
         var (context, connection) = TestDb.CreateShopping();
