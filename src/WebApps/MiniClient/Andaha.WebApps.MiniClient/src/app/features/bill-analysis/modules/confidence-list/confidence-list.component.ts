@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { confidencePercent } from '../../functions/analyzed-bill-functions';
 
-/** Warnschwellen in Prozent (verglichen wird der gerundete, angezeigte Wert), siehe design.md §3 */
-export const CONFIDENCE_THRESHOLDS = { shop: 75, date: 80, amount: 90, document: 75 } as const;
+/** Warnschwellen als Anteil; verglichen wird der Rohwert wie in den Backend-Regeln, angezeigt der gerundete Prozentwert (design.md §3) */
+export const CONFIDENCE_THRESHOLDS = { shop: 0.75, date: 0.8, amount: 0.9, document: 0.75 } as const;
 
 interface ConfidenceRow {
   key: string;
@@ -73,6 +73,6 @@ export class ConfidenceListComponent {
 
   private row(key: string, label: string, value: number | null | undefined, threshold: number): ConfidenceRow {
     const percent = confidencePercent(value);
-    return { key, label, percent, warn: percent !== null && percent < threshold };
+    return { key, label, percent, warn: percent !== null && (value as number) < threshold };
   }
 }

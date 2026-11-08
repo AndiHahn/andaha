@@ -21,12 +21,21 @@ describe('ConfidenceListComponent', () => {
     expect(row(host, 'document').textContent).toContain('–');
   });
 
-  it('marks values below their threshold with warn (rounded percent, strictly below)', () => {
-    const host = render({ shop: 0.74, date: 0.8, amount: 0.89, document: 0.75 });
+  it('warns on the raw fraction like the backend rules, shows the rounded percent', () => {
+    const host = render({ shop: 0.746, date: 0.796, amount: 0.896, document: 0.74 });
+    expect(row(host, 'shop').textContent).toContain('75 %');
     expect(row(host, 'shop').classList).toContain('warn');
-    expect(row(host, 'date').classList).not.toContain('warn');
+    expect(row(host, 'date').classList).toContain('warn');
+    expect(row(host, 'amount').textContent).toContain('90 %');
     expect(row(host, 'amount').classList).toContain('warn');
-    expect(row(host, 'document').classList).not.toContain('warn');
+    expect(row(host, 'document').classList).toContain('warn');
+  });
+
+  it('does not warn at exactly the threshold', () => {
+    const host = render({ shop: 0.75, date: 0.8, amount: 0.9, document: 0.75 });
+    for (const key of ['shop', 'date', 'amount', 'document']) {
+      expect(row(host, key).classList).not.toContain('warn');
+    }
   });
 
   it('shows the raw amount text hint only when given', () => {
