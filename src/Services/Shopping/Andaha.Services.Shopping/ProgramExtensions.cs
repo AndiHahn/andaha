@@ -103,6 +103,7 @@ public static class ProgramExtensions
         builder.Services.AddHostedService<ImmediateAnalysisService>();
         builder.Services.AddHostedService<AnalyzeBillWorker>();
         builder.Services.AddHostedService<NasBillWorker>();
+        builder.Services.AddHostedService<BillImageMigrationService>();
 
         return builder;
     }
