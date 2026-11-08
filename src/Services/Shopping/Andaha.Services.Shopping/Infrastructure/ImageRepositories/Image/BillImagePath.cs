@@ -17,7 +17,7 @@ public static partial class BillImagePath
             return UnknownShop;
         }
 
-        var replaced = shopName
+        var replaced = shopName.Normalize(NormalizationForm.FormC)
             .Replace("ä", "ae").Replace("ö", "oe").Replace("ü", "ue")
             .Replace("Ä", "Ae").Replace("Ö", "Oe").Replace("Ü", "Ue")
             .Replace("ß", "ss");
@@ -54,6 +54,17 @@ public static partial class BillImagePath
 
     public static string ExtensionOf(string name)
         => IsLegacy(name) ? string.Empty : Path.GetExtension(name);
+
+    /// <summary>
+    /// Image number of a name: legacy "{guid}-{n}" or structured "…_{guid}-{n}.{ext}". Falls back to 1.
+    /// </summary>
+    public static int NumberOf(string name)
+    {
+        string stem = Path.GetFileNameWithoutExtension(name);
+        int dash = stem.LastIndexOf('-');
+
+        return dash >= 0 && int.TryParse(stem[(dash + 1)..], NumberStyles.None, CultureInfo.InvariantCulture, out int n) ? n : 1;
+    }
 
     [GeneratedRegex("[^A-Za-z0-9]+")]
     private static partial Regex InvalidRuns();

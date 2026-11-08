@@ -1,4 +1,3 @@
-using System.Globalization;
 using Andaha.Services.Shopping.Infrastructure;
 using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Image;
 using Azure;
@@ -21,6 +20,22 @@ internal sealed class BillImageMigrator(
     /// <summary>Test hook: runs right before the conditional database update.</summary>
     internal Func<Task>? BeforeUpdate { get; set; }
 
+    /// <summary>
+    /// Logs once how many legacy rows are linked to neither a bill nor a scan (removed images whose row stayed behind).
+    /// They are not migrated.
+    /// </summary>
+    public async Task LogUnlinkedLegacyAsync(CancellationToken ct)
+    {
+        int count = await dbContext.BillImage
+            .Where(i => !i.Name.Contains("/") && i.BillId == null && i.AnalyzedBillId == null)
+            .CountAsync(ct);
+
+        if (count > 0)
+        {
+            logger.LogInformation("{Count} legacy bill image row(s) belong to neither a bill nor a scan and are not migrated.", count);
+        }
+    }
+
     public Task<int> MigrateBatchAsync(int batchSize, CancellationToken ct)
         => MigrateBatchAsync(batchSize, ownSkipped, ct);
 
@@ -35,7 +50,7 @@ internal sealed class BillImageMigrator(
 
         var candidates = await dbContext.BillImage
             .AsNoTracking()
-            .Where(i => !i.Name.Contains("/") && !skippedIds.Contains(i.Id))
+            .Where(i => !i.Name.Contains("/") && (i.BillId != null || i.AnalyzedBillId != null) && !skippedIds.Contains(i.Id))
             .OrderBy(i => i.Id)
             .Take(batchSize)
             .Select(i => new Candidate(
@@ -81,8 +96,7 @@ internal sealed class BillImageMigrator(
     {
         if (c.BillUserId is null && c.ScanUserId is null)
         {
-            logger.LogWarning("Bill image '{ImageName}' belongs to neither a bill nor a scan. Skipping it.", c.Name);
-
+            // Linked by id but the owner is not loadable (deleted concurrently); skip quietly.
             return false;
         }
 
@@ -105,10 +119,11 @@ internal sealed class BillImageMigrator(
         var fileType = await logger.DetectOrWarnAsync(stream, c.Name, ct);
 
         string target = c.BillUserId is { } userId
-            ? BillImagePath.ForBill(userId, c.BillDate!.Value, c.BillShopName, c.BillId!.Value, NumberOf(c.Name), fileType.Extension)
+            ? BillImagePath.ForBill(userId, c.BillDate!.Value, c.BillShopName, c.BillId!.Value, BillImagePath.NumberOf(c.Name), fileType.Extension)
             : BillImagePath.ForScan(c.ScanUserId!.Value, c.ScanCreatedAt!.Value, c.AnalyzedBillId!.Value, fileType.Extension);
 
-        await imageRepository.UploadImageAsync(target, stream, fileType.ContentType, ct);
+        // An existing target counts as done (another instance migrated it, or a user uploaded there); it is never overwritten.
+        await imageRepository.UploadImageIfAbsentAsync(target, stream, fileType.ContentType, ct);
 
         if (BeforeUpdate is not null)
         {
@@ -116,12 +131,20 @@ internal sealed class BillImageMigrator(
         }
 
         int updated = await dbContext.BillImage
-            .Where(i => i.Id == c.Id && i.Name == c.Name)
+            .Where(i => i.Id == c.Id && i.Name == c.Name && i.BillId == c.BillId && i.AnalyzedBillId == c.AnalyzedBillId)
             .ExecuteUpdateAsync(s => s.SetProperty(i => i.Name, target), ct);
 
         if (updated == 0)
         {
             logger.LogWarning("Bill image '{ImageName}' was changed in the meantime. Leaving it as it is.", c.Name);
+
+            // Drop the uploaded target unless a still-linked row uses it (another instance migrated the image).
+            bool targetInUse = await dbContext.BillImage
+                .AnyAsync(i => i.Name == target && (i.BillId != null || i.AnalyzedBillId != null), ct);
+            if (!targetInUse)
+            {
+                await imageRepository.DeleteImageAsync(target, ct);
+            }
 
             return false;
         }
@@ -133,14 +156,6 @@ internal sealed class BillImageMigrator(
 
     private static bool IsMissing(Exception ex)
         => ex is FileNotFoundException or DirectoryNotFoundException or RequestFailedException { Status: 404 };
-
-    // Legacy names are "{guid}-{n}"; scans always use 1.
-    private static int NumberOf(string name)
-    {
-        int dash = name.LastIndexOf('-');
-
-        return dash >= 0 && int.TryParse(name[(dash + 1)..], NumberStyles.None, CultureInfo.InvariantCulture, out int n) ? n : 1;
-    }
 
     private sealed record Candidate(
         Guid Id,

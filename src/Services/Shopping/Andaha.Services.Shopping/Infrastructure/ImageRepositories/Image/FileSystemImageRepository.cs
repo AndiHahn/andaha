@@ -60,6 +60,27 @@ internal class FileSystemImageRepository : IImageRepository
         return File.WriteAllBytesAsync(filePath, imageBytes, ct);
     }
 
+    public async Task<bool> UploadImageIfAbsentAsync(string name, Stream imageStream, string? contentType, CancellationToken ct = default)
+    {
+        string filePath = this.GetImagePath(name);
+
+        Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
+
+        var imageBytes = ReadStreamToBytes(imageStream);
+
+        try
+        {
+            await using var file = new FileStream(filePath, FileMode.CreateNew, FileAccess.Write, FileShare.None);
+            await file.WriteAsync(imageBytes, ct);
+
+            return true;
+        }
+        catch (IOException) when (File.Exists(filePath))
+        {
+            return false;
+        }
+    }
+
     public Task CopyImageAsync(string sourceName, string targetName, CancellationToken ct = default)
     {
         string sourcePath = this.GetImagePath(sourceName);

@@ -121,6 +121,29 @@ public class BillImageMoveTests
     }
 
     [Fact]
+    public async Task Missing_source_blob_keeps_the_name_logs_a_warning_and_stays_successful()
+    {
+        var (context, connection) = TestDb.CreateShopping();
+        using (connection)
+        using (context)
+        {
+            var (bill, oldName) = Seed(context, "Billa", OldDate);
+            var images = Substitute.For<IImageRepository>();
+            images.CopyImageAsync(default!, default!, default).ThrowsForAnyArgs(new FileNotFoundException("gone"));
+            var logger = new CapturingLogger();
+
+            var result = await Handler(context, images, logger: logger).Handle(Command(bill, "Spar", NewDate), CancellationToken.None);
+
+            Assert.IsType<Ok<Requests.Bill.Dtos.V1.BillDto>>(result);
+            await images.DidNotReceiveWithAnyArgs().DeleteImageAsync(default!, default);
+            Assert.Equal([oldName], await StoredImages(context, bill.Id));
+            Assert.Contains(logger.Entries, e => e.Level == LogLevel.Warning);
+            context.ChangeTracker.Clear();
+            Assert.Equal("Spar", (await context.Bill.SingleAsync(b => b.Id == bill.Id)).ShopName);
+        }
+    }
+
+    [Fact]
     public async Task Failing_delete_of_the_old_blob_logs_a_warning_and_stays_successful()
     {
         var (context, connection) = TestDb.CreateShopping();

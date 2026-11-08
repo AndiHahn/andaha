@@ -1,4 +1,5 @@
 ﻿using Andaha.Services.Shopping.Infrastructure.AzureBlobStorage;
+using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 
@@ -27,6 +28,32 @@ internal class AzureStorageImageRepository(BlobServiceClient blobServiceClient) 
         }
 
         return this.imageBlobStorageService.UpdateBlobContentAsync(blobPath, imageStream, options, ct);
+    }
+
+    public async Task<bool> UploadImageIfAbsentAsync(string name, Stream imageStream, string? contentType, CancellationToken ct = default)
+    {
+        string blobPath = GetImagesBlobPath(name);
+
+        var options = new BlobUploadOptions
+        {
+            Conditions = new BlobRequestConditions { IfNoneMatch = ETag.All }
+        };
+        if (!string.IsNullOrWhiteSpace(contentType))
+        {
+            options.HttpHeaders = new BlobHttpHeaders { ContentType = contentType };
+        }
+
+        try
+        {
+            await this.imageBlobStorageService.UpdateBlobContentAsync(blobPath, imageStream, options, ct);
+
+            return true;
+        }
+        catch (RequestFailedException ex) when (ex.Status is 409 or 412
+            || ex.ErrorCode is "BlobAlreadyExists" or "ConditionNotMet")
+        {
+            return false;
+        }
     }
 
     public Task CopyImageAsync(string sourceName, string targetName, CancellationToken ct = default)

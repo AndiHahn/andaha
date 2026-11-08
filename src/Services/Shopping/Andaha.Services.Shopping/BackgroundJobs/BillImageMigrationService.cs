@@ -37,6 +37,7 @@ internal sealed class BillImageMigrationService(
     {
         var skipped = new HashSet<Guid>();
         int total = 0;
+        bool first = true;
 
         while (true)
         {
@@ -47,6 +48,12 @@ internal sealed class BillImageMigrationService(
                 scope.ServiceProvider.GetRequiredService<ShoppingDbContext>(),
                 scope.ServiceProvider.GetRequiredService<IImageRepository>(),
                 scope.ServiceProvider.GetRequiredService<ILogger<BillImageMigrator>>());
+
+            if (first)
+            {
+                first = false;
+                await migrator.LogUnlinkedLegacyAsync(ct);
+            }
 
             int migrated = await migrator.MigrateBatchAsync(BatchSize, skipped, ct);
             total += migrated;

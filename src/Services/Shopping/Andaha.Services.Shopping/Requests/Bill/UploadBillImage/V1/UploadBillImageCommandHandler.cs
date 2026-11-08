@@ -69,21 +69,22 @@ internal class UploadBillImageCommandHandler : IRequestHandler<UploadBillImageCo
 
         await imageRepository.UploadImageAsync(imageName, imageStream, fileType.ContentType, cancellationToken);
 
+        // If SaveChangesAsync fails after the upload, the new blob stays behind as an accepted orphan.
         await dbContext.SaveChangesAsync(cancellationToken);
 
         if (oldName is not null && oldName != imageName)
         {
-            await TryDeleteOldImageAsync(oldName, cancellationToken);
+            await TryDeleteOldImageAsync(oldName);
         }
 
         return Results.NoContent();
     }
 
-    private async Task TryDeleteOldImageAsync(string oldName, CancellationToken cancellationToken)
+    private async Task TryDeleteOldImageAsync(string oldName)
     {
         try
         {
-            await imageRepository.DeleteImageAsync(oldName, cancellationToken);
+            await imageRepository.DeleteImageAsync(oldName, CancellationToken.None);
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {

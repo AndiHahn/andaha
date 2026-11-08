@@ -13,6 +13,7 @@ public class BillImagePathTests
     [InlineData("Straße", "Strasse")]
     [InlineData("--A--", "A")]
     [InlineData("Billa  Plus!", "Billa-Plus")]
+    [InlineData("Müller", "Mueller")]
     public void ShopSlug_NormalizesName(string? input, string expected)
         => Assert.Equal(expected, BillImagePath.ShopSlug(input));
 
@@ -51,6 +52,15 @@ public class BillImagePathTests
         Assert.True(BillImagePath.IsLegacy("abc-1"));
         Assert.False(BillImagePath.IsLegacy("u/2026/11/x.jpg"));
     }
+
+    [Theory]
+    [InlineData("0b1c2d3e-0000-4000-8000-000000000001-3", 3)]
+    [InlineData("u/2026/11/2026-11-06_Billa_0b1c2d3e-0000-4000-8000-000000000001-2.jpg", 2)]
+    [InlineData("u/offen/2026-11-08_09-14-03_0b1c2d3e-0000-4000-8000-000000000001-1.png", 1)]
+    [InlineData("nodash", 1)]
+    [InlineData("abc-x", 1)]
+    public void NumberOf_ParsesLegacyAndStructuredNames(string name, int expected)
+        => Assert.Equal(expected, BillImagePath.NumberOf(name));
 
     [Fact]
     public void ExtensionOf_ReturnsExtensionOrEmptyForLegacy()

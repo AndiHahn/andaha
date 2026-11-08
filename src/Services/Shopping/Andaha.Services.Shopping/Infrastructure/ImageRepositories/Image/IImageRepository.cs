@@ -7,6 +7,9 @@ internal interface IImageRepository
     /// <summary>Stores the image under <paramref name="name"/> (may contain '/'), overwriting an existing one.</summary>
     Task UploadImageAsync(string name, Stream imageStream, string? contentType, CancellationToken ct = default);
 
+    /// <summary>Stores the image only if nothing exists under <paramref name="name"/>. Returns false if it already exists (nothing is overwritten).</summary>
+    Task<bool> UploadImageIfAbsentAsync(string name, Stream imageStream, string? contentType, CancellationToken ct = default);
+
     /// <summary>
     /// Copies an image, overwriting an existing target and keeping the source content type.
     /// Throws <see cref="FileNotFoundException"/> if the source does not exist.

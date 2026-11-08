@@ -2,7 +2,7 @@ using Andaha.Services.Shopping.BackgroundJobs;
 using Andaha.Services.Shopping.Infrastructure;
 using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Image;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace Andaha.Services.Shopping.Tests.BackgroundJobs;
 
@@ -33,7 +33,33 @@ public sealed class BillImageMigrationTests : IDisposable
         }
     }
 
-    private BillImageMigrator Migrator() => new(context, images, NullLogger<BillImageMigrator>.Instance);
+    private readonly CapturingLogger logger = new();
+
+    private BillImageMigrator Migrator() => new(context, images, logger);
+
+    private static string TargetFor(string legacy)
+        => BillImagePath.ForBill(Owner, new DateTime(2026, 10, 30), "Billa", Guid.Parse(legacy[..36]), 1, ".jpg");
+
+    private async Task<byte[]> BytesAsync(string name)
+    {
+        await using var s = await images.GetImageStreamAsync(name);
+        using var ms = new MemoryStream();
+        await s.CopyToAsync(ms);
+
+        return ms.ToArray();
+    }
+
+    private sealed class CapturingLogger : ILogger<BillImageMigrator>
+    {
+        public List<(LogLevel Level, string Message)> Entries { get; } = [];
+
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+            => Entries.Add((logLevel, formatter(state, exception)));
+    }
 
     private async Task<string> SeedBillAsync(byte[]? content, int number = 1)
     {
@@ -107,6 +133,9 @@ public sealed class BillImageMigrationTests : IDisposable
             Assert.True(await ExistsAsync(name));
         }
 
+        Assert.Equal(Jpeg, await BytesAsync(TargetFor(bill1)));
+        Assert.Equal(Png, await BytesAsync(names.Single(n => n.EndsWith("-2.png"))));
+
         Assert.False(await ExistsAsync(bill1));
         Assert.False(await ExistsAsync(bill2));
         Assert.False(await ExistsAsync(scanLegacy));
@@ -169,5 +198,56 @@ public sealed class BillImageMigrationTests : IDisposable
         Assert.Equal(0, migrated);
         Assert.Equal(["concurrent/name.jpg"], await NamesAsync());
         Assert.True(await ExistsAsync(legacy));
+    }
+
+    [Fact]
+    public async Task Orphaned_legacy_row_is_not_migrated_and_logs_no_row_warning()
+    {
+        string legacy = await SeedBillAsync(Jpeg);
+        await context.BillImage.ExecuteUpdateAsync(s => s.SetProperty(i => i.BillId, (Guid?)null));
+
+        int migrated = await Migrator().MigrateBatchAsync(50, CancellationToken.None);
+        await Migrator().LogUnlinkedLegacyAsync(CancellationToken.None);
+
+        Assert.Equal(0, migrated);
+        Assert.Equal([legacy], await NamesAsync());
+        Assert.True(await ExistsAsync(legacy));
+        Assert.DoesNotContain(logger.Entries, e => e.Level >= LogLevel.Warning);
+        Assert.Single(logger.Entries, e => e.Level == LogLevel.Information && e.Message.StartsWith("1 legacy"));
+    }
+
+    [Fact]
+    public async Task Row_unlinked_between_read_and_update_is_not_renamed_and_the_target_blob_is_removed()
+    {
+        string legacy = await SeedBillAsync(Jpeg);
+        string target = TargetFor(legacy);
+        var migrator = Migrator();
+        migrator.BeforeUpdate = async () =>
+        {
+            await using var other = TestDb.Open(connection);
+            await other.BillImage.ExecuteUpdateAsync(s => s.SetProperty(i => i.BillId, (Guid?)null));
+        };
+
+        int migrated = await migrator.MigrateBatchAsync(50, CancellationToken.None);
+
+        Assert.Equal(0, migrated);
+        Assert.Equal([legacy], await NamesAsync());
+        Assert.True(await ExistsAsync(legacy));
+        Assert.False(await ExistsAsync(target));
+    }
+
+    [Fact]
+    public async Task Existing_target_blob_is_not_overwritten()
+    {
+        string legacy = await SeedBillAsync(Jpeg);
+        string target = TargetFor(legacy);
+        await images.UploadImageAsync(target, new MemoryStream(Png), null);
+
+        int migrated = await Migrator().MigrateBatchAsync(50, CancellationToken.None);
+
+        Assert.Equal(1, migrated);
+        Assert.Equal([target], await NamesAsync());
+        Assert.Equal(Png, await BytesAsync(target));
+        Assert.False(await ExistsAsync(legacy));
     }
 }

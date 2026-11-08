@@ -70,7 +70,7 @@ internal class UpdateBillCommandHandler : IRequestHandler<UpdateBillCommand, IRe
 
             try
             {
-                movedOldNames = await BillImageMover.CopyToNewPathsAsync(bill, imageRepository, cancellationToken);
+                movedOldNames = await BillImageMover.CopyToNewPathsAsync(bill, imageRepository, logger, cancellationToken);
             }
             catch (Exception exception) when (exception is not OperationCanceledException)
             {
@@ -82,7 +82,7 @@ internal class UpdateBillCommandHandler : IRequestHandler<UpdateBillCommand, IRe
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        await BillImageMover.DeleteOldAsync(movedOldNames, imageRepository, logger, cancellationToken);
+        await BillImageMover.DeleteOldAsync(movedOldNames, imageRepository, logger);
 
         if (request.Image is not null)
         {
