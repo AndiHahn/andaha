@@ -57,8 +57,7 @@
   overflow-wrap: anywhere;
 }
 
-.cat,
-.conf {
+.cat {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -80,22 +79,6 @@
 
 .why-title {
   font-weight: 600;
-}
-
-// Konfidenz: kleiner Balken in positive
-.bar {
-  width: 72px;
-  height: 6px;
-  border-radius: 3px;
-  background: var(--line-sheet);
-  overflow: hidden;
-}
-
-.fill {
-  display: block;
-  max-width: 100%;
-  height: 100%;
-  background: var(--pos);
 }
 
 // Positionen (AC32): Beschreibung, darunter Menge × Einzelpreis, rechts Summe

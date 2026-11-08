@@ -146,3 +146,23 @@
     .btn { flex: none; min-width: 160px; }
   }
 }
+
+// Eingeklappter Block „Automatisch erkannt“
+.detected-toggle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--line2);
+  background: transparent;
+  color: var(--mut);
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+@media (min-width: 1024px) {
+  .detected-toggle { padding-left: 0; padding-right: 0; }
+}

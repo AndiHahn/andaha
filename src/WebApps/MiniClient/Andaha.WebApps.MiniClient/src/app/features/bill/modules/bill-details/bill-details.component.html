@@ -39,6 +39,21 @@
           </div>
         }
         <app-line-items-view [items]="lineItems" [price]="bill.price" [initialQuery]="initialQuery" />
+        @if (hasConfidences) {
+          <div class="detected">
+            <button type="button" class="detected-toggle" aria-controls="bill-details-detected"
+              [attr.aria-expanded]="detectedOpen" (click)="detectedOpen = !detectedOpen">
+              <span>Automatisch erkannt</span>
+              <mat-icon aria-hidden="true">{{ detectedOpen ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </button>
+            @if (detectedOpen) {
+              <div id="bill-details-detected" role="region" aria-label="Automatisch erkannt">
+                <app-confidence-list [shop]="bill.shopNameConfidence" [date]="bill.dateConfidence"
+                  [amount]="bill.totalAmountConfidence" [document]="bill.confidence" />
+              </div>
+            }
+          </div>
+        }
       }
       <!--
       BEARBEITEN: FORMULAR

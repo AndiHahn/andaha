@@ -36,15 +36,11 @@
               <span class="v">{{ subCategory.name }}</span>
             </div>
           }
-          @if (confidence !== null) {
-            <div class="kv">
-              <span class="k">Analyse-Konfidenz</span>
-              <span class="v conf">
-                <span class="bar" aria-hidden="true"><span class="fill" [style.width.%]="confidence"></span></span>
-                {{ confidence }} %
-              </span>
-            </div>
-          }
+          <div class="erkennung">
+            <p class="sec" role="heading" aria-level="2">Erkennung</p>
+            <app-confidence-list [shop]="bill.shopNameConfidence" [date]="bill.dateConfidence"
+              [amount]="bill.totalAmountConfidence" [document]="bill.confidence" [amountText]="amountText" />
+          </div>
           @if (bill.lineItems.length) {
             <p class="sec">Positionen</p>
             <ul class="items">

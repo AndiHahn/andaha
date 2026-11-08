@@ -308,4 +308,27 @@ describe('AnalyzedBillDetailsComponent', () => {
     expect(leaveTo).toHaveBeenCalledWith('/bill/analysis');
     expect(openSnackbar).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: expect.objectContaining({ message: 'Eintrag wurde nicht gefunden.' }) }));
   });
+
+  it('Erkennung: vier Zeilen mit Prozent, fehlende als Strich, alte Konfidenzzeile weg', async () => {
+    await setup({ bill: { ...bill, confidence: 0.876, shopNameConfidence: 0.9, dateConfidence: null, totalAmountConfidence: 0.5 } });
+
+    expect(host.textContent).not.toContain('Analyse-Konfidenz');
+    expect(host.querySelector('.erkennung [role="heading"]')!.textContent).toContain('Erkennung');
+    const row = (key: string) => host.querySelector<HTMLElement>(`[data-row="${key}"]`)!;
+    expect(row('shop').textContent).toContain('90 %');
+    expect(row('date').textContent).toContain('–');
+    expect(row('amount').textContent).toContain('50 %');
+    expect(row('amount').classList).toContain('warn');
+    expect(row('document').textContent).toContain('88 %');
+  });
+
+  it('Rohtext-Hinweis nur bei AmountIncomplete mit totalAmountText', async () => {
+    await setup({ bill: { ...bill, totalAmountConfidence: 0.5, totalAmountText: '7,', notCreatedReasons: ['AmountIncomplete'] } });
+    expect(host.querySelector('[data-row="amount"]')!.textContent).toContain('erkannt: 7,');
+
+    fixture.destroy();
+    TestBed.resetTestingModule();
+    await setup({ bill: { ...bill, totalAmountConfidence: 0.5, totalAmountText: '7,', notCreatedReasons: ['DateMissing'] } });
+    expect(host.textContent).not.toContain('erkannt:');
+  });
 });

@@ -33,6 +33,7 @@ import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { ShowErrorPipe } from '../../../../shared/form-field/show-error.pipe';
+import { ConfidenceListComponent } from 'src/app/features/bill-analysis/modules/confidence-list/confidence-list.component';
 import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
 
 @Component({
@@ -41,9 +42,14 @@ import { PanelBackDirective } from 'src/app/core/overlay/panel-back.directive';
     styleUrls: ['./bill-details.component.scss'],
     providers: GERMAN_DATE_PROVIDERS,
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [PanelBackDirective, BillImageComponent, FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, MatOption, MatIcon, MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker, MatProgressBar, MatProgressSpinner, DecimalPipe, DatePipe, ShowErrorPipe, LineItemsViewComponent, LineItemsEditorComponent]
+    imports: [PanelBackDirective, BillImageComponent, FormsModule, ReactiveFormsModule, MatSelect, MatSelectTrigger, MatOption, MatIcon, MatDatepickerInput, MatDatepickerToggle, MatDatepickerToggleIcon, MatDatepicker, MatProgressBar, MatProgressSpinner, DecimalPipe, DatePipe, ShowErrorPipe, LineItemsViewComponent, LineItemsEditorComponent, ConfidenceListComponent]
 })
 export class BillDetailsComponent implements OnInit, OnDestroy {
+  /** Nur Rechnungen aus einer automatischen Analyse tragen Konfidenzen */
+  get hasConfidences(): boolean {
+    return this.bill?.confidence != null || this.bill?.totalAmountConfidence != null;
+  }
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private historyTrail = inject(HistoryTrailService);
@@ -76,6 +82,8 @@ export class BillDetailsComponent implements OnInit, OnDestroy {
   isSaving: boolean = false;
   isDeleting: boolean = false;
   isEditing: boolean = false;
+  /** Block „Automatisch erkannt“ aufgeklappt */
+  detectedOpen: boolean = false;
   isLoading: boolean = false;
   isExternal: boolean = false;
 

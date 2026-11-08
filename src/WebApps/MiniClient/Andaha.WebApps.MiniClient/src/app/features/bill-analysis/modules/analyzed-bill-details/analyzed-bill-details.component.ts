@@ -18,9 +18,10 @@ import { BillCategoryContextService } from 'src/app/services/bill-category-conte
 import { ConfirmationDialogService } from 'src/app/shared/confirmation-dialog/confirmation-dialog.service';
 import { openErrorSnackbar } from 'src/app/shared/snackbar/snackbar-functions';
 import { vibrate } from 'src/app/shared/utils/haptics';
-import { confidencePercent, resolveAnalyzedCategory } from '../../functions/analyzed-bill-functions';
+import { resolveAnalyzedCategory } from '../../functions/analyzed-bill-functions';
 import { getParametersFromRouteRecursive, leaveDetailNotFound } from 'src/app/shared/utils/routing-helper';
 import { MatProgressBar } from '@angular/material/progress-bar';
+import { ConfidenceListComponent } from '../confidence-list/confidence-list.component';
 import { AnalyzedBillImageComponent } from '../analyzed-bill-image/analyzed-bill-image.component';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { NotCreatedReasonText, notCreatedReasonTexts } from '../../functions/not-created-reasons';
@@ -39,7 +40,7 @@ const IMAGE_FAILED = 'Foto konnte nicht geladen werden.';
     templateUrl: './analyzed-bill-details.component.html',
     styleUrls: ['./analyzed-bill-details.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [MatProgressBar, MatIcon, AnalyzedBillImageComponent, DecimalPipe, DatePipe]
+    imports: [MatProgressBar, MatIcon, AnalyzedBillImageComponent, ConfidenceListComponent, DecimalPipe, DatePipe]
 })
 export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
@@ -55,7 +56,8 @@ export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
   bill?: BillAnalyzedDto;
   category?: CategoryDto;
   subCategory?: SubCategoryDto;
-  confidence: number | null = null;
+  /** Rohtext des Betrags, nur bei AmountIncomplete (design.md §4a) */
+  amountText: string | null = null;
   /** Sätze, warum die Analyse nicht automatisch angelegt wurde (US-0011) */
   reasons: NotCreatedReasonText[] = [];
   /** Foto wird für die Übernahme geladen bzw. die Analyse wird verworfen */
@@ -77,7 +79,7 @@ export class AnalyzedBillDetailsComponent implements OnInit, OnDestroy {
       }
 
       this.bill = bill;
-      this.confidence = confidencePercent(bill.confidence);
+      this.amountText = bill.notCreatedReasons?.includes('AmountIncomplete') ? bill.totalAmountText ?? null : null;
       this.reasons = notCreatedReasonTexts(bill.notCreatedReasons);
 
       this.categoryContext.categories().pipe(takeUntil(this.destroy$)).subscribe(categories => {

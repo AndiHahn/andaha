@@ -460,4 +460,51 @@ describe('BillDetailsComponent', () => {
     expect(leaveTo).toHaveBeenCalledWith('/bill/list');
     vibrate.mockRestore();
   });
+
+  describe('Automatisch erkannt', () => {
+    async function showBill(extra: Partial<BillDto>): Promise<void> {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [BillDetailsComponent],
+        providers: [
+          { provide: ActivatedRoute, useValue: route() },
+          { provide: BillApiService, useValue: { getBill } },
+          { provide: HistoryTrailService, useValue: { leaveTo } },
+          { provide: ConfirmationDialogService, useValue: { openDialog: openConfirmation } },
+          {
+            provide: BillContextService,
+            useValue: { loadBillById: () => of({ ...bill, ...extra }), loading: () => of(false), isPendingSync: () => false, deleteBill }
+          },
+          { provide: BillCategoryContextService, useValue: { categories: () => of([]) } }
+        ]
+      });
+      fixture = TestBed.createComponent(BillDetailsComponent);
+      host = fixture.nativeElement;
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+    }
+    const toggle = () => host.querySelector<HTMLButtonElement>('button[aria-controls]');
+
+    it('with confidences: collapsed block, click expands to four rows', async () => {
+      await showBill({ confidence: 0.876, totalAmountConfidence: 0.95, shopNameConfidence: 0.9, dateConfidence: 0.85 });
+
+      expect(toggle()!.textContent).toContain('Automatisch erkannt');
+      expect(toggle()!.getAttribute('aria-expanded')).toBe('false');
+      expect(host.querySelector('[data-row]')).toBeNull();
+
+      toggle()!.click();
+      fixture.detectChanges();
+
+      expect(toggle()!.getAttribute('aria-expanded')).toBe('true');
+      expect(host.querySelectorAll('[data-row]').length).toBe(4);
+      expect(host.querySelector('[data-row="document"]')!.textContent).toContain('88 %');
+      expect(host.querySelector('#' + toggle()!.getAttribute('aria-controls'))).not.toBeNull();
+    });
+
+    it('without confidences: no block', async () => {
+      await showBill({ confidence: null, totalAmountConfidence: null });
+      expect(host.textContent).not.toContain('Automatisch erkannt');
+    });
+  });
 });
