@@ -26,4 +26,19 @@ public class BillImage : Entity<Guid>
     public Bill? Bill { get; private set; }
 
     public AnalyzedBill? AnalyzedBill { get; private set; }
+
+    public void Rename(string newName)
+    {
+        if (string.IsNullOrWhiteSpace(newName))
+        {
+            throw new ArgumentException("Name must not be empty.", nameof(newName));
+        }
+
+        if (newName.Length > 200)
+        {
+            throw new ArgumentException("Name must not exceed 200 characters.", nameof(newName));
+        }
+
+        Name = newName;
+    }
 }
