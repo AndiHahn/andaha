@@ -20,8 +20,6 @@ internal sealed class BillAnalysisProcessor(
     ShoppingDbContext dbContext,
     ILogger<BillAnalysisProcessor> logger) : IBillAnalysisProcessor
 {
-    private const int thumbnailPixelSize = 60;
-
     public async Task ProcessAsync(string imageName, CancellationToken ct)
     {
         // An earlier attempt may have saved its result but failed to delete the source image.
@@ -102,8 +100,8 @@ internal sealed class BillAnalysisProcessor(
 
         dbContext.AnalyzedBill.Add(analyzedBill);
 
-        var (imageName, thumbnail) = await UploadImageAsync(analyzedBill.Id, file.Image, ct);
-        analyzedBill.AddImage(imageName, thumbnail);
+        var imageName = await UploadImageAsync(analyzedBill.Id, file.Image, ct);
+        analyzedBill.AddImage(imageName, []);
 
         await dbContext.SaveChangesAsync(ct);
 
@@ -138,8 +136,8 @@ internal sealed class BillAnalysisProcessor(
 
         dbContext.Bill.Add(bill);
 
-        var (imageName, thumbnail) = await UploadImageAsync(bill.Id, file.Image, ct);
-        bill.AddImage(imageName, thumbnail);
+        var imageName = await UploadImageAsync(bill.Id, file.Image, ct);
+        bill.AddImage(imageName, []);
 
         await dbContext.SaveChangesAsync(ct);
 
@@ -149,25 +147,17 @@ internal sealed class BillAnalysisProcessor(
     }
 
     /// <summary>
-    /// Uploads the image as the first image of the (analyzed) bill and returns its name and thumbnail.
+    /// Uploads the image as the first image of the (analyzed) bill and returns its name.
     /// </summary>
-    private async Task<(string Name, byte[] Thumbnail)> UploadImageAsync(Guid billId, Stream imageStream, CancellationToken ct)
+    private async Task<string> UploadImageAsync(Guid billId, Stream imageStream, CancellationToken ct)
     {
         string imageName = $"{billId}-1";
-
-        imageStream.Position = 0;
-        byte[] thumbnail;
-        using (Stream thumbnailStream = ImageResizer.ShrinkProportional(imageStream, thumbnailPixelSize))
-        {
-            thumbnailStream.Position = 0;
-            thumbnail = ReadStreamToBytes(thumbnailStream);
-        }
 
         imageStream.Position = 0;
 
         await imageRepository.UploadImageAsync(imageName, imageStream, ct);
 
-        return (imageName, thumbnail);
+        return imageName;
     }
 
     private async Task<CategoryClassificationResult?> GetCategoryClassification(
@@ -212,11 +202,4 @@ internal sealed class BillAnalysisProcessor(
             .Include(category => category.SubCategories)
             .Where(category => category.UserId == userId)
             .ToListAsync(cancellationToken);
-
-    private static byte[] ReadStreamToBytes(Stream input)
-    {
-        using MemoryStream ms = new();
-        input.CopyTo(ms);
-        return ms.ToArray();
-    }
 }

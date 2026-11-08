@@ -19,8 +19,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace Andaha.Services.Shopping.Tests.BackgroundJobs;
 
@@ -522,13 +520,8 @@ public sealed class ImmediateAnalysisTests : IDisposable
         return file;
     }
 
-    private static byte[] Png()
-    {
-        using var image = new Image<Rgba32>(120, 80);
-        using var stream = new MemoryStream();
-        image.SaveAsPng(stream);
-        return stream.ToArray();
-    }
+    // Nothing decodes the image anymore, so any bytes will do.
+    private static byte[] Png() => [1, 2, 3, 4, 5];
 
     private sealed class MutableTimeProvider(DateTimeOffset now) : TimeProvider
     {

@@ -13,8 +13,6 @@ internal class FailedAnalysisImageHandler(
     IImageRepository imageRepository,
     ILogger<FailedAnalysisImageHandler> logger) : IFailedAnalysisImageHandler
 {
-    private const int thumbnailPixelSize = 60;
-
     public async Task HandleAsync(string imageName, CancellationToken ct)
     {
         // An earlier run (or the analysis itself) already created the entry but did not delete the image.
@@ -43,7 +41,7 @@ internal class FailedAnalysisImageHandler(
 
         string billImageName = $"{analyzedBill.Id}-1";
 
-        analyzedBill.AddImage(billImageName, CreateThumbnail(imageName, imageStream));
+        analyzedBill.AddImage(billImageName, []);
 
         dbContext.AnalyzedBill.Add(analyzedBill);
 
@@ -55,22 +53,5 @@ internal class FailedAnalysisImageHandler(
         await analysisImageRepository.DeleteImageAsync(imageName, ct);
 
         logger.LogInformation("Created empty analyzed bill {AnalyzedBillId} from analysis image '{ImageName}'.", analyzedBill.Id, imageName);
-    }
-
-    private byte[] CreateThumbnail(string imageName, Stream imageStream)
-    {
-        // A file that cannot be decoded may be the very reason the analysis failed; keep it without thumbnail.
-        try
-        {
-            using var thumbnailStream = ImageResizer.ShrinkProportional(imageStream, thumbnailPixelSize);
-            using MemoryStream ms = new();
-            thumbnailStream.CopyTo(ms);
-            return ms.ToArray();
-        }
-        catch (SixLabors.ImageSharp.ImageFormatException ex)
-        {
-            logger.LogWarning(ex, "Could not create thumbnail for analysis image '{ImageName}'.", imageName);
-            return [];
-        }
     }
 }

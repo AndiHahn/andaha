@@ -10,8 +10,6 @@ namespace Andaha.Services.Shopping.Requests.Bill.UploadBillImage.V1;
 
 internal class UploadBillImageCommandHandler : IRequestHandler<UploadBillImageCommand, IResult>
 {
-    private const int thumbnailPixelSize = 60;
-
     private readonly ShoppingDbContext dbContext;
     private readonly IIdentityService identityService;
     private readonly ICollaborationApiProxy collaborationApiProxy;
@@ -59,12 +57,7 @@ internal class UploadBillImageCommandHandler : IRequestHandler<UploadBillImageCo
 
         using Stream imageStream = request.Image.OpenReadStream();
 
-        using Stream thumbnailStream = ImageResizer.ShrinkProportional(imageStream, thumbnailPixelSize);
-
-        thumbnailStream.Position = 0;
-        var thumbnail = ReadStreamToBytes(thumbnailStream);
-
-        bill.AddImage(imageName, thumbnail);
+        bill.AddImage(imageName, []);
 
         imageStream.Position = 0;
 
@@ -76,11 +69,4 @@ internal class UploadBillImageCommandHandler : IRequestHandler<UploadBillImageCo
     }
 
     private static string GetImageName(Guid billId, int nrOfExistingImages) => $"{billId}-{nrOfExistingImages + 1}";
-
-    private static byte[] ReadStreamToBytes(Stream input)
-    {
-        using MemoryStream ms = new();
-        input.CopyTo(ms);
-        return ms.ToArray();
-    }
 }

@@ -4,20 +4,13 @@ using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Image;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace Andaha.Services.Shopping.Tests.BackgroundJobs;
 
 public class FailedAnalysisImageHandlerTests
 {
-    private static byte[] Png()
-    {
-        using var image = new Image<Rgba32>(120, 80);
-        using var stream = new MemoryStream();
-        image.SaveAsPng(stream);
-        return stream.ToArray();
-    }
+    // Nothing decodes the image anymore, so any bytes will do.
+    private static byte[] Png() => [1, 2, 3, 4, 5];
 
     [Fact]
     public async Task Creates_analyzed_bill_with_empty_fields_and_image_for_owner()
@@ -65,7 +58,7 @@ public class FailedAnalysisImageHandlerTests
 
             var image = Assert.Single(bill.Images);
             Assert.Equal($"{bill.Id}-1", image.Name);
-            Assert.NotEmpty(image.Thumbnail);
+            Assert.Empty(image.Thumbnail);
             Assert.Equal(image.Name, uploadedName);
             Assert.Equal(source, uploaded);
             await analysisImages.Received(1).DeleteImageAsync("a.jpg", Arg.Any<CancellationToken>());
