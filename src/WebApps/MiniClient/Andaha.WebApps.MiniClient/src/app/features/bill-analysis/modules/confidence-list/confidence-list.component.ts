@@ -68,11 +68,13 @@ export class ConfidenceListComponent {
     this.row('date', 'Datum', this.date(), CONFIDENCE_THRESHOLDS.date),
     { ...this.row('amount', 'Betrag', this.amount(), CONFIDENCE_THRESHOLDS.amount),
       hint: this.amountText() ? `erkannt: ${this.amountText()}` : undefined },
-    this.row('document', 'Dokument', this.document(), CONFIDENCE_THRESHOLDS.document)
+    this.row('document', 'Dokument', this.document(), CONFIDENCE_THRESHOLDS.document, true)
   ]);
 
-  private row(key: string, label: string, value: number | null | undefined, threshold: number): ConfidenceRow {
+  private row(key: string, label: string, value: number | null | undefined, threshold: number, strict = false): ConfidenceRow {
     const percent = confidencePercent(value);
-    return { key, label, percent, warn: percent !== null && (value as number) < threshold };
+    const v = value as number;
+    // Backend: Dokument muss strikt über der Schwelle liegen (genau 0,75 = LowConfidence), die übrigen genügen mit >=
+    return { key, label, percent, warn: percent !== null && (strict ? !(v > threshold) : v < threshold) };
   }
 }

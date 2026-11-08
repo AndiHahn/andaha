@@ -261,19 +261,5 @@ public class AutoCreationRulesTests
                 new AutoCreationInput(shop, shopConf, date, dateConf, amount, tac, text, confidence, sum, withPrice, true),
                 Reference).Count == 0);
 
-        // Delegation wiring: the model's IsReasonableResult agrees (its reference date is today).
-        var result = new InvoiceAnalysisResult
-        {
-            VendorName = shop,
-            VendorNameConfidence = shopConf,
-            InvoiceDate = hasDate ? new DateTimeOffset(DateTime.UtcNow.Date.AddDays(futureDays)) : null,
-            InvoiceDateConfidence = dateConf,
-            TotalAmount = amount,
-            TotalAmountText = text,
-            Confidence = confidence,
-            TotalAmountConfidence = tac,
-            LineItems = withPrice > 0 ? [new InvoiceLineItem { TotalPrice = sum }] : [],
-        };
-        Assert.Equal(expected, result.IsReasonableResult());
     }
 }

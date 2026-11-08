@@ -51,4 +51,25 @@ public class AmountSignTests
         Assert.Null(total);
         Assert.Equal(1.0, unit);
     }
+
+    [Theory]
+    [InlineData("1,00-")]
+    [InlineData("-1,00")]
+    [InlineData("−1,00")]
+    [InlineData("1,00 -")]
+    public void Negative_notation_flips_sign(string text)
+    {
+        var (total, _) = AmountSign.Apply(1.00, null, text);
+        Assert.Equal(-1.00, total);
+    }
+
+    [Theory]
+    [InlineData("7,-")]
+    [InlineData("7,–")]
+    [InlineData("3,50")]
+    public void Flat_price_and_plain_notation_stay_positive(string text)
+    {
+        var (total, _) = AmountSign.Apply(7.00, null, text);
+        Assert.Equal(7.00, total);
+    }
 }

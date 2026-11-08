@@ -39,11 +39,15 @@ public class InvoiceAnalysisService : IInvoiceAnalysisService
         return MapInvoice(document);
     }
 
+    /// <summary>Azure confidences are float; (double)0.9f is 0.8999999..., so round to make inclusive thresholds reachable.</summary>
+    private static double? ToDouble(float? c) =>
+        c is float f ? Math.Round((double)f, 3, MidpointRounding.AwayFromZero) : null;
+
     internal static InvoiceAnalysisResult MapInvoice(AnalyzedDocument document)
     {
         var output = new InvoiceAnalysisResult();
 
-        output.Confidence = document.Confidence;
+        output.Confidence = ToDouble(document.Confidence);
         output.InvoiceId = document.Fields.GetString("InvoiceId");
         output.VendorName = document.Fields.GetString("VendorName");
         output.CustomerName = document.Fields.GetString("CustomerName");
@@ -52,12 +56,12 @@ public class InvoiceAnalysisService : IInvoiceAnalysisService
 
         if (document.Fields.TryGetValue("VendorName", out var vendorField))
         {
-            output.VendorNameConfidence = vendorField.Confidence;
+            output.VendorNameConfidence = ToDouble(vendorField.Confidence);
         }
 
         if (document.Fields.TryGetValue("InvoiceDate", out var dateField))
         {
-            output.InvoiceDateConfidence = dateField.Confidence;
+            output.InvoiceDateConfidence = ToDouble(dateField.Confidence);
         }
 
         var total = document.Fields.GetCurrency("InvoiceTotal");
@@ -70,7 +74,7 @@ public class InvoiceAnalysisService : IInvoiceAnalysisService
         // Read raw field to get confidence score (0..1)
         if (document.Fields.TryGetValue("InvoiceTotal", out var totalField))
         {
-            output.TotalAmountConfidence = totalField.Confidence;
+            output.TotalAmountConfidence = ToDouble(totalField.Confidence);
             output.TotalAmountText = totalField.Content;
         }
 

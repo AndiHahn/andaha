@@ -31,11 +31,17 @@ describe('ConfidenceListComponent', () => {
     expect(row(host, 'document').classList).toContain('warn');
   });
 
-  it('does not warn at exactly the threshold', () => {
-    const host = render({ shop: 0.75, date: 0.8, amount: 0.9, document: 0.75 });
+  it('does not warn at exactly the threshold for shop, date and amount', () => {
+    const host = render({ shop: 0.75, date: 0.8, amount: 0.9, document: 0.76 });
     for (const key of ['shop', 'date', 'amount', 'document']) {
       expect(row(host, key).classList).not.toContain('warn');
     }
+  });
+
+  it('warns for the document at exactly 0.75 (backend requires strictly greater)', () => {
+    const host = render({ shop: 0.75, date: 0.8, amount: 0.9, document: 0.75 });
+    expect(row(host, 'document').classList).toContain('warn');
+    expect(row(host, 'shop').classList).not.toContain('warn');
   });
 
   it('shows the raw amount text hint only when given', () => {

@@ -327,7 +327,12 @@ export class BillListComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       const images = await takeSharedImages();
       if (images.length > 0) {
-        this.startScanAndOpenScans(images);
+        if (quick) {
+          // Quick-Entry-Shortcut: auf der Liste bleiben (Eingabedock offen), Upload mit Info-Snackbar
+          this.analysisUpload.uploadAll(images);
+        } else {
+          this.startScanAndOpenScans(images);
+        }
       }
     });
   }

@@ -224,6 +224,18 @@ describe('BillListComponent', () => {
       expect(await cache.match(sharedImageKey(1))).toBeUndefined();
     });
 
+    it('?quick=1 with shared images uploads with the info snackbar and stays on the list', async () => {
+      const cache = await caches.open(SHARED_IMAGE_CACHE);
+      await cache.put(sharedImageKey(0), new Response(new Blob(['1'], { type: 'image/jpeg' }), { headers: { 'Content-Type': 'image/jpeg', 'X-File-Name': 'a.jpg' } }));
+
+      const navigateByUrl = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+      await openListWith({ quick: '1' });
+      await vi.waitFor(() => expect(uploadAll).toHaveBeenCalled());
+
+      expect(uploadAll.mock.calls[0]).toHaveLength(1);
+      expect(navigateByUrl).not.toHaveBeenCalled();
+    });
+
     it('?shared=0 shows the existing failure snackbar', async () => {
       await openListWith({ shared: '0' });
 
