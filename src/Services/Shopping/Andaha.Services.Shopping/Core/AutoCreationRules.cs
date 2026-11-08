@@ -67,12 +67,12 @@ public static partial class AutoCreationRules
 
         if (string.IsNullOrWhiteSpace(input.ShopName))
             reasons.Add(NotCreatedReason.ShopMissing);
-        if (!legacy && !(input.ShopConfidence >= MinShopConfidence))
+        if (!legacy && !string.IsNullOrWhiteSpace(input.ShopName) && !(input.ShopConfidence >= MinShopConfidence))
             reasons.Add(NotCreatedReason.ShopUncertain);
 
         if (!input.Date.HasValue)
             reasons.Add(NotCreatedReason.DateMissing);
-        if (!legacy && !(input.DateConfidence >= MinDateConfidence))
+        if (!legacy && input.Date.HasValue && !(input.DateConfidence >= MinDateConfidence))
             reasons.Add(NotCreatedReason.DateUncertain);
         if (!legacy && input.Date.HasValue && input.Date.Value.Date > referenceUtcDate.Date.AddDays(MaxDaysInFuture))
             reasons.Add(NotCreatedReason.DateInFuture);

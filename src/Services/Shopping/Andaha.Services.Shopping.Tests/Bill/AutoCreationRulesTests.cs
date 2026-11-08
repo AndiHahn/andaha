@@ -46,6 +46,15 @@ public class AutoCreationRulesTests
         => Assert.Equal(uncertain ? [NotCreatedReason.DateUncertain] : [], Eval(dateConf: conf));
 
     [Fact]
+    public void Missing_values_report_only_the_missing_code()
+    {
+        Assert.Equal([NotCreatedReason.ShopMissing], Eval(shop: null, shopConf: null));
+        Assert.Equal([NotCreatedReason.ShopMissing], Eval(shop: " ", shopConf: 0.1));
+        Assert.Equal([NotCreatedReason.ShopUncertain], Eval(shop: "Billa", shopConf: null));
+        Assert.Equal([NotCreatedReason.DateMissing], Eval(noDate: true, dateConf: null));
+    }
+
+    [Fact]
     public void Date_in_future_boundary()
     {
         Assert.Equal([NotCreatedReason.DateInFuture], Eval(date: Reference.AddDays(2)));
@@ -149,8 +158,8 @@ public class AutoCreationRulesTests
             tac: 0.1, confidence: null, sum: 0, withPrice: 0, category: false);
 
         Assert.Equal(
-            [NotCreatedReason.ShopMissing, NotCreatedReason.ShopUncertain, NotCreatedReason.DateMissing,
-             NotCreatedReason.DateUncertain, NotCreatedReason.AmountIncomplete, NotCreatedReason.AmountUncertain,
+            [NotCreatedReason.ShopMissing, NotCreatedReason.DateMissing,
+             NotCreatedReason.AmountIncomplete, NotCreatedReason.AmountUncertain,
              NotCreatedReason.LowConfidence, NotCreatedReason.CategoryUnclear],
             reasons);
 
@@ -213,7 +222,7 @@ public class AutoCreationRulesTests
     private static bool Oracle(string? shop, double? shopConf, bool hasDate, double? dateConf, int futureDays,
         double? amount, string? text, double? tac, double? confidence, double sum, int withPrice)
     {
-        bool shopOk = !string.IsNullOrWhiteSpace(shop) && shopConf >= 0.75;
+        bool shopOk = !string.IsNullOrWhiteSpace(shop) && shopConf >= 0.75; // missing shop fails via ShopMissing only
         bool dateOk = hasDate && dateConf >= 0.80 && futureDays <= 1;
         bool amountOk = amount > 0;
         bool textOk = text is not null && Regex.IsMatch(text, @"\d[.,]\d{2}(?!\d)");
