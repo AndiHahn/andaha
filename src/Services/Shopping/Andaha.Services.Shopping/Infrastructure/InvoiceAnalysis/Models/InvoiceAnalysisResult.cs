@@ -12,6 +12,10 @@ public class InvoiceAnalysisResult
     public string? Currency { get; set; }
     public double? TotalAmountConfidence { get; set; }
     public double? Confidence { get; set; }
+    public double? VendorNameConfidence { get; set; }
+    public double? InvoiceDateConfidence { get; set; }
+    /// <summary>Raw text of the total as read from the document (InvoiceTotal.Content).</summary>
+    public string? TotalAmountText { get; set; }
 
     public List<InvoiceLineItem> LineItems { get; set; } = new List<InvoiceLineItem>();
 

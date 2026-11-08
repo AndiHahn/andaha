@@ -39,7 +39,7 @@ public class InvoiceAnalysisService : IInvoiceAnalysisService
         return MapInvoice(document);
     }
 
-    private static InvoiceAnalysisResult MapInvoice(AnalyzedDocument document)
+    internal static InvoiceAnalysisResult MapInvoice(AnalyzedDocument document)
     {
         var output = new InvoiceAnalysisResult();
 
@@ -49,6 +49,16 @@ public class InvoiceAnalysisService : IInvoiceAnalysisService
         output.CustomerName = document.Fields.GetString("CustomerName");
 
         output.InvoiceDate = document.Fields.GetDate("InvoiceDate");
+
+        if (document.Fields.TryGetValue("VendorName", out var vendorField))
+        {
+            output.VendorNameConfidence = vendorField.Confidence;
+        }
+
+        if (document.Fields.TryGetValue("InvoiceDate", out var dateField))
+        {
+            output.InvoiceDateConfidence = dateField.Confidence;
+        }
 
         var total = document.Fields.GetCurrency("InvoiceTotal");
         if (total != null)
@@ -61,6 +71,7 @@ public class InvoiceAnalysisService : IInvoiceAnalysisService
         if (document.Fields.TryGetValue("InvoiceTotal", out var totalField))
         {
             output.TotalAmountConfidence = totalField.Confidence;
+            output.TotalAmountText = totalField.Content;
         }
 
         if (document.Fields.TryGetValue("Items", out var itemsField) &&
@@ -70,12 +81,20 @@ public class InvoiceAnalysisService : IInvoiceAnalysisService
             {
                 var itemFields = item.ValueDictionary;
 
+                string? amountContent = itemFields.TryGetValue("Amount", out var amountField)
+                    ? amountField.Content
+                    : null;
+                var (totalPrice, unitPrice) = AmountSign.Apply(
+                    itemFields.GetCurrency("Amount")?.Amount,
+                    itemFields.GetCurrency("UnitPrice")?.Amount,
+                    amountContent);
+
                 output.LineItems.Add(new InvoiceLineItem
                 {
                     Description = itemFields.GetString("Description"),
                     Quantity = (int?)itemFields.GetDecimal("Quantity"),
-                    UnitPrice = itemFields.GetCurrency("UnitPrice")?.Amount,
-                    TotalPrice = itemFields.GetCurrency("Amount")?.Amount
+                    UnitPrice = unitPrice,
+                    TotalPrice = totalPrice
                 });
             }
         }
