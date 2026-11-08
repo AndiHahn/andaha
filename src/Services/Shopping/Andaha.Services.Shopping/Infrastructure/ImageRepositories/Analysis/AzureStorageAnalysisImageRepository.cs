@@ -67,6 +67,8 @@ public class AzureStorageAnalysisImageRepository(BlobServiceClient blobServiceCl
 
         await foreach (var blobItem in containerClient.GetBlobsAsync(
             traits: BlobTraits.Metadata,
+            states: BlobStates.None,
+            prefix: null,
             cancellationToken: ct))
         {
             result.Add(ToImageMetadata(
