@@ -1,5 +1,6 @@
 using Andaha.CrossCutting.Application.Identity;
 using Andaha.Services.Shopping.Core;
+using Andaha.Services.Shopping.Infrastructure.ImageRepositories.Image;
 using Andaha.Services.Shopping.Infrastructure.Proxies;
 using Andaha.Services.Shopping.Requests.Bill.CreateBill.V1;
 using Andaha.Services.Shopping.Requests.Bill.Dtos.V1;
@@ -65,6 +66,7 @@ public sealed class BillValidationPipelineTests : IDisposable
         builder.Services.AddScoped(_ => TestDb.Open(this.connection));
         builder.Services.AddSingleton(identity);
         builder.Services.AddSingleton(collaborationApiProxy);
+        builder.Services.AddSingleton(Substitute.For<IImageRepository>());
 
         return builder.Build();
     }
