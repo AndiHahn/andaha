@@ -1,5 +1,6 @@
 ﻿using Andaha.Services.Shopping.Infrastructure.AzureBlobStorage;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 
 namespace Andaha.Services.Shopping.Infrastructure.ImageRepositories.Image;
 
@@ -15,19 +16,30 @@ internal class AzureStorageImageRepository(BlobServiceClient blobServiceClient) 
         return this.imageBlobStorageService.GetBlobContentAsync(blobPath, ct);
     }
 
-    public Task UploadImageAsync(string name, Stream imageStream, CancellationToken ct = default)
+    public Task UploadImageAsync(string name, Stream imageStream, string? contentType, CancellationToken ct = default)
     {
         string blobPath = GetImagesBlobPath(name);
 
-        return this.imageBlobStorageService.UpdateBlobContentAsync(blobPath, imageStream, ct: ct);
+        var options = new BlobUploadOptions();
+        if (!string.IsNullOrWhiteSpace(contentType))
+        {
+            options.HttpHeaders = new BlobHttpHeaders { ContentType = contentType };
+        }
+
+        return this.imageBlobStorageService.UpdateBlobContentAsync(blobPath, imageStream, options, ct);
+    }
+
+    public Task CopyImageAsync(string sourceName, string targetName, CancellationToken ct = default)
+    {
+        return this.imageBlobStorageService.CopyBlobAsync(GetImagesBlobPath(sourceName), GetImagesBlobPath(targetName), ct);
     }
 
     public Task DeleteImageAsync(string name, CancellationToken ct = default)
     {
         string blobPath = GetImagesBlobPath(name);
 
-        return this.imageBlobStorageService.DeleteDocumentAsync(blobPath, ct);
+        return this.imageBlobStorageService.DeleteDocumentIfExistsAsync(blobPath, ct);
     }
 
-    private string GetImagesBlobPath(string name) => Path.Combine(this.imagesFolderName, name);
+    private string GetImagesBlobPath(string name) => $"{this.imagesFolderName}/{name}";
 }

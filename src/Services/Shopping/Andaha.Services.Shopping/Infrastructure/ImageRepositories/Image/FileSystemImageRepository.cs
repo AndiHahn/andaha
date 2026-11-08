@@ -4,11 +4,19 @@ namespace Andaha.Services.Shopping.Infrastructure.ImageRepositories.Image;
 
 internal class FileSystemImageRepository : IImageRepository
 {
-    private readonly string imagesFilePath = "images";
-    private readonly string analyzeFilePath = "analyze";
+    private readonly string imagesFilePath;
+    private readonly string analyzeFilePath;
 
-    public FileSystemImageRepository()
+    public FileSystemImageRepository() : this(string.Empty)
     {
+    }
+
+    /// <param name="baseDirectory">Folder containing the "images" and "analyze" folders; empty means the working directory.</param>
+    public FileSystemImageRepository(string baseDirectory)
+    {
+        this.imagesFilePath = Path.Combine(baseDirectory, "images");
+        this.analyzeFilePath = Path.Combine(baseDirectory, "analyze");
+
         if (!Directory.Exists(this.imagesFilePath))
         {
             Directory.CreateDirectory(this.imagesFilePath);
@@ -40,13 +48,33 @@ internal class FileSystemImageRepository : IImageRepository
         return (new MemoryStream(imageBytes), userId);
     }
 
-    public Task UploadImageAsync(string name, Stream imageStream, CancellationToken ct = default)
+    // The content type cannot be stored on disk (local development only), so it is ignored here.
+    public Task UploadImageAsync(string name, Stream imageStream, string? contentType, CancellationToken ct = default)
     {
         string filePath = this.GetImagePath(name);
+
+        Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
 
         var imageBytes = ReadStreamToBytes(imageStream);
 
         return File.WriteAllBytesAsync(filePath, imageBytes, ct);
+    }
+
+    public Task CopyImageAsync(string sourceName, string targetName, CancellationToken ct = default)
+    {
+        string sourcePath = this.GetImagePath(sourceName);
+        string targetPath = this.GetImagePath(targetName);
+
+        if (!File.Exists(sourcePath))
+        {
+            throw new FileNotFoundException($"Image '{sourceName}' does not exist.", sourcePath);
+        }
+
+        Directory.CreateDirectory(Path.GetDirectoryName(targetPath)!);
+
+        File.Copy(sourcePath, targetPath, overwrite: true);
+
+        return Task.CompletedTask;
     }
 
     public async Task UploadImageForAnalysisAsync(string name, Stream imageStream, Guid userId, CancellationToken ct = default)
@@ -68,7 +96,11 @@ internal class FileSystemImageRepository : IImageRepository
     {
         string filePath = this.GetImagePath(name);
 
-        File.Delete(filePath);
+        // File.Delete does not throw for a missing file (only for a missing directory).
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+        }
 
         return Task.CompletedTask;
     }
@@ -139,7 +171,7 @@ internal class FileSystemImageRepository : IImageRepository
         }
     }
 
-    private string GetImagePath(string name) => Path.Combine(this.imagesFilePath, name);
+    private string GetImagePath(string name) => Path.Combine(this.imagesFilePath, name.Replace('/', Path.DirectorySeparatorChar));
 
     private string GetAnalyzeFilePath(string name) => Path.Combine(this.analyzeFilePath, name);
 

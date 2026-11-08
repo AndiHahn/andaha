@@ -46,7 +46,7 @@ internal class FailedAnalysisImageHandler(
         dbContext.AnalyzedBill.Add(analyzedBill);
 
         imageStream.Position = 0;
-        await imageRepository.UploadImageAsync(billImageName, imageStream, ct);
+        await imageRepository.UploadImageAsync(billImageName, imageStream, contentType: null, ct);
 
         await dbContext.SaveChangesAsync(ct);
 

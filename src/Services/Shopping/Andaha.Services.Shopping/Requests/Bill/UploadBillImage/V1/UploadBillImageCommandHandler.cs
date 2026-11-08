@@ -61,7 +61,7 @@ internal class UploadBillImageCommandHandler : IRequestHandler<UploadBillImageCo
 
         imageStream.Position = 0;
 
-        await imageRepository.UploadImageAsync(imageName, imageStream, cancellationToken);
+        await imageRepository.UploadImageAsync(imageName, imageStream, contentType: null, cancellationToken);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

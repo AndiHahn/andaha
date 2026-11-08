@@ -403,7 +403,7 @@ public sealed class ImmediateAnalysisTests : IDisposable
         }
 
         await invoiceAnalysis.DidNotReceiveWithAnyArgs().AnalyzeAsync(default!, default);
-        await billImages.DidNotReceiveWithAnyArgs().UploadImageAsync(default!, default!, default);
+        await billImages.DidNotReceiveWithAnyArgs().UploadImageAsync(default!, default!, default, default);
         Assert.Empty(await analysisImages.ListImagesAsync());
         await using var context = TestDb.Open(connection);
         Assert.Equal((asAnalyzedBill ? 0 : 1), (await context.Bill.ToListAsync()).Count);

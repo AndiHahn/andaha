@@ -26,6 +26,7 @@ public class FailedAnalysisImageHandlerTests
         await images.UploadImageAsync(
             Arg.Do<string>(name => uploadedName = name),
             Arg.Do<Stream>(stream => { using var ms = new MemoryStream(); stream.CopyTo(ms); uploaded = ms.ToArray(); }),
+            Arg.Any<string?>(),
             Arg.Any<CancellationToken>());
 
         var (context, connection) = TestDb.CreateShopping();
@@ -103,7 +104,7 @@ public class FailedAnalysisImageHandlerTests
             Assert.Equal(asAnalyzedBill ? 1 : 0, await context.AnalyzedBill.CountAsync());
             Assert.Equal(asAnalyzedBill ? 0 : 1, await context.Bill.CountAsync());
             await analysisImages.DidNotReceiveWithAnyArgs().GetImageAsync(default!, default);
-            await images.DidNotReceiveWithAnyArgs().UploadImageAsync(default!, default!, default);
+            await images.DidNotReceiveWithAnyArgs().UploadImageAsync(default!, default!, default, default);
             await analysisImages.Received(1).DeleteImageAsync("a.jpg", Arg.Any<CancellationToken>());
         }
     }

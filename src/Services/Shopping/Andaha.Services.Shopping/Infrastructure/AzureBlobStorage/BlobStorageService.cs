@@ -1,4 +1,5 @@
-﻿using Azure.Storage.Blobs;
+﻿using Azure;
+using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 
 namespace Andaha.Services.Shopping.Infrastructure.AzureBlobStorage;
@@ -24,6 +25,44 @@ internal class BlobStorageService : IBlobStorageService
         var blobClient = containerClient.GetBlobClient(blobName);
 
         await blobClient.DeleteAsync(cancellationToken: ct);
+    }
+
+    public async Task<bool> DeleteDocumentIfExistsAsync(string blobName, CancellationToken ct = default)
+    {
+        var blobClient = GetContainerClient().GetBlobClient(blobName);
+
+        var response = await blobClient.DeleteIfExistsAsync(cancellationToken: ct);
+
+        return response.Value;
+    }
+
+    public async Task CopyBlobAsync(string sourceBlobName, string targetBlobName, CancellationToken ct = default)
+    {
+        var containerClient = GetContainerClient();
+        var sourceClient = containerClient.GetBlobClient(sourceBlobName);
+        var targetClient = containerClient.GetBlobClient(targetBlobName);
+
+        BlobDownloadStreamingResult download;
+        try
+        {
+            download = (await sourceClient.DownloadStreamingAsync(cancellationToken: ct)).Value;
+        }
+        catch (RequestFailedException ex) when (ex.Status == 404)
+        {
+            throw new FileNotFoundException($"Blob '{sourceBlobName}' does not exist.", sourceBlobName, ex);
+        }
+
+        using (download)
+        {
+            await targetClient.UploadAsync(
+                download.Content,
+                new BlobUploadOptions
+                {
+                    HttpHeaders = new BlobHttpHeaders { ContentType = download.Details.ContentType },
+                    Conditions = new BlobRequestConditions(),
+                },
+                ct);
+        }
     }
 
     public async Task<Stream> GetBlobContentAsync(string blobName, CancellationToken ct = default)

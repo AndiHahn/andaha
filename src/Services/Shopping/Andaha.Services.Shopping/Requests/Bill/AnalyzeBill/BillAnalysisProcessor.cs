@@ -155,7 +155,7 @@ internal sealed class BillAnalysisProcessor(
 
         imageStream.Position = 0;
 
-        await imageRepository.UploadImageAsync(imageName, imageStream, ct);
+        await imageRepository.UploadImageAsync(imageName, imageStream, contentType: null, ct);
 
         return imageName;
     }
