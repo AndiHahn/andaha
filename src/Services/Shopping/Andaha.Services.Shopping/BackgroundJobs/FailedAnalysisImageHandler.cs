@@ -39,14 +39,15 @@ internal class FailedAnalysisImageHandler(
             sourceUploadId: imageName,
             notCreatedReasons: [NotCreatedReason.AnalysisFailed]);
 
-        string billImageName = $"{analyzedBill.Id}-1";
+        imageStream.Position = 0;
+        var fileType = await logger.DetectOrWarnAsync(imageStream, $"analyzed bill {analyzedBill.Id}", ct);
+        string billImageName = BillImagePath.ForScan(file.UserId, analyzedBill.CreatedAt, analyzedBill.Id, fileType.Extension);
 
         analyzedBill.AddImage(billImageName, []);
 
         dbContext.AnalyzedBill.Add(analyzedBill);
 
-        imageStream.Position = 0;
-        await imageRepository.UploadImageAsync(billImageName, imageStream, contentType: null, ct);
+        await imageRepository.UploadImageAsync(billImageName, imageStream, fileType.ContentType, ct);
 
         await dbContext.SaveChangesAsync(ct);
 

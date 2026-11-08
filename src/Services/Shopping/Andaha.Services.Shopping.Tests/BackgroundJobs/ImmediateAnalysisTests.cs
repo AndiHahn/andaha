@@ -411,6 +411,40 @@ public sealed class ImmediateAnalysisTests : IDisposable
     }
 
     [Fact]
+    public async Task Auto_created_bill_stores_image_under_structured_path_with_content_type()
+    {
+        invoiceAnalysis.AnalyzeAsync(Arg.Any<Stream>(), Arg.Any<CancellationToken>()).Returns(Plausible());
+        using var services = BuildServices();
+        string id = await UploadAsync();
+
+        await CreateService(services).ProcessAsync(id, CancellationToken.None);
+
+        await using var context = TestDb.Open(connection);
+        var bill = await context.Bill.Include(b => b.Images).SingleAsync();
+        var image = Assert.Single(bill.Images);
+        Assert.Equal(BillImagePath.ForBill(UserA, bill.Date, "ZZ Markt", bill.Id, 1, ".png"), image.Name);
+        await billImages.Received(1).UploadImageAsync(image.Name, Arg.Any<Stream>(), "image/png", Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Analyzed_bill_stores_scan_under_structured_path_with_content_type()
+    {
+        var result = Plausible();
+        result.Confidence = 0.2;
+        invoiceAnalysis.AnalyzeAsync(Arg.Any<Stream>(), Arg.Any<CancellationToken>()).Returns(result);
+        using var services = BuildServices();
+        string id = await UploadAsync();
+
+        await CreateService(services).ProcessAsync(id, CancellationToken.None);
+
+        await using var context = TestDb.Open(connection);
+        var analyzedBill = await context.AnalyzedBill.Include(b => b.Images).SingleAsync();
+        var image = Assert.Single(analyzedBill.Images);
+        Assert.Equal(BillImagePath.ForScan(UserA, analyzedBill.CreatedAt, analyzedBill.Id, ".png"), image.Name);
+        await billImages.Received(1).UploadImageAsync(image.Name, Arg.Any<Stream>(), "image/png", Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task Nas_images_get_origin_nas()
     {
         var nasImages = Substitute.For<INasImageRepository>();
@@ -520,8 +554,7 @@ public sealed class ImmediateAnalysisTests : IDisposable
         return file;
     }
 
-    // Nothing decodes the image anymore, so any bytes will do.
-    private static byte[] Png() => [1, 2, 3, 4, 5];
+    private static byte[] Png() => [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 1, 2, 3];
 
     private sealed class MutableTimeProvider(DateTimeOffset now) : TimeProvider
     {

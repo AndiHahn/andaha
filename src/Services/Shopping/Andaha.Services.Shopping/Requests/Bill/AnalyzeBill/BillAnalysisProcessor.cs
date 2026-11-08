@@ -100,7 +100,11 @@ internal sealed class BillAnalysisProcessor(
 
         dbContext.AnalyzedBill.Add(analyzedBill);
 
-        var imageName = await UploadImageAsync(analyzedBill.Id, file.Image, ct);
+        var imageName = await UploadImageAsync(
+            analyzedBill.Id,
+            file.Image,
+            fileType => BillImagePath.ForScan(file.UserId, analyzedBill.CreatedAt, analyzedBill.Id, fileType.Extension),
+            ct);
         analyzedBill.AddImage(imageName, []);
 
         await dbContext.SaveChangesAsync(ct);
@@ -136,7 +140,11 @@ internal sealed class BillAnalysisProcessor(
 
         dbContext.Bill.Add(bill);
 
-        var imageName = await UploadImageAsync(bill.Id, file.Image, ct);
+        var imageName = await UploadImageAsync(
+            bill.Id,
+            file.Image,
+            fileType => BillImagePath.ForBill(bill.UserId, bill.Date, bill.ShopName, bill.Id, 1, fileType.Extension),
+            ct);
         bill.AddImage(imageName, []);
 
         await dbContext.SaveChangesAsync(ct);
@@ -147,15 +155,20 @@ internal sealed class BillAnalysisProcessor(
     }
 
     /// <summary>
-    /// Uploads the image as the first image of the (analyzed) bill and returns its name.
+    /// Detects the file type, uploads the image under the path built for it and returns the name.
     /// </summary>
-    private async Task<string> UploadImageAsync(Guid billId, Stream imageStream, CancellationToken ct)
+    private async Task<string> UploadImageAsync(
+        Guid billId,
+        Stream imageStream,
+        Func<ImageFileType, string> buildName,
+        CancellationToken ct)
     {
-        string imageName = $"{billId}-1";
-
         imageStream.Position = 0;
 
-        await imageRepository.UploadImageAsync(imageName, imageStream, contentType: null, ct);
+        var fileType = await logger.DetectOrWarnAsync(imageStream, $"bill {billId}", ct);
+        string imageName = buildName(fileType);
+
+        await imageRepository.UploadImageAsync(imageName, imageStream, fileType.ContentType, ct);
 
         return imageName;
     }

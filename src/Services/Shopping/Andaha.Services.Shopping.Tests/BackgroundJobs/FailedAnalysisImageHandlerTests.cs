@@ -9,8 +9,7 @@ namespace Andaha.Services.Shopping.Tests.BackgroundJobs;
 
 public class FailedAnalysisImageHandlerTests
 {
-    // Nothing decodes the image anymore, so any bytes will do.
-    private static byte[] Png() => [1, 2, 3, 4, 5];
+    private static byte[] Png() => [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 1, 2, 3];
 
     [Fact]
     public async Task Creates_analyzed_bill_with_empty_fields_and_image_for_owner()
@@ -23,10 +22,11 @@ public class FailedAnalysisImageHandlerTests
         var images = Substitute.For<IImageRepository>();
         byte[]? uploaded = null;
         string? uploadedName = null;
+        string? uploadedContentType = null;
         await images.UploadImageAsync(
             Arg.Do<string>(name => uploadedName = name),
             Arg.Do<Stream>(stream => { using var ms = new MemoryStream(); stream.CopyTo(ms); uploaded = ms.ToArray(); }),
-            Arg.Any<string?>(),
+            Arg.Do<string?>(contentType => uploadedContentType = contentType),
             Arg.Any<CancellationToken>());
 
         var (context, connection) = TestDb.CreateShopping();
@@ -58,9 +58,10 @@ public class FailedAnalysisImageHandlerTests
             Assert.Equal([Core.NotCreatedReason.AnalysisFailed], bill.NotCreatedReasons);
 
             var image = Assert.Single(bill.Images);
-            Assert.Equal($"{bill.Id}-1", image.Name);
+            Assert.Equal(BillImagePath.ForScan(owner, bill.CreatedAt, bill.Id, ".png"), image.Name);
             Assert.Empty(image.Thumbnail);
             Assert.Equal(image.Name, uploadedName);
+            Assert.Equal("image/png", uploadedContentType);
             Assert.Equal(source, uploaded);
             await analysisImages.Received(1).DeleteImageAsync("a.jpg", Arg.Any<CancellationToken>());
         }

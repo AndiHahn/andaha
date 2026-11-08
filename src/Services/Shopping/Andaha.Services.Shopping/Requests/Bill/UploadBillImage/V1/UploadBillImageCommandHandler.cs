@@ -14,17 +14,20 @@ internal class UploadBillImageCommandHandler : IRequestHandler<UploadBillImageCo
     private readonly IIdentityService identityService;
     private readonly ICollaborationApiProxy collaborationApiProxy;
     private readonly IImageRepository imageRepository;
+    private readonly ILogger<UploadBillImageCommandHandler> logger;
 
     public UploadBillImageCommandHandler(
         ShoppingDbContext dbContext,
         IIdentityService identityService,
         ICollaborationApiProxy collaborationApiProxy,
-        IImageRepository imageRepository)
+        IImageRepository imageRepository,
+        ILogger<UploadBillImageCommandHandler> logger)
     {
         this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         this.identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
         this.collaborationApiProxy = collaborationApiProxy ?? throw new ArgumentNullException(nameof(collaborationApiProxy));
         this.imageRepository = imageRepository ?? throw new ArgumentNullException(nameof(imageRepository));
+        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<IResult> Handle(UploadBillImageCommand request, CancellationToken cancellationToken)
@@ -48,25 +51,59 @@ internal class UploadBillImageCommandHandler : IRequestHandler<UploadBillImageCo
             }
         }
 
-        if (bill.Images.Any())
+        // The old blob is deleted only after the new one is written and saved, so a failure never leaves the bill without an image.
+        var oldImage = bill.Images.FirstOrDefault();
+        string? oldName = oldImage?.Name;
+        if (oldImage is not null)
         {
-            bill.RemoveImage(bill.Images.First());
+            bill.RemoveImage(oldImage);
         }
 
-        string imageName = GetImageName(bill.Id, bill.Images.Count);
+        using Stream requestStream = request.Image.OpenReadStream();
+        using Stream imageStream = await EnsureSeekableAsync(requestStream, cancellationToken);
 
-        using Stream imageStream = request.Image.OpenReadStream();
+        var fileType = await logger.DetectOrWarnAsync(imageStream, $"bill {bill.Id}", cancellationToken);
+        string imageName = BillImagePath.ForBill(bill.UserId, bill.Date, bill.ShopName, bill.Id, bill.Images.Count + 1, fileType.Extension);
 
         bill.AddImage(imageName, []);
 
-        imageStream.Position = 0;
-
-        await imageRepository.UploadImageAsync(imageName, imageStream, contentType: null, cancellationToken);
+        await imageRepository.UploadImageAsync(imageName, imageStream, fileType.ContentType, cancellationToken);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return Results.NotFound();
+        if (oldName is not null && oldName != imageName)
+        {
+            await TryDeleteOldImageAsync(oldName, cancellationToken);
+        }
+
+        return Results.NoContent();
     }
 
-    private static string GetImageName(Guid billId, int nrOfExistingImages) => $"{billId}-{nrOfExistingImages + 1}";
+    private async Task TryDeleteOldImageAsync(string oldName, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await imageRepository.DeleteImageAsync(oldName, cancellationToken);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            logger.LogWarning(exception, "The replaced bill image '{ImageName}' could not be deleted.", oldName);
+        }
+    }
+
+    private static async Task<Stream> EnsureSeekableAsync(Stream stream, CancellationToken cancellationToken)
+    {
+        if (stream.CanSeek)
+        {
+            stream.Position = 0;
+
+            return stream;
+        }
+
+        var buffer = new MemoryStream();
+        await stream.CopyToAsync(buffer, cancellationToken);
+        buffer.Position = 0;
+
+        return buffer;
+    }
 }
