@@ -200,6 +200,39 @@ public sealed class ImmediateAnalysisTests : IDisposable
     }
 
     [Fact]
+    public async Task Incomplete_amount_text_lands_in_review_with_amount_incomplete()
+    {
+        var result = Plausible();
+        result.TotalAmount = 4.0;
+        result.TotalAmountText = "4,";
+        invoiceAnalysis.AnalyzeAsync(Arg.Any<Stream>(), Arg.Any<CancellationToken>()).Returns(result);
+        using var services = BuildServices();
+        string id = await UploadAsync();
+
+        await CreateService(services).ProcessAsync(id, CancellationToken.None);
+
+        await using var context = TestDb.Open(connection);
+        var analyzedBill = await context.AnalyzedBill.SingleAsync();
+        Assert.Equal([Core.NotCreatedReason.AmountIncomplete], analyzedBill.NotCreatedReasons);
+        Assert.Empty(await context.Bill.ToListAsync());
+    }
+
+    [Fact]
+    public async Task Date_after_the_injected_reference_day_is_in_the_future()
+    {
+        var result = Plausible();
+        result.InvoiceDate = new DateTimeOffset(2026, 11, 7, 0, 0, 0, TimeSpan.Zero);
+        invoiceAnalysis.AnalyzeAsync(Arg.Any<Stream>(), Arg.Any<CancellationToken>()).Returns(result);
+        using var services = BuildServices();
+        string id = await UploadAsync();
+
+        await CreateService(services).ProcessAsync(id, CancellationToken.None);
+
+        await using var context = TestDb.Open(connection);
+        Assert.Equal([Core.NotCreatedReason.DateInFuture], (await context.AnalyzedBill.SingleAsync()).NotCreatedReasons);
+    }
+
+    [Fact]
     public async Task Analyzed_bill_stores_category_unclear_when_classification_invalid()
     {
         invoiceAnalysis.AnalyzeAsync(Arg.Any<Stream>(), Arg.Any<CancellationToken>()).Returns(Plausible());
@@ -505,6 +538,7 @@ public sealed class ImmediateAnalysisTests : IDisposable
             .AddSingleton(billImages)
             .AddSingleton(invoiceAnalysis)
             .AddSingleton(classification)
+            .AddSingleton<TimeProvider>(time)
             .AddScoped<IBillAnalysisProcessor, BillAnalysisProcessor>()
             .BuildServiceProvider();
 
@@ -535,6 +569,9 @@ public sealed class ImmediateAnalysisTests : IDisposable
             TotalAmount = 4.15,
             Confidence = 0.95,
             TotalAmountConfidence = 0.9,
+            VendorNameConfidence = 0.9,
+            InvoiceDateConfidence = 0.9,
+            TotalAmountText = "4,15",
             LineItems =
             [
                 new InvoiceLineItem { Description = "  Brot ", Quantity = 2, UnitPrice = 1.5, TotalPrice = 3.0 },

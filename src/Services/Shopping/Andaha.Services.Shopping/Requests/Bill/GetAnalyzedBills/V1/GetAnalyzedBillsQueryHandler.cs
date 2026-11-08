@@ -54,6 +54,7 @@ internal class GetAnalyzedBillsQueryHandler : IRequestHandler<GetAnalyzedBillsQu
             dto.Confidence,
             dto.TotalAmountConfidence,
             dto.LineItems.Sum(item => item.TotalPrice ?? 0),
+            dto.LineItems.Count(item => item.TotalPrice != null),
             dto.CategoryId != null);
 
         return reasons.Select(reason => reason.ToString()).ToList();

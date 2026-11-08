@@ -22,9 +22,13 @@ public class InvoiceAnalysisResult
     public bool IsReasonableResult()
     {
         double lineItemsSum = LineItems?.Sum(lineItem => lineItem.TotalPrice) ?? 0.0;
+        int withPrice = LineItems?.Count(lineItem => lineItem.TotalPrice != null) ?? 0;
 
         return AutoCreationRules.Evaluate(
-            VendorName, InvoiceDate?.DateTime, TotalAmount, Confidence, TotalAmountConfidence,
-            lineItemsSum, categoryValid: true).Count == 0;
+            new AutoCreationInput(
+                VendorName, VendorNameConfidence, InvoiceDate?.DateTime, InvoiceDateConfidence,
+                TotalAmount, TotalAmountConfidence, TotalAmountText, Confidence,
+                lineItemsSum, withPrice, CategoryValid: true),
+            DateTime.UtcNow.Date).Count == 0;
     }
 }

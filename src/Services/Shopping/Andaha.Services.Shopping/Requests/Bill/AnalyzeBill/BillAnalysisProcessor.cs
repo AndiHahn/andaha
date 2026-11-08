@@ -18,6 +18,7 @@ internal sealed class BillAnalysisProcessor(
     IInvoiceAnalysisService invoiceAnalysisService,
     ICategoryClassificationService categoryClassificationService,
     ShoppingDbContext dbContext,
+    TimeProvider timeProvider,
     ILogger<BillAnalysisProcessor> logger) : IBillAnalysisProcessor
 {
     public async Task ProcessAsync(string imageName, CancellationToken ct)
@@ -50,13 +51,19 @@ internal sealed class BillAnalysisProcessor(
             .Select(lineItem => (lineItem.Description, lineItem.Quantity, lineItem.UnitPrice, lineItem.TotalPrice)));
 
         var notCreatedReasons = AutoCreationRules.Evaluate(
-            analysisResult.VendorName,
-            analysisResult.InvoiceDate?.Date,
-            totalAmount,
-            analysisResult.Confidence,
-            analysisResult.TotalAmountConfidence,
-            lineItemsAmount ?? 0,
-            categoryValid: classificationResult is not null);
+            new AutoCreationInput(
+                analysisResult.VendorName,
+                analysisResult.VendorNameConfidence,
+                analysisResult.InvoiceDate?.Date,
+                analysisResult.InvoiceDateConfidence,
+                totalAmount,
+                analysisResult.TotalAmountConfidence,
+                analysisResult.TotalAmountText,
+                analysisResult.Confidence,
+                lineItemsAmount ?? 0,
+                analysisResult.LineItems.Count(lineItem => lineItem.TotalPrice != null),
+                CategoryValid: classificationResult is not null),
+            timeProvider.GetUtcNow().UtcDateTime.Date);
 
         logger.LogInformation("Not-created reasons: {Reasons}", string.Join(", ", notCreatedReasons));
 

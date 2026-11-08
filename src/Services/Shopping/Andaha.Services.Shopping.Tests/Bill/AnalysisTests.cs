@@ -163,7 +163,7 @@ public class AnalysisTests
 
             var list = Assert.IsType<Ok<List<AnalyzedBillDto>>>(result).Value!;
             Assert.Equal(
-                ["LowConfidence", "AmountUncertain", "CategoryUnclear"],
+                ["AmountUncertain", "LowConfidence", "CategoryUnclear"],
                 Assert.Single(list, d => d.Id == legacy.Id).NotCreatedReasons);
             Assert.Equal(["AnalysisFailed"], Assert.Single(list, d => d.Id == failed.Id).NotCreatedReasons);
         }
@@ -176,12 +176,12 @@ public class AnalysisTests
         using (connection)
         using (context)
         {
-            // Sum 8 + 0 (TotalPrice null counts as 0) differs from 10 by 2 <= 5.0: no AmountUncertain.
-            var matching = new AnalyzedBill(UserA, Guid.NewGuid(), null, "Billa", 10, 0.9, 0.1, DateTime.UtcNow);
-            matching.LineItems.Add(new AnalyzedBillLineItem(matching.Id, "A", 8, 8, 1, 0));
+            // Sum 9.95 + 0 (TotalPrice null counts as 0) differs from 10 by 0.05 <= 0.10 with one priced item: no AmountUncertain.
+            var matching = new AnalyzedBill(UserA, Guid.NewGuid(), null, "Billa", 10, 0.9, 0.7, DateTime.UtcNow);
+            matching.LineItems.Add(new AnalyzedBillLineItem(matching.Id, "A", 9.95, 9.95, 1, 0));
             matching.LineItems.Add(new AnalyzedBillLineItem(matching.Id, "B", null, null, 1, 1));
-            // Sum 2 differs from 10 by 8 > 5.0 and TAC 0.1 is low: AmountUncertain.
-            var mismatching = new AnalyzedBill(UserA, Guid.NewGuid(), null, "Spar", 10, 0.9, 0.1, DateTime.UtcNow.AddDays(-1));
+            // Sum 2 differs from 10 by 8 > 0.10 with TAC 0.7: AmountUncertain.
+            var mismatching = new AnalyzedBill(UserA, Guid.NewGuid(), null, "Spar", 10, 0.9, 0.7, DateTime.UtcNow.AddDays(-1));
             mismatching.LineItems.Add(new AnalyzedBillLineItem(mismatching.Id, "C", 2, 2, 1, 0));
             context.AnalyzedBill.AddRange(matching, mismatching);
             context.SaveChanges();
